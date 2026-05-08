@@ -306,7 +306,6 @@ protected:
 	bool LoadTotalTexture();
 	bool LoadTotalMesh();
 	bool LoadTotalEffect();
-	bool LoadTotalVShader();
 	bool LoadTotalPath();
 
 	void LoadTotalPartCtrl();
@@ -349,7 +348,6 @@ protected:
 	IDirect3DVertexShaderX* _dwShadeMapVS;
 
 	IDirect3DVertexShaderX* _dwMinimapVS;
-	bool _bMagr; //
 
 	CMPEffectFile _CEffectFile;
 

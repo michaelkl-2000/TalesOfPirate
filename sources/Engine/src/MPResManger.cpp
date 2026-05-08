@@ -43,7 +43,6 @@ CMPResManger::CMPResManger(void) {
 
 	_vecVShader.clear();
 	_dwShadeMapVS = 0L;
-	_bMagr = false;
 	_dwMinimapVS = 0L;
 
 	_vecEffectParam.clear();
@@ -221,10 +220,6 @@ bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatvie
 		MessageBox(NULL, "shader\\eff.fx", "ERROR", 0);
 		return false;
 	}
-
-	if (!_bMagr)
-		if (!LoadTotalVShader())
-			return false;
 
 	_pszTexPath = "texture\\effect";
 	_pszMeshPath = "model";
@@ -804,72 +799,6 @@ bool CMPResManger::LoadTotalEffect() {
 	return true;
 }
 
-bool CMPResManger::LoadTotalVShader() {
-	std::string t_Path;
-
-	LPD3DXBUFFER pCode;
-	if (!m_bUseSoft) {
-		t_Path = "shader\\dx9\\eff1.vsh";
-		while (SUCCEEDED(D3DXAssembleShaderFromFile( t_Path.c_str(), NULL, NULL, 0, &pCode, NULL ))) {
-			_iVShaderNum++;
-			_vecVShader.resize(_iVShaderNum);
-			if (HRESULT hr = m_pDev->GetDevice()->CreateVertexShader(
-				(DWORD*)pCode->GetBufferPointer(),
-				(IDirect3DVertexShaderX**)&_vecVShader[_iVShaderNum - 1]); FAILED(hr)) {
-				ToLogService("errors", LogLevel::Error,
-							 "[{}] CreateVertexShader failed (eff loop): path={}, idx={}, hr=0x{:08X}",
-							 __FUNCTION__, t_Path, _iVShaderNum - 1, static_cast<std::uint32_t>(hr));
-				MessageBox(NULL, t_Path.c_str(), "ERROR", 0);
-				return false;
-			}
-
-			t_Path = std::format("shader\\dx9\\eff{}.vsh", _iVShaderNum + 1);
-			pCode->Release();
-			pCode = NULL;
-		}
-
-		t_Path = "shader\\dx9\\shadeeff.vsh";
-		if (SUCCEEDED(D3DXAssembleShaderFromFile( t_Path.c_str(), NULL, NULL, 0, &pCode, NULL ))) {
-			if (HRESULT hr = m_pDev->GetDevice()->CreateVertexShader(
-				(DWORD*)pCode->GetBufferPointer(),
-				(IDirect3DVertexShaderX**)&_dwShadeMapVS); FAILED(hr)) {
-				ToLogService("errors", LogLevel::Error,
-							 "[{}] CreateVertexShader failed (shadeeff): hr=0x{:08X}",
-							 __FUNCTION__, static_cast<std::uint32_t>(hr));
-				MessageBox(NULL, "shader\\shadeeff.vsh", "ERROR", 0);
-				return false;
-			}
-			pCode->Release();
-			pCode = NULL;
-		}
-		else {
-			MessageBox(NULL, "shader\\shadeeff.vsh", "ERROR", 0);
-			return false;
-		}
-	}
-	else {
-		t_Path = "shader\\dx9\\eff2.vsh";
-		if (SUCCEEDED(D3DXAssembleShaderFromFile( t_Path.c_str(), NULL, NULL, 0, &pCode, NULL ))) {
-			_iVShaderNum++;
-			_vecVShader.resize(_iVShaderNum);
-			if (HRESULT hr = m_pDev->GetDevice()->CreateVertexShader(
-				(DWORD*)pCode->GetBufferPointer(),
-				(IDirect3DVertexShaderX**)&_vecVShader[_iVShaderNum - 1]); FAILED(hr)) {
-				ToLogService("errors", LogLevel::Error,
-							 "[{}] CreateVertexShader failed (eff2): idx={}, hr=0x{:08X}",
-							 __FUNCTION__, _iVShaderNum - 1, static_cast<std::uint32_t>(hr));
-				_vecVShader[0] = 0L;
-			}
-
-			pCode->Release();
-			pCode = NULL;
-		}
-	}
-
-
-	return true;
-}
-
 bool CMPResManger::LoadTotalVShader(lwISysGraphics* sys_graphics) {
 	lwISystem* sys = sys_graphics->GetSystem();
 
@@ -941,12 +870,6 @@ bool CMPResManger::LoadTotalVShader(lwISysGraphics* sys_graphics) {
 		"shadeeff.hlsl",
 		"minimap.hlsl",
 	};
-	// Все шейдеры HLSL после полного рефакторинга (vs_2_0).
-	const DWORD shader_compile_flag[] =
-	{
-		VS_FILE_HLSL, VS_FILE_HLSL, VS_FILE_HLSL,
-		VS_FILE_HLSL, VS_FILE_HLSL, VS_FILE_HLSL,
-	};
 
 	D3DVERTEXELEMENT9* decl_tab[] =
 	{
@@ -990,7 +913,7 @@ bool CMPResManger::LoadTotalVShader(lwISysGraphics* sys_graphics) {
 
 	for (int i = 0; i < decl_num; i++) {
 		const std::string path = std::format("{}{}", path_info->GetPath(PATH_TYPE_SHADER), shader_file[i]);
-		if (LW_RESULT r = shader_mgr->RegisterVertexShader(shader_type[i], path.c_str(), shader_compile_flag[i]);
+		if (LW_RESULT r = shader_mgr->RegisterVertexShader(shader_type[i], path.c_str());
 			LW_FAILED(r)) {
 			ToLogService("errors", LogLevel::Error,
 						 "[{}] shader_mgr->RegisterVertexShader failed: i={}, shader_type={}, path={}, ret={}",
@@ -1013,8 +936,6 @@ bool CMPResManger::LoadTotalVShader(lwISysGraphics* sys_graphics) {
 		}
 	}
 
-
-	_bMagr = true;
 	return true;
 }
 

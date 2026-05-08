@@ -749,12 +749,6 @@ LW_BEGIN
 	typedef lwVertDeclInfo9 lwVertDeclInfo;
 
 
-	enum {
-		VS_FILE_OBJECT = 1,
-		VS_FILE_ASM = 2,
-		VS_FILE_HLSL = 3,
-	};
-
 	class lwAnimCtrlTypeInfo {
 	public:
 		DWORD type;

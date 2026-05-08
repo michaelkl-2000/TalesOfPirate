@@ -7,54 +7,8 @@
 LW_BEGIN
 	LW_STD_IMPLEMENTATION(lwPoseCtrl)
 
-	LW_RESULT lwPoseCtrl::Load(FILE* fp) {
-		size_t t = fread(&_pose_num, sizeof(_pose_num), 1, fp);
-
-		_pose_seq = LW_NEW(lwPoseInfo[_pose_num]);
-		t = fread(&_pose_seq[0], sizeof(lwPoseInfo), _pose_num, fp);
-
-		return LW_RET_OK;
-	}
-
-	LW_RESULT lwPoseCtrl::Save(FILE* fp) const {
-		fwrite(&_pose_num, sizeof(_pose_num), 1, fp);
-		fwrite(&_pose_seq[0], sizeof(lwPoseInfo), _pose_num, fp);
-
-		return LW_RET_OK;
-	}
-
-	LW_RESULT lwPoseCtrl::Load(std::string_view file) {
-		FILE* fp = fopen(std::string{file}.c_str(), "rb");
-
-		if (fp == NULL)
-			return ERR_INVALID_PARAM;
-
-		DWORD version;
-
-		fread(&version, sizeof(DWORD), 1, fp);
-		assert(version == 1 && "error version code");
-
-		Load(fp);
-
-		fclose(fp);
-
-		return 1;
-	}
-
-	LW_RESULT lwPoseCtrl::Save(std::string_view file) const {
-		FILE* fp = fopen(std::string{file}.c_str(), "wb");
-		if (fp == 0)
-			return ERR_INVALID_PARAM;
-
-		DWORD version = 1;
-		fwrite(&version, sizeof(DWORD), 1, fp);
-
-		Save(fp);
-
-		fclose(fp);
-
-		return 1;
-	}
+	// Load/Save (file и FILE*) перенесены в Corsairs::Engine::Render::PoseCtrlLoader
+	// (см. AssetLoaders.h/cpp). lwPoseCtrl остаётся data-классом без I/O.
 
 	LW_RESULT lwPoseCtrl::Clone(lwIPoseCtrl** obj) {
 		lwPoseCtrl* o = LW_NEW(lwPoseCtrl);

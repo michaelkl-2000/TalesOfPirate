@@ -166,8 +166,7 @@ LW_RESULT LoadShader0(lwISysGraphics* sys_graphics) {
 		int i;
 		for (i = 0; i < shader_num; ++i) {
 			const std::string path = std::format("{}{}", path_info->GetPath(PATH_TYPE_SHADER), shader_file[i]);
-			if (LW_RESULT r = shader_mgr->RegisterVertexShader(shader_type[i], path.c_str(), VS_FILE_HLSL,
-															   defines_tab[i]);
+			if (LW_RESULT r = shader_mgr->RegisterVertexShader(shader_type[i], path.c_str(), defines_tab[i]);
 				LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
 							 "[{}] shader_mgr->RegisterVertexShader failed: i={}, shader_type={}, path={}, ret={}",
@@ -275,7 +274,7 @@ LW_RESULT LoadShader1(lwISysGraphics* sys_graphics) {
 
 	for (int i = 0; i < 6; i++) {
 		const std::string path = std::format("{}{}", path_info->GetPath(PATH_TYPE_SHADER), shader_file[i]);
-		if (LW_RESULT r = shader_mgr->RegisterVertexShader(shader_type[i], path.c_str(), VS_FILE_HLSL, defs_tab[i]);
+		if (LW_RESULT r = shader_mgr->RegisterVertexShader(shader_type[i], path.c_str(), defs_tab[i]);
 			LW_FAILED(r)) {
 			ToLogService("errors", LogLevel::Error,
 						 "[{}] shader_mgr->RegisterVertexShader (skinmesh) failed: i={}, shader_type={}, path={}, ret={}",

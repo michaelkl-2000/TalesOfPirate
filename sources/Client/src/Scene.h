@@ -32,18 +32,8 @@ struct SceneTranspObjStateDesc {
 	D3DLIGHTX light[3];
 };
 
-// Added by clp
-typedef struct ReallyBigObjectInfo {
-	int typeID;
-	D3DXVECTOR3 position;
-	D3DXQUATERNION orientation;
-	float terrainHeight;
-} ReallyBigObjectInfo;
-
-std::ostream& operator <<(std::ostream& os, const ReallyBigObjectInfo& info);
-std::istream& operator >>(std::istream& is, ReallyBigObjectInfo& info);
-bool operator <(const ReallyBigObjectInfo& info1, const ReallyBigObjectInfo& info2);
-void operator <<(FILE* file, const ReallyBigObjectInfo& info);
+// ReallyBigObjectInfo + операторы перенесены в SceneFileLoaders.h (Engine).
+#include "SceneFileLoaders.h"
 
 struct stSceneInitParam {
 	stSceneInitParam() : nUITemplete(-1), nMaxCha(0), nMaxObj(0), nMaxItem(0), nMaxEff(0), nTypeID(0) {

@@ -148,14 +148,6 @@ LW_BEGIN
 			return _res_mgr->getTextureOperationDescription(operation);
 		}
 
-		void setPixelShader(size_t index, const std::string& filename) {
-			if (_obj_seq) {
-				if (_obj_seq[index]) {
-					_obj_seq[index]->setPixelShader(filename);
-				}
-			}
-		}
-
 	private:
 		typedef std::pair<D3DCOLOR, std::string> ColourFilterPair;
 		typedef std::map<size_t, ColourFilterPair> IndexColourFilterPairList;

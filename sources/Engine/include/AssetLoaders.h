@@ -407,7 +407,14 @@ private:
 // Нужна по значению внутри MapInfo, поэтому подключаем полное определение.
 #include "MPMapDef.h"
 
+#include <cstdio>
 #include <vector>
+
+// MPTile живёт в глобальном namespace (Engine/include/MPTile.h). Полное
+// определение тянет MPRender.h → DirectX, что не нужно для тулз вроде
+// AssetLoaderTests/PkoTool, поэтому здесь — только forward-decl: в API
+// MapLoader/MapStream MPTile фигурирует только через указатели.
+struct MPTile;
 
 namespace Corsairs::Engine::Render {
 
@@ -446,6 +453,64 @@ struct MapInfo {
     std::vector<std::byte> body;
 };
 
+// MapStream — открытое состояние .map-файла, нужное MPMap'у для двух
+// сценариев:
+//  • runtime (edit=false): file всё равно открыт `rb` для совместимости с
+//    `MPMap::FullLoading`/`DynamicLoading` (используют `IsOpen()` как «карта
+//    загружена»), но всё содержимое body уже скопировано в `_bulkData`,
+//    последующее чтение секций идёт по memcpy из памяти, не дисковыми
+//    fread'ами.
+//  • editor (edit=true): file открыт `r+b`. `_bulkData` пуст, чтение секции
+//    делает `fseek+fread`, запись — `fseek+fwrite` плюс обновление on-disk
+//    offset entry в tablice оффсетов.
+//
+// MapStream не копируется. RAII: деструктор закрывает FILE*; Close() можно
+// вызвать вручную. Конструктор в private — собирается только через MapLoader.
+//
+// `MPTile` (struct в глобальном namespace, объявлен в `MPTile.h`) — точка
+// сериализации. Forward-decl ниже, полное определение нужно лишь в
+// MapLoader.cpp.
+class MapStream {
+public:
+    MapStream() = default;
+    ~MapStream();
+
+    MapStream(const MapStream&) = delete;
+    MapStream& operator=(const MapStream&) = delete;
+    MapStream(MapStream&& other) noexcept;
+    MapStream& operator=(MapStream&& other) noexcept;
+
+    [[nodiscard]] bool IsOpen() const noexcept;
+    [[nodiscard]] bool IsEdit() const noexcept { return _edit; }
+    [[nodiscard]] const MPMapFileHeader& Header() const noexcept { return _header; }
+    [[nodiscard]] std::int32_t SectionCountX() const noexcept { return _sectionCntX; }
+    [[nodiscard]] std::int32_t SectionCountY() const noexcept { return _sectionCntY; }
+    [[nodiscard]] std::int32_t SectionCount() const noexcept {
+        return _sectionCntX * _sectionCntY;
+    }
+    [[nodiscard]] std::uint32_t SectionOffset(int sectionX, int sectionY) const noexcept;
+
+    void Close() noexcept;
+
+private:
+    friend class MapLoader;
+
+    std::FILE* _fp{nullptr};
+    bool _edit{false};
+    MPMapFileHeader _header{};
+    std::int32_t _sectionCntX{0};
+    std::int32_t _sectionCntY{0};
+    std::vector<std::uint32_t> _offsets;
+
+    // Только для non-edit: байты body (всё после offset-таблицы). В edit —
+    // пуст, чтение идёт через _fp.
+    std::vector<std::byte> _bulkData;
+    // Смещение, по которому начинается body в файле; равно
+    // sizeof(MPMapFileHeader) + offsets.size() * 4. Дублируется отдельным
+    // полем, чтобы не вычислять при каждом Read.
+    std::uint32_t _bulkBaseOffset{0};
+};
+
 // Текущий формат записи .map. CUR_VERSION_NO в MPMapDef.h хранится как
 // `MP_MAP_FLAG + 3`; сюда дублируем как литерал, чтобы заголовок мог
 // использоваться без define NEW_VERSION (в тестах NEW_VERSION включён —
@@ -460,10 +525,40 @@ public:
     // файл (NEW_VERSION включён), а Save сохраняет в актуальной версии.
     static constexpr std::int32_t kLegacyMapFlag = 780626;
 
+    // Снапшот-API (round-trip-тесты, тулзы).
     [[nodiscard]] static LW_RESULT Load(MapInfo& info, std::string_view file);
     [[nodiscard]] static LW_RESULT LoadEx(MapInfo& info, std::string_view file,
                                           MapLoadDiagnostics& diag);
     static LW_RESULT Save(const MapInfo& info, std::string_view file);
+
+    // Stream-API (используется MPMap для runtime'а и редактора).
+    //
+    // OpenStream разбирает header + offsets и при edit=false читает body в
+    // память. На неуспех возвращает LW_RET_FAILED, заполняет diag, stream
+    // остаётся в default-состоянии (IsOpen()==false).
+    [[nodiscard]] static LW_RESULT OpenStream(MapStream& stream, std::string_view file,
+                                              bool edit, MapLoadDiagnostics& diag);
+
+    // ReadSection декодирует одну секцию из stream'а в outTiles. Размер
+    // outTiles — header.nSectionWidth * header.nSectionHeight (вызывающий
+    // выделяет буфер). Возвращает LW_RET_FAILED при offset==0 (пустая секция;
+    // вызывающий обязан проверить SectionOffset перед вызовом).
+    [[nodiscard]] static LW_RESULT ReadSection(const MapStream& stream,
+                                                int sectionX, int sectionY,
+                                                ::MPTile* outTiles);
+
+    // WriteSection пишет тайлы в stream (только edit=true). Если offset для
+    // данной (sx,sy) == 0, секция дописывается в конец файла, иначе пишется
+    // на месте. Обновляет offset entry на диске и в stream._offsets.
+    [[nodiscard]] static LW_RESULT WriteSection(MapStream& stream,
+                                                 int sectionX, int sectionY,
+                                                 const ::MPTile* tiles);
+
+    // ClearSection обнуляет offset entry для секции (на диске и в кеше).
+    // Тайл-данные физически в файле остаются — fseek/append-семантика
+    // оригинального формата это допускает.
+    [[nodiscard]] static LW_RESULT ClearSection(MapStream& stream,
+                                                 int sectionX, int sectionY);
 };
 
 [[nodiscard]] constexpr std::string_view ToString(MapLoadStatus s) noexcept {
@@ -479,5 +574,80 @@ public:
     }
     return "?";
 }
+
+// =============================================================================
+// EfxTrackLoader — бинарный effect-track (lwAnimDataMatrix-payload без version-
+// заголовка; формат у lwEfxTrack тривиален: просто SaveAnimDataMatrix → файл).
+// =============================================================================
+
+// Forward-decls для классов из LW_NAMESPACE — полные определения в
+// lwEfxTrack.h / lwPoseCtrl.h / lwDDSFile.h. Подключение этих заголовков из
+// AssetLoaders.h всё ещё избыточно для тулз (lwDDSFile тянет lwDirectX → DDK),
+// потому ограничиваемся forward-decl и работаем через ссылки.
+
+class EfxTrackLoader {
+public:
+    [[nodiscard]] static LW_RESULT Load(LW_NAMESPACE::lwEfxTrack& track, std::string_view file);
+    [[nodiscard]] static LW_RESULT Save(const LW_NAMESPACE::lwEfxTrack& track, std::string_view file);
+};
+
+// =============================================================================
+// PoseCtrlLoader — pose-controller-файл: [DWORD version=1][DWORD pose_num]
+// [lwPoseInfo[pose_num]]. Раньше I/O жил методами на data-классе lwPoseCtrl.
+// =============================================================================
+
+class PoseCtrlLoader {
+public:
+    static constexpr std::uint32_t kCurrentVersion = 1;
+
+    // Path-обёртки: открывают файл, валидируют version DWORD, делегируют в FILE*.
+    [[nodiscard]] static LW_RESULT Load(LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view file);
+    [[nodiscard]] static LW_RESULT Save(const LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view file);
+
+    // FILE*-вариант: читает/пишет «тело» (pose_num + pose_seq[]) без version-
+    // заголовка. Используется path-обёртками.
+    [[nodiscard]] static LW_RESULT LoadBody(LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp);
+    [[nodiscard]] static LW_RESULT SaveBody(const LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp);
+};
+
+// =============================================================================
+// DdsLoader — запись .dds файла из lwDDSFile (origin или сжатой текстуры).
+// Чтение .dds живёт отдельно (lwDDSFile::LoadOriginTexture использует
+// D3DXCreateTextureFromFileEx, не наш fopen-путь).
+// =============================================================================
+
+class DdsLoader {
+public:
+    [[nodiscard]] static LW_RESULT Save(LW_NAMESPACE::lwDDSFile& dds, std::string_view file);
+
+private:
+    // Внутренние шаги — приватные static-методы DdsLoader (не free-функции),
+    // чтобы единого friend-объявления `friend class DdsLoader;` в lwDDSFile
+    // хватало для доступа к приватным полям (_tex_width, _mip_level и т.д.)
+    // и приватным IsVolumeMap/IsCubeMap.
+    [[nodiscard]] static long SaveDDSHeader(LW_NAMESPACE::lwDDSFile& dds,
+                                             struct IDirect3DBaseTexture9* tex, std::FILE* fp);
+    [[nodiscard]] static long SaveAllMipSurfaces(LW_NAMESPACE::lwDDSFile& dds,
+                                                  struct IDirect3DBaseTexture9* ptex,
+                                                  unsigned int faceType,
+                                                  std::FILE* fp);
+    [[nodiscard]] static long SaveAllVolumeSurfaces(LW_NAMESPACE::lwDDSFile& dds,
+                                                     struct IDirect3DVolumeTexture9* pvoltex,
+                                                     std::FILE* fp);
+};
+
+// =============================================================================
+// ScreenshotSaver — дамп IDirect3DSurfaceX в файл. Формат — PNG (D3DX встроен
+// поддерживает D3DXIFF_PNG; никаких stb_image_write не подключаем). Раньше
+// MPRender::CaptureScreen писал .bmp вручную через std::ofstream — заменено
+// на единый path через ScreenshotSaver.
+// =============================================================================
+
+class ScreenshotSaver {
+public:
+    // Сохранить surface в файл. Формат определяется по расширению; по умолчанию
+    // (если расширение не .bmp/.dds/.jpg) — PNG.
+    [[nodiscard]] static LW_RESULT SaveSurface(IDirect3DSurfaceX* surface, std::string_view file);
+};
 
 } // namespace Corsairs::Engine::Render

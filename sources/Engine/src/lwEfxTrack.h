@@ -6,10 +6,18 @@
 #include "lwInterfaceExt.h"
 #include "lwExpObj.h"
 
+// Forward-decl loader из AssetLoaders.h — самостоятельный include тут излишен.
+namespace Corsairs::Engine::Render { class EfxTrackLoader; }
+
 LW_BEGIN
 	class lwEfxTrack {
 	private:
 		lwAnimDataMatrix* _data;
+
+		// Все .track-I/O делегировано Corsairs::Engine::Render::EfxTrackLoader
+		// (см. AssetLoaders.h). Loader пишет напрямую в _data, чтобы не плодить
+		// сеттеров под единственный сериализационный путь.
+		friend class Corsairs::Engine::Render::EfxTrackLoader;
 
 	public:
 		lwEfxTrack();
@@ -22,9 +30,6 @@ LW_BEGIN
 		lwAnimDataMatrix* GetData() {
 			return _data;
 		}
-
-		LW_RESULT Load(std::string_view file);
-		LW_RESULT Save(std::string_view file);
 	};
 
 LW_END

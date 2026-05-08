@@ -56,18 +56,6 @@ LW_BEGIN
 		LW_RESULT EndSet(lwIRenderCtrlAgent* agent);
 		LW_RESULT BeginSetSubset(DWORD subset, lwIRenderCtrlAgent* agent);
 		LW_RESULT EndSetSubset(DWORD subset, lwIRenderCtrlAgent* agent);
-
-	private:
-		// added by clp
-		std::string mPixelShaderName;
-		bool mPixelShaderReload;
-		DWORD mPixelShader;
-
-	public:
-		void setPixelShader(const std::string& filename) {
-			mPixelShaderName = filename;
-			mPixelShaderReload = true;
-		}
 	};
 
 

@@ -8,10 +8,17 @@
 
 #include "lwDDS.h"
 
+// Forward-decl loader из AssetLoaders.h — самостоятельный include тут излишен.
+namespace Corsairs::Engine::Render { class DdsLoader; }
 
 LW_BEGIN
 	class lwDDSFile : public lwIDDSFile {
 		LW_STD_DECLARATION()
+
+		// Все .dds-Save живёт в Corsairs::Engine::Render::DdsLoader; loader
+		// читает приватные поля (текстуры, размер, mip-уровень) и вызывает
+		// приватные SaveDDSHeader/SaveAllMipSurfaces/SaveAllVolumeSurfaces.
+		friend class Corsairs::Engine::Render::DdsLoader;
 
 	private:
 		IDirect3DDeviceX* _dev;
@@ -36,9 +43,9 @@ LW_BEGIN
 
 		HRESULT BltAllLevels(D3DCUBEMAP_FACES FaceType, IDirect3DBaseTextureX* ptexSrc,
 							 IDirect3DBaseTextureX* ptexDest);
-		HRESULT SaveDDSHeader(IDirect3DBaseTextureX* tex, FILE* fp);
-		HRESULT SaveAllMipSurfaces(IDirect3DBaseTextureX* ptex, D3DCUBEMAP_FACES FaceType, FILE* fp);
-		HRESULT SaveAllVolumeSurfaces(IDirect3DVolumeTextureX* pvoltex, FILE* fp);
+		// SaveDDSHeader/SaveAllMipSurfaces/SaveAllVolumeSurfaces переехали в
+		// ImageLoaders.cpp (free-функции в anon-namespace), вызываются из
+		// DdsLoader::Save через friend-доступ к приватным полям.
 
 	public:
 		lwDDSFile();
@@ -51,7 +58,6 @@ LW_BEGIN
 		LW_RESULT Clear();
 		LW_RESULT LoadOriginTexture(std::string_view file, DWORD mip_level, D3DFORMAT format, DWORD colorkey);
 		LW_RESULT Convert(std::string_view file, D3DFORMAT src_fmt, D3DFORMAT dds_fmt, DWORD mip_level, DWORD src_colorkey);
-		LW_RESULT Save(std::string_view file);
 	};
 
 LW_END

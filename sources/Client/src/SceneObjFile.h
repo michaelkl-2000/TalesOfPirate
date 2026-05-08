@@ -1,52 +1,12 @@
 ﻿#ifndef	SCENEOBJFILE_H
 #define	SCENEOBJFILE_H
 
-#define	OBJ_FILE_VER100	    100
-#define	OBJ_FILE_VER200		200
-#define	OBJ_FILE_VER300		300
-#define	OBJ_FILE_VER400		400
-#define	OBJ_FILE_VER500		500
-#define	OBJ_FILE_VER600		600
-#define MAX_MAP_SECTION_OBJ 25
-
-struct ReallyBigObjectInfo;
-
-struct SSceneObjInfo {
-	short sTypeID; // 2type(0: , 1: ), ID
-	int nX; // 
-	int nY;
-	short sHeightOff;
-	short sYawAngle;
-	short sScale; // 
-
-	short GetType() {
-		return sTypeID >> (sizeof(short) * 8 - 2);
-	}
-
-	short GetID() {
-		return ~(0x0003 << (sizeof(short) * 8 - 2)) & sTypeID;
-	}
-};
+// SFileHead, SSectionIndex, SSceneObjInfo, ReallyBigObjectInfo, OBJ_FILE_VER*,
+// MAX_MAP_SECTION_OBJ — теперь в SceneFileLoaders.h (Engine), чтобы PkoTool
+// мог дёргать ObjFileLoader/RboLoader без зависимости от Client.
+#include "SceneFileLoaders.h"
 
 class CSceneObjFile {
-	struct SFileHead {
-		_TCHAR tcsTitle[16]; // "HF Object File!"
-		int lVersion;
-		long lFileSize;
-
-		int iSectionCntX; // 
-		int iSectionCntY; // 
-		int iSectionWidth; // Tile
-		int iSectionHeight; // Tile
-		int iSectionObjNum; // 
-	};
-
-	struct SSectionIndex {
-		// obj
-		long lObjInfoPos;
-		int iObjNum;
-	};
-
 	friend class CObjInfluence;
 
 public:

@@ -1,7 +1,7 @@
 // eff1.hlsl — effect VS (базовый, с массивом UV для углов quad).
 //
 // Было ASM vs.1.1. После рефакторинга — HLSL, компилируется runtime'ом через
-// lwShaderMgr9::RegisterVertexShader(VS_FILE_HLSL) → D3DXCompileShader + vs_2_0.
+// lwShaderMgr9::RegisterVertexShader → D3DXCompileShader + vs_2_0.
 //
 // Регистры зафиксированы явно — C++ runtime выставляет их через
 // SetVertexShaderConstantF по абсолютным индексам:

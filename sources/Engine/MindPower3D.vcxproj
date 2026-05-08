@@ -113,6 +113,7 @@
         <ClInclude Include="include\lwIFunc.h"/>
         <ClInclude Include="include\lwInterface.h"/>
         <ClInclude Include="include\AssetLoaders.h"/>
+        <ClInclude Include="include\SceneFileLoaders.h"/>
         <ClInclude Include="include\lwITypes.h"/>
         <ClInclude Include="include\lwITypes2.h"/>
         <ClInclude Include="include\lwIUtil.h"/>
@@ -240,6 +241,8 @@
         <ClCompile Include="src\AssetLoaders.cpp"/>
         <ClCompile Include="src\EffectLoaders.cpp"/>
         <ClCompile Include="src\MapLoader.cpp"/>
+        <ClCompile Include="src\SceneFileLoaders.cpp"/>
+        <ClCompile Include="src\ImageLoaders.cpp"/>
         <ClCompile Include="src\EffectYaml.cpp"/>
         <ClCompile Include="src\PartCtrlYaml.cpp"/>
         <ClCompile Include="src\lwD3DSettings.cpp"/>

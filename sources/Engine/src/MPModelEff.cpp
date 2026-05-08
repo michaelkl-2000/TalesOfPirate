@@ -75,9 +75,9 @@ bool CEffPath::LoadPathFromFileLet(std::string_view file) {
 	lwEfxTrack et;
 	lwIAnimDataMatrix* data;
 	const std::string fileStr{file};
-	if (LW_RESULT r = et.Load(fileStr.c_str()); LW_FAILED(r)) {
+	if (LW_RESULT r = Corsairs::Engine::Render::EfxTrackLoader::Load(et, fileStr); LW_FAILED(r)) {
 		ToLogService("errors", LogLevel::Error,
-					 "[{}] lwEfxTrack::Load failed: file='{}', ret={}",
+					 "[{}] EfxTrackLoader::Load failed: file='{}', ret={}",
 					 __FUNCTION__, file, static_cast<long long>(r));
 		return false;
 	}

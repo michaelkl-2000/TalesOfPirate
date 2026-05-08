@@ -1,5 +1,6 @@
 ﻿#ifndef _MPMAP_H_
 #define _MPMAP_H_
+#include "AssetLoaders.h"  // Corsairs::Engine::Render::MapStream
 #include "ZRBlock.h"
 #include "MPTile.h"
 
@@ -219,8 +220,6 @@ protected:
 	void _LoadSectionData(MPActiveMapSection* pSection);
 	void _SaveSection(MPActiveMapSection* pSection);
 	void _RenderSea(int nStartX, int nStartY);
-	DWORD _ReadSectionDataOffset(int nSectionX, int nSectionY);
-	void _WriteSectionDataOffset(int nSectionX, int nSectionY, DWORD dwDataOffset);
 	void _CalTileNormal(int nX, int nY);
 	void _RenderFocusRect();
 	void _GenerateTerrainGroup(int nTileStartX, int nTileStartY);
@@ -280,11 +279,13 @@ protected:
 	MPActiveMapSection* _ActiveSectionArray[512][512]{nullptr};
 	int _nSectionStartX{0};
 	int _nSectionStartY{0};
-	DWORD* _pOffsetIdx{nullptr};
 
 	MAP_PROC _pfnProc{nullptr}; // ?????????aoy
 
-	FILE* _fp{nullptr}; // ?????t??
+	// Открытое состояние .map: header, offset-таблица и (в non-edit) bulk
+	// body. Все I/O делегируются Corsairs::Engine::Render::MapLoader::*Section.
+	// Раньше тут жили _fp / _pOffsetIdx / m_pMapData / m_dwMapDataSize / m_dwMapPos.
+	Corsairs::Engine::Render::MapStream _stream;
 	BOOL _bEdit{TRUE}; // ????-
 	BOOL _bSeaVisible{TRUE};
 	BOOL _bShowCenterPoint{FALSE}; // ??????1?o?1???Section
@@ -300,9 +301,6 @@ protected:
 	DWORD _dwLoadingCnt{0};
 
 	DWORD _dwSeaDefaultColor{D3DCOLOR_ARGB(0xcf, 140, 140, 220)};
-	std::unique_ptr<std::byte[]> m_pMapData{nullptr};
-	DWORD m_dwMapDataSize{0};
-	DWORD m_dwMapPos{0};
 
 public:
 	void SetupPixelFog(DWORD Color, DWORD Mode, float Start, float End, float Density);

@@ -27,29 +27,6 @@ VOID D3DUtil_InitLight(D3DLIGHTX& light, D3DLIGHTTYPE ltType,
 
 
 //-----------------------------------------------------------------------------
-// Desc: Helper function to create a texture. It checks the root path first,
-//       then tries the DXSDK media path (as specified in the system registry).
-//-----------------------------------------------------------------------------
-HRESULT D3DUtil_CreateTexture(IDirect3DDeviceX* pd3dDevice, TCHAR* strTexture,
-							  IDirect3DTextureX** ppTexture,
-							  D3DFORMAT d3dFormat = D3DFMT_UNKNOWN);
-
-
-//-----------------------------------------------------------------------------
-// Desc: Changes all texels matching the colorkey to transparent, black.
-//-----------------------------------------------------------------------------
-HRESULT D3DUtil_SetColorKey(IDirect3DTextureX* pTexture, DWORD dwColorKey);
-
-
-//-----------------------------------------------------------------------------
-// Desc: Assembles and creates a file-based vertex shader
-//-----------------------------------------------------------------------------
-HRESULT D3DUtil_CreateVertexShader(IDirect3DDeviceX* pd3dDevice,
-								   TCHAR* strFilename, DWORD* pdwVertexDecl,
-								   DWORD* pdwVertexShader);
-
-
-//-----------------------------------------------------------------------------
 // Desc: Returns a view matrix for rendering to a face of a cubemap.
 //-----------------------------------------------------------------------------
 D3DXMATRIX D3DUtil_GetCubeMapViewMatrix(DWORD dwFace);

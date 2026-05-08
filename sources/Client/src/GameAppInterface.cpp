@@ -481,7 +481,7 @@ void CGameApp::CreateCharImg() {
 		const std::string szPath = "screenshot/cha";
 		Util_MakeDir(szPath.c_str());
 
-		const std::string fileName = std::format("{}/{}.bmp", szPath, pInfo->DataName);
+		const std::string fileName = std::format("{}/{}.png", szPath, pInfo->DataName);
 
 		g_Render.CaptureScreen(fileName.c_str());
 
@@ -579,7 +579,7 @@ BOOL CGameApp::_CreateSmMap(MPTerrain* pTerr) {
 
 		const std::string szPath = std::format("texture/minimap/{}", _pCurScene->GetTerrainName());
 		Util_MakeDir(szPath.c_str());
-		const std::string fileName = std::format("{}/sm_{}_{}.bmp", szPath,
+		const std::string fileName = std::format("{}/sm_{}_{}.png", szPath,
 												 int(vEyePt.x / SHOWRSIZE), int(vEyePt.y / SHOWRSIZE));
 
 		g_Render.CaptureScreen(fileName.c_str());
@@ -623,7 +623,7 @@ BOOL CGameApp::_PrintScreen() {
 				break;
 			}
 		}
-		const std::string fileName = std::format("{}cap{:05}.bmp", pszName, g_nScreenCap);
+		const std::string fileName = std::format("{}cap{:05}.png", pszName, g_nScreenCap);
 		g_Render.CaptureScreen(fileName.c_str());
 
 		auto _strTip = SafeVFormat(GetLanguageString(75), fileName);
@@ -639,7 +639,7 @@ BOOL CGameApp::_CreateAviScreen() {
 	char fileName[64];
     Util_MakeDir("screenshot/");
 
-	sprintf(fileName,"screenshot/cap%05d.bmp",g_nAviCnt);
+	sprintf(fileName,"screenshot/cap%05d.png",g_nAviCnt);
 	g_Render.CaptureScreen(fileName);
 	g_nAviCnt++;*/
 	return TRUE;

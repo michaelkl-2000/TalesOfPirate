@@ -28,7 +28,6 @@ MPMap::MPMap()
 	: _bEdit(FALSE),
 	  _bSeaVisible(TRUE),
 	  _bShowCenterPoint(FALSE),
-	  _fp(NULL),
 	  _bUseVB(FALSE),
 	  _bClip(TRUE),
 	  _bWireFrame(FALSE),
@@ -45,10 +44,7 @@ MPMap::MPMap()
 	  _nLastSectionX(0),
 	  _nLastSectionY(0),
 	  _bRenderSea(FALSE),
-	  m_bCullTile(FALSE),
-	  _pOffsetIdx(NULL),
-	  m_dwMapDataSize(0),
-	  m_dwMapPos(0) {
+	  m_bCullTile(FALSE) {
 	_fShowCenterX = 0;
 	_fShowCenterY = 0;
 
@@ -83,8 +79,7 @@ MPMap::MPMap()
 MPMap::~MPMap() {
 	ClearAllSection(TRUE);
 	delete _pDefaultTile;
-	SAFE_DELETE_ARRAY(_pOffsetIdx);
-	if (_fp) fclose(_fp);
+	// _stream закроет FILE* и освободит buffers сама в деструкторе.
 #if(defined DRAW_SEA_USE_DYNAMIC_BUFFER)
 	delete[] _pVertBuf;
 #endif
@@ -122,7 +117,7 @@ float AlphaNo2UV[16][2] =
 
 
 void MPMap::Render() {
-	if (_fp == NULL) return;
+	if (!_stream.IsOpen()) return;
 
 	MPTimer t;
 	t.Begin();
@@ -290,7 +285,7 @@ void MPMap::Render() {
 }
 
 void MPMap::RenderSmMap() {
-	if (_fp == NULL) return;
+	if (!_stream.IsOpen()) return;
 
 	g_Render.ResetWorldTransform();
 

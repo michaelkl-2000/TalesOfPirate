@@ -7,6 +7,8 @@
 #include "lwITypes.h"
 #include "lwInterfaceExt.h"
 
+// Forward-decl loader из AssetLoaders.h — самостоятельный include тут излишен.
+namespace Corsairs::Engine::Render { class PoseCtrlLoader; }
 
 LW_BEGIN
 	// by lsh
@@ -31,10 +33,11 @@ LW_BEGIN
 			LW_SAFE_DELETE_A(_pose_seq);
 		}
 
-		LW_RESULT Load(std::string_view file);
-		LW_RESULT Save(std::string_view file) const;
-		LW_RESULT Load(FILE* fp);
-		LW_RESULT Save(FILE* fp) const;
+		// I/O .pose-файла делегировано Corsairs::Engine::Render::PoseCtrlLoader
+		// (см. AssetLoaders.h). Friend нужен, чтобы loader дотянулся до
+		// _pose_seq/_pose_num — RAII через готовые setter'ы (InsertPose) ввело
+		// бы дополнительную валидацию, которой Load исторически не делал.
+		friend class Corsairs::Engine::Render::PoseCtrlLoader;
 
 		LW_RESULT Copy(const lwPoseCtrl* src);
 		LW_RESULT Clone(lwIPoseCtrl** obj);

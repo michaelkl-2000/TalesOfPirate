@@ -2363,4 +2363,128 @@ LW_RESULT LgoLoader::LoadModelEx(lwModelInfo& info, std::string_view file,
 // (вынесены отдельно, чтобы линкер не тянул MPParticleCtrl/MPModelEff/I_Effect-
 // зависимости в тулзы, использующие только LgoLoader).
 
+// =============================================================================
+// EfxTrackLoader — тонкая обёртка над LgoLoader::Load/SaveAnimDataMatrix.
+// =============================================================================
+
+} // namespace Corsairs::Engine::Render
+
+#include "lwEfxTrack.h"
+#include "lwPoseCtrl.h"
+
+namespace Corsairs::Engine::Render {
+
+LW_RESULT EfxTrackLoader::Load(LW_NAMESPACE::lwEfxTrack& track, std::string_view file) {
+    UniqueFile fp{std::fopen(std::string{file}.c_str(), "rb")};
+    if (!fp) {
+        ToLogService("errors", LogLevel::Error,
+                     "[EfxTrackLoader::Load] fopen failed: {}", file);
+        return LW_RET_FAILED;
+    }
+
+    track._data = LW_NEW(LW_NAMESPACE::lwAnimDataMatrix());
+    if (LW_RESULT r = LgoLoader::LoadAnimDataMatrix(*track._data, fp.get(), 0); LW_FAILED(r)) {
+        ToLogService("errors", LogLevel::Error,
+                     "[EfxTrackLoader::Load] LoadAnimDataMatrix failed: file={}, ret={}",
+                     file, static_cast<long long>(r));
+        return LW_RET_FAILED;
+    }
+    return LW_RET_OK;
+}
+
+LW_RESULT EfxTrackLoader::Save(const LW_NAMESPACE::lwEfxTrack& track, std::string_view file) {
+    UniqueFile fp{std::fopen(std::string{file}.c_str(), "wb")};
+    if (!fp) {
+        ToLogService("errors", LogLevel::Error,
+                     "[EfxTrackLoader::Save] fopen failed: {}", file);
+        return LW_RET_FAILED;
+    }
+    if (track._data == nullptr) {
+        ToLogService("errors", LogLevel::Error,
+                     "[EfxTrackLoader::Save] track._data is null: {}", file);
+        return LW_RET_FAILED;
+    }
+    if (LW_RESULT r = LgoLoader::SaveAnimDataMatrix(*track._data, fp.get()); LW_FAILED(r)) {
+        ToLogService("errors", LogLevel::Error,
+                     "[EfxTrackLoader::Save] SaveAnimDataMatrix failed: file={}, ret={}",
+                     file, static_cast<long long>(r));
+        return LW_RET_FAILED;
+    }
+    return LW_RET_OK;
+}
+
+// =============================================================================
+// PoseCtrlLoader
+// =============================================================================
+
+LW_RESULT PoseCtrlLoader::LoadBody(LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp) {
+    if (std::fread(&ctrl._pose_num, sizeof(ctrl._pose_num), 1, fp) != 1) {
+        ToLogService("errors", LogLevel::Error,
+                     "[PoseCtrlLoader::LoadBody] short fread of pose_num");
+        return LW_RET_FAILED;
+    }
+    LW_SAFE_DELETE_A(ctrl._pose_seq);
+    if (ctrl._pose_num == 0) {
+        ctrl._pose_seq = nullptr;
+        return LW_RET_OK;
+    }
+    ctrl._pose_seq = LGO_NEW_ARRAY(LW_NAMESPACE::lwPoseInfo, ctrl._pose_num);
+    if (std::fread(&ctrl._pose_seq[0], sizeof(LW_NAMESPACE::lwPoseInfo),
+                   ctrl._pose_num, fp) != ctrl._pose_num) {
+        ToLogService("errors", LogLevel::Error,
+                     "[PoseCtrlLoader::LoadBody] short fread of pose_seq[{}]",
+                     ctrl._pose_num);
+        return LW_RET_FAILED;
+    }
+    return LW_RET_OK;
+}
+
+LW_RESULT PoseCtrlLoader::SaveBody(const LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp) {
+    if (std::fwrite(&ctrl._pose_num, sizeof(ctrl._pose_num), 1, fp) != 1) {
+        return LW_RET_FAILED;
+    }
+    if (ctrl._pose_num > 0
+        && std::fwrite(&ctrl._pose_seq[0], sizeof(LW_NAMESPACE::lwPoseInfo),
+                       ctrl._pose_num, fp) != ctrl._pose_num) {
+        return LW_RET_FAILED;
+    }
+    return LW_RET_OK;
+}
+
+LW_RESULT PoseCtrlLoader::Load(LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view file) {
+    UniqueFile fp{std::fopen(std::string{file}.c_str(), "rb")};
+    if (!fp) {
+        ToLogService("errors", LogLevel::Error,
+                     "[PoseCtrlLoader::Load] fopen failed: {}", file);
+        return LW_RET_FAILED;
+    }
+    DWORD version = 0;
+    if (std::fread(&version, sizeof(DWORD), 1, fp.get()) != 1) {
+        ToLogService("errors", LogLevel::Error,
+                     "[PoseCtrlLoader::Load] short fread of version: {}", file);
+        return LW_RET_FAILED;
+    }
+    if (version != kCurrentVersion) {
+        ToLogService("errors", LogLevel::Error,
+                     "[PoseCtrlLoader::Load] unsupported version {}: {}",
+                     version, file);
+        return LW_RET_FAILED;
+    }
+    return LoadBody(ctrl, fp.get());
+}
+
+LW_RESULT PoseCtrlLoader::Save(const LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view file) {
+    UniqueFile fp{std::fopen(std::string{file}.c_str(), "wb")};
+    if (!fp) {
+        ToLogService("errors", LogLevel::Error,
+                     "[PoseCtrlLoader::Save] fopen failed: {}", file);
+        return LW_RET_FAILED;
+    }
+    const DWORD version = kCurrentVersion;
+    if (std::fwrite(&version, sizeof(DWORD), 1, fp.get()) != 1) {
+        return LW_RET_FAILED;
+    }
+    return SaveBody(ctrl, fp.get());
+}
+
 } // namespace Corsairs::Engine::Render

@@ -1,6 +1,7 @@
 ﻿#include "Stdafx.h"
 #include "MPTile.h"
 #include "MPMap.h"
+#include "AssetLoaders.h"  // Corsairs::Engine::Render::MapLoader
 #include "lwgraphicsutil.h"
 #include "assert.h"
 #include <sys/types.h>
@@ -14,81 +15,33 @@ using namespace std;
 
 
 BOOL MPMap::Load(const char* pszMapName, BOOL bEdit) {
-	if (_fp != NULL) {
-		fclose(_fp);
-		_fp = NULL;
-	}
+	using MapLoader = Corsairs::Engine::Render::MapLoader;
 
-	FILE* fp = NULL;
 	if (bEdit) {
 		_chmod(pszMapName, _S_IWRITE);
+	}
 
-		fp = fopen(pszMapName, "r+b");
-	}
-	else {
-		fp = fopen(pszMapName, "rb");
-	}
-	if (fp == NULL) {
-		ToLogService("map", LogLevel::Error, "Load Map [{}] Error!", pszMapName);
+	Corsairs::Engine::Render::MapLoadDiagnostics diag;
+	if (LW_FAILED(MapLoader::OpenStream(_stream, pszMapName, bEdit != FALSE, diag))) {
+		ToLogService("map", LogLevel::Error,
+					 "Load Map [{}] Error! status={} ({})",
+					 pszMapName,
+					 Corsairs::Engine::Render::ToString(diag.status),
+					 diag.detail);
 		return FALSE;
 	}
 
-	MPMapFileHeader header;
-
-	DWORD dwReadSize = 0;
-
-	fread(&header, sizeof(MPMapFileHeader), 1, fp);
-	dwReadSize += sizeof(MPMapFileHeader);
-
-	if (header.nMapFlag == MP_MAP_FLAG + 1) {
-		fclose(fp);
-		ToLogService("map", LogLevel::Error, "[{}], MapTool!", pszMapName);
-		return FALSE;
-	}
-
-#ifdef NEW_VERSION
-	if (header.nMapFlag != MP_MAP_FLAG + 3)
-#else
-	if (header.nMapFlag != MP_MAP_FLAG + 2)
-#endif
-	{
-		fclose(fp);
-		ToLogService("map", LogLevel::Error, "[{}] MindPower Map File!", pszMapName);
-		return FALSE;
-	}
-
+	const auto& header = _stream.Header();
 	_nWidth = header.nWidth;
 	_nHeight = header.nHeight;
 	_nSectionWidth = header.nSectionWidth;
 	_nSectionHeight = header.nSectionHeight;
-
-	_nSectionCntX = _nWidth / _nSectionWidth;
-	_nSectionCntY = _nHeight / _nSectionHeight;
+	_nSectionCntX = _stream.SectionCountX();
+	_nSectionCntY = _stream.SectionCountY();
 	_nSectionCnt = _nSectionCntX * _nSectionCntY;
 
 	_bEdit = bEdit;
 
-	_fp = fp;
-
-	_pOffsetIdx = new DWORD[_nSectionCnt];
-	fread(_pOffsetIdx, _nSectionCnt * 4, 1, _fp);
-	dwReadSize += _nSectionCnt * 4;
-
-	if (!_bEdit) {
-		m_dwMapPos = ftell(_fp);
-
-		fseek(_fp, 0, SEEK_END);
-		DWORD dwPos = ftell(_fp);
-
-		DWORD dwMapDataSize = dwPos - dwReadSize;
-
-		if (dwMapDataSize > m_dwMapDataSize) {
-			m_pMapData = std::make_unique<std::byte[]>(dwMapDataSize);
-			m_dwMapDataSize = dwMapDataSize;
-		}
-		fseek(_fp, dwReadSize, SEEK_SET);
-		fread(m_pMapData.get(), dwMapDataSize, 1, _fp);
-	}
 	ClearSectionArray();
 
 	m_pBlock->Load(pszMapName, bEdit);
@@ -98,9 +51,12 @@ BOOL MPMap::Load(const char* pszMapName, BOOL bEdit) {
 
 int MPMap::GetValidSectionCnt() {
 	int nValidCnt = 0;
-	for (int i = 0; i < _nSectionCnt; i++) {
-		DWORD dwDataOff = *(_pOffsetIdx + i);
-		if (dwDataOff) nValidCnt++;
+	for (int sy = 0; sy < _nSectionCntY; ++sy) {
+		for (int sx = 0; sx < _nSectionCntX; ++sx) {
+			if (_stream.SectionOffset(sx, sy) != 0) {
+				++nValidCnt;
+			}
+		}
 	}
 	return nValidCnt;
 }
@@ -121,121 +77,40 @@ void MPMap::SetSectionTileData(int nX, int nY, BYTE btTexNo) {
 			pTile->TexLayer[0].btAlphaNo = 15;
 			pTile->fHeight = 0.6f + (float)(rand() % 30) / 100.0f;
 			pTile->dwColor = 0xffffffff;
-			pTile->sRegion = 1; // 
+			pTile->sRegion = 1; //
 		}
 	}
 
 	_SaveSection(pSection);
 }
 
-
-void MPMap::_WriteSectionDataOffset(int nSectionX, int nSectionY, DWORD dwDataOffset) {
-	DWORD dwLoc = (nSectionY * _nSectionCntX + nSectionX);
-	*(_pOffsetIdx + dwLoc) = dwDataOffset;
-	fseek(_fp, sizeof(MPMapFileHeader) + 4 * dwLoc, SEEK_SET);
-	fwrite(&dwDataOffset, 4, 1, _fp);
-}
-
-DWORD MPMap::_ReadSectionDataOffset(int nSectionX, int nSectionY) {
-	DWORD dwLoc = (nSectionY * _nSectionCntX + nSectionX);
-	return *(_pOffsetIdx + dwLoc);
-
-	fseek(_fp, sizeof(MPMapFileHeader) + 4 * dwLoc, SEEK_SET);
-	DWORD dwDataOffset;
-	fread(&dwDataOffset, 4, 1, _fp);
-	return dwDataOffset;
-}
-
 //-----------------
 //-----------------
 void MPMap::_SaveSection(MPActiveMapSection* pSection) {
-	if (!_bEdit || _fp == NULL) return;
+	if (!_bEdit || !_stream.IsOpen()) return;
 
-	// TileData
-	if (pSection->dwDataOffset) {
-		fseek(_fp, pSection->dwDataOffset, SEEK_SET);
+	if (LW_FAILED(Corsairs::Engine::Render::MapLoader::WriteSection(
+			_stream, pSection->nX, pSection->nY, pSection->pTileData))) {
+		ToLogService("errors", LogLevel::Error,
+					 "[MPMap::_SaveSection] WriteSection failed for section [{},{}]",
+					 pSection->nX, pSection->nY);
+		return;
 	}
-	else {
-		fseek(_fp, 0, SEEK_END);
-		pSection->dwDataOffset = ftell(_fp);
-	}
-#ifdef NEW_VERSION
-	SNewFileTile tile;
-#else
-	SFileTile tile;
-#endif
-	for (int y = 0; y < _nSectionHeight; y++) {
-		for (int x = 0; x < _nSectionWidth; x++) {
-			MPTile* pTile = pSection->pTileData + _nSectionWidth * y + x;
-#ifdef NEW_VERSION
-			TileInfo_8To5((BYTE*)(&pTile->TexLayer[0]), tile.dwTileInfo, tile.btTileInfo);
-			tile.cHeight = (char)(pTile->fHeight * 100 / 10);
-			tile.sColor = LW_RGBDWORDTO565(pTile->dwColor);
-#else
-			memcpy(&tile.t[0], &pTile->TexLayer[0], 8);
-			tile.sHeight = (short)(pTile->fHeight * 100);
-			tile.dwColor = pTile->dwColor;
-#endif
-			tile.sRegion = pTile->sRegion;
-			tile.btIsland = pTile->btIsland;
-			memcpy(&(tile.btBlock[0]), &(pTile->btBlock[0]), 4);
-			fwrite(&tile, sizeof(tile), 1, _fp);
-		}
-	}
-	_WriteSectionDataOffset(pSection->nX, pSection->nY, pSection->dwDataOffset);
+	pSection->dwDataOffset = _stream.SectionOffset(pSection->nX, pSection->nY);
 }
 
 //-----------------
 //-----------------
 void MPMap::_LoadSectionData(MPActiveMapSection* pSection) {
-	int nSectionX = pSection->nX;
-	int nSectionY = pSection->nY;
-
-	pSection->dwDataOffset = _ReadSectionDataOffset(nSectionX, nSectionY);
-
+	pSection->dwDataOffset = _stream.SectionOffset(pSection->nX, pSection->nY);
 	if (pSection->dwDataOffset == 0) return;
 
-	DWORD dwPos = 0;
-	if (_bEdit) {
-		fseek(_fp, pSection->dwDataOffset, SEEK_SET);
-	}
-	else {
-		dwPos = pSection->dwDataOffset - m_dwMapPos;
-	}
-
 	pSection->pTileData = new MPTile[_nSectionWidth * _nSectionHeight];
-
-#ifdef NEW_VERSION
-	SNewFileTile tile;
-#else
-	SFileTile tile;
-#endif
-
-	for (int y = 0; y < _nSectionHeight; y++) {
-		for (int x = 0; x < _nSectionWidth; x++) {
-			MPTile* pTile = pSection->pTileData + _nSectionWidth * y + x;
-			pTile->Init();
-			if (_bEdit) {
-				fread(&tile, sizeof(tile), 1, _fp);
-			}
-			else {
-				memcpy(&tile, m_pMapData.get() + dwPos, sizeof(tile));
-				dwPos += sizeof(tile);
-			}
-#ifdef NEW_VERSION
-			TileInfo_5To8(tile.dwTileInfo, tile.btTileInfo, (BYTE*)(&pTile->TexLayer[0]));
-			pTile->dwColor = LW_RGB565TODWORD(tile.sColor);
-			pTile->dwColor |= 0xff000000;
-			pTile->fHeight = (float)(tile.cHeight * 10) / 100.0f;
-#else
-			pTile->dwColor = tile.dwColor;
-			memcpy(&pTile->TexLayer[0], &(tile.t[0]), 8);
-			pTile->fHeight = (float)(tile.sHeight) / 100.0f;
-#endif
-			pTile->btIsland = tile.btIsland;
-			pTile->sRegion = tile.sRegion;
-			memcpy(&pTile->btBlock[0], &tile.btBlock[0], 4);
-		}
+	if (LW_FAILED(Corsairs::Engine::Render::MapLoader::ReadSection(
+			_stream, pSection->nX, pSection->nY, pSection->pTileData))) {
+		ToLogService("errors", LogLevel::Error,
+					 "[MPMap::_LoadSectionData] ReadSection failed for section [{},{}]",
+					 pSection->nX, pSection->nY);
 	}
 }
 
@@ -253,7 +128,11 @@ MPActiveMapSection* MPMap::LoadSectionData(int nSectionX, int nSectionY) {
 }
 
 void MPMap::ClearSectionData(int nSectionX, int nSectionY) {
-	_WriteSectionDataOffset(nSectionX, nSectionY, 0);
+	if (LW_FAILED(Corsairs::Engine::Render::MapLoader::ClearSection(_stream, nSectionX, nSectionY))) {
+		ToLogService("errors", LogLevel::Error,
+					 "[MPMap::ClearSectionData] ClearSection failed for [{},{}]",
+					 nSectionX, nSectionY);
+	}
 
 	MPActiveMapSection* pSection = GetActiveSection(nSectionX, nSectionY);
 	if (pSection) // Section
@@ -265,13 +144,13 @@ void MPMap::ClearSectionData(int nSectionX, int nSectionY) {
 }
 
 void MPMap::FullLoading() {
-	if (_fp == NULL) return;
+	if (!_stream.IsOpen()) return;
 
 	// Section
 	for (int i = 0; i < _nSectionCnt; i++) {
 		int nSectionX = i % _nSectionCntX;
 		int nSectionY = i / _nSectionCntX;
-		if (*(_pOffsetIdx + i) != 0) {
+		if (_stream.SectionOffset(nSectionX, nSectionY) != 0) {
 			MPActiveMapSection* pSection = LoadSectionData(nSectionX, nSectionY);
 			_pfnProc(0, pSection->nX, pSection->nY, (DWORD)(pSection), this);
 		}
@@ -279,7 +158,7 @@ void MPMap::FullLoading() {
 }
 
 void MPMap::DynamicLoading(DWORD dwTimeParam) {
-	if (_fp == NULL) return;
+	if (!_stream.IsOpen()) return;
 
 	int nCenterSectionX = _fShowCenterX / _nSectionWidth;
 	int nCenterSectionY = _fShowCenterY / _nSectionHeight;
@@ -402,8 +281,6 @@ void MPMap::ClearAllSection(BOOL bSaveFlag) {
 
 	ClearSectionArray();
 	_ActiveSectionList.clear();
-
-	m_pMapData.reset();
 }
 
 void MPMap::ClearSectionArray() {

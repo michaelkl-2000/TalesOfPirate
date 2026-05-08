@@ -1,6 +1,7 @@
 #include "Validator.h"
 
 #include "AssetLoaders.h"
+#include "SceneFileLoaders.h"
 #include "lwExpObj.h"
 #include "MPModelEff.h"      // EffectFileInfo
 #include "MPParticleCtrl.h"  // CMPPartCtrl
@@ -220,6 +221,165 @@ ClassifyPartCtrlStatus(Corsairs::Engine::Render::PartCtrlLoadStatus s) {
     return {ValidationStatus::Error, "Unknown PartCtrlLoader status."};
 }
 
+[[nodiscard]] std::pair<ValidationStatus, std::string>
+ClassifyMapStatus(Corsairs::Engine::Render::MapLoadStatus s) {
+    using S = Corsairs::Engine::Render::MapLoadStatus;
+    switch (s) {
+    case S::Ok:
+        return {ValidationStatus::Ok, ""};
+    case S::FileOpenFailed:
+        return {ValidationStatus::Error,
+                "Failed to open file (missing file or permissions)."};
+    case S::HeaderTruncated:
+        return {ValidationStatus::Error,
+                "Map header truncated. Re-export from MapTool."};
+    case S::BadMagic:
+        return {ValidationStatus::Error,
+                "Bad nMapFlag (not a MindPower .map). Foreign or corrupt file."};
+    case S::InconsistentDimensions:
+        return {ValidationStatus::Error,
+                "Inconsistent dimensions: width/height non-positive or smaller than section. "
+                "Re-export from MapTool."};
+    case S::OffsetTableTruncated:
+        return {ValidationStatus::Error,
+                "Section offset table truncated. Re-export from MapTool."};
+    case S::BodyTruncated:
+        return {ValidationStatus::Error,
+                "Section body truncated or out-of-range offset. Re-export from MapTool."};
+    case S::UnknownVersion:
+        return {ValidationStatus::Error,
+                "Unknown map version (NEW_VERSION mismatch). Re-export from MapTool."};
+    }
+    return {ValidationStatus::Error, "Unknown MapLoader status."};
+}
+
+ValidationRecord ValidateMap(const fs::path& file) {
+    ValidationRecord rec;
+    rec.file = file;
+    rec.extension = "map";
+
+    Corsairs::Engine::Render::MapInfo info;
+    Corsairs::Engine::Render::MapLoadDiagnostics diag;
+    Corsairs::Engine::Render::MapLoader::LoadEx(info, file.string(), diag);
+    rec.version = static_cast<std::uint32_t>(diag.mapFlag);
+
+    auto [status, recommendation] = ClassifyMapStatus(diag.status);
+    rec.status = status;
+    rec.problem = (status == ValidationStatus::Ok)
+        ? std::string{}
+        : std::format("{}: {}", Corsairs::Engine::Render::ToString(diag.status), diag.detail);
+    rec.recommendation = std::move(recommendation);
+    return rec;
+}
+
+// .obj — header-only валидация: title-magic, version, lFileSize.
+// Полный re-parse (sections+per-section objs) опускаем: формат с переменными
+// per-section массивами, дешёвой проверки на «всё прочиталось» нет, а наша
+// цель — отсеять заведомо битые / чужие файлы.
+ValidationRecord ValidateObj(const fs::path& file) {
+    ValidationRecord rec;
+    rec.file = file;
+    rec.extension = "obj";
+
+    using ObjFileLoader = Corsairs::Engine::Scene::ObjFileLoader;
+
+    std::FILE* fp = std::fopen(file.string().c_str(), "rb");
+    if (!fp) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = "fopen failed";
+        rec.recommendation = "Check path and access permissions.";
+        return rec;
+    }
+    SFileHead head{};
+    long fileSize = 0;
+    const bool readOk = ObjFileLoader::ReadHeader(fp, head, fileSize);
+    std::fclose(fp);
+
+    if (!readOk) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = "header truncated";
+        rec.recommendation = "File too small to contain SFileHead. Re-export.";
+        return rec;
+    }
+    rec.version = static_cast<std::uint32_t>(head.lVersion);
+
+    if (std::strncmp(head.tcsTitle, ObjFileLoader::kMagicTitle,
+                     std::strlen(ObjFileLoader::kMagicTitle)) != 0) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("bad magic title: '{:.16}'", head.tcsTitle);
+        rec.recommendation = "Not a MindPower .obj. Re-export from editor.";
+        return rec;
+    }
+    if (head.lVersion != ObjFileLoader::kCurrentVersion
+        && head.lVersion != ObjFileLoader::kLegacyVersion500) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("unsupported version: {}", head.lVersion);
+        rec.recommendation = "Only versions 500 (legacy) and 600 are supported.";
+        return rec;
+    }
+    if (head.iSectionCntX <= 0 || head.iSectionCntY <= 0
+        || head.iSectionWidth <= 0 || head.iSectionHeight <= 0
+        || head.iSectionObjNum <= 0) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format(
+            "invalid header dimensions: cnt={}x{}, sec={}x{}, objNum={}",
+            head.iSectionCntX, head.iSectionCntY,
+            head.iSectionWidth, head.iSectionHeight, head.iSectionObjNum);
+        rec.recommendation = "Header fields must be positive.";
+        return rec;
+    }
+    if (head.lFileSize != fileSize) {
+        // lFileSize даёт editor при WriteSectionObjInfo; mismatch — признак
+        // обрезанного / частично перезаписанного файла.
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format(
+            "header.lFileSize={} mismatches actual={}", head.lFileSize, fileSize);
+        rec.recommendation = "File partially written or truncated. Re-export.";
+        return rec;
+    }
+    if (head.lVersion == ObjFileLoader::kLegacyVersion500) {
+        rec.status = ValidationStatus::Warning;
+        rec.problem = "legacy version 500 (will be upgraded to 600 on first edit)";
+        rec.recommendation = "Run pkotool --mode=fix to convert in-place.";
+        return rec;
+    }
+
+    rec.status = ValidationStatus::Ok;
+    return rec;
+}
+
+// .rbo — текстовый sidecar; валидация = успешная попытка распарсить файл.
+// Пустой файл считается Ok (не все карты имеют RBO).
+ValidationRecord ValidateRbo(const fs::path& file) {
+    ValidationRecord rec;
+    rec.file = file;
+    rec.extension = "rbo";
+    rec.version = 0;
+
+    std::set<ReallyBigObjectInfo> items;
+    if (!Corsairs::Engine::Scene::RboLoader::Load(file.string(), items)) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = "RboLoader::Load failed (I/O error)";
+        rec.recommendation = "Check that the file is a text RBO sidecar.";
+        return rec;
+    }
+
+    if (items.empty()) {
+        // Файл может физически отсутствовать (Load возвращает true с пустым
+        // out) — это нормальный случай. Но если файл существует и пуст —
+        // это легаси-баг (старый _Serialize_RBO создавал 0-байтные .rbo).
+        std::error_code ec;
+        if (fs::exists(file, ec) && fs::file_size(file, ec) == 0) {
+            rec.status = ValidationStatus::Warning;
+            rec.problem = "empty .rbo file (legacy bug)";
+            rec.recommendation = "Safe to delete: pkotool --mode=fix removes it.";
+            return rec;
+        }
+    }
+    rec.status = ValidationStatus::Ok;
+    return rec;
+}
+
 ValidationRecord ValidatePar(const fs::path& file) {
     ValidationRecord rec;
     rec.file = file;
@@ -236,6 +396,82 @@ ValidationRecord ValidatePar(const fs::path& file) {
         ? std::string{}
         : std::format("{}: {}", Corsairs::Engine::Render::ToString(diag.status), diag.detail);
     rec.recommendation = std::move(recommendation);
+    return rec;
+}
+
+// .dds — DDS-текстура. Полная валидация требует D3D-девайса (для парсинга
+// pixel format / mip-цепочки), но для отсева повреждённых/чужих файлов
+// достаточно проверить magic 'DDS ' + header.size==124 + положительные
+// width/height. Структура header известна как lwDDSHeader (124 байта).
+ValidationRecord ValidateDds(const fs::path& file) {
+    ValidationRecord rec;
+    rec.file = file;
+    rec.extension = "dds";
+    rec.version = 0;
+
+    std::ifstream is(file, std::ios::binary);
+    if (!is) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = "fopen failed";
+        rec.recommendation = "Check path and access permissions.";
+        return rec;
+    }
+
+    // 4 байта magic + минимум sizeof(DDS_HEADER)=124 байт.
+    constexpr std::size_t kMinDdsBytes = 4 + 124;
+    is.seekg(0, std::ios::end);
+    const auto sz = is.tellg();
+    if (sz < static_cast<std::streampos>(kMinDdsBytes)) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("file too small ({} bytes < {} required)",
+                                   static_cast<std::int64_t>(sz), kMinDdsBytes);
+        rec.recommendation = "DDS header truncated. Re-export texture.";
+        return rec;
+    }
+
+    is.seekg(0, std::ios::beg);
+    char magic[4]{};
+    is.read(magic, sizeof(magic));
+    if (!(magic[0] == 'D' && magic[1] == 'D' && magic[2] == 'S' && magic[3] == ' ')) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("bad magic: '{}{}{}{}'",
+                                   magic[0], magic[1], magic[2], magic[3]);
+        rec.recommendation = "Not a DDS file. Foreign or corrupt.";
+        return rec;
+    }
+
+    // lwDDSHeader: первое поле — DWORD size (= 124 для стандартного DDS).
+    // Положение width/height: после size, header_flag (offsets +0, +4, +8, +12).
+    std::uint32_t headerSize = 0;
+    std::uint32_t headerFlag = 0;
+    std::uint32_t height = 0;
+    std::uint32_t width = 0;
+    is.read(reinterpret_cast<char*>(&headerSize), sizeof(headerSize));
+    is.read(reinterpret_cast<char*>(&headerFlag), sizeof(headerFlag));
+    is.read(reinterpret_cast<char*>(&height), sizeof(height));
+    is.read(reinterpret_cast<char*>(&width), sizeof(width));
+    if (!is) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = "short read of DDS header";
+        rec.recommendation = "DDS header truncated. Re-export texture.";
+        return rec;
+    }
+
+    if (headerSize != 124) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("unexpected DDS header size: {} (must be 124)",
+                                   headerSize);
+        rec.recommendation = "Non-standard DDS or corrupt file.";
+        return rec;
+    }
+    if (width == 0 || height == 0) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("invalid dimensions: {}x{}", width, height);
+        rec.recommendation = "DDS dimensions must be positive.";
+        return rec;
+    }
+
+    rec.status = ValidationStatus::Ok;
     return rec;
 }
 
@@ -361,6 +597,10 @@ ValidationRecord ValidateFile(const fs::path& file) {
         if (ext == "lab") return ValidateLab(file);
         if (ext == "eff") return ValidateEff(file);
         if (ext == "par") return ValidatePar(file);
+        if (ext == "map") return ValidateMap(file);
+        if (ext == "obj") return ValidateObj(file);
+        if (ext == "rbo") return ValidateRbo(file);
+        if (ext == "dds") return ValidateDds(file);
         if (ext == "bmp" || ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "tga") {
             return ValidateTexture(file, ext);
         }

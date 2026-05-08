@@ -145,10 +145,6 @@ LW_BEGIN
 		std::string_view getTextureOperationDescription(size_t operation) {
 			return _physique->getTextureOperationDescription(operation);
 		}
-
-		void setPixelShader(size_t index, const std::string& filename) {
-			_physique->setPixelShader(index, filename);
-		}
 	};
 
 	typedef MPCharacter MPCharacter;

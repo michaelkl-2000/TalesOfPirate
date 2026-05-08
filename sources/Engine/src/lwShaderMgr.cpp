@@ -87,7 +87,7 @@ LW_BEGIN
 		return ret;
 	}
 
-	LW_RESULT lwShaderMgr9::RegisterVertexShader(DWORD type, std::string_view file, DWORD file_flag,
+	LW_RESULT lwShaderMgr9::RegisterVertexShader(DWORD type, std::string_view file,
 												 const D3DXMACRO* defines) {
 		LW_RESULT ret = LW_RET_FAILED;
 
@@ -113,86 +113,34 @@ LW_BEGIN
 
 		fclose(fp);
 
-		if (file_flag == VS_FILE_OBJECT) {
-			code = data;
-		}
-		else {
-#if(defined LW_SHADER_DEBUG_VS)
+		{
 			DWORD compile_flag = 0;
-			compile_flag |= D3DXSHADER_DEBUG;
-
-			if (file_flag == VS_FILE_ASM) {
-				if (HRESULT hr = D3DXAssembleShaderFromFile(
-					file,
-					NULL,
-					NULL,
-					compile_flag,
-					&buf_code,
-					&buf_error); FAILED(hr)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] D3DXAssembleShaderFromFile failed: file={}, hr=0x{:08X}",
-								 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), static_cast<std::uint32_t>(hr));
-					goto __ret;
-				}
+			// defines — указатель на массив D3DXMACRO, терминированный
+			// {NULL, NULL}. Может быть nullptr (без макросов). Пропускаем
+			// напрямую в D3DXCompileShader — он корректно обрабатывает оба случая.
+			const D3DXMACRO* macro_ptr = nullptr;
+			if (defines && defines->Name) {
+				macro_ptr = defines;
 			}
-			else if (file_flag == VS_FILE_HLSL) {
-				if (HRESULT hr = D3DXCompileShaderFromFile(
-					file,
-					NULL,
-					NULL,
-					"main",
-					"vs_3_0",
-					compile_flag,
-					&buf_code,
-					&buf_error,
-					NULL); FAILED(hr)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] D3DXCompileShaderFromFile failed: file={}, hr=0x{:08X}",
-								 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), static_cast<std::uint32_t>(hr));
-					goto __ret;
-				}
+			if (HRESULT hr = D3DXCompileShader(
+				(LPCSTR)data,
+				size,
+				macro_ptr,
+				NULL,
+				"main",
+				"vs_3_0",
+				compile_flag,
+				&buf_code,
+				&buf_error,
+				NULL); FAILED(hr)) {
+				const char* err_msg = (buf_error && buf_error->GetBufferPointer())
+										  ? static_cast<const char*>(buf_error->GetBufferPointer())
+										  : "(no error buffer)";
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] D3DXCompileShader failed: file={}, size={}, hr=0x{:08X}, err={}",
+							 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), size, static_cast<std::uint32_t>(hr), err_msg);
+				goto __ret;
 			}
-
-#else
-			if (file_flag == VS_FILE_ASM) {
-				if (HRESULT hr = D3DXAssembleShader((LPCSTR)data, size, NULL, NULL, 0, &buf_code, &buf_error);
-					FAILED(hr)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] D3DXAssembleShader failed: file={}, size={}, hr=0x{:08X}",
-								 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), size, static_cast<std::uint32_t>(hr));
-					goto __ret;
-				}
-			}
-			else if (file_flag == VS_FILE_HLSL) {
-				DWORD compile_flag = 0;
-				// defines — указатель на массив D3DXMACRO, терминированный
-				// {NULL, NULL}. Может быть nullptr (без макросов). Пропускаем
-				// напрямую в D3DXCompileShader — он корректно обрабатывает оба случая.
-				const D3DXMACRO* macro_ptr = nullptr;
-				if (defines && defines->Name) {
-					macro_ptr = defines;
-				}
-				if (HRESULT hr = D3DXCompileShader(
-					(LPCSTR)data,
-					size,
-					macro_ptr,
-					NULL,
-					"main",
-					"vs_3_0",
-					compile_flag,
-					&buf_code,
-					&buf_error,
-					NULL); FAILED(hr)) {
-					const char* err_msg = (buf_error && buf_error->GetBufferPointer())
-											  ? static_cast<const char*>(buf_error->GetBufferPointer())
-											  : "(no error buffer)";
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] D3DXCompileShader failed: file={}, size={}, hr=0x{:08X}, err={}",
-								 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), size, static_cast<std::uint32_t>(hr), err_msg);
-					goto __ret;
-				}
-			}
-#endif
 
 			code = (BYTE*)buf_code->GetBufferPointer();
 			size = buf_code->GetBufferSize();

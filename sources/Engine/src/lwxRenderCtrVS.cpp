@@ -21,9 +21,7 @@ LW_BEGIN
 	// lwxRenderCtrlVSVertexBlend_dx8
 	LW_STD_IMPLEMENTATION(lwxRenderCtrlVSVertexBlend_dx8);
 
-	lwxRenderCtrlVSVertexBlend_dx8::lwxRenderCtrlVSVertexBlend_dx8()
-		: mPixelShaderReload(false),
-		  mPixelShader(-1) {
+	lwxRenderCtrlVSVertexBlend_dx8::lwxRenderCtrlVSVertexBlend_dx8() {
 	}
 
 
@@ -155,51 +153,6 @@ LW_BEGIN
 					dev_obj->SetVertexShaderConstantF(VS_CONST_REG_MAT_PALETTE, __this_buf, bone_num * 3);
 					break;
 				}
-			}
-		}
-
-		// ===== pixel shader (bloco adicionado, mantido prximo ao original) =====
-		if (!mPixelShaderName.empty()) {
-			IDirect3DDeviceX* device = dev_obj->GetDevice();
-			if (device) {
-				if (mPixelShaderReload) {
-					// opcional: liberar anterior para evitar leak ao recarregar
-					if (mPixelShader) {
-						device->SetPixelShader(0);
-						((IDirect3DPixelShaderX*)mPixelShader)->Release();
-						mPixelShader = 0;
-					}
-
-					LPD3DXBUFFER codeBuffer = 0;
-					LPD3DXBUFFER errorBuffer = 0;
-					HRESULT hr = D3DXAssembleShaderFromFile(
-						mPixelShaderName.c_str(), NULL, NULL, 0, &codeBuffer, &errorBuffer);
-
-					if (SUCCEEDED(hr) && codeBuffer) {
-						hr = device->CreatePixelShader(
-							(DWORD*)codeBuffer->GetBufferPointer(),
-							(IDirect3DPixelShaderX**)&mPixelShader);
-					}
-					else {
-						mPixelShader = 0;
-						if (errorBuffer) {
-							const char* str = (const char*)errorBuffer->GetBufferPointer();
-							MessageBox(0, str, "D3DXAssembleShaderFromFile Failed", 0);
-						}
-					}
-
-					if (errorBuffer) {
-						errorBuffer->Release();
-						errorBuffer = 0;
-					}
-					if (codeBuffer) {
-						codeBuffer->Release();
-						codeBuffer = 0;
-					}
-					mPixelShaderReload = false;
-				}
-
-				device->SetPixelShader((IDirect3DPixelShaderX*)mPixelShader);
 			}
 		}
 

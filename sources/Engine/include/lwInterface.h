@@ -79,8 +79,8 @@ LW_STD_GETINTERFACE( cls )
 
 	class LW_DECLSPEC_NOVTABLE lwIPoseCtrl : public lwInterface {
 	public:
-		virtual LW_RESULT Load(std::string_view file) PURE_METHOD;
-		virtual LW_RESULT Save(std::string_view file) const PURE_METHOD;
+		// Load/Save убраны из интерфейса — точка входа теперь
+		// Corsairs::Engine::Render::PoseCtrlLoader (см. AssetLoaders.h).
 
 		virtual LW_RESULT InsertPose(DWORD id, const lwPoseInfo* pi, int num) PURE_METHOD;
 		virtual LW_RESULT ReplacePose(DWORD id, const lwPoseInfo* pi) PURE_METHOD;
@@ -268,8 +268,6 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT SetTextureLOD(DWORD level) PURE_METHOD;
 		virtual LW_RESULT PlayDefaultAnimation(float velocity = 1.0f) PURE_METHOD;
 		virtual LW_RESULT ResetTexture(DWORD subset, DWORD stage, std::string_view file, std::string_view tex_path) PURE_METHOD;
-
-		virtual void setPixelShader(const std::string& filename) PURE_METHOD;
 	};
 
 
@@ -318,7 +316,6 @@ LW_STD_GETINTERFACE( cls )
 		PURE_METHOD;
 		virtual void setTextureOperation(size_t index, D3DTEXTUREOP operation) PURE_METHOD;
 		virtual std::string_view getTextureOperationDescription(size_t operation) PURE_METHOD;
-		virtual void setPixelShader(size_t index, const std::string& filename) PURE_METHOD;
 	};
 
 	class LW_DECLSPEC_NOVTABLE lwIModel : public lwInterface {
@@ -944,7 +941,7 @@ LW_STD_GETINTERFACE( cls )
 		virtual lwIShaderDeclMgr* GetShaderDeclMgr() PURE_METHOD;
 		virtual LW_RESULT Init(DWORD vs_buf_size, DWORD decl_buf_size, DWORD ps_buf_size) PURE_METHOD;
 		virtual LW_RESULT RegisterVertexShader(DWORD type, BYTE* data, DWORD size) PURE_METHOD;
-		virtual LW_RESULT RegisterVertexShader(DWORD type, std::string_view file, DWORD binary_flag,
+		virtual LW_RESULT RegisterVertexShader(DWORD type, std::string_view file,
 											   const D3DXMACRO* defines = NULL) PURE_METHOD;
 		virtual LW_RESULT RegisterVertexDeclaration(DWORD type, D3DVERTEXELEMENT9* data) PURE_METHOD;
 		virtual LW_RESULT QueryVertexShader(IDirect3DVertexShaderX** ret_obj, DWORD type) PURE_METHOD;
@@ -1082,7 +1079,6 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT EndSetSubset(DWORD subset) PURE_METHOD;
 
 		virtual LW_RESULT DrawSubset(DWORD subset) PURE_METHOD;
-		virtual void setPixelShader(const std::string& filename) PURE_METHOD;
 	};
 
 	class LW_DECLSPEC_NOVTABLE lwIBoundingBox : public lwInterface {
@@ -1543,7 +1539,8 @@ LW_STD_GETINTERFACE( cls )
 		PURE_METHOD;
 		virtual LW_RESULT Convert(std::string_view file, D3DFORMAT src_fmt, D3DFORMAT dds_fmt, DWORD mip_level,
 								  DWORD src_colorkey) PURE_METHOD;
-		virtual LW_RESULT Save(std::string_view file) PURE_METHOD;
+		// Save убран из интерфейса — единственная точка записи .dds —
+		// Corsairs::Engine::Render::DdsLoader::Save (см. AssetLoaders.h).
 	};
 
 	class LW_DECLSPEC_NOVTABLE lwIDirectoryBrowser : public lwInterface {
@@ -1613,9 +1610,6 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT EndSet(lwIRenderCtrlAgent* agent) PURE_METHOD;
 		virtual LW_RESULT BeginSetSubset(DWORD subset, lwIRenderCtrlAgent* agent) PURE_METHOD;
 		virtual LW_RESULT EndSetSubset(DWORD subset, lwIRenderCtrlAgent* agent) PURE_METHOD;
-
-		virtual void setPixelShader(const std::string& filename) {
-		}
 	};
 
 	class LW_DECLSPEC_NOVTABLE lwIBuffer : public lwInterface {

@@ -38,11 +38,6 @@ LW_BEGIN
 		DWORD _ps_type;
 
 	public:
-		void setPixelShader(const std::string& filename) {
-			_render_ctrl->setPixelShader(filename);
-		}
-
-	public:
 		lwRenderCtrlAgent(lwIResourceMgr* res_mgr);
 		~lwRenderCtrlAgent();
 

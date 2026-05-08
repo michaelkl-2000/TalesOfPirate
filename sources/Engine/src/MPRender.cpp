@@ -1,5 +1,6 @@
 ﻿#include "StdAfx.h"
 #include "MPRender.h"
+#include "AssetLoaders.h"  // ScreenshotSaver
 #include "MPMath.h"
 #include "MPTextureSet.h"
 #include "lwIFunc.h"
@@ -750,80 +751,9 @@ void MPRender::BeginState(int iIdx) {
 void MPRender::EndState() {
 }
 
-////////rework screenshot to remove asm and use smart pointer @mothannakh///////////
-bool SurfaceToBMP(IDirect3DSurfaceX* pSurface, const char* strName) {
-	D3DSURFACE_DESC Desc;
-	D3DLOCKED_RECT Rect;
-	if (!pSurface) {
-		ToLogService("common", "Invalid surface pointer");
-		return false;
-	}
-	pSurface->GetDesc(&Desc);
-
-	const int nPitch = (Desc.Width * 3 + 3) & ~0x3;
-	if (pSurface->LockRect(&Rect, nullptr, D3DLOCK_READONLY) != D3D_OK) {
-		ToLogService("common", "Failed to lock surface rect");
-		return false;
-	}
-	//somehow we need wider buffer if screen reso is 2k so we add buffer *4
-	const auto pbtTmp = std::make_unique<BYTE[]>(
-		sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + nPitch * Desc.Height * 4);
-	BYTE* pbtTmpRaw = pbtTmp.get();
-
-	BITMAPFILEHEADER bithead;
-	BITMAPINFOHEADER bitinfo;
-
-	std::ofstream file(strName, std::ios::binary);
-	if (!file) {
-		ToLogService("common", "Failed to open file");
-		pSurface->UnlockRect();
-		return false;
-	}
-
-	constexpr int headsize = sizeof(bithead) + sizeof(bitinfo);
-	bithead.bfType = 0x4D42; // 'BM' in little-endian order
-	bithead.bfSize = headsize + nPitch * Desc.Height;
-	bithead.bfReserved1 = bithead.bfReserved2 = 0;
-	bithead.bfOffBits = headsize;
-	bitinfo.biSize = sizeof(bitinfo);
-	bitinfo.biWidth = Desc.Width;
-	bitinfo.biHeight = Desc.Height;
-	bitinfo.biPlanes = 1;
-	bitinfo.biBitCount = 24;
-	bitinfo.biCompression = BI_RGB;
-	bitinfo.biSizeImage = 0;
-	//we use 72 dpi screenshot if want use 300 use:
-	bitinfo.biXPelsPerMeter = 72;
-	bitinfo.biYPelsPerMeter = 72;
-	bitinfo.biClrUsed = 0;
-	bitinfo.biClrImportant = 0;
-
-	file.write(reinterpret_cast<char*>(&bithead), sizeof(BITMAPFILEHEADER));
-	file.write(reinterpret_cast<char*>(&bitinfo), sizeof(BITMAPINFOHEADER));
-
-	const auto pSrc = static_cast<BYTE*>(Rect.pBits);
-	for (int y = 0; y < Desc.Height; ++y) {
-		for (int x = 0; x < Desc.Width; ++x) {
-			const BYTE* pPixel = pSrc + y * Rect.Pitch + x * 4;
-			const int dstIndex = (Desc.Height - 1 - y) * nPitch + x * 3;
-			if (dstIndex + 2 >= sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + nPitch * Desc.Height * 4) {
-				ToLogService("common", "Out of bounds write detected at y= {} x={}", y, x);
-				pSurface->UnlockRect();
-				file.close();
-				return false;
-			}
-			pbtTmpRaw[dstIndex + 0] = pPixel[0]; // Blue channel
-			pbtTmpRaw[dstIndex + 1] = pPixel[1]; // Green channel
-			pbtTmpRaw[dstIndex + 2] = pPixel[2]; // Red channel
-		}
-	}
-
-	file.write(reinterpret_cast<char*>(pbtTmpRaw), static_cast<std::streamsize>(Desc.Height) * nPitch);
-	file.close();
-
-	pSurface->UnlockRect();
-	return true;
-}
+// Старый ручной BMP-encoder (SurfaceToBMP) удалён — заменён на
+// Corsairs::Engine::Render::ScreenshotSaver, который пишет PNG через
+// D3DXSaveSurfaceToFile (см. AssetLoaders.h, реализация в ImageLoaders.cpp).
 
 void MPRender::CaptureScreen(const char* szFilename) const {
 	D3DSURFACE_DESC sDesc;
@@ -835,7 +765,11 @@ void MPRender::CaptureScreen(const char* szFilename) const {
 	_pD3DDevice->CreateOffscreenPlainSurface(sDesc.Width, sDesc.Height, sDesc.Format, D3DPOOL_SYSTEMMEM, &pCapSurface,
 											 nullptr);
 	_pD3DDevice->GetRenderTargetData(pBackBuffer, pCapSurface);
-	SurfaceToBMP(pCapSurface, szFilename);
+	if (LW_RESULT r = Corsairs::Engine::Render::ScreenshotSaver::SaveSurface(pCapSurface, szFilename);
+		LW_FAILED(r)) {
+		ToLogService("errors", LogLevel::Error,
+					 "[MPRender::CaptureScreen] ScreenshotSaver::SaveSurface failed: file={}", szFilename);
+	}
 
 	pBackBuffer->Release();
 	pCapSurface->Release();

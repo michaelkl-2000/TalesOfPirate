@@ -411,13 +411,6 @@ LW_BEGIN
 			param->present_param.BackBufferFormat = d3ddm.Format;
 		}
 
-#if(defined LW_SHADER_DEBUG_VS || defined LW_SHADER_DEBUG_PS)
-		if (param->dev_type != D3DDEVTYPE_REF) {
-			param->behavior_flag &= ~D3DCREATE_HARDWARE_VERTEXPROCESSING;
-			param->behavior_flag &= ~D3DCREATE_PUREDEVICE;
-			param->behavior_flag |= D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-		}
-#endif
 		{
 			IDirect3DDeviceX* dev;
 			//Create a Direct3D device.

@@ -17,6 +17,8 @@ LW_BEGIN
 
 	class lwPathInfo;
 	class lwPoseCtrl;
+	class lwEfxTrack;
+	class lwDDSFile;
 
 	class lwWeaponMesh;
 

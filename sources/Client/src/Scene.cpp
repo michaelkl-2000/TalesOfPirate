@@ -77,52 +77,8 @@ CLargerMap* CGameScene::_pLargerMap = NULL;
 
 
 // Added by clp
-std::ostream& operator <<(ostream& os, const ReallyBigObjectInfo& info) {
-	os << info.typeID << ' ';
-	os << info.position.x << ' ' << info.position.y << ' ' << info.position.z << ' ';
-	os << info.orientation.w << ' ' << info.orientation.x << ' ' << info.orientation.y << ' ' << info.orientation.z <<
-		' ';
-	os << info.terrainHeight;
-	os << endl;
-	return os;
-}
-
-std::istream& operator >>(istream& is, ReallyBigObjectInfo& info) {
-	is >> info.typeID;
-	is >> info.position.x >> info.position.y >> info.position.z;
-	is >> info.orientation.w >> info.orientation.x >> info.orientation.y >> info.orientation.z;
-	is >> info.terrainHeight;
-	return is;
-}
-
-void operator <<(FILE* file, const ReallyBigObjectInfo& info) {
-	fprintf(file, "%d %f %f %f %f %f %f %f %f\n",
-			&info.typeID,
-			&info.position.x,
-			&info.position.y,
-			&info.position.z,
-			&info.orientation.w,
-			&info.orientation.x,
-			&info.orientation.y,
-			&info.orientation.z,
-			&info.terrainHeight);
-}
-
-bool operator <(const ReallyBigObjectInfo& info1, const ReallyBigObjectInfo& info2) {
-	return (
-		info1.typeID < info2.typeID ||
-		info1.position.x < info2.position.x ||
-		info1.position.y < info2.position.y ||
-		info1.position.z < info2.position.z ||
-		info1.orientation.w < info2.orientation.w ||
-		info1.orientation.x < info2.orientation.x ||
-		info1.orientation.y < info2.orientation.y ||
-		info1.orientation.z < info2.orientation.z ||
-		info1.terrainHeight < info2.terrainHeight);
-}
-
-
-// Added by clp
+// Операторы (<<, >>, <) для ReallyBigObjectInfo перенесены в Engine'овский
+// SceneFileLoaders.cpp вместе со стуктурой и используются RboLoader'ом.
 void CGameScene::_RecordRBO() {
 	for (int i = 0; i < GetSceneObjCnt(); i++) {
 		CSceneObj* object = GetSceneObj(i);
@@ -156,29 +112,24 @@ void CGameScene::_ReadRBO() {
 	}
 
 	_reallyBigObjectList.clear();
-	ifstream file(rboPath.c_str());
-	if (!file.is_open()) {
+
+	std::set<ReallyBigObjectInfo> items;
+	if (!Corsairs::Engine::Scene::RboLoader::Load(rboPath, items)) {
 		if (EngineDiag::Instance().IsSceneLoadEnabled()) {
-			ToLogService("scene", LogLevel::Debug, "_ReadRBO: file not found, skipping");
+			ToLogService("scene", LogLevel::Debug, "_ReadRBO: load failed, skipping");
+		}
+		return;
+	}
+	if (items.empty()) {
+		if (EngineDiag::Instance().IsSceneLoadEnabled()) {
+			ToLogService("scene", LogLevel::Debug, "_ReadRBO: file not found or empty");
 		}
 		return;
 	}
 
-	struct ReallyBigObjectInfo info;
-	char c1 = file.get();
-	char c2 = file.get();
-	if (c1 == '\\' && c2 == '\\') {
-		string temp;
-		getline(file, temp, '\n');
-	}
-	else {
-		file.putback(c2);
-		file.putback(c1);
-	}
-
 	std::int32_t loaded = 0;
 	std::int32_t skipped = 0;
-	while (file >> info) {
+	for (const auto& info : items) {
 		CSceneObjInfo* pInfo = GetSceneObjInfo(info.typeID);
 		CSceneObj* pObj = AddSceneObj(info.typeID);
 
@@ -200,7 +151,6 @@ void CGameScene::_ReadRBO() {
 			++skipped;
 		}
 	}
-	file.close();
 	if (EngineDiag::Instance().IsSceneLoadEnabled()) {
 		ToLogService("scene", LogLevel::Debug, "_ReadRBO: done, loaded={}, skipped={}", loaded, skipped);
 	}

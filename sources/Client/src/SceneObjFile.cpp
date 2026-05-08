@@ -3,6 +3,7 @@
 #include	<sys/timeb.h>
 #include	<time.h>
 #include	"SceneObjFile.h"
+#include "SceneFileLoaders.h"
 #include	"GameConfig.h"
 #include "scene.h"
 #include "GameApp.h"
@@ -43,32 +44,10 @@ void CSceneObjFile::end_RBO() {
 }
 
 void CSceneObjFile::_Serialize_RBO() {
-	if (!filename_RBO.empty() && !RBOinfoList.empty()) {
-		// Без проверки на пустой RBOinfoList ofstream создавал на диске .rbo
-		// файл размером 0 байт каждый раз, когда сцена закрывалась без RBO-
-		// объектов. В Client/map/ накопилось 51 такой файл; новые больше не
-		// создаём — существующие 0-байтные .rbo безопасно удалить отдельно.
-		std::ofstream file(filename_RBO.c_str());
-		std::set<struct ReallyBigObjectInfo>::iterator itr = RBOinfoList.begin();
-		std::set<struct ReallyBigObjectInfo>::iterator end = RBOinfoList.end();
-		while (itr != end) {
-			file << *(itr++);
-		}
-		file.close();
-
-		//FILE *file = fopen ( filename_RBO.c_str(), "wt" );
-		//if( !file )
-		//{
-		//	return;
-		//}
-
-		//std::set < struct ReallyBigObjectInfo >::iterator itr = RBOinfoList.begin();
-		//std::set < struct ReallyBigObjectInfo >::iterator end = RBOinfoList.end();
-		//while( itr != end )
-		//{
-		//	file << *(itr++);
-		//}
-		//fclose ( file );
+	if (!filename_RBO.empty()) {
+		// RboLoader::Save сам пропускает пустой items (раньше пустой список
+		// порождал 0-байтный .rbo на диске).
+		Corsairs::Engine::Scene::RboLoader::Save(filename_RBO, RBOinfoList);
 	}
 }
 
@@ -105,8 +84,10 @@ void CSceneObjFile::_Serialize_RBO_ToMap() {
 }
 
 long CSceneObjFile::Init(const char* ptcsFileName, bool bSilence) {
+	using ObjFileLoader = Corsairs::Engine::Scene::ObjFileLoader;
+
 	long lRet = 1;
-	long lFileSize;
+	long lFileSize = 0;
 	char tcsPrint[256];
 	FILE* fFile = nullptr;
 
@@ -134,10 +115,10 @@ long CSceneObjFile::Init(const char* ptcsFileName, bool bSilence) {
 		fFile = _tfopen(ptcsFileName, "rb");
 	}
 
-	fseek(fFile, 0, SEEK_END);
-	lFileSize = ftell(fFile);
-	fseek(fFile, 0, SEEK_SET);
-	fread((void*)&m_SFileHead, sizeof(SFileHead), 1, fFile);
+	if (!ObjFileLoader::ReadHeader(fFile, m_SFileHead, lFileSize)) {
+		lRet = 0;
+		goto end;
+	}
 	if (m_SFileHead.lFileSize != lFileSize) {
 		if (!bSilence) {
 			_stprintf(tcsPrint, "%s %s", ptcsFileName, GetLanguageString(357).c_str());
@@ -165,10 +146,10 @@ long CSceneObjFile::Init(const char* ptcsFileName, bool bSilence) {
 			goto end;
 		}
 
-		fseek(fFile, 0, SEEK_END);
-		lFileSize = ftell(fFile);
-		fseek(fFile, 0, SEEK_SET);
-		fread((void*)&m_SFileHead, sizeof(SFileHead), 1, fFile);
+		if (!ObjFileLoader::ReadHeader(fFile, m_SFileHead, lFileSize)) {
+			lRet = 0;
+			goto end;
+		}
 	}
 	if (m_SFileHead.lVersion != OBJ_FILE_VER600) {
 		if (!bSilence) {
@@ -184,7 +165,11 @@ long CSceneObjFile::Init(const char* ptcsFileName, bool bSilence) {
 		lRet = 0;
 		goto end;
 	}
-	fread((void*)m_SSectionIndex, sizeof(SSectionIndex), m_SFileHead.iSectionCntX * m_SFileHead.iSectionCntY, fFile);
+	if (!ObjFileLoader::ReadSectionIndexTable(fFile, m_SSectionIndex,
+			static_cast<std::size_t>(m_SFileHead.iSectionCntX) * m_SFileHead.iSectionCntY)) {
+		lRet = 0;
+		goto end;
+	}
 
 	if (GlobalAppConfig.IsEditor())
 		m_fRdWr = _tfopen(ptcsFileName, "r+b");
@@ -256,174 +241,44 @@ void CSceneObjFile::Free(void) {
 long CSceneObjFile::CreateFile(const char* ptcsFileName,
 							   int iSectionCntX, int iSectionCntY, int iSectionWidth,
 							   int iSectionHeight, int iMaxSectionObjNum) {
-	FILE* fFile = NULL;
-	SFileHead SHead;
-	SSectionIndex* lFileSectionIndex = NULL;
-
-	if (GlobalAppConfig.IsEditor())
-		fFile = _tfopen(ptcsFileName, "wb");
-	else
-		fFile = _tfopen(ptcsFileName, "rb");
-	if (fFile == NULL)
-		return 0;
-
-	_tcscpy(SHead.tcsTitle, "HF Object File!");
-	SHead.lVersion = OBJ_FILE_VER600;
-	SHead.lFileSize = sizeof(SFileHead) + sizeof(SSectionIndex) * iSectionCntX * iSectionCntY;
-	SHead.iSectionCntX = iSectionCntX;
-	SHead.iSectionCntY = iSectionCntY;
-	SHead.iSectionHeight = iSectionHeight;
-	SHead.iSectionWidth = iSectionWidth;
-	SHead.iSectionObjNum = iMaxSectionObjNum;
-
-	lFileSectionIndex = new (SSectionIndex[iSectionCntX * iSectionCntY]);
-	if (lFileSectionIndex == NULL) {
-		fclose(fFile);
+	// В non-editor режиме старая логика отказывалась создавать файл (открывала
+	// "rb" и сразу падала по NULL). ObjFileLoader::CreateEmpty вызывается только
+	// из editor-пути (через Init), где режим уже подразумевается. Сохраняем
+	// прежнее поведение через явную проверку.
+	if (!GlobalAppConfig.IsEditor()) {
 		return 0;
 	}
-	memset(lFileSectionIndex, 0, sizeof(SSectionIndex) * iSectionCntX * iSectionCntY);
-
-	fwrite((const void*)&SHead, sizeof(SFileHead), 1, fFile);
-	fwrite((const void*)lFileSectionIndex, sizeof(SSectionIndex), iSectionCntX * iSectionCntY, fFile);
-
-	if (fFile)
-		fclose(fFile);
-	if (lFileSectionIndex)
-		delete [] lFileSectionIndex;
+	if (!Corsairs::Engine::Scene::ObjFileLoader::CreateEmpty(
+			ptcsFileName, iSectionCntX, iSectionCntY,
+			iSectionWidth, iSectionHeight, iMaxSectionObjNum)) {
+		return 0;
+	}
 	return 1;
 }
 
 long CSceneObjFile::ConvertObjFileVer(const char* ptcsFileName, bool bBackUp) // 500600(section)
 {
-	long lRet = 2;
-	char tcsBackUpName[_MAX_FNAME] = "";
+	if (!GlobalAppConfig.IsEditor()) {
+		return -1;
+	}
 	char tcsPrint[256];
-	long i, j;
-	long lMaxSectionNum;
-	FILE *fFileOld, *fFileNew;
-	SSceneObjInfo* pSObjInfo = NULL;
-	SFileHead SHead;
-	SSectionIndex* pSSectionIndex = NULL;
-	unsigned long ulFileSize;
-
-	_tcscpy(tcsBackUpName, ptcsFileName);
-	for (i = 0; i < _MAX_FNAME - (long)_tcslen(ptcsFileName); i += 4) {
-		_tcscat(tcsBackUpName, ".bak");
-		fFileNew = _tfopen(tcsBackUpName, "rb");
-		if (fFileNew == NULL)
-			break;
-		else {
-			fclose(fFileNew);
-			fFileNew = NULL;
-		}
-	}
-	if (i >= _MAX_FNAME - (long)_tcslen(ptcsFileName)) {
-		lRet = -1; // 
-		goto end;
-	}
-	if (_trename(ptcsFileName, tcsBackUpName) != 0) // 
-	{
-		lRet = -2; // 
-		goto end;
-	}
-
-	fFileOld = _tfopen(tcsBackUpName, "rb");
-	if (fFileOld == NULL) {
-		lRet = -3; // 
-		goto end;
-	}
-
-	if (GlobalAppConfig.IsEditor())
-		fFileNew = _tfopen(ptcsFileName, "wb");
-	else
-		fFileNew = _tfopen(ptcsFileName, "rb");
-	if (fFileNew == NULL) {
-		lRet = -1; // 
-		goto end;
-	}
-
-	fseek(fFileOld, 0, SEEK_END);
-	ulFileSize = ftell(fFileOld);
-	fseek(fFileOld, 0, SEEK_SET);
-	fread(&SHead, sizeof(SFileHead), 1, fFileOld);
-	if (SHead.lVersion != OBJ_FILE_VER500) // 
-	{
-		lRet = 1;
-		goto end;
-	}
-
 	_stprintf(tcsPrint, GetLanguageString(360).c_str(), ptcsFileName);
 	MessageBox(NULL, tcsPrint, GetLanguageString(361).c_str(), 0);
 
-	lMaxSectionNum = SHead.iSectionCntX * SHead.iSectionCntY;
-	pSSectionIndex = new (SSectionIndex[lMaxSectionNum]);
-	if (pSSectionIndex == NULL) {
-		lRet = -4; // 
-		goto end;
-	}
+	const long lRet = Corsairs::Engine::Scene::ObjFileLoader::ConvertVer500ToVer600(
+		ptcsFileName, bBackUp);
 
-	pSObjInfo = new (SSceneObjInfo[SHead.iSectionObjNum]);
-	if (pSObjInfo == NULL) {
-		lRet = -4;
-		goto end;
-	}
-
-	fread((void*)pSSectionIndex, sizeof(SSectionIndex), lMaxSectionNum, fFileOld);
-	fseek(fFileNew, sizeof(SFileHead) + sizeof(SSectionIndex) * lMaxSectionNum, SEEK_SET);
-
-	int nSectionX, nSectionY;
-	for (i = 0; i < lMaxSectionNum && ulFileSize >= (unsigned long)ftell(fFileOld); i++) {
-		if (pSSectionIndex[i].iObjNum > 0) //
-		{
-			fseek(fFileOld, pSSectionIndex[i].lObjInfoPos, SEEK_SET);
-			fread(pSObjInfo, sizeof(SSceneObjInfo) * SHead.iSectionObjNum, 1, fFileOld);
-			for (j = 0; j < pSSectionIndex[i].iObjNum; j++) {
-				nSectionX = i % SHead.iSectionCntX * SHead.iSectionWidth * 100;
-				nSectionY = i / SHead.iSectionCntX * SHead.iSectionHeight * 100;
-				pSObjInfo[j].nX -= nSectionX;
-				pSObjInfo[j].nY -= nSectionY;
-				if (pSObjInfo[j].nY < 0) {
-					int nnn = 0;
-				}
-			}
-			pSSectionIndex[i].lObjInfoPos = ftell(fFileNew);
-			fwrite(pSObjInfo, sizeof(SSceneObjInfo) * SHead.iSectionObjNum, 1, fFileNew);
-		}
-		else {
-			pSSectionIndex[i].lObjInfoPos = 0;
-		}
-	}
-
-	SHead.lVersion = OBJ_FILE_VER600;
-	SHead.lFileSize = ftell(fFileNew);
-	fseek(fFileNew, 0, SEEK_SET);
-	fwrite((const void*)&SHead, sizeof(SFileHead), 1, fFileNew);
-	fwrite((const void*)pSSectionIndex, sizeof(SSectionIndex), lMaxSectionNum, fFileNew);
-
-	if (!bBackUp) {
-		fclose(fFileOld);
-		fFileOld = NULL;
-		_tremove(tcsBackUpName);
-		_tcscpy(tcsBackUpName, ptcsFileName);
-	}
-
-end:
 	if (lRet == 2) {
-		_stprintf(tcsPrint, GetLanguageString(362).c_str(), ptcsFileName, tcsBackUpName);
+		_stprintf(tcsPrint, GetLanguageString(362).c_str(), ptcsFileName,
+				  bBackUp ? (std::string{ptcsFileName} + ".bak").c_str() : ptcsFileName);
 		MessageBox(NULL, tcsPrint, GetLanguageString(363).c_str(), 0);
 	}
-	if (fFileOld)
-		fclose(fFileOld);
-	if (fFileNew)
-		fclose(fFileNew);
-	if (pSSectionIndex)
-		delete [] pSSectionIndex;
-	if (pSObjInfo)
-		delete [] pSObjInfo;
 	return lRet;
 }
 
 long CSceneObjFile::ReadSectionObjInfo(int nSectionNO, SSceneObjInfo* SSceneObj, long* lSectionObjNum) {
+	using ObjFileLoader = Corsairs::Engine::Scene::ObjFileLoader;
+
 	if (!m_bInitSuccess)
 		return 0;
 
@@ -431,31 +286,31 @@ long CSceneObjFile::ReadSectionObjInfo(int nSectionNO, SSceneObjInfo* SSceneObj,
 		return 0;
 
 	if ((*lSectionObjNum = m_SSectionIndex[nSectionNO].iObjNum) > 0) {
-		fseek(m_fRdWr, m_SSectionIndex[nSectionNO].lObjInfoPos, SEEK_SET);
-		fread(SSceneObj, sizeof(SSceneObjInfo), m_SSectionIndex[nSectionNO].iObjNum, m_fRdWr);
-		// 
-		int nSectionX, nSectionY;
+		if (!ObjFileLoader::ReadSceneObjs(m_fRdWr, m_SSectionIndex[nSectionNO].lObjInfoPos,
+				SSceneObj, m_SSectionIndex[nSectionNO].iObjNum)) {
+			return 0;
+		}
+		// Координаты в файле относительные внутри секции; при чтении
+		// разворачиваем обратно в мировые.
+		const int sectionXBase = nSectionNO % m_SFileHead.iSectionCntX
+								  * m_SFileHead.iSectionWidth * 100;
+		const int sectionYBase = nSectionNO / m_SFileHead.iSectionCntX
+								  * m_SFileHead.iSectionHeight * 100;
 		for (int i = 0; i < m_SSectionIndex[nSectionNO].iObjNum; i++) {
-			nSectionX = nSectionNO % m_SFileHead.iSectionCntX * m_SFileHead.iSectionWidth * 100;
-			nSectionY = nSectionNO / m_SFileHead.iSectionCntX * m_SFileHead.iSectionHeight * 100;
-			if (SSceneObj[i].nX < 0) {
-				int jjj = 0;
-			}
-			SSceneObj[i].nX += nSectionX;
-			SSceneObj[i].nY += nSectionY;
+			SSceneObj[i].nX += sectionXBase;
+			SSceneObj[i].nY += sectionYBase;
 			SSceneObjInfo* pObj = (SSceneObj + i);
 			if (pObj->GetID() == 0) {
 				g_logManager.InternalLog(LogLevel::Error, "errors", GetLanguageString(364));
 			}
 		}
-		//
 	}
 
 	return 1;
 }
 
 long CSceneObjFile::WriteSectionObjInfo(int nSectionNO, SSceneObjInfo* SSceneObj, long lSectionObjNum) {
-	FILE* fFile;
+	using ObjFileLoader = Corsairs::Engine::Scene::ObjFileLoader;
 
 	if (!m_bInitSuccess)
 		return 0;
@@ -465,49 +320,57 @@ long CSceneObjFile::WriteSectionObjInfo(int nSectionNO, SSceneObjInfo* SSceneObj
 
 	m_SSectionIndex[nSectionNO].iObjNum = lSectionObjNum;
 	if (lSectionObjNum > 0) {
+		FILE* fFile = nullptr;
 		if (m_SSectionIndex[nSectionNO].lObjInfoPos > 0) {
 			fFile = m_fRdWr;
-			fseek(fFile, m_SSectionIndex[nSectionNO].lObjInfoPos, SEEK_SET);
+			if (std::fseek(fFile, m_SSectionIndex[nSectionNO].lObjInfoPos, SEEK_SET) != 0) {
+				return 0;
+			}
 		}
 		else {
 			m_SSectionIndex[nSectionNO].lObjInfoPos = m_SFileHead.lFileSize;
 			m_SFileHead.lFileSize += sizeof(SSceneObjInfo) * m_SFileHead.iSectionObjNum;
-			fseek(m_fRdWr, 0, SEEK_SET);
-			fwrite((const void*)&m_SFileHead, sizeof(SFileHead), 1, m_fRdWr);
-			fflush(m_fRdWr);
-
+			if (!ObjFileLoader::WriteHeader(m_fRdWr, m_SFileHead)) {
+				return 0;
+			}
+			std::fflush(m_fRdWr);
 			fFile = m_fAppend;
 		}
-		// 
-		int nSectionX, nSectionY;
+		// Конвертация координат в относительные.
+		const int sectionXBase = nSectionNO % m_SFileHead.iSectionCntX
+								  * m_SFileHead.iSectionWidth * 100;
+		const int sectionYBase = nSectionNO / m_SFileHead.iSectionCntX
+								  * m_SFileHead.iSectionHeight * 100;
 		for (int j = 0; j < m_SSectionIndex[nSectionNO].iObjNum; j++) {
-			nSectionX = nSectionNO % m_SFileHead.iSectionCntX * m_SFileHead.iSectionWidth * 100;
-			nSectionY = nSectionNO / m_SFileHead.iSectionCntX * m_SFileHead.iSectionHeight * 100;
-			SSceneObj[j].nX -= nSectionX;
-			SSceneObj[j].nY -= nSectionY;
+			SSceneObj[j].nX -= sectionXBase;
+			SSceneObj[j].nY -= sectionYBase;
 		}
-		//
-		// obj
-		fwrite((const void*)SSceneObj, sizeof(SSceneObjInfo), m_SFileHead.iSectionObjNum, fFile);
-		fflush(fFile);
+		// Пишем фиксированную заполненность iSectionObjNum (не реальное число
+		// объектов): формат хранит «слот» под потенциальный максимум.
+		if (!ObjFileLoader::WriteSceneObjs(fFile, -1, SSceneObj,
+				static_cast<std::size_t>(m_SFileHead.iSectionObjNum))) {
+			return 0;
+		}
+		std::fflush(fFile);
 	}
 	else {
 		m_SSectionIndex[nSectionNO].lObjInfoPos = 0;
 	}
 
-	fseek(m_fRdWr, sizeof(SFileHead) + sizeof(SSectionIndex) * nSectionNO, SEEK_SET);
-	fwrite((const void*)(m_SSectionIndex + nSectionNO), sizeof(SSectionIndex), 1, m_fRdWr);
-	fflush(m_fRdWr);
+	if (!ObjFileLoader::WriteSectionIndexEntry(m_fRdWr,
+			static_cast<std::size_t>(nSectionNO),
+			m_SSectionIndex[nSectionNO])) {
+		return 0;
+	}
+	std::fflush(m_fRdWr);
 
-	// 
-	// 
+	// Sanity check: размер файла должен совпасть с m_SFileHead.lFileSize.
 	long lFileSize;
-	fseek(m_fRdWr, 0, SEEK_END);
-	lFileSize = ftell(m_fRdWr);
+	std::fseek(m_fRdWr, 0, SEEK_END);
+	lFileSize = std::ftell(m_fRdWr);
 	if (lFileSize != m_SFileHead.lFileSize) {
 		MessageBox(nullptr, GetLanguageString(365).c_str(), GetLanguageString(25).c_str(), 0);
 	}
-	//
 
 	return 1;
 }

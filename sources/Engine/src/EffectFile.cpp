@@ -5,6 +5,7 @@
 
 #include "EffectFile.h"
 #include "MPRender.h"
+#include "ShaderLoader.h"
 
 // Construction/Destruction
 CMPEffectFile::CMPEffectFile() {
@@ -32,19 +33,14 @@ void CMPEffectFile::InitDev(MPRender* pDev) {
 }
 
 BOOL CMPEffectFile::LoadEffectFromFile(LPCSTR pszfile) {
-	HRESULT hr;
-	if (hr = D3DXCreateEffectFromFile(m_pDev->GetDevice(), pszfile,NULL,NULL, 0,NULL, &m_pEffect,NULL); FAILED(hr)) {
-		ToLogService("errors", LogLevel::Error,
-					 "[{}] D3DXCreateEffectFromFile failed: file={}, hr=0x{:08X}",
-					 __FUNCTION__, pszfile ? pszfile : "(null)", static_cast<std::uint32_t>(hr));
+	const std::string_view file = pszfile ? std::string_view{pszfile} : std::string_view{};
+	if (LW_RESULT r = Corsairs::Engine::Render::ShaderLoader::LoadEffect(
+			m_pDev->GetDevice(), file, &m_pEffect);
+		LW_FAILED(r)) {
 		return FALSE;
 	}
 
 	D3DXHANDLE technique;
-
-	//	return FALSE;
-
-
 	std::string t_psz = "t0";
 	while (SUCCEEDED(m_pEffect->FindNextValidTechnique(t_psz.c_str(), &technique))) {
 		_vecTechniques.push_back(technique);
@@ -52,7 +48,6 @@ BOOL CMPEffectFile::LoadEffectFromFile(LPCSTR pszfile) {
 
 		t_psz = std::format("t{}", _iTechNum);
 	}
-
 
 	return TRUE;
 }

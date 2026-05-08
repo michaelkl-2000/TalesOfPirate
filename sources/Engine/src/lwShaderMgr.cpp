@@ -5,6 +5,7 @@
 #include "lwSysGraphics.h"
 #include "lwResourceMgr.h"
 #include "lwShaderDeclMgr.h"
+#include "ShaderLoader.h"
 
 LW_BEGIN
 	// =================================
@@ -89,76 +90,24 @@ LW_BEGIN
 
 	LW_RESULT lwShaderMgr9::RegisterVertexShader(DWORD type, std::string_view file,
 												 const D3DXMACRO* defines) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		long size = 0;
-		BYTE* data = 0;
-		BYTE* code = 0;
-
-		ID3DXBuffer* buf_code = 0;
-		ID3DXBuffer* buf_error = 0;
-
-		FILE* fp = fopen(std::string{file}.c_str(), "rb");
-		if (fp == NULL)
-			goto __ret;
-
-		fseek(fp, 0, SEEK_END);
-
-		size = ftell(fp);
-		data = LW_NEW(BYTE[size]);
-
-		fseek(fp, 0, SEEK_SET);
-
-		fread(data, size, 1, fp);
-
-		fclose(fp);
-
-		{
-			DWORD compile_flag = 0;
-			// defines — указатель на массив D3DXMACRO, терминированный
-			// {NULL, NULL}. Может быть nullptr (без макросов). Пропускаем
-			// напрямую в D3DXCompileShader — он корректно обрабатывает оба случая.
-			const D3DXMACRO* macro_ptr = nullptr;
-			if (defines && defines->Name) {
-				macro_ptr = defines;
-			}
-			if (HRESULT hr = D3DXCompileShader(
-				(LPCSTR)data,
-				size,
-				macro_ptr,
-				NULL,
-				"main",
-				"vs_3_0",
-				compile_flag,
-				&buf_code,
-				&buf_error,
-				NULL); FAILED(hr)) {
-				const char* err_msg = (buf_error && buf_error->GetBufferPointer())
-										  ? static_cast<const char*>(buf_error->GetBufferPointer())
-										  : "(no error buffer)";
-				ToLogService("errors", LogLevel::Error,
-							 "[{}] D3DXCompileShader failed: file={}, size={}, hr=0x{:08X}, err={}",
-							 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), size, static_cast<std::uint32_t>(hr), err_msg);
-				goto __ret;
-			}
-
-			code = (BYTE*)buf_code->GetBufferPointer();
-			size = buf_code->GetBufferSize();
+		ID3DXBuffer* buf_code = nullptr;
+		if (LW_RESULT r = Corsairs::Engine::Render::ShaderLoader::CompileVertexShader(
+				file, defines, &buf_code);
+			LW_FAILED(r)) {
+			return LW_RET_FAILED;
 		}
 
-		if (LW_RESULT r = RegisterVertexShader(type, code, size); LW_FAILED(r)) {
+		const DWORD size = buf_code->GetBufferSize();
+		BYTE* code = static_cast<BYTE*>(buf_code->GetBufferPointer());
+
+		LW_RESULT ret = RegisterVertexShader(type, code, size);
+		if (LW_FAILED(ret)) {
 			ToLogService("errors", LogLevel::Error,
 						 "[{}] RegisterVertexShader failed: type={}, size={}, ret={}",
-						 __FUNCTION__, type, size, static_cast<long long>(r));
-			goto __ret;
+						 __FUNCTION__, type, size, static_cast<long long>(ret));
 		}
 
-		ret = LW_RET_OK;
-
-	__ret:
-		LW_SAFE_DELETE_A(data);
 		LW_SAFE_RELEASE(buf_code);
-		LW_SAFE_RELEASE(buf_error);
 		return ret;
 	}
 

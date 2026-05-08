@@ -60,7 +60,6 @@ LW_BEGIN
 				d->shader_id = info->shader_id;
 				d->light_type = info->light_type;
 				d->anim_type = info->anim_type;
-				_tcscpy(d->file, info->file);
 
 				ret = LW_RET_OK;
 			}

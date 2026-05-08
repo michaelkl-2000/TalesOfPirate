@@ -427,39 +427,6 @@ void CSMallMap2D::InitScene() {
 
 	_Cha.Init(m_pDev);
 
-	//#ifdef MGR
-	//#else
-	//	LPD3DXBUFFER pCode;
-	//	char t_Path[64];
-	//	DWORD dwMapDecl[] =
-	//	{
-	//		D3DVSD_STREAM( 0 ),
-	//			D3DVSD_REG( D3DVSDE_POSITION ,		D3DVSDT_FLOAT3 ), // Position of first mesh
-	//			D3DVSD_REG( D3DVSDE_BLENDWEIGHT,	D3DVSDT_FLOAT1),
-	//			D3DVSD_REG( D3DVSDE_DIFFUSE,		D3DVSDT_D3DCOLOR ), // diffuse
-	//			D3DVSD_REG( D3DVSDE_TEXCOORD0,		D3DVSDT_FLOAT2 ), // Tex coords
-	//			D3DVSD_END()
-	//	};
-	//	if(_dwVShader != 0)
-	//	{
-	//		g_Render.GetDevice()->DeleteVertexShader(_dwVShader);
-	//		_dwVShader = 0;
-	//	}
-	//	if(SUCCEEDED(D3DXAssembleShaderFromFile( t_Path, NULL, 0, &pCode, NULL )))
-	//	{
-	//		if( FAILED(m_pDev->CreateVertexShader( dwMapDecl, 
-	//			(DWORD*)pCode->GetBufferPointer(),
-	//			&_dwVShader , FALSE ) ) )
-	//		{
-	//			_dwVShader = 0L;
-	//		}
-	//		pCode->Release();
-	//		pCode = NULL;
-	//	}
-	//	else
-	//		_dwVShader = 0L;
-	//#endif
-
 #ifdef MGR
 	//MPIResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
 	if (FAILED(lwLoadTex(&_pTexMask,res_mgr, "texture\\minimap\\mapmask.bmp", std::string_view{}, D3DFMT_A8R8G8B8))) {

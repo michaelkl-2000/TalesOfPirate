@@ -19,7 +19,6 @@ LW_BEGIN
 		DWORD shader_id;
 		DWORD light_type;
 		DWORD anim_type;
-		char file[LW_MAX_NAME];
 
 	public:
 		lwShaderDeclInfo()

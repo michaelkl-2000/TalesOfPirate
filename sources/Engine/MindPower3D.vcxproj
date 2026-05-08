@@ -104,6 +104,7 @@
         <ClInclude Include="include\GlobalInc.h"/>
         <ClInclude Include="include\I_Effect.h"/>
         <ClInclude Include="include\ImageLoader.h"/>
+        <ClInclude Include="include\ShaderLoader.h"/>
         <ClInclude Include="include\lwClassDecl.h"/>
         <ClInclude Include="include\lwD3D.h"/>
         <ClInclude Include="include\lwDirectX.h"/>
@@ -228,6 +229,7 @@
         <ClCompile Include="src\EffectFile.cpp"/>
         <ClCompile Include="src\I_Effect.cpp"/>
         <ClCompile Include="src\ImageLoader.cpp"/>
+        <ClCompile Include="src\ShaderLoader.cpp"/>
         <ClCompile Include="src\lwAnimCtrl.cpp"/>
         <ClCompile Include="src\lwAnimCtrlObj.cpp"/>
         <ClCompile Include="src\lwAnimKeySetPRS.cpp"/>

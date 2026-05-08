@@ -304,6 +304,12 @@
     <ClCompile Include="src\ImageLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClInclude Include="include\ShaderLoader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClCompile Include="src\ShaderLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClInclude Include="include\MPColorValue.h">
       <Filter>effect</Filter>
     </ClInclude>

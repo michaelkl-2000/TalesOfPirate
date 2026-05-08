@@ -206,9 +206,6 @@ BOOL CGameApp::_Init() {
 		lwIByteSet* res_bs = g_Render.GetInterfaceMgr()->res_mgr->GetByteSet();
 		res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, GlobalAppConfig.IsMultiThreadRes());
 		res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0); //GlobalAppConfig.IsMultiThreadRes());
-
-		// tex encoder
-		res_bs->SetValue(OPT_RESMGR_TEXENCODE, 1);
 	}
 
 	{

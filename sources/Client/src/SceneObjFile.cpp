@@ -43,7 +43,11 @@ void CSceneObjFile::end_RBO() {
 }
 
 void CSceneObjFile::_Serialize_RBO() {
-	if (!filename_RBO.empty()) {
+	if (!filename_RBO.empty() && !RBOinfoList.empty()) {
+		// Без проверки на пустой RBOinfoList ofstream создавал на диске .rbo
+		// файл размером 0 байт каждый раз, когда сцена закрывалась без RBO-
+		// объектов. В Client/map/ накопилось 51 такой файл; новые больше не
+		// создаём — существующие 0-байтные .rbo безопасно удалить отдельно.
 		std::ofstream file(filename_RBO.c_str());
 		std::set<struct ReallyBigObjectInfo>::iterator itr = RBOinfoList.begin();
 		std::set<struct ReallyBigObjectInfo>::iterator end = RBOinfoList.end();

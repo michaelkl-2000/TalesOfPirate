@@ -24,7 +24,6 @@
 #include "lwNodeObject.h"
 #include "lwDDS.h"
 #include "lwAnimCtrlObj.h"
-#include "lwFileEncode.h"
 
 #include <filesystem>
 #include "GlobalInc.h"
@@ -2321,15 +2320,6 @@ LW_BEGIN
 			goto __ret;
 		}
 
-		if (_res_mgr->GetByteSet()->GetValue(OPT_RESMGR_TEXENCODE)) {
-			lwTexEncode te;
-			if (LW_RESULT r = te.Decode(o->buf); LW_FAILED(r)) {
-				ToLogService("errors", LogLevel::Error,
-							 "[{}] te.Decode failed: file={}, ret={}",
-							 __FUNCTION__, info->file_name, static_cast<long long>(r));
-			}
-		}
-
 		o->colorkey = info->colorkey;
 		o->format = info->format;
 		o->filter = info->filter;
@@ -2677,7 +2667,6 @@ LW_BEGIN
 			_byte_set.Alloc(OPT_RESMGR_BYTESET_SIZE);
 			_byte_set.SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 			_byte_set.SetValue(OPT_RESMGR_LOADMESH_MT, 0);
-			_byte_set.SetValue(OPT_RESMGR_TEXENCODE, 0);
 			_byte_set.SetValue(OPT_CREATE_ASSISTANTOBJECT, 0);
 		}
 

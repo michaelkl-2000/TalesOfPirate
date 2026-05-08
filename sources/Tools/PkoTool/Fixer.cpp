@@ -6,9 +6,12 @@
 #include "MPParticleCtrl.h"  // CMPPartCtrl
 #include "logutil.h"
 
+#include <exception>
 #include <filesystem>
+#include <stdexcept>
 #include <string>
 #include <system_error>
+#include <typeinfo>
 
 namespace pkotool {
 
@@ -26,6 +29,11 @@ struct ResaveResult {
 
 // Universal scheme: переименовать original → original.bak, затем загрузить .bak,
 // сохранить под original. Если save упал — откатить (.bak → original).
+//
+// LgoLoader::CheckedNewArray бросает std::length_error при подозрительно большом
+// *_num (битое поле в .lgo). Любой такой throw из load()/save() ловим здесь,
+// откатываем .bak и возвращаем ResaveResult{false, ...}, чтобы Fixer не уронил
+// процесс при первом же corrupt-файле.
 template <typename LoadFn, typename SaveFn>
 ResaveResult ResaveViaBak(const fs::path& path, LoadFn&& load, SaveFn&& save) {
     const fs::path bak = path.string() + ".bak";
@@ -36,17 +44,40 @@ ResaveResult ResaveViaBak(const fs::path& path, LoadFn&& load, SaveFn&& save) {
         return {false, std::format("rename → .bak failed: {}", ec.message())};
     }
 
-    if (!load(bak.string())) {
+    auto rollbackBak = [&]() {
+        std::error_code ec2;
+        fs::remove(path, ec2);
+        ec2.clear();
+        fs::rename(bak, path, ec2);
+    };
+
+    bool loaded = false;
+    try {
+        loaded = load(bak.string());
+    }
+    catch (const std::exception& e) {
+        rollbackBak();
+        return {false, std::format("load threw {}: {} (rolled back)",
+                                    typeid(e).name(), e.what())};
+    }
+    if (!loaded) {
         // Откатываем: возвращаем .bak на место.
         std::error_code ec2;
         fs::rename(bak, path, ec2);
         return {false, "load from .bak failed (rolled back)"};
     }
-    if (!save(path.string())) {
-        std::error_code ec2;
-        fs::remove(path, ec2);
-        ec2.clear();
-        fs::rename(bak, path, ec2);
+
+    bool saved = false;
+    try {
+        saved = save(path.string());
+    }
+    catch (const std::exception& e) {
+        rollbackBak();
+        return {false, std::format("save threw {}: {} (rolled back)",
+                                    typeid(e).name(), e.what())};
+    }
+    if (!saved) {
+        rollbackBak();
         return {false, "save failed (rolled back)"};
     }
 

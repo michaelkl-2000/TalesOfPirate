@@ -397,4 +397,87 @@ private:
     return "?";
 }
 
+// =============================================================================
+// .map — MindPower3D terrain map (header + per-section offset table + tile data)
+// =============================================================================
+
+} // namespace Corsairs::Engine::Render
+
+// MPMapFileHeader — 20-байтная C-структура из Libraries/Util/include/MPMapDef.h.
+// Нужна по значению внутри MapInfo, поэтому подключаем полное определение.
+#include "MPMapDef.h"
+
+#include <vector>
+
+namespace Corsairs::Engine::Render {
+
+enum class MapLoadStatus : std::uint32_t {
+    Ok = 0,
+    FileOpenFailed,         // fopen(file) не удался (нет файла, прав)
+    HeaderTruncated,        // < 20 байт в файле — MPMapFileHeader не дочитан
+    BadMagic,               // header.nMapFlag не из {MP_MAP_FLAG+2, MP_MAP_FLAG+3}; чужой формат или MapTool-файл
+    InconsistentDimensions, // nSectionWidth/Height равны 0 либо не делят nWidth/nHeight нацело
+    OffsetTableTruncated,   // не удалось прочитать DWORD[sectionCount] таблицу оффсетов
+    BodyTruncated,          // EOF до конца секции, на которую указывает один из offsets[i]
+    UnknownVersion          // зарезервировано: header принят как валидный, но runtime его не поддерживает
+};
+
+struct MapLoadDiagnostics {
+    MapLoadStatus status{MapLoadStatus::Ok};
+    std::string detail;
+    std::int32_t mapFlag{0};
+};
+
+// In-memory снимок одного .map-файла. Содержит ровно те же байты, что и файл
+// на диске:
+//   [MPMapFileHeader (20 байт): {nMapFlag, nWidth, nHeight, nSectionWidth, nSectionHeight}]
+//   [DWORD[sectionCount] offsets — 0 значит «секция пустая, на диске её нет»]
+//   [body: конкатенация tile-данных секций; конкретный кусок берётся по
+//          offset[i] − (sizeof(header) + offsets.size()*4), вычитая префикс,
+//          чтобы получить индекс внутри body.]
+//
+// MapLoader::Load читает все три блока «как есть» и не разбирает body на
+// SNewFileTile/SFileTile-структуры — для round-trip-теста это не нужно, а
+// «сырая» секция делает Save(Load(file)) побайтно детерминированным для
+// любого валидного .map.
+struct MapInfo {
+    MPMapFileHeader header{};
+    std::vector<std::uint32_t> offsets;
+    std::vector<std::byte> body;
+};
+
+// Текущий формат записи .map. CUR_VERSION_NO в MPMapDef.h хранится как
+// `MP_MAP_FLAG + 3`; сюда дублируем как литерал, чтобы заголовок мог
+// использоваться без define NEW_VERSION (в тестах NEW_VERSION включён —
+// см. MPMapDef.h, в самом конце файла).
+class MapLoader {
+public:
+    // MP_MAP_FLAG (780624) + 3. Совпадает с CUR_VERSION_NO из MPMapDef.h —
+    // именно эта версия пишется обратно в Save и принимается runtime'ом.
+    static constexpr std::int32_t kCurrentMapFlag = 780627;
+    // MP_MAP_FLAG + 2 (LAST_VERSION_NO). Принимается на чтение, но в
+    // round-trip-тестах считается legacy: runtime откажется загружать такой
+    // файл (NEW_VERSION включён), а Save сохраняет в актуальной версии.
+    static constexpr std::int32_t kLegacyMapFlag = 780626;
+
+    [[nodiscard]] static LW_RESULT Load(MapInfo& info, std::string_view file);
+    [[nodiscard]] static LW_RESULT LoadEx(MapInfo& info, std::string_view file,
+                                          MapLoadDiagnostics& diag);
+    static LW_RESULT Save(const MapInfo& info, std::string_view file);
+};
+
+[[nodiscard]] constexpr std::string_view ToString(MapLoadStatus s) noexcept {
+    switch (s) {
+        case MapLoadStatus::Ok:                     return "Ok";
+        case MapLoadStatus::FileOpenFailed:         return "FileOpenFailed";
+        case MapLoadStatus::HeaderTruncated:        return "HeaderTruncated";
+        case MapLoadStatus::BadMagic:               return "BadMagic";
+        case MapLoadStatus::InconsistentDimensions: return "InconsistentDimensions";
+        case MapLoadStatus::OffsetTableTruncated:   return "OffsetTableTruncated";
+        case MapLoadStatus::BodyTruncated:          return "BodyTruncated";
+        case MapLoadStatus::UnknownVersion:         return "UnknownVersion";
+    }
+    return "?";
+}
+
 } // namespace Corsairs::Engine::Render

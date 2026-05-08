@@ -1,5 +1,5 @@
-// Интеграционный тест round-trip загрузки .lmo, .lxo, .lab, .eff и .par через
-// Corsairs::Engine::Render::{LgoLoader, EffectLoader, PartCtrlLoader}.
+// Интеграционный тест round-trip загрузки .lmo, .lxo, .lab, .eff, .par и .map через
+// Corsairs::Engine::Render::{LgoLoader, EffectLoader, PartCtrlLoader, MapLoader}.
 //
 // Алгоритм:
 //   1. Найти repo root (поиск вверх по дереву, маркер — Client/model/character/).
@@ -9,6 +9,7 @@
 //        Client/animation/*.lab     (lwAnimDataBone)         — анимация костей.
 //        Client/effect/*.eff        (EffectFileInfo)         — спрайтовые эффекты.
 //        Client/effect/*.par        (CMPPartCtrl)            — particle controllers.
+//        Client/map/*.map           (MapInfo)                — terrain карты.
 //   3. Загрузить каждую копию через соответствующий *::LoadEx — собрать список неудач.
 //   4. Удачно загруженные пересохранить через *::Save в bin/runs/saved/<category>/.
 //   5. Сравнить пары source vs saved побайтово — сообщить о расхождениях.
@@ -809,6 +810,34 @@ int main(int argc, char** argv) {
             return true;
         }};
 
+    // .map: MapInfo через MapLoader. Файлы в Client/map/. Снапшот-семантика
+    // (header + offset table + сырое body): Load копирует файл «как есть» в
+    // три буфера, Save пишет их обратно. Byte-deterministic: round-trip
+    // Load→Save обязан совпадать побайтно как для kCurrentMapFlag, так и для
+    // kLegacyMapFlag (Save не апгрейдит nMapFlag). Поэтому `currentVersion`
+    // выставлен в legacy: ничего из датасета не должно проваливаться в
+    // ветку "skip legacy".
+    const AssetKind mapKind{
+        .label = "map",
+        .extensions = {".map", ".MAP"},
+        .subRoot = "Client",
+        .categories = {"map"},
+        .currentVersion = static_cast<std::uint32_t>(
+            Corsairs::Engine::Render::MapLoader::kLegacyMapFlag),
+        .processOne = [](const std::string& srcPath,
+                          const std::string& savePath,
+                          Corsairs::Engine::Render::LgoLoadDiagnostics& /*diag*/)
+                          -> std::optional<LW_RESULT> {
+            Corsairs::Engine::Render::MapInfo info;
+            Corsairs::Engine::Render::MapLoadDiagnostics mapDiag;
+            const LW_RESULT loadRet =
+                Corsairs::Engine::Render::MapLoader::LoadEx(info, srcPath, mapDiag);
+            if (LW_FAILED(loadRet)) {
+                return std::nullopt;
+            }
+            return Corsairs::Engine::Render::MapLoader::Save(info, savePath);
+        }};
+
     // .par: CMPPartCtrl через PartCtrlLoader. Файлы в Client/effect/, рядом с .eff.
     // Текущая версия CMPPartCtrl::ParVersion = 15.
     const AssetKind parKind{
@@ -876,11 +905,16 @@ int main(int argc, char** argv) {
     RunRoundTripPipeline(parKind, repoRoot, sourceRoot, savedRoot,
                          limit, noCopy, removeOk, parStats);
 
+    AssetKindStats mapStats;
+    RunRoundTripPipeline(mapKind, repoRoot, sourceRoot, savedRoot,
+                         limit, noCopy, removeOk, mapStats);
+
     PrintSummary("lmo", lmoStats);
     PrintSummary("lxo", lxoStats);
     PrintSummary("lab", labStats);
     PrintSummary("eff", effStats);
     PrintSummary("par", parStats);
+    PrintSummary("map", mapStats);
 
     const bool allOk = lmoStats.loadFailures.empty()
                        && lmoStats.compareFailures.empty()
@@ -894,8 +928,10 @@ int main(int argc, char** argv) {
                        && parStats.loadFailures.empty()
                        && parStats.compareFailures.empty()
                        && parStats.yamlFailures.empty()
+                       && mapStats.loadFailures.empty()
+                       && mapStats.compareFailures.empty()
                        && (lmoStats.copied + lxoStats.copied + labStats.copied
-                           + effStats.copied + parStats.copied) > 0;
+                           + effStats.copied + parStats.copied + mapStats.copied) > 0;
 
     Sleep(1000 * 5);
     g_logManager.Shutdown();

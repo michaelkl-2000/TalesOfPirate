@@ -9,10 +9,14 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
+#include <exception>
 #include <format>
 #include <fstream>
 #include <ios>
+#include <stdexcept>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 namespace pkotool {
@@ -254,6 +258,31 @@ ValidationRecord ValidatePar(const fs::path& file) {
     return fs.good() || fs.eof();
 }
 
+// stb_image не распознаёт некоторые экзотические BMP (8-битные с unusual
+// palette, или DIB v4/v5 с alpha-масками). Делаем минимальный sanity-check по
+// заголовку — если 'BM' и width/height в разумных пределах, считаем валидным.
+[[nodiscard]] bool LooksLikePlausibleBmp(const std::vector<unsigned char>& buf) {
+    if (buf.size() < 26) {
+        return false;
+    }
+    if (buf[0] != 'B' || buf[1] != 'M') {
+        return false;
+    }
+    auto rd32 = [&](std::size_t off) {
+        return static_cast<std::uint32_t>(buf[off])
+             | (static_cast<std::uint32_t>(buf[off + 1]) << 8)
+             | (static_cast<std::uint32_t>(buf[off + 2]) << 16)
+             | (static_cast<std::uint32_t>(buf[off + 3]) << 24);
+    };
+    const auto dibSize = rd32(14);
+    if (dibSize < 12 || dibSize > 256) {
+        return false;
+    }
+    const auto width  = rd32(18);
+    const auto height = rd32(22);
+    return width > 0 && width <= 16384 && height > 0 && height <= 16384;
+}
+
 // Базовая валидация текстур: stbi_info_from_memory читает только заголовок,
 // не декодирует пиксели; возвращает (width, height, channels).
 ValidationRecord ValidateTexture(const fs::path& file, std::string ext) {
@@ -278,6 +307,17 @@ ValidationRecord ValidateTexture(const fs::path& file, std::string ext) {
 
     int x = 0, y = 0, comp = 0;
     if (stbi_info_from_memory(buf.data(), static_cast<int>(buf.size()), &x, &y, &comp) == 0) {
+        if (ext == "bmp" && LooksLikePlausibleBmp(buf)) {
+            // stb_image не понимает этот вариант BMP, но заголовок выглядит
+            // здраво — движок (через D3DX/lwTex) такие BMP грузит. Warning,
+            // чтобы было видно в отчёте, но Fixer не удалит.
+            rec.status = ValidationStatus::Warning;
+            rec.problem = std::format("stbi_info_from_memory rejected BMP (likely unsupported "
+                                      "subformat): {}",
+                                      stbi_failure_reason() ? stbi_failure_reason() : "unknown");
+            rec.recommendation = "Manually verify; engine may still load it.";
+            return rec;
+        }
         rec.status = ValidationStatus::Error;
         rec.problem = std::format("stbi_info_from_memory failed: {}",
                                   stbi_failure_reason() ? stbi_failure_reason() : "unknown");
@@ -309,23 +349,42 @@ std::string_view ToString(ValidationStatus s) noexcept {
 ValidationRecord ValidateFile(const fs::path& file) {
     const std::string ext = ExtLower(file);
 
-    if (ext == "lgo") return ValidateLgo(file);
-    if (ext == "lmo") return ValidateLmo(file);
-    if (ext == "lxo") return ValidateLxo(file);
-    if (ext == "lab") return ValidateLab(file);
-    if (ext == "eff") return ValidateEff(file);
-    if (ext == "par") return ValidatePar(file);
-    if (ext == "bmp" || ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "tga") {
-        return ValidateTexture(file, ext);
-    }
+    // LgoLoader::CheckedNewArray бросает std::length_error при подозрительно
+    // большом *_num (битое поле в .lgo) — нам нужно перевести это исключение в
+    // ValidationStatus::Error для текущего файла, чтобы scanner не падал и
+    // продолжил обработку остальных. Та же защита покрывает std::bad_alloc от
+    // обычных new[] на гигантских массивах и любые иные std::exception.
+    try {
+        if (ext == "lgo") return ValidateLgo(file);
+        if (ext == "lmo") return ValidateLmo(file);
+        if (ext == "lxo") return ValidateLxo(file);
+        if (ext == "lab") return ValidateLab(file);
+        if (ext == "eff") return ValidateEff(file);
+        if (ext == "par") return ValidatePar(file);
+        if (ext == "bmp" || ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "tga") {
+            return ValidateTexture(file, ext);
+        }
 
-    ValidationRecord rec;
-    rec.file = file;
-    rec.extension = ext;
-    rec.status = ValidationStatus::Error;
-    rec.problem = std::format("unsupported extension: .{}", ext);
-    rec.recommendation = "Remove file from --scope or add support in Validator.";
-    return rec;
+        ValidationRecord rec;
+        rec.file = file;
+        rec.extension = ext;
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("unsupported extension: .{}", ext);
+        rec.recommendation = "Remove file from --scope or add support in Validator.";
+        return rec;
+    }
+    catch (const std::exception& e) {
+        ValidationRecord rec;
+        rec.file = file;
+        rec.extension = ext;
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("loader threw {}: {}",
+                                   typeid(e).name(), e.what());
+        rec.recommendation =
+            "Loader detected a corrupt field (likely *_num overflow) and "
+            "aborted. Re-export from source.";
+        return rec;
+    }
 }
 
 } // namespace pkotool

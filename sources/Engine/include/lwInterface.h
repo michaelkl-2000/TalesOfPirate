@@ -1,6 +1,7 @@
 ﻿//
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include "lwHeader.h"
 #include "lwStdInc.h"
@@ -367,13 +368,20 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT ExtractModelInfo(lwIModelObjInfo* out_info) PURE_METHOD;
 	};
 
+	// Опции загрузки lwItem. `SkipPool` пропускает поиск готового
+	// прототипа в `_res_mgr` (OBJ_TYPE_ITEM) — используется при загрузке
+	// эффектов через EffectMeshStore, где прототип не нужен.
+	enum class lwItemLoadOptions : std::uint8_t {
+		Default = 0,
+		SkipPool = 1,
+	};
+
 	class LW_DECLSPEC_NOVTABLE lwIItem : public lwInterface {
 	public:
 		virtual lwMatrix44* GetMatrix() PURE_METHOD;
 		virtual void SetMatrix(const lwMatrix44* mat) PURE_METHOD;
 
-		virtual LW_RESULT Load(lwGeomObjInfo* info) PURE_METHOD;
-		virtual LW_RESULT Load(std::string_view file, int arbitrary_flag = 0) PURE_METHOD;
+		virtual LW_RESULT Load(std::string_view file, lwItemLoadOptions opts = lwItemLoadOptions::Default) PURE_METHOD;
 		virtual LW_RESULT Update() PURE_METHOD;
 		virtual LW_RESULT Render() PURE_METHOD;
 		virtual LW_RESULT Destroy() PURE_METHOD;

@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -16,15 +16,14 @@ LW_BEGIN
 		lwISceneMgr* _scene_mgr;
 
 		lwLinkCtrl* _link_ctrl;
-		DWORD _link_parent_id;
-		DWORD _link_item_id;
+		DWORD _linkParentId;
+		DWORD _linkItemId;
 
 		lwStateCtrl _state_ctrl;
 		std::string _file_name;
 		lwIPrimitive* _obj;
 		lwMatrix44 _mat_base;
 		DWORD _id;
-		DWORD _item_type;
 		float _opacity;
 
 		LW_STD_DECLARATION()
@@ -58,8 +57,7 @@ LW_BEGIN
 
 		void SetOpacity(float opacity);
 
-		LW_RESULT Load(std::string_view file, int arbitrary_flag = 0);
-		LW_RESULT Load(lwGeomObjInfo* info);
+		LW_RESULT Load(std::string_view file, lwItemLoadOptions opts = lwItemLoadOptions::Default);
 		LW_RESULT Update();
 		LW_RESULT Render();
 		LW_RESULT Destroy();
@@ -101,6 +99,12 @@ LW_BEGIN
 		float GetOpacity() {
 			return _opacity;
 		}
+
+	private:
+		// Шаги Load(file, opts), вынесены ради читаемости.
+		LW_RESULT _TryCopyFromProto(std::string_view file);
+		LW_RESULT _LoadFromFile(std::string_view file);
+		void _FinalizeRegistration();
 	};
 
 

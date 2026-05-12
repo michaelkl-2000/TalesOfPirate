@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 
@@ -9,8 +9,6 @@
 #include "lwAnimCtrl.h"
 #include "lwRenderImp.h"
 #include "lwPathInfo.h"
-#include "lwD3D.h"
-#include "lwShaderMgr.h"
 #include "lwExpObj.h"
 #include "AssetLoaders.h"
 #include "GeomObjCache.h"
@@ -20,8 +18,14 @@ LW_BEGIN
 	LW_STD_IMPLEMENTATION(lwItem)
 
 	lwItem::lwItem(lwIResourceMgr* res_mgr)
-		: _id(LW_INVALID_INDEX), _res_mgr(res_mgr), _obj(0), _link_ctrl(0) {
-		_opacity = 1.0f;
+		: _res_mgr(res_mgr),
+		  _scene_mgr(nullptr),
+		  _link_ctrl(nullptr),
+		  _linkParentId(LW_INVALID_INDEX),
+		  _linkItemId(LW_INVALID_INDEX),
+		  _obj(nullptr),
+		  _id(LW_INVALID_INDEX),
+		  _opacity(1.0f) {
 		lwMatrix44Identity(&_mat_base);
 	}
 
@@ -29,117 +33,85 @@ LW_BEGIN
 		Destroy();
 	}
 
-	LW_RESULT lwItem::Load(lwGeomObjInfo* info) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		if (_obj)
-			goto __ret;
-
-		{
-			lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
-			lwISystem* sys = sys_graphics->GetSystem();
-			lwIPathInfo* path_info = 0;
-			sys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO);
-
-			// create new item object
-			lwPrimitive* imp = LW_NEW(lwPrimitive(_res_mgr));
-
-
-			if (LW_RESULT r = imp->Load(info, path_info->GetPath(PATH_TYPE_TEXTURE_ITEM).c_str(), NULL); LW_FAILED(r)) {
-				ToLogService("errors", LogLevel::Error,
-							 "[{}] imp->Load failed: tex_path={}, ret={}",
-							 __FUNCTION__, path_info->GetPath(PATH_TYPE_TEXTURE_ITEM), static_cast<long long>(r));
-				goto __ret;
-			}
-
-			_obj = imp;
-
-			_res_mgr->RegisterObject(&_id, this, OBJ_TYPE_ITEM);
-
-			RegisterSceneMgr(_res_mgr->GetSysGraphics()->GetSceneMgr());
-
-			ret = LW_RET_OK;
-		}
-	__ret:
-		return ret;
-	}
-
-	LW_RESULT lwItem::Load(std::string_view file, int arbitrary_flag) {
+	LW_RESULT lwItem::Load(std::string_view file, lwItemLoadOptions opts) {
 		if (_obj) {
 			return LW_RET_FAILED;
 		}
 
-		LW_RESULT ret = LW_RET_OK;
+		if (opts == lwItemLoadOptions::Default) {
+			if (_TryCopyFromProto(file) == LW_RET_OK) {
+				_FinalizeRegistration();
+				return LW_RET_OK;
+			}
+		}
 
+		if (LW_RESULT r = _LoadFromFile(file); LW_FAILED(r)) {
+			return r;
+		}
 
+		_FinalizeRegistration();
+		return LW_RET_OK;
+	}
+
+	LW_RESULT lwItem::_TryCopyFromProto(std::string_view file) {
+		lwItem* proto = nullptr;
+		_res_mgr->QueryObject(reinterpret_cast<void**>(&proto), OBJ_TYPE_ITEM, file);
+		if (proto == nullptr) {
+			return LW_RET_FAILED;
+		}
+		proto->Copy(this);
+		return LW_RET_OK;
+	}
+
+	LW_RESULT lwItem::_LoadFromFile(std::string_view file) {
 		lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
 		lwISystem* sys = sys_graphics->GetSystem();
-		lwIPathInfo* path_info = 0;
-		sys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO);
+		lwIPathInfo* path_info = nullptr;
+		sys->GetInterface(reinterpret_cast<LW_VOID**>(&path_info), LW_GUID_PATHINFO);
 
-		lwItem* obj_model = nullptr;
+		const std::string path = std::format("{}{}", path_info->GetPath(PATH_TYPE_MODEL_ITEM), file);
 
-		if (arbitrary_flag == 1)
-			goto __a;
+		lwResFile res;
+		res.obj_id = 0;
+		res.res_type = RES_FILE_TYPE_GEOMETRY;
+		std::memset(res.file_name, 0, sizeof(res.file_name));
+		std::memcpy(res.file_name, path.data(),
+					std::min<std::size_t>(path.size(), sizeof(res.file_name) - 1));
 
-		// query model pool
-
-		_res_mgr->QueryObject((void**)&obj_model, OBJ_TYPE_ITEM, file);
-
-		if (obj_model) {
-			// copy
-			obj_model->Copy(this);
-		}
-		else {
-		__a:
-			const std::string path = std::format("{}{}", path_info->GetPath(PATH_TYPE_MODEL_ITEM), file);
-
-			lwResFile res;
-			res.obj_id = 0;
-			res.res_type = RES_FILE_TYPE_GEOMETRY;
-			std::memset(res.file_name, 0, sizeof(res.file_name));
-			std::memcpy(res.file_name, path.data(),
-						std::min<std::size_t>(path.size(), sizeof(res.file_name) - 1));
-
-			// create new item object
-			lwPrimitive* imp = LW_NEW(lwPrimitive( _res_mgr ));
-
-
-			// begin load mesh — info живёт в общем GeomObjCache,
-			// shared_ptr держит запись на время вызова Load.
-			auto info = Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(path);
-			if (!info) {
-				return LW_RET_FAILED;
-			}
-
-			LW_RESULT primLoadRet = imp->Load(info.get(), path_info->GetPath(PATH_TYPE_TEXTURE_ITEM).c_str(), &res);
-
-			if (LW_FAILED(primLoadRet)) {
-				ToLogService("errors", LogLevel::Error,
-							 "[{}] imp->Load failed: path={}, file={}, ret={}",
-							 __FUNCTION__, path, (file.empty() ? std::string_view{"(null)"} : file), static_cast<long long>(primLoadRet));
-				return LW_RET_FAILED;
-			}
-
-			_obj = imp;
-
-			SetFileName(file);
+		// info живёт в общем GeomObjCache, shared_ptr держит запись на время Load.
+		auto info = Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(path);
+		if (!info) {
+			return LW_RET_FAILED;
 		}
 
+		lwPrimitive* imp = LW_NEW(lwPrimitive(_res_mgr));
+
+		if (LW_RESULT r = imp->Load(info.get(), path_info->GetPath(PATH_TYPE_TEXTURE_ITEM).c_str(), &res); LW_FAILED(r)) {
+			ToLogService("errors", LogLevel::Error,
+						 "[{}] imp->Load failed: path={}, file={}, ret={}",
+						 __FUNCTION__, path, (file.empty() ? std::string_view{"(null)"} : file), static_cast<long long>(r));
+			LW_DELETE(imp);
+			return LW_RET_FAILED;
+		}
+
+		_obj = imp;
+		SetFileName(file);
+		return LW_RET_OK;
+	}
+
+	void lwItem::_FinalizeRegistration() {
 		_res_mgr->RegisterObject(&_id, this, OBJ_TYPE_ITEM);
-
 		RegisterSceneMgr(_res_mgr->GetSysGraphics()->GetSceneMgr());
-
-		return ret;
 	}
 
 	LW_RESULT lwItem::Destroy() {
-		if (_obj == 0)
+		if (_obj == nullptr) {
 			return LW_RET_FAILED;
+		}
 
 		_obj->Destroy();
 		LW_DELETE(_obj);
-		_obj = 0;
+		_obj = nullptr;
 
 		_res_mgr->UnregisterObject(NULL, _id, OBJ_TYPE_ITEM);
 		_id = LW_INVALID_INDEX;
@@ -148,110 +120,97 @@ LW_BEGIN
 	}
 
 	LW_RESULT lwItem::Copy(lwIItem* src_obj) {
-		lwItem* o = (lwItem*)src_obj;
+		lwItem* o = static_cast<lwItem*>(src_obj);
 
 		_file_name = o->_file_name;
-
 		o->_obj->Clone(&_obj);
 
-		_id = o->_id;
-		_item_type = o->_item_type;
 		_mat_base = o->_mat_base;
 		_link_ctrl = o->_link_ctrl;
-		_link_item_id = o->_link_item_id;
-		_link_parent_id = o->_link_parent_id;
+		_linkItemId = o->_linkItemId;
+		_linkParentId = o->_linkParentId;
+
+		// _id не копируем — caller (lwItem::Load) сразу зарегистрирует новый
+		// id в _res_mgr через _FinalizeRegistration. Копирование чужого id
+		// раньше затиралось в Load — это был dead-write.
 
 		return LW_RET_OK;
 	}
 
 	LW_RESULT lwItem::Clone(lwIItem** ret_obj) {
-		lwItem* o;
-		_res_mgr->CreateItem((lwIItem**)&o);
+		lwIItem* item = nullptr;
+		_res_mgr->CreateItem(&item);
+		lwItem* o = static_cast<lwItem*>(item);
 
 		o->Copy(this);
 
 		*ret_obj = o;
-
-
 		return LW_RET_OK;
 	}
 
 	LW_RESULT lwItem::Update() {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		if (_obj) {
-			if (_link_ctrl) {
-				lwMatrix44 mat_parent;
-
-				if (LW_RESULT r = _link_ctrl->GetLinkCtrlMatrix(&mat_parent, _link_parent_id); LW_FAILED(r)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] _link_ctrl->GetLinkCtrlMatrix failed: link_parent_id={}, ret={}",
-								 __FUNCTION__, _link_parent_id, static_cast<long long>(r));
-					goto __ret;
-				}
-
-				lwMatrix44 mat_dummy;
-
-				if (LW_RESULT r = GetDummyMatrix(&mat_dummy, _link_item_id); LW_FAILED(r)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] GetDummyMatrix failed: link_item_id={}, ret={}",
-								 __FUNCTION__, _link_item_id, static_cast<long long>(r));
-					goto __ret;
-				}
-
-
-				lwMatrix44InverseNoScaleFactor(&mat_dummy, &mat_dummy);
-
-				lwMatrix44Multiply(&_mat_base, &mat_dummy, &mat_parent);
-			}
-
-			_obj->SetMatrixParent(&_mat_base);
-
-			if (LW_RESULT r = _obj->Update(); LW_FAILED(r)) {
-				ToLogService("errors", LogLevel::Error,
-							 "[{}] _obj->Update failed: ret={}",
-							 __FUNCTION__, static_cast<long long>(r));
-				goto __ret;
-			}
+		if (_obj == nullptr) {
+			return LW_RET_OK;
 		}
 
-		ret = LW_RET_OK;
+		if (_link_ctrl) {
+			lwMatrix44 mat_parent;
+			if (LW_RESULT r = _link_ctrl->GetLinkCtrlMatrix(&mat_parent, _linkParentId); LW_FAILED(r)) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] _link_ctrl->GetLinkCtrlMatrix failed: link_parent_id={}, ret={}",
+							 __FUNCTION__, _linkParentId, static_cast<long long>(r));
+				return LW_RET_FAILED;
+			}
 
-	__ret:
+			lwMatrix44 mat_dummy;
+			if (LW_RESULT r = GetDummyMatrix(&mat_dummy, _linkItemId); LW_FAILED(r)) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] GetDummyMatrix failed: link_item_id={}, ret={}",
+							 __FUNCTION__, _linkItemId, static_cast<long long>(r));
+				return LW_RET_FAILED;
+			}
 
-		return ret;
+			lwMatrix44InverseNoScaleFactor(&mat_dummy, &mat_dummy);
+			lwMatrix44Multiply(&_mat_base, &mat_dummy, &mat_parent);
+		}
+
+		_obj->SetMatrixParent(&_mat_base);
+
+		if (LW_RESULT r = _obj->Update(); LW_FAILED(r)) {
+			ToLogService("errors", LogLevel::Error,
+						 "[{}] _obj->Update failed: ret={}",
+						 __FUNCTION__, static_cast<long long>(r));
+			return LW_RET_FAILED;
+		}
+
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwItem::Render() {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		if (_state_ctrl.GetState(STATE_VISIBLE) == 0)
-			goto __addr_ok;
-
-
-		if (_obj) {
-			if (_scene_mgr && _obj->GetState(STATE_TRANSPARENT)) {
-				if (LW_RESULT r = _scene_mgr->AddTransparentPrimitive(_obj); LW_FAILED(r)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] AddTransparentPrimitive failed: ret={}",
-								 __FUNCTION__, static_cast<long long>(r));
-					goto __ret;
-				}
-			}
-			else {
-				if (LW_RESULT r = _obj->Render(); LW_FAILED(r)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] _obj->Render failed: ret={}",
-								 __FUNCTION__, static_cast<long long>(r));
-					goto __ret;
-				}
-			}
+		if (_state_ctrl.GetState(STATE_VISIBLE) == 0) {
+			return LW_RET_OK;
+		}
+		if (_obj == nullptr) {
+			return LW_RET_OK;
 		}
 
-	__addr_ok:
-		ret = LW_RET_OK;
-	__ret:
-		return ret;
+		if (_scene_mgr && _obj->GetState(STATE_TRANSPARENT)) {
+			if (LW_RESULT r = _scene_mgr->AddTransparentPrimitive(_obj); LW_FAILED(r)) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] AddTransparentPrimitive failed: ret={}",
+							 __FUNCTION__, static_cast<long long>(r));
+				return LW_RET_FAILED;
+			}
+			return LW_RET_OK;
+		}
+
+		if (LW_RESULT r = _obj->Render(); LW_FAILED(r)) {
+			ToLogService("errors", LogLevel::Error,
+						 "[{}] _obj->Render failed: ret={}",
+						 __FUNCTION__, static_cast<long long>(r));
+			return LW_RET_FAILED;
+		}
+		return LW_RET_OK;
 	}
 
 	void lwItem::SetMaterial(const lwMaterial* mtl) {
@@ -261,57 +220,32 @@ LW_BEGIN
 	}
 
 	LW_RESULT lwItem::HitTestPrimitive(lwPickInfo* info, const lwVector3* org, const lwVector3* ray) {
-		lwPickInfo p, x;
-		x.dis = -1.0f;
-
-		if (LW_SUCCEEDED(_obj->HitTest( &p, org, ray ))) {
-			if ((x.dis == -1.0f) || (x.dis > p.dis)) {
-				x = p;
-			}
-		}
-
-		if (x.dis == -1.0f) {
-			return LW_RET_FAILED;
-		}
-		else {
-			*info = x;
-			return LW_RET_OK;
-		}
+		return _obj ? _obj->HitTest(info, org, ray) : LW_RET_FAILED;
 	}
 
 	void lwItem::ShowBoundingObject(int show) {
-		if (_obj) {
-			if (_obj->GetHelperObject()) {
-				_obj->GetHelperObject()->SetVisible(show);
-			}
+		if (_obj && _obj->GetHelperObject()) {
+			_obj->GetHelperObject()->SetVisible(show);
 		}
 	}
 
 	const lwMatrix44* lwItem::GetObjDummyMatrix(DWORD id) {
-		lwMatrix44* ret = 0;
-
-		if (_obj == 0)
-			goto __ret;
-		{
-			lwIHelperObject* h = _obj->GetHelperObject();
-			if (h == 0)
-				goto __ret;
-			{
-				lwIHelperDummy* hd = h->GetHelperDummy();
-				if (hd == 0)
-					goto __ret;
-
-				{
-					lwHelperDummyInfo* info = hd->GetDataInfoWithID(id);
-					if (info == 0)
-						goto __ret;
-
-					ret = &info->mat;
-				}
-			}
+		if (_obj == nullptr) {
+			return nullptr;
 		}
-	__ret:
-		return ret;
+		lwIHelperObject* h = _obj->GetHelperObject();
+		if (h == nullptr) {
+			return nullptr;
+		}
+		lwIHelperDummy* hd = h->GetHelperDummy();
+		if (hd == nullptr) {
+			return nullptr;
+		}
+		lwHelperDummyInfo* info = hd->GetDataInfoWithID(id);
+		if (info == nullptr) {
+			return nullptr;
+		}
+		return &info->mat;
 	}
 
 	const lwMatrix44* lwItem::GetObjBoneDummyMatrix(DWORD id) {
@@ -322,88 +256,75 @@ LW_BEGIN
 		type_info.data[0] = LW_INVALID_INDEX;
 		type_info.data[1] = LW_INVALID_INDEX;
 
-		lwIAnimCtrlObj* aca_bone = (lwIAnimCtrlObj*)anim_agent->GetAnimCtrlObj(&type_info);
-		lwIAnimCtrlBone* c = (lwIAnimCtrlBone*)aca_bone->GetAnimCtrl();
-		if (c == 0)
-			return NULL;
+		lwIAnimCtrlObj* aca_bone = static_cast<lwIAnimCtrlObj*>(anim_agent->GetAnimCtrlObj(&type_info));
+		lwIAnimCtrlBone* c = static_cast<lwIAnimCtrlBone*>(aca_bone->GetAnimCtrl());
+		if (c == nullptr) {
+			return nullptr;
+		}
 
-		DWORD rtmat_num = c->GetDummyNum();
+		const DWORD rtmat_num = c->GetDummyNum();
 		lwIndexMatrix44* rtmat_seq = c->GetDummyRTMSeq();
 
 		for (DWORD i = 0; i < rtmat_num; i++) {
 			if (rtmat_seq[i].id == id) {
-				return &rtmat_seq[id].mat;
+				return &rtmat_seq[i].mat;
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	LW_RESULT lwItem::GetObjDummyRunTimeMatrix(lwMatrix44* mat, DWORD id) {
-		LW_RESULT ret = LW_RET_FAILED;
+		if (_obj == nullptr) {
+			return LW_RET_FAILED;
+		}
 
 		lwMatrix44 mat_dummy;
-
-		if (_obj == 0)
-			goto __ret;
-
-
 		if (LW_RESULT r = GetDummyMatrix(&mat_dummy, id); LW_FAILED(r)) {
 			ToLogService("errors", LogLevel::Error,
 						 "[{}] GetDummyMatrix failed: id={}, ret={}",
 						 __FUNCTION__, id, static_cast<long long>(r));
-			goto __ret;
+			return LW_RET_FAILED;
 		}
 
 		lwMatrix44Multiply(mat, &mat_dummy, _obj->GetMatrixGlobal());
-
-		ret = LW_RET_OK;
-
-	__ret:
-		return ret;
+		return LW_RET_OK;
 	}
 
 
 	LW_RESULT lwItem::GetDummyMatrix(lwMatrix44* mat, DWORD id) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		const lwMatrix44* mat_dummy;
+		const lwMatrix44* mat_dummy = nullptr;
 
 		lwIAnimCtrlAgent* anim_agent = _obj->GetAnimAgent();
-		if (anim_agent == 0)
-			goto __addr_obj_dummy;
-		{
+		bool useObjDummy = (anim_agent == nullptr);
+
+		if (!useObjDummy) {
 			lwAnimCtrlObjTypeInfo type_info;
 			type_info.type = ANIM_CTRL_TYPE_BONE;
 			type_info.data[0] = LW_INVALID_INDEX;
 			type_info.data[1] = LW_INVALID_INDEX;
 
 			lwIAnimCtrlObj* ctrl_obj = anim_agent->GetAnimCtrlObj(&type_info);
-			if (ctrl_obj == 0)
-				goto __addr_obj_dummy;
-
-			if (ctrl_obj->GetAnimCtrl() == 0)
-				goto __addr_obj_dummy;
-
-
-			mat_dummy = GetObjBoneDummyMatrix(id);
-			goto __addr_1;
+			if (ctrl_obj == nullptr || ctrl_obj->GetAnimCtrl() == nullptr) {
+				useObjDummy = true;
+			}
+			else {
+				mat_dummy = GetObjBoneDummyMatrix(id);
+			}
 		}
-	__addr_obj_dummy:
-		mat_dummy = GetObjDummyMatrix(id);
 
-	__addr_1:
-		if (mat_dummy == 0)
-			goto __ret;
+		if (useObjDummy) {
+			mat_dummy = GetObjDummyMatrix(id);
+		}
+
+		if (mat_dummy == nullptr) {
+			return LW_RET_FAILED;
+		}
 
 		if (mat) {
 			*mat = *mat_dummy;
 		}
-
-		ret = LW_RET_OK;
-
-	__ret:
-		return ret;
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwItem::SetLinkCtrl(lwLinkCtrl* ctrl, DWORD link_parent_id, DWORD link_item_id) {
@@ -415,17 +336,16 @@ LW_BEGIN
 		}
 
 		_link_ctrl = ctrl;
-		_link_parent_id = link_parent_id;
-		_link_item_id = link_item_id;
+		_linkParentId = link_parent_id;
+		_linkItemId = link_item_id;
 
 		return LW_RET_OK;
 	}
 
 	LW_RESULT lwItem::ClearLinkCtrl() {
-		_link_ctrl = 0;
-		_link_parent_id = LW_INVALID_INDEX;
-		_link_item_id = LW_INVALID_INDEX;
-
+		_link_ctrl = nullptr;
+		_linkParentId = LW_INVALID_INDEX;
+		_linkItemId = LW_INVALID_INDEX;
 		return LW_RET_OK;
 	}
 
@@ -444,7 +364,6 @@ LW_BEGIN
 		if (_obj) {
 			_obj->SetTextureLOD(level);
 		}
-
 		return LW_RET_OK;
 	}
 

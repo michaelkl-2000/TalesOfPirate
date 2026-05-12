@@ -1142,7 +1142,7 @@ bool CEffectModel::LoadModel(const char* pszName) {
 
 
 	// begin by lsh
-	if (Load(pszName, 1) == 0) {
+	if (Load(pszName, MindPower::lwItemLoadOptions::SkipPool) == 0) {
 		m_oldtex = this->GetPrimitive()->GetMtlTexAgent(0)->GetTex(0);
 		if (this->GetPrimitive()->GetMtlTexAgent(1))
 			m_oldtex2 = this->GetPrimitive()->GetMtlTexAgent(1)->GetTex(0);

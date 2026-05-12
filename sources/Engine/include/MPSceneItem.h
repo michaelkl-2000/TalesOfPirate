@@ -21,7 +21,7 @@ LW_BEGIN
 			return _obj;
 		}
 
-		LW_RESULT Load(std::string_view file, int arbitrary_flag = 0);
+		LW_RESULT Load(std::string_view file, lwItemLoadOptions opts = lwItemLoadOptions::Default);
 
 
 		void FrameMove();

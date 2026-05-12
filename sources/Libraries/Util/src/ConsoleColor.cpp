@@ -7,8 +7,54 @@
 
 namespace TalesOfPirate::Utils::Console {
 
+    // CODES/NAMES — function-local statics (Meyers' singleton), не namespace-scope.
+    // Why: namespace-scope `const std::map` без inline даёт per-TU копию (internal
+    // linkage const) и непредсказуемый destruction order. При shutdown logger thread
+    // в DrainQueue звал stoc() → CODES.find() уже после деструкции CODES → crash.
+    // С function-local static порядок init/destruction контролируем через ForceInit().
+    static const std::map<std::string, int>& Codes() {
+        static const std::map<std::string, int> codes = {
+            {"black", 0}, {"k", 0},
+            {"blue", 1}, {"b", 1},
+            {"green", 2}, {"g", 2},
+            {"aqua", 3}, {"a", 3},
+            {"red", 4}, {"r", 4},
+            {"purple", 5}, {"p", 5},
+            {"yellow", 6}, {"y", 6},
+            {"white", 7}, {"w", 7},
+            {"grey", 8}, {"e", 8},
+            {"light blue", 9}, {"lb", 9},
+            {"light green", 10}, {"lg", 10},
+            {"light aqua", 11}, {"la", 11},
+            {"light red", 12}, {"lr", 12},
+            {"light purple", 13}, {"lp", 13},
+            {"light yellow", 14}, {"ly", 14},
+            {"bright white", 15}, {"bw", 15}
+        };
+        return codes;
+    }
+
+    static const std::map<int, std::string>& Names() {
+        static const std::map<int, std::string> names = {
+            {0, "black"}, {1, "blue"}, {2, "green"}, {3, "aqua"},
+            {4, "red"}, {5, "purple"}, {6, "yellow"}, {7, "white"},
+            {8, "grey"}, {9, "light blue"}, {10, "light green"},
+            {11, "light aqua"}, {12, "light red"}, {13, "light purple"},
+            {14, "light yellow"}, {15, "bright white"}
+        };
+        return names;
+    }
+
+    void ForceInit() {
+        // Касаемся обоих singleton-ов чтобы они инициализировались до вызывающего —
+        // это переносит их в destruction-list ПЕРЕД вызывающим объектом
+        // (function-local static destruction = reverse of init order).
+        (void)Codes();
+        (void)Names();
+    }
+
     int stoc(std::string a) {
-        //    ,  '_'  '-'  
+        //    ,  '_'  '-'
         std::transform(a.begin(), a.end(), a.begin(), [](char c) {
             if ('A' <= c && c <= 'Z')
                 c = c - 'A' + 'a';
@@ -17,7 +63,9 @@ namespace TalesOfPirate::Utils::Console {
             return c;
         });
 
-        return (CODES.find(a) != CODES.end()) ? CODES.at(a) : BAD_COLOR;
+        const auto& codes = Codes();
+        auto it = codes.find(a);
+        return (it != codes.end()) ? it->second : BAD_COLOR;
     }
 
     int stoc(std::string a, std::string b) {
@@ -25,9 +73,11 @@ namespace TalesOfPirate::Utils::Console {
     }
 
     std::string ctos(int c) {
-        return (0 <= c && c < 256) ? "(text) " + NAMES.at(c % 16) + " + " +
-                                         "(background) " + NAMES.at(c / 16)
-                                   : "BAD COLOR";
+        if (c < 0 || c >= 256) {
+            return "BAD COLOR";
+        }
+        const auto& names = Names();
+        return "(text) " + names.at(c % 16) + " + " + "(background) " + names.at(c / 16);
     }
 
     int get() {

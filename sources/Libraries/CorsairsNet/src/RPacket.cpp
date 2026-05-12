@@ -2,7 +2,7 @@
 #include "MsgpackUtil.h"
 #include <algorithm>
 
-namespace net {
+namespace Corsairs::Net {
 
 // 
 //  RPacket   (msgpack payload)
@@ -361,4 +361,4 @@ void RPacket::ResetPosition() {
     InitReader();
 }
 
-} // namespace net
+} // namespace Corsairs::Net

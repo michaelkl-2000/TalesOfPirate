@@ -16,5 +16,5 @@
 #include "DBCCommon.h"
 #include "util.h"
 
-#include "i18n.h"
+#include "Core/i18n.h"
 

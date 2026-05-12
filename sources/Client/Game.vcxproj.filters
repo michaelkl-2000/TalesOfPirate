@@ -7,91 +7,73 @@
     <Filter Include="App\GameApp">
       <UniqueIdentifier>{ae803f9e-c74d-4292-bfc3-8995cb1baf81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{a9aa1c87-7e2c-4d11-86e1-1b8d2e3f4a01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Crypto">
+      <UniqueIdentifier>{b1cb2d98-8f3d-4e22-97f2-2c9e3f4a5b12}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Gui">
       <UniqueIdentifier>{093dba17-0415-4cc9-96fa-850069b35c23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Compent">
+    <Filter Include="Gui\Components">
       <UniqueIdentifier>{48c67151-e689-431a-983e-d59186e66b9f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Compent\Game">
+    <Filter Include="Gui\Components\Game">
       <UniqueIdentifier>{f650cfb4-1699-46f5-8cf2-42eae047bab9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Compent\Win32">
+    <Filter Include="Gui\Components\Win32">
       <UniqueIdentifier>{de714b7d-1396-4b2e-b172-8f34e8d2487e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Compent\Edit">
+    <Filter Include="Gui\Components\Edit">
       <UniqueIdentifier>{ab15fc48-f0ef-4d29-a073-b1fed8c93b1c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Interface">
-      <UniqueIdentifier>{7555fde8-bfde-4fd9-8545-cdf28c99ea48}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Interface\Chat">
-      <UniqueIdentifier>{200fcec9-4958-4c5a-85d7-0ee5e92d4700}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Interface\Chat\FormMgr">
-      <UniqueIdentifier>{899e9d1f-f78d-4470-8828-c1b903bcbaa7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Interface\Guild">
-      <UniqueIdentifier>{846ebcb2-9dd7-40ae-96b5-f3d558c2d521}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Interface\Guild\MembersList">
-      <UniqueIdentifier>{e24c6dfe-94b2-40b1-9566-ae1f1f16112c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Interface\Guild\GuildList">
-      <UniqueIdentifier>{d95ef6b6-95ff-43a8-9ab9-f4f96bec2932}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Interface\Guild\GuildApply">
-      <UniqueIdentifier>{1d0dff07-07f1-4e22-a048-1388017bedbb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gui\Interface\Game">
-      <UniqueIdentifier>{7caf5e78-a01a-4710-9bff-9658783e8209}</UniqueIdentifier>
     </Filter>
     <Filter Include="Gui\Core">
       <UniqueIdentifier>{efc8054f-3766-4d3e-8411-13886be0c6e4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Core\CItemObj">
+    <Filter Include="Gui\Components\Items">
       <UniqueIdentifier>{d75c6a20-c7c6-45a5-9557-40588a198ec7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Core\CItemObj\Game">
+    <Filter Include="Gui\Components\Items">
       <UniqueIdentifier>{fef4068d-57f9-43a8-bffc-4e258726d490}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Core\CItemObj\Normal">
+    <Filter Include="Gui\Components\Items">
       <UniqueIdentifier>{f519bbf4-953c-47a1-9a57-ca22f65430b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Core\GUI">
+    <Filter Include="Gui\Core">
       <UniqueIdentifier>{87cbf5b9-372c-41e5-95c6-33579d744c75}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Core\Tools">
+    <Filter Include="Gui\Tools">
       <UniqueIdentifier>{7a550e02-750d-41ef-8946-092ae582b61f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gui\Core\GraphLayer">
+    <Filter Include="Gui\Core">
       <UniqueIdentifier>{eca1a068-d607-46e0-96c9-0473208a0ea9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{38eca49f-d521-4949-9c33-9a705199f7fe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\SceneNode">
+    <Filter Include="Scene\Nodes\Base">
       <UniqueIdentifier>{283dac2b-b2f6-4ba6-b125-2d8932f4f018}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\SceneNode\Character">
+    <Filter Include="Scene\Nodes\Character">
       <UniqueIdentifier>{cbeb3a1d-0614-4e48-8eae-d1a9dd7a0c05}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\SceneNode\Character\State">
+    <Filter Include="Scene\Nodes\Character\State">
       <UniqueIdentifier>{258c0bd0-3fd7-4236-a40a-4131e48df713}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\SceneNode\Character\ServerHarm">
+    <Filter Include="Scene\Nodes\Character\ServerHarm">
       <UniqueIdentifier>{3fb922d4-f411-45e0-92b1-2f32f7098f1e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\SceneNode\SceneItem">
+    <Filter Include="Scene\Nodes\Item">
       <UniqueIdentifier>{b7fc02ac-9c99-4e94-9bfc-2f1c471508b4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\SceneNode\Effect">
+    <Filter Include="Scene\Nodes\Effect">
       <UniqueIdentifier>{22ade8fd-5c05-41e8-94b0-dafc955413ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\SceneNode\SceneObj">
+    <Filter Include="Scene\Nodes\Object">
       <UniqueIdentifier>{8bf3882d-ed15-4305-a3ec-758ec91b631a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\SceneNode\Event">
+    <Filter Include="Scene\Nodes\Event">
       <UniqueIdentifier>{c7175011-9858-4ef8-ba68-69b6decffedd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scene\Tools">
@@ -100,13 +82,13 @@
     <Filter Include="Scene\Ship">
       <UniqueIdentifier>{8524e1cd-8222-48f7-92f7-2b8f9a9b9342}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scripts">
+    <Filter Include="Script">
       <UniqueIdentifier>{86ed780c-f4c4-4cf5-b565-30e3d0ff5e98}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scripts\Table">
+    <Filter Include="Script\Core">
       <UniqueIdentifier>{036bc7f6-418a-48d4-95c0-e79840f6c10b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scripts\Table\LuaTable">
+    <Filter Include="Script\Tables">
       <UniqueIdentifier>{38d93e56-2943-40e8-bac7-880819cb22db}</UniqueIdentifier>
     </Filter>
     <Filter Include="Tools">
@@ -121,9 +103,6 @@
     <Filter Include="Tools\Language">
       <UniqueIdentifier>{1752ff07-c666-4362-96c6-7cf51aad1740}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tools\Thread">
-      <UniqueIdentifier>{cfbc787b-25b7-4144-84b1-4eb3eb1a78ba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Lua_GamePlatform">
       <UniqueIdentifier>{f5a6ede5-40cd-4d4e-8968-09d4090e7e00}</UniqueIdentifier>
     </Filter>
@@ -134,1216 +113,1271 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
     </Filter>
-    <Filter Include="NetIF">
+    <Filter Include="Net">
       <UniqueIdentifier>{a1006ed7-b1d4-4f89-bbb4-7b7ab6c22165}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NetIF\Connection">
+    <Filter Include="Net\Transport">
       <UniqueIdentifier>{754b9f8e-4275-4919-b020-9e73e7339cd1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\Game World Scene">
+    <Filter Include="Net\Protocol">
+      <UniqueIdentifier>{c2d3e4f5-6789-4abc-def0-123456789abc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Net\Handlers">
+      <UniqueIdentifier>{d3e4f5a6-789a-4bcd-ef01-23456789bcde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\World">
       <UniqueIdentifier>{80f47af8-91da-43e3-920d-fd4cc0e9f68c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\Scene Base Class">
+    <Filter Include="Scene\Base">
       <UniqueIdentifier>{23e9e580-4256-4bda-9d7c-4460220bbef5}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
+      <Filter Include="Gui\Forms">
+      <UniqueIdentifier>{dbd153fb-3d29-4835-98d2-1eba2ee99dba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Inventory">
+      <UniqueIdentifier>{d3f3a16a-b690-46e8-a38d-51b97e4c5c88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Trade">
+      <UniqueIdentifier>{f3792a6d-443c-4d4a-b17a-997a81444643}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Crafting">
+      <UniqueIdentifier>{f77fba86-c507-4609-bad0-52d2603de5df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Mission">
+      <UniqueIdentifier>{4dd1101c-4f7e-41f0-9307-315bec3ed409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Social">
+      <UniqueIdentifier>{c5bcb296-7129-401b-87a7-6de02f6a8453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Guild">
+      <UniqueIdentifier>{6bf84cd2-1edd-4f3a-b2fb-e7e849ec9771}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\System">
+      <UniqueIdentifier>{2ed26f91-6d79-466b-ae4f-380bd1e9c2a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Pvp">
+      <UniqueIdentifier>{d23b48ed-ef70-4ddb-a84b-ec2cddfe92e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Mail">
+      <UniqueIdentifier>{d8953e00-3417-473f-9179-852ce21f266a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Forms\Misc">
+      <UniqueIdentifier>{568c147c-8bb1-4a15-86d2-4d732e48ab36}</UniqueIdentifier>
+    </Filter>
+</ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\CameraCtrl.cpp">
+    <ClCompile Include="src\App\CameraCtrl.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameConfig.cpp">
+    <ClCompile Include="src\App\GameConfig.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\GlobalVar.cpp">
+    <ClCompile Include="src\App\GlobalVar.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\Main.cpp">
+    <ClCompile Include="src\App\Main.cpp">
       <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameAppFrameMove.cpp">
+    <ClCompile Include="src\App\GameAppFrameMove.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameAppInit.cpp">
+    <ClCompile Include="src\App\GameAppInit.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameAppInterface.cpp">
+    <ClCompile Include="src\App\GameAppInterface.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameAppMsg.cpp">
+    <ClCompile Include="src\App\GameAppMsg.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameAppNet.cpp">
+    <ClCompile Include="src\App\GameAppNet.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameAppRender.cpp">
+    <ClCompile Include="src\App\GameAppRender.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameLoading.cpp">
+    <ClCompile Include="src\App\GameLoading.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameMovie.cpp">
+    <ClCompile Include="src\App\GameMovie.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameWG.cpp">
+    <ClCompile Include="src\App\GameWG.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\SteadyFrame.cpp">
+    <ClCompile Include="src\App\TestDemo.cpp">
       <Filter>App\GameApp</Filter>
     </ClCompile>
-    <ClCompile Include="src\TestDemo.cpp">
-      <Filter>App\GameApp</Filter>
+    <ClCompile Include="src\Gui\Components\Game\UIFastCommand.cpp">
+      <Filter>Gui\Components\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIFastCommand.cpp">
-      <Filter>Gui\Compent\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Game\UIGoodsGrid.cpp">
+      <Filter>Gui\Components\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGoodsGrid.cpp">
-      <Filter>Gui\Compent\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Game\UISkillList.cpp">
+      <Filter>Gui\Components\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\UISkillList.cpp">
-      <Filter>Gui\Compent\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Game\UITitle.cpp">
+      <Filter>Gui\Components\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\UITitle.cpp">
-      <Filter>Gui\Compent\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UI3DCompent.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UI3DCompent.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UICheckBox.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICheckBox.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UICombo.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICombo.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIDragTitle.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIDragTitle.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIEdit.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIEdit.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIGrid.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGrid.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIImage.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIImage.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UILabel.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UILabel.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIList.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIList.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIListView.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIListView.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIMemo.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIMemo.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIPage.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIPage.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIPicList.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIPicList.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIProgressBar.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIProgressBar.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UIScroll.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIScroll.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UITextButton.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UITextButton.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Win32\UITreeView.cpp">
+      <Filter>Gui\Components\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="src\UITreeView.cpp">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClCompile Include="src\Gui\Components\Edit\UIEditData.cpp">
+      <Filter>Gui\Components\Edit</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIEditData.cpp">
-      <Filter>Gui\Compent\Edit</Filter>
+    <ClCompile Include="src\Gui\Components\Edit\UIEditKey.cpp">
+      <Filter>Gui\Components\Edit</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIEditKey.cpp">
-      <Filter>Gui\Compent\Edit</Filter>
+    <ClCompile Include="src\Gui\Components\Edit\UIEditStrategy.cpp">
+      <Filter>Gui\Components\Edit</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIEditStrategy.cpp">
-      <Filter>Gui\Compent\Edit</Filter>
+    <ClCompile Include="src\Gui\Components\Edit\UIRichEdit.cpp">
+      <Filter>Gui\Components\Edit</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIRichEdit.cpp">
-      <Filter>Gui\Compent\Edit</Filter>
+    <ClCompile Include="src\Gui\Forms\Social\ChatRecord.cpp">
+      <Filter>Gui\Forms\Social</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChatRecord.cpp">
-      <Filter>Gui\Interface\Chat</Filter>
+    <ClCompile Include="src\Gui\Forms\Social\UIChat.cpp">
+      <Filter>Gui\Forms\Social</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIChat.cpp">
-      <Filter>Gui\Interface\Chat</Filter>
+    <ClCompile Include="src\Gui\Forms\Social\UICozeForm.cpp">
+      <Filter>Gui\Forms\Social</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICozeForm.cpp">
-      <Filter>Gui\Interface\Chat</Filter>
+    <ClCompile Include="src\Gui\Forms\Social\UITeam.cpp">
+      <Filter>Gui\Forms\Social</Filter>
     </ClCompile>
-    <ClCompile Include="src\UITeam.cpp">
-      <Filter>Gui\Interface\Chat</Filter>
+    <ClCompile Include="src\Gui\Forms\Social\FrndInviteFormMgr.cpp">
+      <Filter>Gui\Forms\Social</Filter>
     </ClCompile>
-    <ClCompile Include="src\FrndInviteFormMgr.cpp">
-      <Filter>Gui\Interface\Chat\FormMgr</Filter>
+    <ClCompile Include="src\Gui\Forms\Social\TalkSessionFormMgr.cpp">
+      <Filter>Gui\Forms\Social</Filter>
     </ClCompile>
-    <ClCompile Include="src\TalkSessionFormMgr.cpp">
-      <Filter>Gui\Interface\Chat\FormMgr</Filter>
+    <ClCompile Include="src\Gui\Forms\Social\TeamInviteFormMgr.cpp">
+      <Filter>Gui\Forms\Social</Filter>
     </ClCompile>
-    <ClCompile Include="src\TeamInviteFormMgr.cpp">
-      <Filter>Gui\Interface\Chat\FormMgr</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\GuildData.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\GuildData.cpp">
-      <Filter>Gui\Interface\Guild</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\UIGuildChallengeForm.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGuildChallengeForm.cpp">
-      <Filter>Gui\Interface\Guild</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\GuildMemberData.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\GuildMemberData.cpp">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\GuildMembersMgr.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\GuildMembersMgr.cpp">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\RecruitMemberData.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\RecruitMemberData.cpp">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\RecruitMembersMgr.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\RecruitMembersMgr.cpp">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\UIGuildMgr.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGuildMgr.cpp">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\GuildListData.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\GuildListData.cpp">
-      <Filter>Gui\Interface\Guild\GuildList</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\GuildListMgr.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\GuildListMgr.cpp">
-      <Filter>Gui\Interface\Guild\GuildList</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\UIGuildList.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGuildList.cpp">
-      <Filter>Gui\Interface\Guild\GuildList</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\UIGuildApply.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGuildApply.cpp">
-      <Filter>Gui\Interface\Guild\GuildApply</Filter>
+    <ClCompile Include="src\Gui\Forms\Mission\NPCHelper.cpp">
+      <Filter>Gui\Forms\Mission</Filter>
     </ClCompile>
-    <ClCompile Include="src\NPCHelper.cpp">
+    <ClCompile Include="src\Gui\Forms\Inventory\UIBankForm.cpp">
+      <Filter>Gui\Forms\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Misc\UIBoatForm.cpp">
+      <Filter>Gui\Forms\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Trade\UIBoothForm.cpp">
+      <Filter>Gui\Forms\Trade</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Trade\UIBourseForm.cpp">
+      <Filter>Gui\Forms\Trade</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Inventory\UIBoxForm.cpp">
+      <Filter>Gui\Forms\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Crafting\UIBreakForm.cpp">
+      <Filter>Gui\Forms\Crafting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Pvp\UIChurchChallenge.cpp">
+      <Filter>Gui\Forms\Pvp</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Crafting\UIComposeForm.cpp">
+      <Filter>Gui\Forms\Crafting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Crafting\UICookingForm.cpp">
+      <Filter>Gui\Forms\Crafting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\System\UIDoublePwdForm.cpp">
+      <Filter>Gui\Forms\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Misc\UIEditor.cpp">
+      <Filter>Gui\Forms\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Inventory\UIEquipForm.cpp">
+      <Filter>Gui\Forms\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Social\UIFindTeamForm.cpp">
+      <Filter>Gui\Forms\Social</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Crafting\UIForgeForm.cpp">
+      <Filter>Gui\Forms\Crafting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Forms\Misc\UIFoundForm.cpp">
+      <Filter>Gui\Forms\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui\Core\UIGlobalVar.cpp">
       <Filter>Gui\Interface\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIBankForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Guild\UIGuildBankForm.cpp">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIBoatForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Crafting\UIHaircutForm.cpp">
+      <Filter>Gui\Forms\Crafting</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIBoothForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Social\UIHeadSay.cpp">
+      <Filter>Gui\Forms\Social</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIBourseForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Mail\UIMailForm.cpp">
+      <Filter>Gui\Forms\Mail</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIBoxForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Crafting\UIMakeEquipForm.cpp">
+      <Filter>Gui\Forms\Crafting</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIBreakForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\System\UIMinimapForm.cpp">
+      <Filter>Gui\Forms\System</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIChurchChallenge.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Mission\UIMisLogForm.cpp">
+      <Filter>Gui\Forms\Mission</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIComposeForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Mission\UIMissionForm.cpp">
+      <Filter>Gui\Forms\Mission</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICookingForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Mission\UINpcTalkForm.cpp">
+      <Filter>Gui\Forms\Mission</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIDoublePwdForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Trade\UINpcTradeForm.cpp">
+      <Filter>Gui\Forms\Trade</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIEditor.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\System\UINumAnswer.cpp">
+      <Filter>Gui\Forms\System</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIEquipForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Pvp\UIPKDialog.cpp">
+      <Filter>Gui\Forms\Pvp</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIFindTeamForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Pvp\UIPKSilverForm.cpp">
+      <Filter>Gui\Forms\Pvp</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIForgeForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Crafting\UIPurifyForm.cpp">
+      <Filter>Gui\Forms\Crafting</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIFoundForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Misc\UISpiritForm.cpp">
+      <Filter>Gui\Forms\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGlobalVar.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\System\UIStartForm.cpp">
+      <Filter>Gui\Forms\System</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGuildBankForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\System\UIStateForm.cpp">
+      <Filter>Gui\Forms\System</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIHaircutForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Trade\UIStoreForm.cpp">
+      <Filter>Gui\Forms\Trade</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIHeadSay.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\System\UISystemForm.cpp">
+      <Filter>Gui\Forms\System</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIMailForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Forms\Trade\UITradeForm.cpp">
+      <Filter>Gui\Forms\Trade</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIMakeEquipForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Items\UICommand.cpp">
+      <Filter>Gui\Components\Items</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIMinimapForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Items\UIItemCommand.cpp">
+      <Filter>Gui\Components\Items</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIMisLogForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Items\UISkillCommand.cpp">
+      <Filter>Gui\Components\Items</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIMissionForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Items\UICheckBoxItem.cpp">
+      <Filter>Gui\Components\Items</Filter>
     </ClCompile>
-    <ClCompile Include="src\UINpcTalkForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Items\UIGraph.cpp">
+      <Filter>Gui\Components\Items</Filter>
     </ClCompile>
-    <ClCompile Include="src\UINpcTradeForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Components\Items\UIItem.cpp">
+      <Filter>Gui\Components\Items</Filter>
     </ClCompile>
-    <ClCompile Include="src\UINumAnswer.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UICloneForm.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIPKDialog.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UICommandCompent.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIPKSilverForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UICompent.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIPurifyForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UIForm.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UISpiritForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UIFormMgr.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIStartForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UIGuiData.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIStateForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UIMenu.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIStoreForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Tools\UICursor.cpp">
+      <Filter>Gui\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\UISystemForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Tools\UIImeInput.cpp">
+      <Filter>Gui\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\UITradeForm.cpp">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClCompile Include="src\Gui\Tools\UITextParse.cpp">
+      <Filter>Gui\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICommand.cpp">
-      <Filter>Gui\Core\CItemObj\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UIFont.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIItemCommand.cpp">
-      <Filter>Gui\Core\CItemObj\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UIPicture.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UISkillCommand.cpp">
-      <Filter>Gui\Core\CItemObj\Game</Filter>
+    <ClCompile Include="src\Gui\Core\UIRender.cpp">
+      <Filter>Gui\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICheckBoxItem.cpp">
-      <Filter>Gui\Core\CItemObj\Normal</Filter>
+    <ClCompile Include="src\Scene\Nodes\Base\SceneNode.cpp">
+      <Filter>Scene\Nodes\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGraph.cpp">
-      <Filter>Gui\Core\CItemObj\Normal</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\Actor.cpp">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIItem.cpp">
-      <Filter>Gui\Core\CItemObj\Normal</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\Character.cpp">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICloneForm.cpp">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\CharacterModel.cpp">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICommandCompent.cpp">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\ChaState.cpp">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICompent.cpp">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\State\state_reading.cpp">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIForm.cpp">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\State\STAttack.cpp">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIFormMgr.cpp">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\State\STMove.cpp">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIGuiData.cpp">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\State\STNpcTalk.cpp">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIMenu.cpp">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\State\STPose.cpp">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClCompile>
-    <ClCompile Include="src\UICursor.cpp">
-      <Filter>Gui\Core\Tools</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\State\STReadyDie.cpp">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIImeInput.cpp">
-      <Filter>Gui\Core\Tools</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\State\STSeat.cpp">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClCompile>
-    <ClCompile Include="src\UITextParse.cpp">
-      <Filter>Gui\Core\Tools</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\State\STStateObj.cpp">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIFont.cpp">
-      <Filter>Gui\Core\GraphLayer</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\ServerHarm\HMAttack.cpp">
+      <Filter>Scene\Nodes\Character\ServerHarm</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIPicture.cpp">
-      <Filter>Gui\Core\GraphLayer</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\ServerHarm\HMManage.cpp">
+      <Filter>Scene\Nodes\Character\ServerHarm</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIRender.cpp">
-      <Filter>Gui\Core\GraphLayer</Filter>
+    <ClCompile Include="src\Scene\Nodes\Character\ServerHarm\HMSynchroObj.cpp">
+      <Filter>Scene\Nodes\Character\ServerHarm</Filter>
     </ClCompile>
-    <ClCompile Include="src\SceneNode.cpp">
-      <Filter>Scene\SceneNode</Filter>
+    <ClCompile Include="src\Scene\Nodes\Item\ItemLitAnim.cpp">
+      <Filter>Scene\Nodes\Item</Filter>
     </ClCompile>
-    <ClCompile Include="src\Actor.cpp">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClCompile Include="src\Scene\Nodes\Item\SceneItem.cpp">
+      <Filter>Scene\Nodes\Item</Filter>
     </ClCompile>
-    <ClCompile Include="src\Character.cpp">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClCompile Include="src\Scene\Nodes\Effect\EffDelay.cpp">
+      <Filter>Scene\Nodes\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharacterModel.cpp">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClCompile Include="src\Scene\Nodes\Effect\EffectObj.cpp">
+      <Filter>Scene\Nodes\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChaState.cpp">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClCompile Include="src\Scene\Nodes\Object\SceneArea.cpp">
+      <Filter>Scene\Nodes\Object</Filter>
     </ClCompile>
-    <ClCompile Include="src\state_reading.cpp">
-      <Filter>Scene\SceneNode\Character\State</Filter>
+    <ClCompile Include="src\Scene\Nodes\Object\SceneObj.cpp">
+      <Filter>Scene\Nodes\Object</Filter>
     </ClCompile>
-    <ClCompile Include="src\STAttack.cpp">
-      <Filter>Scene\SceneNode\Character\State</Filter>
+    <ClCompile Include="src\Scene\Nodes\Object\SceneObjFile.cpp">
+      <Filter>Scene\Nodes\Object</Filter>
     </ClCompile>
-    <ClCompile Include="src\STMove.cpp">
-      <Filter>Scene\SceneNode\Character\State</Filter>
+    <ClCompile Include="src\Scene\Nodes\Event\Event.cpp">
+      <Filter>Scene\Nodes\Event</Filter>
     </ClCompile>
-    <ClCompile Include="src\STNpcTalk.cpp">
-      <Filter>Scene\SceneNode\Character\State</Filter>
+    <ClCompile Include="src\Scene\World\CreateChaScene.cpp">
+      <Filter>Scene\World</Filter>
     </ClCompile>
-    <ClCompile Include="src\STPose.cpp">
-      <Filter>Scene\SceneNode\Character\State</Filter>
+    <ClCompile Include="src\Scene\World\LoginScene.cpp">
+      <Filter>Scene\World</Filter>
     </ClCompile>
-    <ClCompile Include="src\STReadyDie.cpp">
-      <Filter>Scene\SceneNode\Character\State</Filter>
+    <ClCompile Include="src\Scene\World\SelectChaScene.cpp">
+      <Filter>Scene\World</Filter>
     </ClCompile>
-    <ClCompile Include="src\STSeat.cpp">
-      <Filter>Scene\SceneNode\Character\State</Filter>
+    <ClCompile Include="src\Scene\World\WorldScene.cpp">
+      <Filter>Scene\World</Filter>
     </ClCompile>
-    <ClCompile Include="src\STStateObj.cpp">
-      <Filter>Scene\SceneNode\Character\State</Filter>
+    <ClCompile Include="src\Scene\Base\RenderStateMgr.cpp">
+      <Filter>Scene\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\HMAttack.cpp">
-      <Filter>Scene\SceneNode\Character\ServerHarm</Filter>
+    <ClCompile Include="src\Scene\Base\Scene.cpp">
+      <Filter>Scene\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\HMManage.cpp">
-      <Filter>Scene\SceneNode\Character\ServerHarm</Filter>
+    <ClCompile Include="src\Scene\Base\SceneCreateNode.cpp">
+      <Filter>Scene\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\HMSynchroObj.cpp">
-      <Filter>Scene\SceneNode\Character\ServerHarm</Filter>
+    <ClCompile Include="src\Scene\Base\SceneFrameMove.cpp">
+      <Filter>Scene\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\ItemLitAnim.cpp">
-      <Filter>Scene\SceneNode\SceneItem</Filter>
+    <ClCompile Include="src\Scene\Base\SceneLight.cpp">
+      <Filter>Scene\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\SceneItem.cpp">
-      <Filter>Scene\SceneNode\SceneItem</Filter>
+    <ClCompile Include="src\Scene\Base\SceneMsg.cpp">
+      <Filter>Scene\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\EffDelay.cpp">
-      <Filter>Scene\SceneNode\Effect</Filter>
+    <ClCompile Include="src\Scene\Base\SceneRender.cpp">
+      <Filter>Scene\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\EffectObj.cpp">
-      <Filter>Scene\SceneNode\Effect</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneArea.cpp">
-      <Filter>Scene\SceneNode\SceneObj</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneObj.cpp">
-      <Filter>Scene\SceneNode\SceneObj</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneObjFile.cpp">
-      <Filter>Scene\SceneNode\SceneObj</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Event.cpp">
-      <Filter>Scene\SceneNode\Event</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CreateChaScene.cpp">
-      <Filter>Scene\Game World Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LoginScene.cpp">
-      <Filter>Scene\Game World Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SelectChaScene.cpp">
-      <Filter>Scene\Game World Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldScene.cpp">
-      <Filter>Scene\Game World Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderStateMgr.cpp">
-      <Filter>Scene\Scene Base Class</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene.cpp">
-      <Filter>Scene\Scene Base Class</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneCreateNode.cpp">
-      <Filter>Scene\Scene Base Class</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneFrameMove.cpp">
-      <Filter>Scene\Scene Base Class</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneLight.cpp">
-      <Filter>Scene\Scene Base Class</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneMsg.cpp">
-      <Filter>Scene\Scene Base Class</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneRender.cpp">
-      <Filter>Scene\Scene Base Class</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AutoAttack.cpp">
+    <ClCompile Include="src\Scene\Tools\AutoAttack.cpp">
       <Filter>Scene\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\IsSkillUse.cpp">
+    <ClCompile Include="src\Scene\Tools\IsSkillUse.cpp">
       <Filter>Scene\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\MouseDown.cpp">
+    <ClCompile Include="src\Scene\Tools\MouseDown.cpp">
       <Filter>Scene\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\SceneSign.cpp">
+    <ClCompile Include="src\Scene\Tools\SceneSign.cpp">
       <Filter>Scene\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\ShipFactory.cpp">
+    <ClCompile Include="src\Scene\Ship\ShipFactory.cpp">
       <Filter>Scene\Ship</Filter>
     </ClCompile>
-    <ClCompile Include="src\AppScript.cpp">
-      <Filter>Scripts</Filter>
+    <ClCompile Include="src\Script\Core\AppScript.cpp">
+      <Filter>Script\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChaScript.cpp">
-      <Filter>Scripts</Filter>
+    <ClCompile Include="src\Script\Core\ChaScript.cpp">
+      <Filter>Script\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\SceneScript.cpp">
-      <Filter>Scripts</Filter>
+    <ClCompile Include="src\Script\Core\SceneScript.cpp">
+      <Filter>Script\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Script.cpp">
-      <Filter>Scripts</Filter>
+    <ClCompile Include="src\Script\Core\Script.cpp">
+      <Filter>Script\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIScript.cpp">
-      <Filter>Scripts</Filter>
+    <ClCompile Include="src\Script\Core\UIScript.cpp">
+      <Filter>Script\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\ArcTrack.cpp">
+    <ClCompile Include="src\Tools\ArcTrack.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3des.cpp">
+    <ClCompile Include="src\Tools\DrawPointList.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\DrawPointList.cpp">
+    <ClCompile Include="src\Tools\FindPath.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\FindPath.cpp">
+    <ClCompile Include="src\Tools\FontManager.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\FontManager.cpp">
+    <ClCompile Include="src\Tools\ConsoleBridge.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\ConsoleBridge.cpp">
+    <ClCompile Include="src\Tools\HairTool.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\HairTool.cpp">
+    <ClCompile Include="src\Tools\PackFile.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\PackFile.cpp">
+    <ClCompile Include="src\Tools\SMallMap.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\SMallMap.cpp">
+    <ClCompile Include="src\Tools\Tools.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\Tools.cpp">
-      <Filter>Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MPEditor.cpp">
+    <ClCompile Include="src\Tools\Editor\MPEditor.cpp">
       <Filter>Tools\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="src\CRCircle.cpp">
+    <ClCompile Include="src\Tools\Cursor\CRCircle.cpp">
       <Filter>Tools\Cursor</Filter>
     </ClCompile>
-    <ClCompile Include="src\CRCursor.cpp">
+    <ClCompile Include="src\Tools\Cursor\CRCursor.cpp">
       <Filter>Tools\Cursor</Filter>
     </ClCompile>
-    <ClCompile Include="src\CRCursorObj.cpp">
+    <ClCompile Include="src\Tools\Cursor\CRCursorObj.cpp">
       <Filter>Tools\Cursor</Filter>
     </ClCompile>
-    <ClCompile Include="src\Language.cpp">
+    <ClCompile Include="src\Tools\Language\Language.cpp">
       <Filter>Tools\Language</Filter>
     </ClCompile>
-    <ClCompile Include="src\AudioThread.cpp">
-      <Filter>Tools\Thread</Filter>
+    <ClCompile Include="src\Audio\AudioThread.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="src\ThreadBase.cpp">
-      <Filter>Tools\Thread</Filter>
+    <ClCompile Include="src\Tools\ThreadBase.cpp">
+      <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\lua_platform.cpp">
-      <Filter>Lua_GamePlatform\main</Filter>
+    <ClCompile Include="src\Script\Core\lua_platform.cpp">
+      <Filter>Script\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\NetChat.cpp">
-      <Filter>NetIF</Filter>
+    <ClCompile Include="src\Net\Handlers\NetChat.cpp">
+      <Filter>Net\Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\NetGuild.cpp">
-      <Filter>NetIF</Filter>
+    <ClCompile Include="src\Net\Handlers\NetGuild.cpp">
+      <Filter>Net\Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\NetPkChat.cpp">
-      <Filter>NetIF</Filter>
+    <ClCompile Include="src\Net\Handlers\NetPkChat.cpp">
+      <Filter>Net\Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\NetPkGuild.cpp">
-      <Filter>NetIF</Filter>
+    <ClCompile Include="src\Net\Handlers\NetPkGuild.cpp">
+      <Filter>Net\Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\NetProtocol.cpp">
-      <Filter>NetIF</Filter>
+    <ClCompile Include="src\Net\Protocol\NetProtocol.cpp">
+      <Filter>Net\Protocol</Filter>
     </ClCompile>
-    <ClCompile Include="src\PacketCmd_CS.cpp">
-      <Filter>NetIF</Filter>
+    <ClCompile Include="src\Net\Protocol\PacketCmd_CS.cpp">
+      <Filter>Net\Protocol</Filter>
     </ClCompile>
-    <ClCompile Include="src\PacketCmd_SC.cpp">
-      <Filter>NetIF</Filter>
+    <ClCompile Include="src\Net\Protocol\PacketCmd_SC.cpp">
+      <Filter>Net\Protocol</Filter>
     </ClCompile>
-    <ClCompile Include="src\Connection.cpp">
-      <Filter>NetIF\Connection</Filter>
+    <ClCompile Include="src\Net\Transport\Connection.cpp">
+      <Filter>Net\Transport</Filter>
     </ClCompile>
-    <ClCompile Include="src\NetIF.cpp">
-      <Filter>NetIF\Connection</Filter>
+    <ClCompile Include="src\Net\Transport\NetIF.cpp">
+      <Filter>Net\Transport</Filter>
     </ClCompile>
-    <ClCompile Include="src\ProCirculateCC.cpp">
-      <Filter>NetIF\Connection</Filter>
+    <ClCompile Include="src\Net\Transport\ProCirculateCC.cpp">
+      <Filter>Net\Transport</Filter>
     </ClCompile>
-    <ClCompile Include="src\ProCirculateCS.cpp">
-      <Filter>NetIF\Connection</Filter>
+    <ClCompile Include="src\Net\Transport\ProCirculateCS.cpp">
+      <Filter>Net\Transport</Filter>
     </ClCompile>
-    <ClCompile Include="src\DSoundInstance.cpp" />
-    <ClCompile Include="src\DSoundManager.cpp" />
-    <ClCompile Include="src\MusicThread.cpp" />
-    <ClCompile Include="src\SoundCommon.cpp" />
-    <ClCompile Include="src\LootFilter.cpp" />
-    <ClCompile Include="src\Point.cpp" />
-    <ClCompile Include="src\CryptoUtils.cpp" />
+    <ClCompile Include="src\Audio\DSoundInstance.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio\DSoundManager.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio\MusicThread.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio\SoundCommon.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Tools\LootFilter.cpp" />
+    <ClCompile Include="src\Tools\Point.cpp" />
+    <ClCompile Include="src\Crypto\CryptoUtils.cpp">
+      <Filter>Crypto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\CameraCtrl.h">
+    <ClInclude Include="src\App\CameraCtrl.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameConfig.h">
+    <ClInclude Include="src\App\GameConfig.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="src\GlobalVar.h">
+    <ClInclude Include="src\App\GlobalVar.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="src\Main.h">
+    <ClInclude Include="src\App\Main.h">
       <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameApp.h">
+    <ClInclude Include="src\App\GameApp.h">
       <Filter>App\GameApp</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameAppMsg.h">
+    <ClInclude Include="src\App\GameAppMsg.h">
       <Filter>App\GameApp</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameLoading.h">
+    <ClInclude Include="src\App\GameLoading.h">
       <Filter>App\GameApp</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameMovie.h">
+    <ClInclude Include="src\App\GameMovie.h">
       <Filter>App\GameApp</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameWG.h">
+    <ClInclude Include="src\App\GameWG.h">
       <Filter>App\GameApp</Filter>
     </ClInclude>
-    <ClInclude Include="src\SteadyFrame.h">
+    <ClInclude Include="src\App\TestDemo.h">
       <Filter>App\GameApp</Filter>
     </ClInclude>
-    <ClInclude Include="src\TestDemo.h">
-      <Filter>App\GameApp</Filter>
+    <ClInclude Include="src\Gui\Components\Game\UIFastCommand.h">
+      <Filter>Gui\Components\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIFastCommand.h">
-      <Filter>Gui\Compent\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Game\UIGoodsGrid.h">
+      <Filter>Gui\Components\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGoodsGrid.h">
-      <Filter>Gui\Compent\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Game\UISkillList.h">
+      <Filter>Gui\Components\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\UISkillList.h">
-      <Filter>Gui\Compent\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Game\UITitle.h">
+      <Filter>Gui\Components\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\UITitle.h">
-      <Filter>Gui\Compent\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\InputBox.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\InputBox.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UI3DCompent.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UI3DCompent.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UICheckBox.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICheckBox.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UICombo.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICombo.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIDragTitle.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIDragTitle.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIEdit.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIEdit.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIGrid.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGrid.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIImage.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIImage.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UILabel.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UILabel.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIList.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIList.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIListView.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIListView.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIMemo.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIMemo.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIPage.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIPage.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIPicList.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIPicList.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIProgressBar.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIProgressBar.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UIScroll.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIScroll.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UITextButton.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UITextButton.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Win32\UITreeView.h">
+      <Filter>Gui\Components\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="src\UITreeView.h">
-      <Filter>Gui\Compent\Win32</Filter>
+    <ClInclude Include="src\Gui\Components\Edit\UIEditData.h">
+      <Filter>Gui\Components\Edit</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIEditData.h">
-      <Filter>Gui\Compent\Edit</Filter>
+    <ClInclude Include="src\Gui\Components\Edit\UIEditKey.h">
+      <Filter>Gui\Components\Edit</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIEditKey.h">
-      <Filter>Gui\Compent\Edit</Filter>
+    <ClInclude Include="src\Gui\Components\Edit\UIEditStrategy.h">
+      <Filter>Gui\Components\Edit</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIEditStrategy.h">
-      <Filter>Gui\Compent\Edit</Filter>
+    <ClInclude Include="src\Gui\Components\Edit\UIRichEdit.h">
+      <Filter>Gui\Components\Edit</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIRichEdit.h">
-      <Filter>Gui\Compent\Edit</Filter>
+    <ClInclude Include="src\Gui\Forms\Social\ChatRecord.h">
+      <Filter>Gui\Forms\Social</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChatRecord.h">
-      <Filter>Gui\Interface\Chat</Filter>
+    <ClInclude Include="src\Gui\Forms\Social\UIChat.h">
+      <Filter>Gui\Forms\Social</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIChat.h">
-      <Filter>Gui\Interface\Chat</Filter>
+    <ClInclude Include="src\Gui\Forms\Social\UICozeForm.h">
+      <Filter>Gui\Forms\Social</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICozeForm.h">
-      <Filter>Gui\Interface\Chat</Filter>
+    <ClInclude Include="src\Gui\Forms\Social\UITeam.h">
+      <Filter>Gui\Forms\Social</Filter>
     </ClInclude>
-    <ClInclude Include="src\UITeam.h">
-      <Filter>Gui\Interface\Chat</Filter>
+    <ClInclude Include="src\Gui\Forms\Social\FrndInviteFormMgr.h">
+      <Filter>Gui\Forms\Social</Filter>
     </ClInclude>
-    <ClInclude Include="src\FrndInviteFormMgr.h">
-      <Filter>Gui\Interface\Chat\FormMgr</Filter>
+    <ClInclude Include="src\Gui\Forms\Social\TalkSessionFormMgr.h">
+      <Filter>Gui\Forms\Social</Filter>
     </ClInclude>
-    <ClInclude Include="src\TalkSessionFormMgr.h">
-      <Filter>Gui\Interface\Chat\FormMgr</Filter>
+    <ClInclude Include="src\Gui\Forms\Social\TeamInviteFormMgr.h">
+      <Filter>Gui\Forms\Social</Filter>
     </ClInclude>
-    <ClInclude Include="src\TeamInviteFormMgr.h">
-      <Filter>Gui\Interface\Chat\FormMgr</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\GuildData.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\GuildData.h">
-      <Filter>Gui\Interface\Guild</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\UIGuildChallengeForm.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGuildChallengeForm.h">
-      <Filter>Gui\Interface\Guild</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\GuildMemberData.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\GuildMemberData.h">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\GuildMembersMgr.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\GuildMembersMgr.h">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\RecruitMemberData.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\RecruitMemberData.h">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\RecruitMembersMgr.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\RecruitMembersMgr.h">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\UIGuildMgr.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGuildMgr.h">
-      <Filter>Gui\Interface\Guild\MembersList</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\GuildListData.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\GuildListData.h">
-      <Filter>Gui\Interface\Guild\GuildList</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\GuildListMgr.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\GuildListMgr.h">
-      <Filter>Gui\Interface\Guild\GuildList</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\UIGuildList.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGuildList.h">
-      <Filter>Gui\Interface\Guild\GuildList</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\UIGuildApply.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGuildApply.h">
-      <Filter>Gui\Interface\Guild\GuildApply</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MonsterSet.h">
+    <ClInclude Include="src\Script\Tables\MonsterSet.h">
       <Filter>Gui\Interface\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\NPCHelper.h">
+    <ClInclude Include="src\Gui\Forms\Mission\NPCHelper.h">
+      <Filter>Gui\Forms\Mission</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Inventory\UIBankForm.h">
+      <Filter>Gui\Forms\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Misc\UIBoatForm.h">
+      <Filter>Gui\Forms\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Trade\UIBoothForm.h">
+      <Filter>Gui\Forms\Trade</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Trade\UIBourseForm.h">
+      <Filter>Gui\Forms\Trade</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Inventory\UIBoxForm.h">
+      <Filter>Gui\Forms\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Crafting\UIBreakForm.h">
+      <Filter>Gui\Forms\Crafting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Pvp\UIChurchChallenge.h">
+      <Filter>Gui\Forms\Pvp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Crafting\UIComposeForm.h">
+      <Filter>Gui\Forms\Crafting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Crafting\UICookingForm.h">
+      <Filter>Gui\Forms\Crafting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\System\UIDoublePwdForm.h">
+      <Filter>Gui\Forms\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Misc\UIEditor.h">
+      <Filter>Gui\Forms\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Inventory\UIEquipForm.h">
+      <Filter>Gui\Forms\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Social\UIFindTeamForm.h">
+      <Filter>Gui\Forms\Social</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Crafting\UIForgeForm.h">
+      <Filter>Gui\Forms\Crafting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Forms\Misc\UIFoundForm.h">
+      <Filter>Gui\Forms\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui\Core\UIGlobalVar.h">
       <Filter>Gui\Interface\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIBankForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Guild\UIGuildBankForm.h">
+      <Filter>Gui\Forms\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIBoatForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Crafting\UIHaircutForm.h">
+      <Filter>Gui\Forms\Crafting</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIBoothForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Social\UIHeadSay.h">
+      <Filter>Gui\Forms\Social</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIBourseForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Mail\UIMailForm.h">
+      <Filter>Gui\Forms\Mail</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIBoxForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Crafting\UIMakeEquipForm.h">
+      <Filter>Gui\Forms\Crafting</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIBreakForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\System\UIMinimapForm.h">
+      <Filter>Gui\Forms\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIChurchChallenge.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Mission\UIMisLogForm.h">
+      <Filter>Gui\Forms\Mission</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIComposeForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Mission\UIMissionForm.h">
+      <Filter>Gui\Forms\Mission</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICookingForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Mission\UINpcTalkForm.h">
+      <Filter>Gui\Forms\Mission</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIDoublePwdForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Trade\UINpcTradeForm.h">
+      <Filter>Gui\Forms\Trade</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIEditor.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\System\UINumAnswer.h">
+      <Filter>Gui\Forms\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIEquipForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Pvp\UIPKDialog.h">
+      <Filter>Gui\Forms\Pvp</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIFindTeamForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Pvp\UIPKSilverForm.h">
+      <Filter>Gui\Forms\Pvp</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIForgeForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Crafting\UIPurifyForm.h">
+      <Filter>Gui\Forms\Crafting</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIFoundForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Misc\UISpiritForm.h">
+      <Filter>Gui\Forms\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGlobalVar.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\System\UIStartForm.h">
+      <Filter>Gui\Forms\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGuildBankForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\System\UIStateForm.h">
+      <Filter>Gui\Forms\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIHaircutForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Trade\UIStoreForm.h">
+      <Filter>Gui\Forms\Trade</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIHeadSay.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\System\UISystemForm.h">
+      <Filter>Gui\Forms\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIMailForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Forms\Trade\UITradeForm.h">
+      <Filter>Gui\Forms\Trade</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIMakeEquipForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Items\UICommand.h">
+      <Filter>Gui\Components\Items</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIMinimapForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Items\UIItemCommand.h">
+      <Filter>Gui\Components\Items</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIMisLogForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Items\UISkillCommand.h">
+      <Filter>Gui\Components\Items</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIMissionForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Items\UICheckBoxItem.h">
+      <Filter>Gui\Components\Items</Filter>
     </ClInclude>
-    <ClInclude Include="src\UINpcTalkForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Items\UIGraph.h">
+      <Filter>Gui\Components\Items</Filter>
     </ClInclude>
-    <ClInclude Include="src\UINpcTradeForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Items\UIItem.h">
+      <Filter>Gui\Components\Items</Filter>
     </ClInclude>
-    <ClInclude Include="src\UINumAnswer.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Components\Items\UIStep.h">
+      <Filter>Gui\Components\Items</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIPKDialog.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UICloneForm.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIPKSilverForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UICommandCompent.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIPurifyForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UICompent.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UISpiritForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UIForm.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIStartForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UIFormMgr.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIStateForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UIGuiData.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIStoreForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UIMenu.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UISystemForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Tools\UICursor.h">
+      <Filter>Gui\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\UITradeForm.h">
-      <Filter>Gui\Interface\Game</Filter>
+    <ClInclude Include="src\Gui\Tools\UIImeInput.h">
+      <Filter>Gui\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICommand.h">
-      <Filter>Gui\Core\CItemObj\Game</Filter>
+    <ClInclude Include="src\Gui\Tools\UITextParse.h">
+      <Filter>Gui\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIItemCommand.h">
-      <Filter>Gui\Core\CItemObj\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UIFont.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UISkillCommand.h">
-      <Filter>Gui\Core\CItemObj\Game</Filter>
+    <ClInclude Include="src\Gui\Core\UIPicture.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICheckBoxItem.h">
-      <Filter>Gui\Core\CItemObj\Normal</Filter>
+    <ClInclude Include="src\Gui\Core\UIRender.h">
+      <Filter>Gui\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGraph.h">
-      <Filter>Gui\Core\CItemObj\Normal</Filter>
+    <ClInclude Include="src\Scene\Nodes\Base\SceneNode.h">
+      <Filter>Scene\Nodes\Base</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIItem.h">
-      <Filter>Gui\Core\CItemObj\Normal</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\Actor.h">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIStep.h">
-      <Filter>Gui\Core\CItemObj\Normal</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\Character.h">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICloneForm.h">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\CharacterAction.h">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICommandCompent.h">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\CharacterModel.h">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICompent.h">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\ChaState.h">
+      <Filter>Scene\Nodes\Character</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIForm.h">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\State\state_reading.h">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIFormMgr.h">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\State\STAttack.h">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIGuiData.h">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\State\STMove.h">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIMenu.h">
-      <Filter>Gui\Core\GUI</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\State\STNpcTalk.h">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClInclude>
-    <ClInclude Include="src\UICursor.h">
-      <Filter>Gui\Core\Tools</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\State\STPose.h">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIImeInput.h">
-      <Filter>Gui\Core\Tools</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\State\STReadyDie.h">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClInclude>
-    <ClInclude Include="src\UITextParse.h">
-      <Filter>Gui\Core\Tools</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\State\STSeat.h">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIFont.h">
-      <Filter>Gui\Core\GraphLayer</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\State\STStateObj.h">
+      <Filter>Scene\Nodes\Character\State</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIPicture.h">
-      <Filter>Gui\Core\GraphLayer</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\ServerHarm\HMAttack.h">
+      <Filter>Scene\Nodes\Character\ServerHarm</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIRender.h">
-      <Filter>Gui\Core\GraphLayer</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\ServerHarm\HMManage.h">
+      <Filter>Scene\Nodes\Character\ServerHarm</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneNode.h">
-      <Filter>Scene\SceneNode</Filter>
+    <ClInclude Include="src\Scene\Nodes\Character\ServerHarm\HMSynchroObj.h">
+      <Filter>Scene\Nodes\Character\ServerHarm</Filter>
     </ClInclude>
-    <ClInclude Include="src\Actor.h">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClInclude Include="src\Scene\Nodes\Item\ItemLitAnim.h">
+      <Filter>Scene\Nodes\Item</Filter>
     </ClInclude>
-    <ClInclude Include="src\Character.h">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClInclude Include="src\Scene\Nodes\Item\SceneItem.h">
+      <Filter>Scene\Nodes\Item</Filter>
     </ClInclude>
-    <ClInclude Include="src\CharacterAction.h">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClInclude Include="src\Script\Tables\SceneItemSet.h">
+      <Filter>Scene\Nodes\Item</Filter>
     </ClInclude>
-    <ClInclude Include="src\CharacterModel.h">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClInclude Include="src\Scene\Nodes\Effect\EffDelay.h">
+      <Filter>Scene\Nodes\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChaState.h">
-      <Filter>Scene\SceneNode\Character</Filter>
+    <ClInclude Include="src\Scene\Nodes\Effect\EffectObj.h">
+      <Filter>Scene\Nodes\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="src\state_reading.h">
-      <Filter>Scene\SceneNode\Character\State</Filter>
-    </ClInclude>
-    <ClInclude Include="src\STAttack.h">
-      <Filter>Scene\SceneNode\Character\State</Filter>
-    </ClInclude>
-    <ClInclude Include="src\STMove.h">
-      <Filter>Scene\SceneNode\Character\State</Filter>
-    </ClInclude>
-    <ClInclude Include="src\STNpcTalk.h">
-      <Filter>Scene\SceneNode\Character\State</Filter>
-    </ClInclude>
-    <ClInclude Include="src\STPose.h">
-      <Filter>Scene\SceneNode\Character\State</Filter>
-    </ClInclude>
-    <ClInclude Include="src\STReadyDie.h">
-      <Filter>Scene\SceneNode\Character\State</Filter>
-    </ClInclude>
-    <ClInclude Include="src\STSeat.h">
-      <Filter>Scene\SceneNode\Character\State</Filter>
-    </ClInclude>
-    <ClInclude Include="src\STStateObj.h">
-      <Filter>Scene\SceneNode\Character\State</Filter>
-    </ClInclude>
-    <ClInclude Include="src\HMAttack.h">
-      <Filter>Scene\SceneNode\Character\ServerHarm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\HMManage.h">
-      <Filter>Scene\SceneNode\Character\ServerHarm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\HMSynchroObj.h">
-      <Filter>Scene\SceneNode\Character\ServerHarm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ItemLitAnim.h">
-      <Filter>Scene\SceneNode\SceneItem</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SceneItem.h">
-      <Filter>Scene\SceneNode\SceneItem</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SceneItemSet.h">
-      <Filter>Scene\SceneNode\SceneItem</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EffDelay.h">
-      <Filter>Scene\SceneNode\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EffectObj.h">
-      <Filter>Scene\SceneNode\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FontManager.h">
+    <ClInclude Include="src\Tools\FontManager.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\ConsoleBridge.h">
+    <ClInclude Include="src\Tools\ConsoleBridge.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneArea.h">
-      <Filter>Scene\SceneNode\SceneObj</Filter>
+    <ClInclude Include="src\Scene\Nodes\Object\SceneArea.h">
+      <Filter>Scene\Nodes\Object</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneObj.h">
-      <Filter>Scene\SceneNode\SceneObj</Filter>
+    <ClInclude Include="src\Scene\Nodes\Object\SceneObj.h">
+      <Filter>Scene\Nodes\Object</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneObjFile.h">
-      <Filter>Scene\SceneNode\SceneObj</Filter>
+    <ClInclude Include="src\Scene\Nodes\Object\SceneObjFile.h">
+      <Filter>Scene\Nodes\Object</Filter>
     </ClInclude>
-    <ClInclude Include="src\Event.h">
-      <Filter>Scene\SceneNode\Event</Filter>
+    <ClInclude Include="src\Scene\Nodes\Event\Event.h">
+      <Filter>Scene\Nodes\Event</Filter>
     </ClInclude>
-    <ClInclude Include="src\CreateChaScene.h">
-      <Filter>Scene\Game World Scene</Filter>
+    <ClInclude Include="src\Scene\World\CreateChaScene.h">
+      <Filter>Scene\World</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginScene.h">
-      <Filter>Scene\Game World Scene</Filter>
+    <ClInclude Include="src\Scene\World\LoginScene.h">
+      <Filter>Scene\World</Filter>
     </ClInclude>
-    <ClInclude Include="src\SelectChaScene.h">
-      <Filter>Scene\Game World Scene</Filter>
+    <ClInclude Include="src\Scene\World\SelectChaScene.h">
+      <Filter>Scene\World</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldScene.h">
-      <Filter>Scene\Game World Scene</Filter>
+    <ClInclude Include="src\Scene\World\WorldScene.h">
+      <Filter>Scene\World</Filter>
     </ClInclude>
-    <ClInclude Include="src\RenderStateMgr.h">
-      <Filter>Scene\Scene Base Class</Filter>
+    <ClInclude Include="src\Scene\Base\RenderStateMgr.h">
+      <Filter>Scene\Base</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene.h">
-      <Filter>Scene\Scene Base Class</Filter>
+    <ClInclude Include="src\Scene\Base\Scene.h">
+      <Filter>Scene\Base</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneLight.h">
-      <Filter>Scene\Scene Base Class</Filter>
+    <ClInclude Include="src\Scene\Base\SceneLight.h">
+      <Filter>Scene\Base</Filter>
     </ClInclude>
-    <ClInclude Include="src\AutoAttack.h">
+    <ClInclude Include="src\Scene\Tools\AutoAttack.h">
       <Filter>Scene\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\IsSkillUse.h">
+    <ClInclude Include="src\Scene\Tools\IsSkillUse.h">
       <Filter>Scene\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\MouseDown.h">
+    <ClInclude Include="src\Scene\Tools\MouseDown.h">
       <Filter>Scene\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneHeight.h">
+    <ClInclude Include="src\Scene\Tools\SceneHeight.h">
       <Filter>Scene\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneSign.h">
+    <ClInclude Include="src\Scene\Tools\SceneSign.h">
       <Filter>Scene\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\ShipFactory.h">
+    <ClInclude Include="src\Scene\Ship\ShipFactory.h">
       <Filter>Scene\Ship</Filter>
     </ClInclude>
-    <ClInclude Include="src\LuaInterface.h">
-      <Filter>Scripts</Filter>
+    <ClInclude Include="src\Script\Core\LuaInterface.h">
+      <Filter>Script\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Script.h">
-      <Filter>Scripts</Filter>
+    <ClInclude Include="src\Script\Core\Script.h">
+      <Filter>Script\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIScript.h">
-      <Filter>Scripts</Filter>
+    <ClInclude Include="src\Script\Core\UIScript.h">
+      <Filter>Script\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\UITemplete.h">
-      <Filter>Scripts</Filter>
+    <ClInclude Include="src\Script\Core\UITemplete.h">
+      <Filter>Script\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChaCreateSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\ChaCreateSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\CharacterPoseSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\CharacterPoseSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChatIconSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\ChatIconSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\EffectSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\EffectSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ElfSkillSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\ElfSkillSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\EventSoundSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\EventSoundSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ItemPreSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\ItemPreSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ItemRefineEffectSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\ItemRefineEffectSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ItemRefineSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\ItemRefineSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ItemTypeSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\ItemTypeSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\MapSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\MapSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\MusicSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\MusicSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\notifyset.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\notifyset.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneObjSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\SceneObjSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ServerSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\ServerSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\StoneSet.h">
-      <Filter>Scripts\Table</Filter>
+    <ClInclude Include="src\Script\Tables\StoneSet.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChaClientAttr.h">
-      <Filter>Scripts\Table\LuaTable</Filter>
+    <ClInclude Include="src\Script\Tables\ChaClientAttr.h">
+      <Filter>Script\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="src\ArcTrack.h">
+    <ClInclude Include="src\Tools\ArcTrack.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\BoolSet.h">
+    <ClInclude Include="src\Tools\BoolSet.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\d3des.h">
+    <ClInclude Include="src\Tools\DrawPointList.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\DrawPointList.h">
+    <ClInclude Include="src\Tools\FindPath.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\FindPath.h">
+    <ClInclude Include="src\Tools\HairTool.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\HairTool.h">
+    <ClInclude Include="src\Tools\PackFile.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\PackFile.h">
+    <ClInclude Include="src\Tools\publicfun.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\publicfun.h">
+    <ClInclude Include="src\Tools\SMallMap.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\SMallMap.h">
+    <ClInclude Include="src\Tools\Tools.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\Tools.h">
+    <ClInclude Include="src\Tools\Track.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\Track.h">
-      <Filter>Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MPEditor.h">
+    <ClInclude Include="src\Tools\Editor\MPEditor.h">
       <Filter>Tools\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="src\CRCircle.h">
+    <ClInclude Include="src\Tools\Cursor\CRCircle.h">
       <Filter>Tools\Cursor</Filter>
     </ClInclude>
-    <ClInclude Include="src\CRCursor.h">
+    <ClInclude Include="src\Tools\Cursor\CRCursor.h">
       <Filter>Tools\Cursor</Filter>
     </ClInclude>
-    <ClInclude Include="src\CRCursorObj.h">
+    <ClInclude Include="src\Tools\Cursor\CRCursorObj.h">
       <Filter>Tools\Cursor</Filter>
     </ClInclude>
-    <ClInclude Include="src\Language.h">
+    <ClInclude Include="src\Tools\Language\Language.h">
       <Filter>Tools\Language</Filter>
     </ClInclude>
-    <ClInclude Include="src\AudioThread.h">
-      <Filter>Tools\Thread</Filter>
+    <ClInclude Include="src\Audio\AudioThread.h">
+      <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="src\ThreadBase.h">
-      <Filter>Tools\Thread</Filter>
+    <ClInclude Include="src\Tools\ThreadBase.h">
+      <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\lua_platform.h">
-      <Filter>Lua_GamePlatform</Filter>
+    <ClInclude Include="src\Script\Core\lua_platform.h">
+      <Filter>Script\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\NetChat.h">
-      <Filter>NetIF</Filter>
+    <ClInclude Include="src\Net\Handlers\NetChat.h">
+      <Filter>Net\Handlers</Filter>
     </ClInclude>
-    <ClInclude Include="src\NetGuild.h">
-      <Filter>NetIF</Filter>
+    <ClInclude Include="src\Net\Handlers\NetGuild.h">
+      <Filter>Net\Handlers</Filter>
     </ClInclude>
-    <ClInclude Include="src\NetProtocol.h">
-      <Filter>NetIF</Filter>
+    <ClInclude Include="src\Net\Protocol\NetProtocol.h">
+      <Filter>Net\Protocol</Filter>
     </ClInclude>
-    <ClInclude Include="src\PacketCmd.h">
-      <Filter>NetIF</Filter>
+    <ClInclude Include="src\Net\Protocol\PacketCmd.h">
+      <Filter>Net\Protocol</Filter>
     </ClInclude>
-    <ClInclude Include="src\Algo.h">
-      <Filter>NetIF\Connection</Filter>
+    <ClInclude Include="src\Net\Transport\Algo.h">
+      <Filter>Net\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="src\Connection.h">
-      <Filter>NetIF\Connection</Filter>
+    <ClInclude Include="src\Net\Transport\Connection.h">
+      <Filter>Net\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="src\NetIF.h">
-      <Filter>NetIF\Connection</Filter>
+    <ClInclude Include="src\Net\Transport\NetIF.h">
+      <Filter>Net\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="src\ProCirculate.h">
-      <Filter>NetIF\Connection</Filter>
+    <ClInclude Include="src\Net\Transport\ProCirculate.h">
+      <Filter>Net\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="src\DSoundInstance.h" />
-    <ClInclude Include="src\DSoundManager.h" />
-    <ClInclude Include="src\SoundCommon.h" />
-    <ClInclude Include="src\SoundInstance.h" />
-    <ClInclude Include="src\SoundManager.h" />
-    <ClInclude Include="src\LootFilter.h" />
-    <ClInclude Include="src\Point.h" />
-    <ClInclude Include="src\CryptoUtils.h" />
+    <ClInclude Include="src\Net\Protocol\CmdNames.h">
+      <Filter>Net\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Audio\DSoundInstance.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Audio\DSoundManager.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Audio\SoundCommon.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Audio\SoundInstance.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Audio\SoundManager.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Audio\IMusicThread.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Tools\LootFilter.h" />
+    <ClInclude Include="src\Tools\Point.h" />
+    <ClInclude Include="src\Crypto\CryptoUtils.h">
+      <Filter>Crypto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\game.ico">

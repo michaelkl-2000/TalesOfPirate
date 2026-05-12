@@ -9,7 +9,7 @@
 #include <mutex>
 #include <vector>
 
-namespace net {
+namespace Corsairs::Net {
 
 class PacketPool {
 public:
@@ -52,4 +52,4 @@ private:
     int FindBucketIndex(int size) const;
 };
 
-} // namespace net
+} // namespace Corsairs::Net

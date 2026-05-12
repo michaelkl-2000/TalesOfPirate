@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace net {
+namespace Corsairs::Net {
 
 // 
 //  ITcpServerHandler  callback'  
@@ -112,4 +112,4 @@ private:
     std::vector<PendingAccept> _pendingAccepts;
 };
 
-} // namespace net
+} // namespace Corsairs::Net

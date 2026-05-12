@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace net {
+namespace Corsairs::Net {
 
 //   msgpack- (data  tag).
 inline void mpack_skip_element_data(mpack_reader_t& reader, mpack_tag_t tag) {
@@ -182,4 +182,4 @@ inline std::string mpack_sequence_to_string(const char* buffer, uint32_t length)
     return stream.str();
 }
 
-} // namespace net
+} // namespace Corsairs::Net

@@ -56,17 +56,68 @@
     <Filter Include="ToolLibrary\Other">
       <UniqueIdentifier>{23038529-0e21-4343-88cf-aafe128d1232}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AppFramework">
+    <Filter Include="App">
       <UniqueIdentifier>{6bc2da4f-04d0-4cdb-86d8-cf9dd4f97ae3}</UniqueIdentifier>
     </Filter>
     <Filter Include="AppFramework\EventHandling">
       <UniqueIdentifier>{2bffc817-e184-4bc5-8970-5a1bcff666fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Event">
+      <UniqueIdentifier>{b1d2c3e4-f5a6-4b7c-9d8e-1f2a3b4c5d6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Combat">
+      <UniqueIdentifier>{a4f8b2e1-3c7d-4e5a-9b6f-c8d7e6f5a4b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World">
+      <UniqueIdentifier>{e7d6c5b4-a3f2-4e1d-9c8b-7a6f5e4d3c2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Item">
+      <UniqueIdentifier>{d8e7f6a5-b4c3-4d2e-9f1a-8b7c6d5e4f30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{c9b8a7d6-e5f4-4a3b-9c2d-1e0f9a8b7c6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NPC">
+      <UniqueIdentifier>{b0a9c8d7-e6f5-4b4a-8d3c-2e1f0a9b8c7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character">
+      <UniqueIdentifier>{a1b2c3d4-e5f6-4708-9192-a3b4c5d6e7f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services">
+      <UniqueIdentifier>{f1e2d3c4-b5a6-4798-8273-647584394a5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Mission">
+      <UniqueIdentifier>{e2d3c4b5-a6f7-4889-9384-758695405b6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Guild">
+      <UniqueIdentifier>{d3c4b5a6-f7e8-4970-a495-869706516c7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Auction">
+      <UniqueIdentifier>{c4b5a6f7-e8d9-4a61-b5a6-979817627d8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Trade">
+      <UniqueIdentifier>{b5a6f7e8-d9c0-4b52-c6b7-a89928738e9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Stall">
+      <UniqueIdentifier>{a6f7e8d9-c0b1-4c43-d7c8-b9aa39849f01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Boat">
+      <UniqueIdentifier>{f7e8d9c0-b1a2-4d34-e8d9-c0bb4a950112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Forge">
+      <UniqueIdentifier>{e8d9c0b1-a2f3-4e25-f9ea-d1cc5ba61223}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Picture">
+      <UniqueIdentifier>{d9c0b1a2-f3e4-4f16-a0fb-e2dd6cb72334}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\SystemDialog">
+      <UniqueIdentifier>{c0b1a2f3-e4d5-4007-b10c-f3ee7dc83445}</UniqueIdentifier>
+    </Filter>
     <Filter Include="AppFramework\ServerConfig">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
     </Filter>
-    <Filter Include="Database">
+    <Filter Include="Db">
       <UniqueIdentifier>{fbb9eb8c-a64d-47c9-88f6-27d2ccc47e25}</UniqueIdentifier>
     </Filter>
     <Filter Include="Bidding">
@@ -81,384 +132,390 @@
     <Filter Include="Network1">
       <UniqueIdentifier>{d3172770-6332-430d-81eb-f0c8f5e6011c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Script System">
+    <Filter Include="Script">
       <UniqueIdentifier>{dc8a8dd8-46a7-402d-b823-bd994ccab452}</UniqueIdentifier>
     </Filter>
     <Filter Include="Script System\Mission System">
       <UniqueIdentifier>{5ab260f3-7673-414f-8c5d-dec2f0d826d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{a3c9e1b6-7b6f-4f4f-9f9e-d2c1a5e3f8a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Range.h">
-      <Filter>ToolLibrary\Math</Filter>
+    <ClInclude Include="src\Combat\Range.h">
+      <Filter>Combat</Filter>
     </ClInclude>
-    <ClInclude Include="src\Identity.h">
-      <Filter>ToolLibrary\Other</Filter>
+    <ClInclude Include="src\Core\Identity.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\MsgQueue.h">
-      <Filter>ToolLibrary\Other</Filter>
+    <ClInclude Include="src\Core\MsgQueue.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Timer.h">
-      <Filter>ToolLibrary\Other</Filter>
+    <ClInclude Include="src\Core\Timer.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Usage.h">
-      <Filter>ToolLibrary\Other</Filter>
+    <ClInclude Include="src\Core\Usage.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\xString.h">
-      <Filter>ToolLibrary\Other</Filter>
+    <ClInclude Include="src\Core\xString.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\CharScript.h">
-      <Filter>Script System</Filter>
+    <ClInclude Include="src\Script\CharScript.h">
+      <Filter>Script</Filter>
     </ClInclude>
-    <ClInclude Include="src\EntityScript.h">
-      <Filter>Script System</Filter>
+    <ClInclude Include="src\Script\EntityScript.h">
+      <Filter>Script</Filter>
     </ClInclude>
-    <ClInclude Include="src\Expand.h">
-      <Filter>Script System</Filter>
+    <ClInclude Include="src\Services\Mission\Expand.h">
+      <Filter>Services\Mission</Filter>
     </ClInclude>
-    <ClInclude Include="src\lua_gamectrl.h">
-      <Filter>Script System</Filter>
+    <ClInclude Include="src\Script\lua_gamectrl.h">
+      <Filter>Script</Filter>
     </ClInclude>
-    <ClInclude Include="src\lua_gamectrl2.h">
-      <Filter>Script System</Filter>
+    <ClInclude Include="src\Script\NpcScript.h">
+      <Filter>Script</Filter>
     </ClInclude>
-    <ClInclude Include="src\NpcScript.h">
-      <Filter>Script System</Filter>
+    <ClInclude Include="src\Script\LuaAPI.h">
+      <Filter>Script</Filter>
     </ClInclude>
-    <ClInclude Include="src\LuaAPI.h">
-      <Filter>Script System</Filter>
+    <ClInclude Include="src\Script\Script.h">
+      <Filter>Script</Filter>
     </ClInclude>
-    <ClInclude Include="src\Script.h">
-      <Filter>Script System</Filter>
+    <ClInclude Include="src\Services\Boat\CharBoat.h">
+      <Filter>Services\Boat</Filter>
     </ClInclude>
-    <ClInclude Include="src\CharBoat.h">
-      <Filter>Script System\Mission System</Filter>
+    <ClInclude Include="src\Services\Forge\CharForge.h">
+      <Filter>Services\Forge</Filter>
     </ClInclude>
-    <ClInclude Include="src\CharForge.h">
-      <Filter>Script System\Mission System</Filter>
+    <ClInclude Include="src\Services\Stall\CharStall.h">
+      <Filter>Services\Stall</Filter>
     </ClInclude>
-    <ClInclude Include="src\CharStall.h">
-      <Filter>Script System\Mission System</Filter>
+    <ClInclude Include="src\Services\Trade\CharTrade.h">
+      <Filter>Services\Trade</Filter>
     </ClInclude>
-    <ClInclude Include="src\CharTrade.h">
-      <Filter>Script System\Mission System</Filter>
+    <ClInclude Include="src\World\MapTrigger.h">
+      <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="src\MapTrigger.h">
-      <Filter>Script System\Mission System</Filter>
+    <ClInclude Include="src\Services\Mission\Mission.h">
+      <Filter>Services\Mission</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mission.h">
-      <Filter>Script System\Mission System</Filter>
+    <ClInclude Include="src\Services\Mission\RoleData.h">
+      <Filter>Services\Mission</Filter>
     </ClInclude>
-    <ClInclude Include="src\RoleData.h">
-      <Filter>Script System\Mission System</Filter>
+    <ClInclude Include="src\Db\GameDB.h">
+      <Filter>Db</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameDB.h">
-      <Filter>Database</Filter>
+    <ClInclude Include="src\Db\TradeLogDB.h">
+      <Filter>Db</Filter>
     </ClInclude>
-    <ClInclude Include="src\TradeLogDB.h">
-      <Filter>Database</Filter>
+    <ClInclude Include="src\App\GameApp.h">
+      <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameApp.h">
-      <Filter>AppFramework</Filter>
+    <ClInclude Include="src\App\GameAppNet.h">
+      <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameAppNet.h">
-      <Filter>AppFramework</Filter>
+    <ClInclude Include="src\App\Config.h">
+      <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="src\Config.h">
-      <Filter>AppFramework\ServerConfig</Filter>
+    <ClInclude Include="src\Event\EventHandler.h">
+      <Filter>Event</Filter>
     </ClInclude>
-    <ClInclude Include="src\EventHandler.h">
-      <Filter>AppFramework\EventHandling</Filter>
+    <ClInclude Include="src\World\Weather.h">
+      <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="src\Weather.h">
-      <Filter>AppFramework\EventHandling</Filter>
+    <ClInclude Include="src\World\Birthplace.h">
+      <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="src\Birthplace.h">
-      <Filter>MapManagementUnit</Filter>
+    <ClInclude Include="src\World\EyeshotCell.h">
+      <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="src\EyeshotCell.h">
-      <Filter>MapManagementUnit</Filter>
+    <ClInclude Include="src\Combat\FindPath.h">
+      <Filter>Combat</Filter>
     </ClInclude>
-    <ClInclude Include="src\FindPath.h">
-      <Filter>MapManagementUnit</Filter>
+    <ClInclude Include="src\World\MapEntry.h">
+      <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="src\MapEntry.h">
-      <Filter>MapManagementUnit</Filter>
+    <ClInclude Include="src\World\MapRes.h">
+      <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="src\MapRes.h">
-      <Filter>MapManagementUnit</Filter>
+    <ClInclude Include="src\World\StateCell.h">
+      <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="src\StateCell.h">
-      <Filter>MapManagementUnit</Filter>
+    <ClInclude Include="src\World\SubMap.h">
+      <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="src\SubMap.h">
-      <Filter>MapManagementUnit</Filter>
+    <ClInclude Include="src\Character\Character.h">
+      <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="src\Character.h">
-      <Filter>Entity\Roles</Filter>
+    <ClInclude Include="src\Player\Player.h">
+      <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="src\Player.h">
-      <Filter>Entity\Roles\Player</Filter>
+    <ClInclude Include="src\NPC\NPC.h">
+      <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="src\NPC.h">
-      <Filter>Entity\Roles\NPC</Filter>
+    <ClInclude Include="src\Combat\Action.h">
+      <Filter>Combat</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action.h">
-      <Filter>Entity\Roles\Behavior Control</Filter>
+    <ClInclude Include="src\NPC\WorldEudemon.h">
+      <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldEudemon.h">
-      <Filter>Entity\Roles\Eudemon</Filter>
+    <ClInclude Include="src\Entity\EventEntity.h">
+      <Filter>Entity</Filter>
     </ClInclude>
-    <ClInclude Include="src\EventEntity.h">
-      <Filter>Entity\Roles\Event Entity</Filter>
+    <ClInclude Include="src\Item\Item.h">
+      <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="src\Item.h">
-      <Filter>Entity\Props</Filter>
+    <ClInclude Include="src\Combat\HarmRec.h">
+      <Filter>Combat</Filter>
     </ClInclude>
-    <ClInclude Include="src\HarmRec.h">
-      <Filter>Entity\Other</Filter>
+    <ClInclude Include="src\Combat\SkillState.h">
+      <Filter>Combat</Filter>
     </ClInclude>
-    <ClInclude Include="src\SkillState.h">
-      <Filter>Entity\Other</Filter>
+    <ClInclude Include="src\Combat\SkillTemp.h">
+      <Filter>Combat</Filter>
     </ClInclude>
-    <ClInclude Include="src\SkillTemp.h">
-      <Filter>Entity\Other</Filter>
+    <ClInclude Include="src\Entity\Attachable.h">
+      <Filter>Entity</Filter>
     </ClInclude>
-    <ClInclude Include="src\Attachable.h">
-      <Filter>Entity\Base Class</Filter>
+    <ClInclude Include="src\Entity\AttachManage.h">
+      <Filter>Entity</Filter>
     </ClInclude>
-    <ClInclude Include="src\AttachManage.h">
-      <Filter>Entity\Base Class</Filter>
+    <ClInclude Include="src\Entity\Entity.h">
+      <Filter>Entity</Filter>
     </ClInclude>
-    <ClInclude Include="src\Entity.h">
-      <Filter>Entity\Base Class</Filter>
+    <ClInclude Include="src\Entity\GamePool.h">
+      <Filter>Entity</Filter>
     </ClInclude>
-    <ClInclude Include="src\GamePool.h">
-      <Filter>Entity\Base Class</Filter>
+    <ClInclude Include="src\Entity\EntitySpawn.h">
+      <Filter>Entity</Filter>
     </ClInclude>
-    <ClInclude Include="src\EntitySpawn.h">
-      <Filter>Entity\Base Class</Filter>
+    <ClInclude Include="src\Entity\Event.h">
+      <Filter>Entity</Filter>
     </ClInclude>
-    <ClInclude Include="src\Event.h">
-      <Filter>Entity\Base Class</Filter>
+    <ClInclude Include="src\Combat\FightAble.h">
+      <Filter>Combat</Filter>
     </ClInclude>
-    <ClInclude Include="src\FightAble.h">
-      <Filter>Entity\Base Class</Filter>
+    <ClInclude Include="src\Combat\MoveAble.h">
+      <Filter>Combat</Filter>
     </ClInclude>
-    <ClInclude Include="src\MoveAble.h">
-      <Filter>Entity\Base Class</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SystemDialog.h">
-      <Filter>SystemReport</Filter>
+    <ClInclude Include="src\Services\SystemDialog\SystemDialog.h">
+      <Filter>Services\SystemDialog</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Other</Filter>
     </ClInclude>
-    <ClInclude Include="src\stdafx.h">
-      <Filter>Other</Filter>
+    <ClInclude Include="src\Core\stdafx.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameServerApp.h">
-      <Filter>Network1</Filter>
+    <ClInclude Include="src\App\GameServerApp.h">
+      <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="src\gtplayer.h">
-      <Filter>Network2</Filter>
+    <ClInclude Include="src\Player\gtplayer.h">
+      <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="src\Guild.h">
-      <Filter>Guild</Filter>
+    <ClInclude Include="src\Services\Guild\Guild.h">
+      <Filter>Services\Guild</Filter>
     </ClInclude>
-    <ClInclude Include="src\PicSet.h">
-      <Filter>PictureResource</Filter>
+    <ClInclude Include="src\Services\Picture\PicSet.h">
+      <Filter>Services\Picture</Filter>
     </ClInclude>
-    <ClInclude Include="src\Picture.h">
-      <Filter>PictureResource</Filter>
+    <ClInclude Include="src\Services\Picture\Picture.h">
+      <Filter>Services\Picture</Filter>
     </ClInclude>
-    <ClInclude Include="src\Auction.h">
-      <Filter>Bidding</Filter>
+    <ClInclude Include="src\Services\Auction\Auction.h">
+      <Filter>Services\Auction</Filter>
     </ClInclude>
-    <ClInclude Include="src\AuctionItem.h">
-      <Filter>Bidding</Filter>
+    <ClInclude Include="src\Services\Auction\AuctionItem.h">
+      <Filter>Services\Auction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\xString.cpp">
-      <Filter>ToolLibrary\Other</Filter>
+    <ClCompile Include="src\Core\xString.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharScript.cpp">
-      <Filter>Script System</Filter>
+    <ClCompile Include="src\Script\CharScript.cpp">
+      <Filter>Script</Filter>
     </ClCompile>
-    <ClCompile Include="src\EntityScript.cpp">
-      <Filter>Script System</Filter>
+    <ClCompile Include="src\Script\EntityScript.cpp">
+      <Filter>Script</Filter>
     </ClCompile>
-    <ClCompile Include="src\lua_gamectrl.cpp">
-      <Filter>Script System</Filter>
+    <ClCompile Include="src\Script\lua_gamectrl.cpp">
+      <Filter>Script</Filter>
     </ClCompile>
-    <ClCompile Include="src\NpcScript.cpp">
-      <Filter>Script System</Filter>
+    <ClCompile Include="src\Script\NpcScript.cpp">
+      <Filter>Script</Filter>
     </ClCompile>
-    <ClCompile Include="src\LuaAPI.cpp">
-      <Filter>Script System</Filter>
+    <ClCompile Include="src\Script\LuaAPI.cpp">
+      <Filter>Script</Filter>
     </ClCompile>
-    <ClCompile Include="src\Script.cpp">
-      <Filter>Script System</Filter>
+    <ClCompile Include="src\Script\Script.cpp">
+      <Filter>Script</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharBoat.cpp">
-      <Filter>Script System\Mission System</Filter>
+    <ClCompile Include="src\Services\Boat\CharBoat.cpp">
+      <Filter>Services\Boat</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharForge.cpp">
-      <Filter>Script System\Mission System</Filter>
+    <ClCompile Include="src\Services\Forge\CharForge.cpp">
+      <Filter>Services\Forge</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharStall.cpp">
-      <Filter>Script System\Mission System</Filter>
+    <ClCompile Include="src\Services\Stall\CharStall.cpp">
+      <Filter>Services\Stall</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharTrade.cpp">
-      <Filter>Script System\Mission System</Filter>
+    <ClCompile Include="src\Services\Trade\CharTrade.cpp">
+      <Filter>Services\Trade</Filter>
     </ClCompile>
-    <ClCompile Include="src\MapTrigger.cpp">
-      <Filter>Script System\Mission System</Filter>
+    <ClCompile Include="src\World\MapTrigger.cpp">
+      <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mission.cpp">
-      <Filter>Script System\Mission System</Filter>
+    <ClCompile Include="src\Services\Mission\Mission.cpp">
+      <Filter>Services\Mission</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameDB.cpp">
-      <Filter>Database</Filter>
+    <ClCompile Include="src\Db\GameDB.cpp">
+      <Filter>Db</Filter>
     </ClCompile>
-    <ClCompile Include="src\TradeLogDB.cpp">
-      <Filter>Database</Filter>
+    <ClCompile Include="src\Db\TradeLogDB.cpp">
+      <Filter>Db</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameApp.cpp">
-      <Filter>AppFramework</Filter>
+    <ClCompile Include="src\App\GameApp.cpp">
+      <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameAppNet.cpp">
-      <Filter>AppFramework</Filter>
+    <ClCompile Include="src\App\GameAppNet.cpp">
+      <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameSMain.cpp">
-      <Filter>AppFramework</Filter>
+    <ClCompile Include="src\App\GameSMain.cpp">
+      <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\Config.cpp">
-      <Filter>AppFramework\ServerConfig</Filter>
+    <ClCompile Include="src\App\Config.cpp">
+      <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\EventCalculate.cpp">
-      <Filter>AppFramework\EventHandling</Filter>
+    <ClCompile Include="src\Event\EventCalculate.cpp">
+      <Filter>Event</Filter>
     </ClCompile>
-    <ClCompile Include="src\EventHandler.cpp">
-      <Filter>AppFramework\EventHandling</Filter>
+    <ClCompile Include="src\Event\EventHandler.cpp">
+      <Filter>Event</Filter>
     </ClCompile>
-    <ClCompile Include="src\Weather.cpp">
-      <Filter>AppFramework\EventHandling</Filter>
+    <ClCompile Include="src\World\Weather.cpp">
+      <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="src\Birthplace.cpp">
-      <Filter>MapManagementUnit</Filter>
+    <ClCompile Include="src\World\Birthplace.cpp">
+      <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="src\EyeshotCell.cpp">
-      <Filter>MapManagementUnit</Filter>
+    <ClCompile Include="src\World\EyeshotCell.cpp">
+      <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="src\FindPath.cpp">
-      <Filter>MapManagementUnit</Filter>
+    <ClCompile Include="src\Combat\FindPath.cpp">
+      <Filter>Combat</Filter>
     </ClCompile>
-    <ClCompile Include="src\MapEntry.cpp">
-      <Filter>MapManagementUnit</Filter>
+    <ClCompile Include="src\World\MapEntry.cpp">
+      <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="src\MapRes.cpp">
-      <Filter>MapManagementUnit</Filter>
+    <ClCompile Include="src\World\MapRes.cpp">
+      <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="src\StateCell.cpp">
-      <Filter>MapManagementUnit</Filter>
+    <ClCompile Include="src\World\StateCell.cpp">
+      <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="src\SubMap.cpp">
-      <Filter>MapManagementUnit</Filter>
+    <ClCompile Include="src\World\SubMap.cpp">
+      <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="src\Character.cpp">
-      <Filter>Entity\Roles</Filter>
+    <ClCompile Include="src\Character\Character.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharacterAI.cpp">
-      <Filter>Entity\Roles</Filter>
+    <ClCompile Include="src\Character\CharacterAI.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharacterAIState.cpp">
-      <Filter>Entity\Roles</Filter>
+    <ClCompile Include="src\Character\CharacterAIState.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharacterCmd.cpp">
-      <Filter>Entity\Roles</Filter>
+    <ClCompile Include="src\Character\CharacterCmd.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharacterPacket.cpp">
-      <Filter>Entity\Roles</Filter>
+    <ClCompile Include="src\Character\CharacterPacket.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharacterPrl.cpp">
-      <Filter>Entity\Roles</Filter>
+    <ClCompile Include="src\Character\CharacterPrl.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharacterRun.cpp">
-      <Filter>Entity\Roles</Filter>
+    <ClCompile Include="src\Character\CharacterRun.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\Player.cpp">
-      <Filter>Entity\Roles\Player</Filter>
+    <ClCompile Include="src\Player\Player.cpp">
+      <Filter>Player</Filter>
     </ClCompile>
-    <ClCompile Include="src\NPC.cpp">
-      <Filter>Entity\Roles\NPC</Filter>
+    <ClCompile Include="src\NPC\NPC.cpp">
+      <Filter>NPC</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action.cpp">
-      <Filter>Entity\Roles\Behavior Control</Filter>
+    <ClCompile Include="src\Combat\Action.cpp">
+      <Filter>Combat</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldEudemon.cpp">
-      <Filter>Entity\Roles\Eudemon</Filter>
+    <ClCompile Include="src\NPC\WorldEudemon.cpp">
+      <Filter>NPC</Filter>
     </ClCompile>
-    <ClCompile Include="src\CharacterSuperCmd.cpp">
-      <Filter>Entity\Roles\SuperCmd</Filter>
+    <ClCompile Include="src\Character\CharacterSuperCmd.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\EventEntity.cpp">
-      <Filter>Entity\Roles\Event Entity</Filter>
+    <ClCompile Include="src\Entity\EventEntity.cpp">
+      <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Item.cpp">
-      <Filter>Entity\Props</Filter>
+    <ClCompile Include="src\Item\Item.cpp">
+      <Filter>Item</Filter>
     </ClCompile>
-    <ClCompile Include="src\HarmRec.cpp">
-      <Filter>Entity\Other</Filter>
+    <ClCompile Include="src\Combat\HarmRec.cpp">
+      <Filter>Combat</Filter>
     </ClCompile>
-    <ClCompile Include="src\Attachable.cpp">
-      <Filter>Entity\Base Class</Filter>
+    <ClCompile Include="src\Entity\Attachable.cpp">
+      <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\AttachManage.cpp">
-      <Filter>Entity\Base Class</Filter>
+    <ClCompile Include="src\Entity\AttachManage.cpp">
+      <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Entity.cpp">
-      <Filter>Entity\Base Class</Filter>
+    <ClCompile Include="src\Entity\Entity.cpp">
+      <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\GamePool.cpp">
-      <Filter>Entity\Base Class</Filter>
+    <ClCompile Include="src\Entity\GamePool.cpp">
+      <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\EntitySpawn.cpp">
-      <Filter>Entity\Base Class</Filter>
+    <ClCompile Include="src\Entity\EntitySpawn.cpp">
+      <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\FightAble.cpp">
-      <Filter>Entity\Base Class</Filter>
+    <ClCompile Include="src\Combat\FightAble.cpp">
+      <Filter>Combat</Filter>
     </ClCompile>
-    <ClCompile Include="src\MoveAble.cpp">
-      <Filter>Entity\Base Class</Filter>
+    <ClCompile Include="src\Combat\MoveAble.cpp">
+      <Filter>Combat</Filter>
     </ClCompile>
-    <ClCompile Include="src\SystemDialog.cpp">
-      <Filter>SystemReport</Filter>
+    <ClCompile Include="src\Services\SystemDialog\SystemDialog.cpp">
+      <Filter>Services\SystemDialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\stdafx.cpp">
-      <Filter>Other</Filter>
+    <ClCompile Include="src\Core\stdafx.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameServerApp.cpp">
-      <Filter>Network1</Filter>
+    <ClCompile Include="src\App\GameServerApp.cpp">
+      <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="src\Guild.cpp">
-      <Filter>Guild</Filter>
+    <ClCompile Include="src\Services\Guild\Guild.cpp">
+      <Filter>Services\Guild</Filter>
     </ClCompile>
-    <ClCompile Include="src\PicSet.cpp">
-      <Filter>PictureResource</Filter>
+    <ClCompile Include="src\Services\Picture\PicSet.cpp">
+      <Filter>Services\Picture</Filter>
     </ClCompile>
-    <ClCompile Include="src\Picture.cpp">
-      <Filter>PictureResource</Filter>
+    <ClCompile Include="src\Services\Picture\Picture.cpp">
+      <Filter>Services\Picture</Filter>
     </ClCompile>
-    <ClCompile Include="src\Auction.cpp">
-      <Filter>Bidding</Filter>
+    <ClCompile Include="src\Services\Auction\Auction.cpp">
+      <Filter>Services\Auction</Filter>
     </ClCompile>
-    <ClCompile Include="src\AuctionItem.cpp">
-      <Filter>Bidding</Filter>
+    <ClCompile Include="src\Services\Auction\AuctionItem.cpp">
+      <Filter>Services\Auction</Filter>
     </ClCompile>
-    <ClCompile Include="src\Expand.cpp">
-      <Filter>Other</Filter>
+    <ClCompile Include="src\Services\Mission\Expand.cpp">
+      <Filter>Services\Mission</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Combat\Range.cpp">
+      <Filter>Combat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Combat\SkillState.cpp">
+      <Filter>Combat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

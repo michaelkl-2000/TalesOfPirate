@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "CommFunc.h"
+#include "Core/CommFunc.h"
 #include <cassert>
 #include <cstring>
 #include <iostream>

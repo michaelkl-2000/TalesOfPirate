@@ -63,7 +63,7 @@
 #include "MPParticleCtrl.h"
 #include "lwEfxTrack.h"      // Corsairs::Engine::Render::lwEfxTrack — для .let round-trip
 
-#include "Blake2s.h"
+#include "Crypto/Blake2s.h"
 
 namespace {
 constexpr const char* kLogChannel = "asset_loader_tests";

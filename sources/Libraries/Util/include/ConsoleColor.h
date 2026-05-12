@@ -7,43 +7,11 @@ namespace TalesOfPirate::Utils::Console {
 	constexpr int DEFAULT_COLOR = 7;
 	constexpr int BAD_COLOR = -256;
 
-	const std::map<std::string, int> CODES = {
-		{"black", 0}, {"k", 0},
-		{"blue", 1}, {"b", 1},
-		{"green", 2}, {"g", 2},
-		{"aqua", 3}, {"a", 3},
-		{"red", 4}, {"r", 4},
-		{"purple", 5}, {"p", 5},
-		{"yellow", 6}, {"y", 6},
-		{"white", 7}, {"w", 7},
-		{"grey", 8}, {"e", 8},
-		{"light blue", 9}, {"lb", 9},
-		{"light green", 10}, {"lg", 10},
-		{"light aqua", 11}, {"la", 11},
-		{"light red", 12}, {"lr", 12},
-		{"light purple", 13}, {"lp", 13},
-		{"light yellow", 14}, {"ly", 14},
-		{"bright white", 15}, {"bw", 15}
-	};
-
-	const std::map<int, std::string> NAMES = {
-		{0, "black"},
-		{1, "blue"},
-		{2, "green"},
-		{3, "aqua"},
-		{4, "red"},
-		{5, "purple"},
-		{6, "yellow"},
-		{7, "white"},
-		{8, "grey"},
-		{9, "light blue"},
-		{10, "light green"},
-		{11, "light aqua"},
-		{12, "light red"},
-		{13, "light purple"},
-		{14, "light yellow"},
-		{15, "bright white"}
-	};
+	// Касание singleton'ов цветовых таблиц до того, как этот ForceInit
+	// возвращается из вызывающего конструктора. Долгоживущие потребители
+	// (LogManager) должны звать это в своём конструкторе, чтобы порядок
+	// destruction был «потребитель раньше таблиц».
+	void ForceInit();
 
 	inline bool is_good(int c) {
 		return 0 <= c && c < 256;

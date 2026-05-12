@@ -8,7 +8,7 @@
 #include <cstring>
 #include <intrin.h>
 
-namespace net {
+namespace Corsairs::Net {
 
 //  Write (big-endian) 
 
@@ -102,4 +102,4 @@ inline float readFloat32(const uint8_t* src) {
     return v;
 }
 
-} // namespace net
+} // namespace Corsairs::Net

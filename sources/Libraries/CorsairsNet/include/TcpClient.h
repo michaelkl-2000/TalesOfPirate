@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-namespace net {
+namespace Corsairs::Net {
 	// 
 	//  ICryptoProvider   
 	// 
@@ -266,4 +266,4 @@ namespace net {
 	//      
 	bool InitWinSock();
 	void CleanupWinSock();
-} // namespace net
+} // namespace Corsairs::Net

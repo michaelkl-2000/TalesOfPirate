@@ -42,6 +42,6 @@
 #include "logutil.h"
 
 // Project — Common core (включается в 43-44 заголовка Common)
-#include "SqliteDatabase.h"
-#include "GameRecordset.h"
-#include "TableData.h"
+#include "Database/SqliteDatabase.h"
+#include "Database/GameRecordset.h"
+#include "Database/TableData.h"

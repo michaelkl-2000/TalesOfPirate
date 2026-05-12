@@ -71,8 +71,8 @@
       <StructMemberAlignment>Default</StructMemberAlignment>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <PrecompiledHeaderFile>Core/stdafx.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>Core/stdafx.h</ForcedIncludeFiles>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -106,8 +106,8 @@
       <StructMemberAlignment>Default</StructMemberAlignment>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <PrecompiledHeaderFile>Core/stdafx.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>Core/stdafx.h</ForcedIncludeFiles>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -130,147 +130,139 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Action.h" />
-    <ClInclude Include="src\Attachable.h" />
-    <ClInclude Include="src\AttachManage.h" />
-    <ClInclude Include="src\Auction.h" />
-    <ClInclude Include="src\AuctionItem.h" />
-    <ClInclude Include="src\Birthplace.h" />
-    <ClInclude Include="src\Character.h" />
-    <ClInclude Include="src\CharBoat.h" />
-    <ClInclude Include="src\CharForge.h" />
-    <ClInclude Include="src\CharScript.h" />
-    <ClInclude Include="src\CharStall.h" />
-    <ClInclude Include="src\CharTrade.h" />
-    <ClInclude Include="src\Config.h" />
-    <ClInclude Include="src\Entity.h" />
-    <ClInclude Include="src\EntityScript.h" />
-    <ClInclude Include="src\EntitySpawn.h" />
-    <ClInclude Include="src\Event.h" />
-    <ClInclude Include="src\EventEntity.h" />
-    <ClInclude Include="src\EventHandler.h" />
-    <ClInclude Include="src\Expand.h" />
-    <ClInclude Include="src\EyeshotCell.h" />
-    <ClInclude Include="src\FightAble.h" />
-    <ClInclude Include="src\FindPath.h" />
-    <ClInclude Include="src\GameApp.h" />
-    <ClInclude Include="src\GameAppNet.h" />
-    <ClInclude Include="src\GamePool.h" />
-    <ClInclude Include="src\GameDB.h" />
-    <ClInclude Include="src\GameServerApp.h" />
-    <ClInclude Include="src\gtplayer.h" />
-    <ClInclude Include="src\Guild.h" />
-    <ClInclude Include="src\HarmRec.h" />
-    <ClInclude Include="src\Identity.h" />
-    <ClInclude Include="src\Item.h" />
-    <ClInclude Include="src\lua_gamectrl.h" />
-    <ClInclude Include="src\lua_gamectrl2.h" />
-    <ClInclude Include="src\MapEntry.h" />
-    <ClInclude Include="src\MapRes.h" />
-    <ClInclude Include="src\MapTrigger.h" />
-    <ClInclude Include="src\Mission.h" />
-    <ClInclude Include="src\MoveAble.h" />
-    <ClInclude Include="src\MsgQueue.h" />
-    <ClInclude Include="src\NPC.h" />
-    <ClInclude Include="src\NpcScript.h" />
-    <ClInclude Include="src\LuaAPI.h" />
-    <ClInclude Include="src\PicSet.h" />
-    <ClInclude Include="src\Picture.h" />
-    <ClInclude Include="src\Player.h" />
-    <ClInclude Include="src\Range.h" />
-    <ClInclude Include="src\RecordScript.h" />
-    <ClInclude Include="src\RoleData.h" />
-    <ClInclude Include="src\Script.h" />
-    <ClInclude Include="src\SkillState.h" />
-    <ClInclude Include="src\SkillTemp.h" />
-    <ClInclude Include="src\StateCell.h" />
-    <ClInclude Include="src\StateCellGrid.h" />
-    <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\SubMap.h" />
-    <ClInclude Include="src\SystemDialog.h" />
-    <ClInclude Include="src\Timer.h" />
-    <ClInclude Include="src\TradeLogDB.h" />
-    <ClInclude Include="src\Usage.h" />
-    <ClInclude Include="src\Weather.h" />
-    <ClInclude Include="src\WorldEudemon.h" />
-    <ClInclude Include="src\xString.h" />
+    <ClInclude Include="src\Combat\Action.h" />
+    <ClInclude Include="src\Entity\Attachable.h" />
+    <ClInclude Include="src\Entity\AttachManage.h" />
+    <ClInclude Include="src\Services\Auction\Auction.h" />
+    <ClInclude Include="src\Services\Auction\AuctionItem.h" />
+    <ClInclude Include="src\World\Birthplace.h" />
+    <ClInclude Include="src\Character\Character.h" />
+    <ClInclude Include="src\Services\Boat\CharBoat.h" />
+    <ClInclude Include="src\Services\Forge\CharForge.h" />
+    <ClInclude Include="src\Script\CharScript.h" />
+    <ClInclude Include="src\Services\Stall\CharStall.h" />
+    <ClInclude Include="src\Services\Trade\CharTrade.h" />
+    <ClInclude Include="src\App\Config.h" />
+    <ClInclude Include="src\Entity\Entity.h" />
+    <ClInclude Include="src\Script\EntityScript.h" />
+    <ClInclude Include="src\Entity\EntitySpawn.h" />
+    <ClInclude Include="src\Entity\Event.h" />
+    <ClInclude Include="src\Entity\EventEntity.h" />
+    <ClInclude Include="src\Event\EventHandler.h" />
+    <ClInclude Include="src\Services\Mission\Expand.h" />
+    <ClInclude Include="src\World\EyeshotCell.h" />
+    <ClInclude Include="src\Combat\FightAble.h" />
+    <ClInclude Include="src\Combat\FindPath.h" />
+    <ClInclude Include="src\App\GameApp.h" />
+    <ClInclude Include="src\App\GameAppNet.h" />
+    <ClInclude Include="src\Entity\GamePool.h" />
+    <ClInclude Include="src\Db\GameDB.h" />
+    <ClInclude Include="src\App\GameServerApp.h" />
+    <ClInclude Include="src\Player\gtplayer.h" />
+    <ClInclude Include="src\Services\Guild\Guild.h" />
+    <ClInclude Include="src\Combat\HarmRec.h" />
+    <ClInclude Include="src\Core\Identity.h" />
+    <ClInclude Include="src\Item\Item.h" />
+    <ClInclude Include="src\Script\lua_gamectrl.h" />
+    <ClInclude Include="src\World\MapEntry.h" />
+    <ClInclude Include="src\World\MapRes.h" />
+    <ClInclude Include="src\World\MapTrigger.h" />
+    <ClInclude Include="src\Services\Mission\Mission.h" />
+    <ClInclude Include="src\Combat\MoveAble.h" />
+    <ClInclude Include="src\Core\MsgQueue.h" />
+    <ClInclude Include="src\NPC\NPC.h" />
+    <ClInclude Include="src\Script\NpcScript.h" />
+    <ClInclude Include="src\Script\LuaAPI.h" />
+    <ClInclude Include="src\Services\Picture\PicSet.h" />
+    <ClInclude Include="src\Services\Picture\Picture.h" />
+    <ClInclude Include="src\Player\Player.h" />
+    <ClInclude Include="src\Combat\Range.h" />
+    <ClInclude Include="src\Script\RecordScript.h" />
+    <ClInclude Include="src\Services\Mission\RoleData.h" />
+    <ClInclude Include="src\Script\Script.h" />
+    <ClInclude Include="src\Combat\SkillState.h" />
+    <ClInclude Include="src\Combat\SkillTemp.h" />
+    <ClInclude Include="src\World\StateCell.h" />
+    <ClInclude Include="src\World\StateCellGrid.h" />
+    <ClInclude Include="src\Core\stdafx.h" />
+    <ClInclude Include="src\World\SubMap.h" />
+    <ClInclude Include="src\Services\SystemDialog\SystemDialog.h" />
+    <ClInclude Include="src\Core\Timer.h" />
+    <ClInclude Include="src\Db\TradeLogDB.h" />
+    <ClInclude Include="src\Core\Usage.h" />
+    <ClInclude Include="src\World\Weather.h" />
+    <ClInclude Include="src\NPC\WorldEudemon.h" />
+    <ClInclude Include="src\Core\xString.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Action.cpp" />
-    <ClCompile Include="src\Attachable.cpp" />
-    <ClCompile Include="src\AttachManage.cpp" />
-    <ClCompile Include="src\Auction.cpp" />
-    <ClCompile Include="src\AuctionItem.cpp" />
-    <ClCompile Include="src\Birthplace.cpp" />
-    <ClCompile Include="src\Character.cpp" />
-    <ClCompile Include="src\CharacterAI.cpp" />
-    <ClCompile Include="src\CharacterAIState.cpp" />
-    <ClCompile Include="src\CharacterCmd.cpp" />
-    <ClCompile Include="src\CharacterPacket.cpp" />
-    <ClCompile Include="src\CharacterPrl.cpp" />
-    <ClCompile Include="src\CharacterRun.cpp" />
-    <ClCompile Include="src\CharacterSuperCmd.cpp" />
-    <ClCompile Include="src\CharBoat.cpp" />
-    <ClCompile Include="src\CharForge.cpp" />
-    <ClCompile Include="src\CharScript.cpp" />
-    <ClCompile Include="src\CharStall.cpp" />
-    <ClCompile Include="src\CharTrade.cpp" />
-    <ClCompile Include="src\Config.cpp" />
-    <ClCompile Include="src\Entity.cpp">
-      <ObjectFileName>$(IntDir)%(Filename)1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="src\Expand.cpp" />
-    <ClCompile Include="src\EntityScript.cpp" />
-    <ClCompile Include="src\EntitySpawn.cpp" />
-    <ClCompile Include="src\EventCalculate.cpp" />
-    <ClCompile Include="src\EventEntity.cpp" />
-    <ClCompile Include="src\EventHandler.cpp" />
-    <ClCompile Include="src\EyeshotCell.cpp" />
-    <ClCompile Include="src\FightAble.cpp" />
-    <ClCompile Include="src\FindPath.cpp" />
-    <ClCompile Include="src\GameApp.cpp" />
-    <ClCompile Include="src\GameAppNet.cpp" />
-    <ClCompile Include="src\GamePool.cpp" />
-    <ClCompile Include="src\GameDB.cpp" />
-    <ClCompile Include="src\GameServerApp.cpp" />
-    <ClCompile Include="src\GameSMain.cpp">
-      <ObjectFileName>$(IntDir)%(Filename)1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="src\Guild.cpp" />
-    <ClCompile Include="src\HarmRec.cpp" />
-    <ClCompile Include="src\Item.cpp" />
-    <ClCompile Include="src\lua_gamectrl.cpp" />
-    <ClCompile Include="src\MapEntry.cpp" />
-    <ClCompile Include="src\MapRes.cpp" />
-    <ClCompile Include="src\MapTrigger.cpp" />
-    <ClCompile Include="src\Mission.cpp" />
-    <ClCompile Include="src\MoveAble.cpp" />
-    <ClCompile Include="src\NPC.cpp" />
-    <ClCompile Include="src\NpcScript.cpp" />
-    <ClCompile Include="src\LuaAPI.cpp" />
-    <ClCompile Include="src\PicSet.cpp" />
-    <ClCompile Include="src\Picture.cpp" />
-    <ClCompile Include="src\Player.cpp" />
-    <ClCompile Include="src\RecordScript.cpp" />
-    <ClCompile Include="src\Script.cpp" />
-    <ClCompile Include="src\gtplayer.cpp" />
-    <ClCompile Include="src\StateCellGrid.cpp" />
-    <ClCompile Include="src\Range.cpp" />
-    <ClCompile Include="src\SkillState.cpp" />
-    <ClCompile Include="src\StateCell.cpp" />
-    <ClCompile Include="src\stdafx.cpp">
-      <ObjectFileName>$(IntDir)%(Filename)1.obj</ObjectFileName>
+    <ClCompile Include="src\Combat\Action.cpp" />
+    <ClCompile Include="src\Entity\Attachable.cpp" />
+    <ClCompile Include="src\Entity\AttachManage.cpp" />
+    <ClCompile Include="src\Services\Auction\Auction.cpp" />
+    <ClCompile Include="src\Services\Auction\AuctionItem.cpp" />
+    <ClCompile Include="src\World\Birthplace.cpp" />
+    <ClCompile Include="src\Character\Character.cpp" />
+    <ClCompile Include="src\Character\CharacterAI.cpp" />
+    <ClCompile Include="src\Character\CharacterAIState.cpp" />
+    <ClCompile Include="src\Character\CharacterCmd.cpp" />
+    <ClCompile Include="src\Character\CharacterPacket.cpp" />
+    <ClCompile Include="src\Character\CharacterPrl.cpp" />
+    <ClCompile Include="src\Character\CharacterRun.cpp" />
+    <ClCompile Include="src\Character\CharacterSuperCmd.cpp" />
+    <ClCompile Include="src\Services\Boat\CharBoat.cpp" />
+    <ClCompile Include="src\Services\Forge\CharForge.cpp" />
+    <ClCompile Include="src\Script\CharScript.cpp" />
+    <ClCompile Include="src\Services\Stall\CharStall.cpp" />
+    <ClCompile Include="src\Services\Trade\CharTrade.cpp" />
+    <ClCompile Include="src\App\Config.cpp" />
+    <ClCompile Include="src\Entity\Entity.cpp" />
+    <ClCompile Include="src\Services\Mission\Expand.cpp" />
+    <ClCompile Include="src\Script\EntityScript.cpp" />
+    <ClCompile Include="src\Entity\EntitySpawn.cpp" />
+    <ClCompile Include="src\Event\EventCalculate.cpp" />
+    <ClCompile Include="src\Entity\EventEntity.cpp" />
+    <ClCompile Include="src\Event\EventHandler.cpp" />
+    <ClCompile Include="src\World\EyeshotCell.cpp" />
+    <ClCompile Include="src\Combat\FightAble.cpp" />
+    <ClCompile Include="src\Combat\FindPath.cpp" />
+    <ClCompile Include="src\App\GameApp.cpp" />
+    <ClCompile Include="src\App\GameAppNet.cpp" />
+    <ClCompile Include="src\Entity\GamePool.cpp" />
+    <ClCompile Include="src\Db\GameDB.cpp" />
+    <ClCompile Include="src\App\GameServerApp.cpp" />
+    <ClCompile Include="src\App\GameSMain.cpp" />
+    <ClCompile Include="src\Services\Guild\Guild.cpp" />
+    <ClCompile Include="src\Combat\HarmRec.cpp" />
+    <ClCompile Include="src\Item\Item.cpp" />
+    <ClCompile Include="src\Script\lua_gamectrl.cpp" />
+    <ClCompile Include="src\World\MapEntry.cpp" />
+    <ClCompile Include="src\World\MapRes.cpp" />
+    <ClCompile Include="src\World\MapTrigger.cpp" />
+    <ClCompile Include="src\Services\Mission\Mission.cpp" />
+    <ClCompile Include="src\Combat\MoveAble.cpp" />
+    <ClCompile Include="src\NPC\NPC.cpp" />
+    <ClCompile Include="src\Script\NpcScript.cpp" />
+    <ClCompile Include="src\Script\LuaAPI.cpp" />
+    <ClCompile Include="src\Services\Picture\PicSet.cpp" />
+    <ClCompile Include="src\Services\Picture\Picture.cpp" />
+    <ClCompile Include="src\Player\Player.cpp" />
+    <ClCompile Include="src\Script\RecordScript.cpp" />
+    <ClCompile Include="src\Script\Script.cpp" />
+    <ClCompile Include="src\Player\gtplayer.cpp" />
+    <ClCompile Include="src\World\StateCellGrid.cpp" />
+    <ClCompile Include="src\Combat\Range.cpp" />
+    <ClCompile Include="src\Combat\SkillState.cpp" />
+    <ClCompile Include="src\World\StateCell.cpp" />
+    <ClCompile Include="src\Core\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\SubMap.cpp">
-      <ObjectFileName>$(IntDir)%(Filename)1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="src\SystemDialog.cpp" />
-    <ClCompile Include="src\TradeLogDB.cpp" />
-    <ClCompile Include="src\Weather.cpp" />
-    <ClCompile Include="src\WorldEudemon.cpp" />
-    <ClCompile Include="src\xString.cpp" />
+    <ClCompile Include="src\World\SubMap.cpp" />
+    <ClCompile Include="src\Services\SystemDialog\SystemDialog.cpp" />
+    <ClCompile Include="src\Db\TradeLogDB.cpp" />
+    <ClCompile Include="src\World\Weather.cpp" />
+    <ClCompile Include="src\NPC\WorldEudemon.cpp" />
+    <ClCompile Include="src\Core\xString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GameServer.rc" />

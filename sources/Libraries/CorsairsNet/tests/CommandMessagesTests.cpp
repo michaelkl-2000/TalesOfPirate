@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-using namespace net;
-using namespace net::msg;
+using namespace Corsairs::Net;
+using namespace Corsairs::Net::Msg;
 
 // =================================================================
 //   A: TP/PT  GateServer <-> GroupServer

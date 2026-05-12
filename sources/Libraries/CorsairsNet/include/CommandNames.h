@@ -7,7 +7,7 @@
 #include <string>
 #include <cstdint>
 
-namespace net {
+namespace Corsairs::Net {
 
 inline const char* GetCommandName(uint16_t cmd) {
     static const std::unordered_map<uint16_t, const char*> names = {
@@ -538,4 +538,4 @@ inline const char* GetCommandName(uint16_t cmd) {
     return it != names.end() ? it->second : nullptr;
 }
 
-} // namespace net
+} // namespace Corsairs::Net

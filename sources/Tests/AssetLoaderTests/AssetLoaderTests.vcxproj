@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\Engine\include;$(ProjectDir)..\..\Engine\src;$(ProjectDir)..\..\Libraries\common\include;$(ProjectDir)..\..\Libraries\Util\include;$(ProjectDir)..\..\Libraries\DirectX\DX9\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\Engine\include;$(ProjectDir)..\..\Engine\src;$(ProjectDir)..\..\Engine\Asset;$(ProjectDir)..\..\Engine\Math;$(ProjectDir)..\..\Engine\Particle;$(ProjectDir)..\..\Engine\Map;$(ProjectDir)..\..\Engine\Util;$(ProjectDir)..\..\Engine\Platform;$(ProjectDir)..\..\Engine\Render;$(ProjectDir)..\..\Engine\Effect;$(ProjectDir)..\..\Engine\Model;$(ProjectDir)..\..\Engine\Resource;$(ProjectDir)..\..\Engine\Core;$(ProjectDir)..\..\Engine\App;$(ProjectDir)..\..\Engine\Texture;$(ProjectDir)..\..\Engine\Shader;$(ProjectDir)..\..\Engine\Animation;$(ProjectDir)..\..\Engine\Console;$(ProjectDir)..\..\Engine\Diagnostic;$(ProjectDir)..\..\Engine\Font;$(ProjectDir)..\..\Engine\Input;$(ProjectDir)..\..\Libraries\common\include;$(ProjectDir)..\..\Libraries\Util\include;$(ProjectDir)..\..\Libraries\DirectX\DX9\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>

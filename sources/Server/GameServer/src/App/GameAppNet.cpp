@@ -1,0 +1,1555 @@
+﻿#include "Core/stdafx.h"
+#include "App/GameApp.h"
+#include "App/GameAppNet.h"
+#include "CommandMessages.h"
+#include "World/SubMap.h"
+#include "World/MapEntry.h"
+#include "Db/GameDB.h"
+#include "Script/LuaAPI.h"
+
+using namespace std;
+
+extern std::string g_strLogName;
+
+void CGameApp::ProcessNetMsg(int nMsgType, GateServer* pGate, Corsairs::Net::RPacket& pkt) {
+	switch (nMsgType) {
+	case NETMSG_GATE_CONNECTED: // ??????Gate
+	{
+		ToLogService("network", "Exec OnGateConnected()");
+		OnGateConnected(pGate, pkt);
+		break;
+	}
+
+	case NETMSG_GATE_DISCONNECT: // ??Gate???????
+	{
+		OnGateDisconnect(pGate, pkt);
+		break;
+	}
+
+	case NETMSG_PACKET: // ????????
+	{
+		ProcessPacket(pGate, pkt);
+		break;
+	}
+	}
+}
+
+
+// ??Gate??????????????
+void CGameApp::OnGateConnected(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
+	// ??GateServer???GameServer
+	//  :  GameServer  GateServer
+	auto wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MtLoginMessage{GETGMSVRNAME(), g_pGameApp->m_strMapNameList.c_str()});
+
+	ToLogService("network", "[{}]", g_pGameApp->m_strMapNameList.c_str());
+
+	pGate->SendData(wpk);
+}
+
+// Gate
+void CGameApp::OnGateDisconnect(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
+	if (!static_cast<bool>(pkt)) return;
+
+	//  snapshot, ..  GoOutGame   DelPlayer   m_playerlist
+	std::vector<CPlayer*> snapshot(pGate->m_playerlist.begin(), pGate->m_playerlist.end());
+	for (CPlayer* p : snapshot) {
+		if (p->IsValid()) {
+			GoOutGame(p, true);
+			p->OnLogoff();
+		}
+	}
+
+	pGate->Invalid();
+}
+
+// ?????????????
+void CGameApp::ProcessPacket(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
+	CPlayer* l_player = nullptr;
+	uShort cmd = pkt.ReadCmd();
+
+	switch (cmd) {
+	case CMD_TM_LOGIN_ACK: {
+		Corsairs::Net::Msg::TmLoginAckMessage loginAck;
+		Corsairs::Net::Msg::deserialize(pkt, loginAck);
+		if (loginAck.errCode) {
+			/*ToLogService("network", "?? GateServer: {}:{}???[{}], ?????[{}]",
+				pGate->GetIP().c_str(), pGate->GetPort(), g_GameGateConnError(loginAck.errCode),
+				g_pGameApp->m_strMapNameList.c_str());*/
+			ToLogService("network", "enter GateServer: {}:{} failed [{}], register map[{}]",
+						 pGate->GetIP().c_str(), pGate->GetPort(), g_GameGateConnError(loginAck.errCode),
+						 g_pGameApp->m_strMapNameList.c_str());
+			DISCONNECT(pGate);
+		}
+		else {
+			pGate->GetName() = loginAck.gateName;
+			if (!strcmp(pGate->GetName().c_str(), "")) {
+				/*ToLogService("network", "?? GateServer: [{}:{}]??? ????????????????????????????",
+					pGate->GetName().c_str(), pGate->GetIP().c_str(), pGate->GetPort(),
+					g_pGameApp->m_strMapNameList.c_str());*/
+				ToLogService(
+					"network",
+					"entry GateServer: [{}:{}]success but do not get his name??so disconnection and entry again",
+					pGate->GetName().c_str(), pGate->GetIP().c_str(), pGate->GetPort(),
+					g_pGameApp->m_strMapNameList.c_str());
+
+				DISCONNECT(pGate);
+			}
+			else {
+				/*ToLogService("network", "?? GateServer: {} [{}:{}]??? [MapName:{}]",
+					pGate->GetName().c_str(), pGate->GetIP().c_str(), pGate->GetPort(),
+					g_pGameApp->m_strMapNameList.c_str());*/
+				ToLogService("network", "entry GateServer: {} [{}:{}]success [MapName:{}]",
+							 pGate->GetName().c_str(), pGate->GetIP().c_str(), pGate->GetPort(),
+							 g_pGameApp->m_strMapNameList.c_str());
+			}
+		}
+
+		break;
+	}
+	//	// Add by lark.li 20080921 begin
+	//case CMD_TM_DELETEMAP:
+	//	{
+	//		int reason = pkt.ReadInt64();
+
+	//		ToLogService("network", "Gate {} Ip {} {} deleted\r", pGate->GetName(), pGate->GetIP(), reason);
+
+	//		pGate->Invalid();
+
+	//		break;
+	//	}
+	//	//End
+
+	case CMD_TM_ENTERMAP: {
+		Corsairs::Net::Msg::TmEnterMapMessage enterMsg;
+		Corsairs::Net::Msg::deserialize(pkt, enterMsg);
+
+		if (enterMsg.password.empty())
+			break;
+		if (enterMsg.mapName.empty())
+			break;
+
+		ToLogService("map", "start entry map atorID = {} enter--------------------------", enterMsg.dbCharId);
+
+		l_player = CreateGamePlayer(enterMsg.password.c_str(), enterMsg.dbCharId, enterMsg.worldId,
+									enterMsg.mapName.c_str(), enterMsg.loginFlag == 0 ? 0 : 1);
+		if (!l_player) {
+			//  :       trailer 
+			auto pkret = Corsairs::Net::Msg::serializeMcEnterMapError(ERR_MC_ENTER_ERROR, enterMsg.dbCharId, enterMsg.gateAddr);
+			pGate->SendData(pkret);
+			ToLogService("map", LogLevel::Error, "when create new palyer ID = {} assign memory failed",
+						 enterMsg.dbCharId);
+			return;
+		}
+		l_player->SetActLoginID(enterMsg.actId);
+		l_player->SetGarnerWiner(enterMsg.winer);
+		l_player->GetLifeSkillinfo() = "";
+		l_player->SetInLifeSkill(false);
+
+		if (!enterMsg.loginFlag)
+			l_player->MisLogin();
+
+		ADDPLAYER(l_player, pGate, enterMsg.gateAddr);
+		l_player->OnLogin();
+
+		CCharacter* pCCha = l_player->GetMainCha();
+		if (pCCha->Cmd_EnterMap(enterMsg.mapName.c_str(), enterMsg.mapCopyNo, enterMsg.posX, enterMsg.posY,
+								enterMsg.loginFlag)) {
+			l_player->MisEnterMap();
+			if (enterMsg.loginFlag == 0) {
+				NoticePlayerLogin(l_player);
+			}
+		}
+
+		ToLogService("map", "end up entry map  [{}]================", pCCha->GetLogName());
+		break;
+	}
+	case CMD_TM_GOOUTMAP: {
+		Corsairs::Net::Msg::TmGoOutMapMessage goOutMsg;
+		Corsairs::Net::Msg::deserialize(pkt, goOutMsg);
+		l_player = ToPointer<CPlayer>(goOutMsg.playerPtr);
+		DWORD l_gateaddr = static_cast<DWORD>(goOutMsg.gateAddr);
+
+		if (!l_player)
+			break;
+		try {
+			if (l_player->GetGateAddr() != l_gateaddr) {
+				//ToLogService("errors", LogLevel::Error, "?????ID: {}, ????????????:{:x}, gate:{:x},cmd={}, ?????({}).", l_player->GetDBChaId(), l_player->GetGateAddr(), l_gateaddr,cmd, l_player->IsValidFlag());
+				ToLogService("errors", LogLevel::Error,
+							 "DB ID: {}, address not matching??local :{:x}, gate:{:x},cmd={}, validity({}).",
+							 l_player->GetDBChaId(), l_player->GetGateAddr(), l_gateaddr, cmd, l_player->IsValidFlag());
+				break;
+			}
+		}
+		catch (...) {
+			//ToLogService("errors", LogLevel::Error, "===========================??Gate?????????????{},cmd ={}", l_player, cmd);
+			ToLogService("errors", LogLevel::Error,
+						 "===========================from Gate player's address error {},cmd ={}",
+						 static_cast<void*>(l_player), static_cast<int>(cmd));
+			break;
+		}
+		if (!l_player->IsValid()) {
+			//LG("enter_map", "???????????\n");
+			ToLogService("map", "this palyer already impotence");
+			break;
+		}
+		if (l_player->GetMainCha()->GetPlayer() != l_player) {
+			//ToLogService("errors", LogLevel::Error, "????player????????????{}??Gate???[????{}, ????{}]????cmd={}", l_player->GetMainCha()->GetLogName(), l_player->GetMainCha()->GetPlayer(), l_player, cmd);
+			ToLogService("errors", LogLevel::Error,
+						 "two player not matching, character name: {}, Gate address [local {}, guest {}], cmd={}",
+						 l_player->GetMainCha()->GetLogName(), static_cast<void*>(l_player->GetMainCha()->GetPlayer()),
+						 static_cast<void*>(l_player), static_cast<int>(cmd));
+		}
+		ToLogService("map", "start leave map--------");
+
+		char chOffLine = static_cast<char>(goOutMsg.offlineFlag);
+		ToLogService("map", "Delete Player [{}]", l_player->GetMainCha()->GetLogName());
+
+		char szLogName[512];
+		strncpy(szLogName, l_player->GetMainCha()->GetLogName(), 512 - 1);
+		//LG("OutMap", "%s????????\n", szLogName);
+
+		GoOutGame(l_player, !chOffLine, false);
+
+		//LG("enter_map", "?????????========\n\n");
+		ToLogService("map", "end and leave the map========");
+
+		//LG("OutMap", "%s?????\n", szLogName);
+
+		break;
+	}
+	case CMD_PM_SAY2ALL: {
+		Corsairs::Net::Msg::PmSay2AllMessage say2AllMsg;
+		Corsairs::Net::Msg::deserialize(pkt, say2AllMsg);
+		uLong ulChaID = static_cast<uLong>(say2AllMsg.chaId);
+		std::string szContent = say2AllMsg.content;
+		long lChatMoney = static_cast<long>(say2AllMsg.money);
+
+		CPlayer* pPlayer = g_pGameApp->GetPlayerByDBID(ulChaID);
+		if (pPlayer) {
+			CCharacter* pCha = pPlayer->GetMainCha();
+			if (!pCha->HasMoney(lChatMoney)) {
+				//pCha->SystemNotice("??????????,?????????????????!");
+				pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00007));
+
+				//  :   (  )
+				auto l_wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmSay2AllMessage{0, {}, {}});
+				pCha->ReflectINFof(pCha, l_wpk);
+
+				break;
+			}
+			pCha->setAttr(ATTR_GD, (pCha->getAttr(ATTR_GD) - lChatMoney));
+			pCha->SynAttr(enumATTRSYN_TASK);
+			//pCha->SystemNotice("?????????????????,??????%ld?????!", lChatMoney);
+			pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00006), lChatMoney);
+
+			//  :   (CMD_MP_SAY2ALL)
+			auto l_wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmSay2AllMessage{1, pCha->GetName(), szContent});
+			pCha->ReflectINFof(pCha, l_wpk);
+		}
+	}
+	break;
+	case CMD_PM_SAY2TRADE: {
+		Corsairs::Net::Msg::PmSay2TradeMessage say2TradeMsg;
+		Corsairs::Net::Msg::deserialize(pkt, say2TradeMsg);
+		uLong ulChaID = static_cast<uLong>(say2TradeMsg.chaId);
+		std::string szContent = say2TradeMsg.content;
+		long lChatMoney = static_cast<long>(say2TradeMsg.money);
+
+		CPlayer* pPlayer = g_pGameApp->GetPlayerByDBID(ulChaID);
+		if (pPlayer) {
+			CCharacter* pCha = pPlayer->GetMainCha();
+			if (!pCha->HasMoney(lChatMoney)) {
+				//pCha->SystemNotice("??????????,????????????????!");
+				pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00005));
+
+				//  :    (  )
+				auto l_wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmSay2TradeMessage{0, {}, {}});
+				pCha->ReflectINFof(pCha, l_wpk);
+
+				break;
+			}
+			pCha->setAttr(ATTR_GD, (pCha->getAttr(ATTR_GD) - lChatMoney));
+			pCha->SynAttr(enumATTRSYN_TASK);
+			//pCha->SystemNotice("????????????????,??????%ld?????!", lChatMoney);
+			pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00004), lChatMoney);
+
+			//  :    (CMD_MP_SAY2TRADE)
+			auto l_wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmSay2TradeMessage{1, pCha->GetName(), szContent});
+			pCha->ReflectINFof(pCha, l_wpk);
+		}
+	}
+	break;
+	case CMD_PM_TEAM: // GroupServer  
+	{
+		Corsairs::Net::Msg::PmTeamMessage teamMsg;
+		Corsairs::Net::Msg::deserialize(pkt, teamMsg);
+		ProcessTeamMsg(pGate, teamMsg);
+		break;
+	}
+	case CMD_PM_GUILDINFO: // GroupServer???????????
+	{
+		Corsairs::Net::Msg::PmGuildInfoMessage guildInfoMsg;
+		Corsairs::Net::Msg::deserialize(pkt, guildInfoMsg);
+		ProcessGuildMsg(pGate, guildInfoMsg);
+		break;
+	}
+	case CMD_PM_GUILD_CHALLMONEY: {
+		Corsairs::Net::Msg::PmGuildChallMoneyMessage challMoneyMsg;
+		Corsairs::Net::Msg::deserialize(pkt, challMoneyMsg);
+		ProcessGuildChallMoney(pGate, challMoneyMsg);
+	}
+	break;
+	case CMD_PM_GUILD_CHALL_PRIZEMONEY: {
+		//ProcessGuildChallPrizeMoney( pGate, pkt );
+
+		//  :    
+		Corsairs::Net::Msg::PmGuildChallPrizeMoneyMessage prizeMsg;
+		Corsairs::Net::Msg::deserialize(pkt, prizeMsg);
+		int64_t _guildId = prizeMsg.leaderId;
+		int64_t _money = prizeMsg.money;
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmGuildChallPrizeMoneyBroadcast{0, _guildId, _money, 0, 0, 0});
+		pGate->SendData(WtPk);
+	}
+	break;
+	case CMD_TM_MAPENTRY: {
+		Corsairs::Net::Msg::MapEntryMessage mapEntryMsg;
+		Corsairs::Net::Msg::deserializeMapEntry(pkt, mapEntryMsg);
+		ProcessDynMapEntry(pGate, mapEntryMsg);
+		break;
+	}
+	/*case CMD_TM_KICKCHA:
+		{
+			long lChaDbID = pkt.ReadInt64();
+			CPlayer* pCOldPly = FindPlayerByDBChaID(lChaDbID);
+			if (!pCOldPly || !pCOldPly->IsValid())
+				break;
+
+			pCOldPly->GetCtrlCha()->BreakAction();
+			pCOldPly->MisLogout();
+			pCOldPly->MisGooutMap();
+			ReleaseGamePlayer( pCOldPly );
+			break;
+		}*/
+	case CMD_TM_MAPENTRY_NOMAP: {
+		break;
+	}
+	case CMD_PM_GARNER2_UPDATE: {
+		Corsairs::Net::Msg::PmGarner2UpdateLegacyMessage garnerMsg;
+		Corsairs::Net::Msg::deserialize(pkt, garnerMsg);
+		ProcessGarner2Update(garnerMsg);
+		break;
+	}
+	case CMD_PM_EXPSCALE: {
+		//  ??????
+		Corsairs::Net::Msg::PmExpScaleMessage expMsg;
+		Corsairs::Net::Msg::deserialize(pkt, expMsg);
+		uLong ulChaID = static_cast<uLong>(expMsg.chaId);
+		uLong ulTime = static_cast<uLong>(expMsg.time);
+
+		CPlayer* pPlayer = g_pGameApp->GetPlayerByDBID(ulChaID);
+
+		if (pPlayer) {
+			CCharacter* pCha = pPlayer->GetMainCha();
+
+			if (pCha->IsScaleFlag()) {
+				break;
+			}
+
+			switch (ulTime) {
+			case 1: {
+				if (pCha->m_noticeState != 1) {
+					pCha->m_noticeState = 1;
+					//pCha->BickerNotice("???????????????? %d ????", ulTime);
+					pCha->BickerNotice(RES_STRING(GM_GAMEAPPNET_CPP_00001), ulTime);
+					pCha->SetExpScale(100);
+				}
+			}
+			break;
+			case 2: {
+				if (pCha->m_noticeState != 2) {
+					pCha->m_noticeState = 2;
+					//pCha->BickerNotice("???????????????? %d ????", ulTime);
+					pCha->BickerNotice(RES_STRING(GM_GAMEAPPNET_CPP_00001), ulTime);
+					pCha->SetExpScale(100);
+				}
+			}
+			break;
+			case 3: {
+				/*	yyy	2008-3-27 change	begin!
+				if(!(pCha->m_retry3 % 30))
+				{
+					pCha->BickerNotice("???????????????? 3 ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????");
+					pCha->SetExpScale(50);
+				}
+
+				pCha->m_retry3++;
+				*/
+				if (pCha->m_retry3 == 0)
+					//pCha->PopupNotice("????????????????60??????????...");
+					pCha->PopupNotice(RES_STRING(GM_GAMEAPPNET_CPP_00002));
+				if (pCha->m_retry3 == 1) {
+					KICKPLAYER(pCha->GetPlayer(), 5);
+					g_pGameApp->GoOutGame(pCha->GetPlayer(), true);
+					//pCha->BickerNotice("???????????????? 3 ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????");
+					//pCha->BickerNotice(RES_STRING(GM_GAMEAPPNET_CPP_00002));
+					//pCha->SetExpScale(50);
+				}
+				pCha->m_retry3++;
+				//	yyy	change	end!
+			}
+			break;
+			case 4: {
+				/*	yyy	2008-3-27 change	begin!
+				if(!(pCha->m_retry4 % 30))
+				{
+					//pCha->BickerNotice("?????????????????????????????????????????????????????????????????????????????????????????????");
+					pCha->BickerNotice(RES_STRING(GM_GAMEAPPNET_CPP_00003));
+					pCha->SetExpScale(50);
+				}
+				pCha->m_retry4++;
+				*/
+				if (pCha->m_retry3 == 0)
+					//pCha->PopupNotice("????????????????60??????????...");
+					pCha->PopupNotice(RES_STRING(GM_GAMEAPPNET_CPP_00003));
+				if (pCha->m_retry3 == 1) {
+					KICKPLAYER(pCha->GetPlayer(), 5);
+					g_pGameApp->GoOutGame(pCha->GetPlayer(), true);
+				}
+
+				pCha->m_retry3++;
+
+				//	yyy	change	end!
+			}
+			break;
+			case 5: {
+				/*	yyy	2008-3-27 change	begin!
+				if(!(pCha->m_retry5 % 15))
+				{
+					pCha->BickerNotice("????????????????????????????????????????????????????????????????????????????????????????????????????? 5 ????????????????");
+					pCha->SetExpScale(0);
+
+				}
+
+				pCha->m_retry5++;
+				*/
+				if (pCha->m_retry3 == 0)
+					//pCha->PopupNotice("????????????????60??????????...");
+					pCha->PopupNotice(RES_STRING(GM_GAMEAPPNET_CPP_00008));
+				if (pCha->m_retry3 == 1) {
+					KICKPLAYER(pCha->GetPlayer(), 5);
+					g_pGameApp->GoOutGame(pCha->GetPlayer(), true);
+					//pCha->BickerNotice("????????????????????????????????????????????????????????????????????????????????????????????????????? 5 ????????????????");
+					//pCha->BickerNotice(RES_STRING(GM_GAMEAPPNET_CPP_00008));
+					//pCha->SetExpScale(0);
+				}
+				pCha->m_retry3++;
+				// pCha->m_retry5++;
+			}
+			break;
+			case 6: {
+				/*	yyy	2008-3-27 change	begin!
+				if(!(pCha->m_retry6 % 15))
+				{
+					pCha->BickerNotice("????????????????????????????????????????????????????????????????????????????????????????????????????? 5 ????????????????");
+					pCha->SetExpScale(0);
+				}
+
+				pCha->m_retry6++;
+				*/
+				if (pCha->m_retry3 == 0)
+					//pCha->PopupNotice("????????????????60??????????...");
+					pCha->PopupNotice(RES_STRING(GM_GAMEAPPNET_CPP_00008));
+				if (pCha->m_retry3 == 1) {
+					KICKPLAYER(pCha->GetPlayer(), 5);
+					g_pGameApp->GoOutGame(pCha->GetPlayer(), true);
+				}
+
+				pCha->m_retry3++;
+			}
+			break;
+			}
+		}
+	}
+	break;
+	default:
+		if (cmd / 500 == CMD_MM_BASE / 500) {
+			ProcessInterGameMsg(cmd, pGate, pkt);
+		}
+		else {
+			l_player = ToPointer<CPlayer>(pkt.ReverseReadInt64());
+			assert(GamePool::Instance().IsValidPlayerPtr(l_player));
+
+			if (cmd / 500 == CMD_PM_BASE / 500 && !l_player) {
+				ProcessGroupBroadcast(cmd, pGate, pkt);
+			}
+			else {
+				DWORD l_gateaddr = pkt.ReverseReadInt64();
+				if (l_player->GetGateAddr() != l_gateaddr) {
+					ToLogService("errors", LogLevel::Error,
+								 "DB ID:{}, address not matching??local :{}, gate:{},cmd={}, validity ({})",
+								 l_player->GetDBChaId(), l_player->GetGateAddr(),
+								 l_gateaddr, cmd, l_player->IsValidFlag());
+					break;
+				}
+
+				if (!l_player->IsValid())
+					break;
+
+				if (l_player->GetMainCha()->GetPlayer() != l_player) {
+					ToLogService("errors", LogLevel::Error,
+								 "two player not matching, character name: {}, Gate address [local {}, guest {}], cmd={}",
+								 l_player->GetMainCha()->GetLogName(),
+								 static_cast<void*>(l_player->GetMainCha()->GetPlayer()), static_cast<void*>(l_player),
+								 static_cast<int>(cmd));
+					break;
+				}
+
+				CCharacter* pCCha = l_player->GetCtrlCha();
+				if (!pCCha)
+					break;
+				if (g_pGameApp->IsValidEntity(pCCha->GetID(), pCCha->GetHandle())) {
+					g_pNoticeChar = pCCha;
+
+					g_ulCurID = pCCha->GetID();
+					g_lCurHandle = pCCha->GetHandle();
+
+					pCCha->ProcessPacket(cmd, pkt);
+
+					g_ulCurID = defINVALID_CHA_ID;
+					g_lCurHandle = defINVALID_CHA_HANDLE;
+
+					g_pNoticeChar = NULL;
+				}
+				else {
+					//ToLogService("errors", LogLevel::Error, "???CMD_CM_BASE?????[{}]?, ??????pCCha???", cmd);
+					ToLogService("errors", LogLevel::Error,
+								 "when receive CMD_CM_BASE message[{}], find character pCCha is null", cmd);
+				}
+				break;
+			}
+		}
+	}
+}
+
+// ??????????????
+void CGameApp::ProcessGuildChallMoney(GateServer* pGate, const Corsairs::Net::Msg::PmGuildChallMoneyMessage& msg) {
+	DWORD dwChaDBID = static_cast<DWORD>(msg.leaderId);
+	DWORD dwMoney = static_cast<DWORD>(msg.money);
+
+	//	2007-8-4	yangyinyu	change	begin!	//	?????????????????????????????????
+	CPlayer* pPlayer = GetPlayerByDBID(dwChaDBID);
+	if (pPlayer) {
+		CCharacter* pCha = pPlayer->GetMainCha();
+		//pCha->AddMoney( "??", dwMoney );
+		pCha->AddMoney(RES_STRING(GM_GAMEAPPNET_CPP_00017), dwMoney);
+		/*pCha->SystemNotice( "??????????%s?????????%s????????????????(%u)????????????\n", pszGuild1, pszGuild2, dwMoney );
+		ToLogService("common", "??{}??????????{}?????????{}????????????????({})????????????", pCha->GetGuildName(), pszGuild1, pszGuild2, dwMoney);*/
+		pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00009), msg.guildName1.c_str(), msg.guildName2.c_str(),
+						   dwMoney);
+		ToLogService(
+			"common",
+			"bidder and consortia [{}] battle was consortia [{}] replace, your consortia gold ({}) had back to you",
+			pCha->GetGuildName(), msg.guildName1.c_str(), msg.guildName2.c_str(), dwMoney);
+	}
+	else {
+		//LG( "?????????", "?????????????????????DBID[%u],???[%u].\n", dwChaDBID, dwMoney );
+		ToLogService("common", "not find deacon information finger??cannot back gold DBID[{}],how much money[{}].",
+					 dwChaDBID, dwMoney);
+	}
+}
+
+void CGameApp::ProcessGuildChallPrizeMoney(GateServer* pGate, const Corsairs::Net::Msg::PmGuildChallPrizeMoneyMessage& msg) {
+	DWORD dwChaDBID = static_cast<DWORD>(msg.leaderId);
+	DWORD dwMoney = static_cast<DWORD>(msg.money);
+	CPlayer* pPlayer = GetPlayerByDBID(dwChaDBID);
+	if (pPlayer) {
+		CCharacter* pCha = pPlayer->GetMainCha();
+		pCha->AddMoney("??", dwMoney);
+		/*pCha->SystemNotice( "????????????%s?????????????????????????%u????", pCha->GetGuildName(), dwMoney );
+		ToLogService("common", "????????????{}?????????????????????????{}????", pCha->GetGuildName(), dwMoney);*/
+		pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00010), pCha->GetGuildName(), dwMoney);
+		ToLogService(
+			"common",
+			"congratulate you have leading the consortia??{}??get win in consortia battle??gain bounty??{}????",
+			pCha->GetGuildName(), dwMoney);
+	}
+	else {
+		//LG( "?????????", "??????????????????????DBID[%u],???[%u]", dwChaDBID, dwMoney );
+		ToLogService("common", "cannot find deacon information finger??cannot hortation DBID[{}],how much money[{}]",
+					 dwChaDBID, dwMoney);
+	}
+}
+
+// ???????????
+void CGameApp::ProcessGuildMsg(GateServer* pGate, const Corsairs::Net::Msg::PmGuildInfoMessage& msg) {
+	DWORD dwChaDBID = static_cast<DWORD>(msg.chaId);
+	CPlayer* pPlayer = GetPlayerByDBID(dwChaDBID);
+	if (pPlayer) {
+		CCharacter* pCha = pPlayer->GetCtrlCha();
+		pCha->SetGuildName(msg.guildName.c_str());
+		pCha->SetGuildMotto(msg.guildMotto.c_str());
+		pCha->SyncGuildInfo();
+	}
+}
+
+// ?????????????
+void CGameApp::ProcessTeamMsg(GateServer* pGate, const Corsairs::Net::Msg::PmTeamMessage& teamMsg) {
+	char cTeamMsgType = static_cast<char>(teamMsg.msg);
+
+	switch (cTeamMsgType) {
+	case TEAM_MSG_ADD: break;
+	case TEAM_MSG_LEAVE: break;
+	case TEAM_MSG_UPDATE: break;
+	default:
+		return;
+	}
+
+	char cMemberCnt = static_cast<char>(teamMsg.count);
+
+	uplayer Team[MAX_TEAM_MEMBER];
+	CPlayer* PlayerList[MAX_TEAM_MEMBER];
+	bool CanSeenO[MAX_TEAM_MEMBER][2];
+	bool CanSeenN[MAX_TEAM_MEMBER][2];
+
+	for (char i = 0; i < cMemberCnt; i++) {
+		const auto& member = teamMsg.members[i];
+		Team[i].Init(member.gateName.c_str(), static_cast<DWORD>(member.gtAddr), static_cast<DWORD>(member.chaId));
+		if (!Team[i].pGate) {
+			ToLogService("common", "GameServer can't find matched Gate: {}, addr = 0x{:X}, chaid = {}.",
+						 member.gateName.c_str(), member.gtAddr, member.chaId);
+			ToLogService("common", "\tGameServer all Gate:");
+			BEGINGETGATE();
+			GateServer* pGateServer;
+			while (pGateServer = GETNEXTGATE()) {
+				ToLogService("common", "\t{}", pGateServer->GetName().c_str());
+			}
+		}
+
+		PlayerList[i] = GetPlayerByDBID(static_cast<DWORD>(member.chaId));
+	}
+
+	//RefreshTeamEyeshot(PlayerList, cMemberCnt, cTeamMsgType);
+	CheckSeeWithTeamChange(CanSeenO, PlayerList, cMemberCnt);
+	//if(PlayerList[0]==NULL)
+	//{
+	//	ToLogService("common", "????????game server????");
+	//}
+
+	int nLeftMember = cMemberCnt;
+	if (cTeamMsgType == TEAM_MSG_LEAVE) // ???????????
+	{
+		nLeftMember -= 1;
+		CPlayer* pLeave = PlayerList[cMemberCnt - 1];
+		if (pLeave) {
+			// Remove party fruit when leaving team
+			if (pLeave->IsTeamLeader()) {
+				for (auto i = 0; i < cMemberCnt - 1; ++i) {
+					if (PlayerList[i] && PlayerList[i]->GetMainCha()) {
+						PlayerList[i]->GetMainCha()->DelSkillState(217, true);
+						PlayerList[i]->GetMainCha()->DelSkillState(218, true);
+					}
+				}
+			}
+			pLeave->GetMainCha()->DelSkillState(217, true);
+			pLeave->GetMainCha()->DelSkillState(218, true);
+
+			pLeave->LeaveTeam();
+		}
+	}
+	else if (cTeamMsgType == TEAM_MSG_ADD) {
+		try {
+			[&]() {
+				CPlayer* newPly = PlayerList[cMemberCnt - 1];
+				if (!newPly) {
+					return;
+				}
+
+				CCharacter* newCha = newPly->GetMainCha();
+				if (!newCha) {
+					return;
+				}
+
+				CPlayer* leaderPly = GetPlayerByDBID(Team[0].m_dwDBChaId);
+				if (!leaderPly) {
+					return;
+				}
+
+				CCharacter* leaderCha = leaderPly->GetMainCha();
+				if (!leaderCha) {
+					return;
+				}
+
+				CSkillState& leader_states = leaderCha->m_CSkillState;
+
+				//if (ulCurTick - pSStateUnit->ulStartTick >= (unsigned long)pSStateUnit->lOnTick * 1000) // 
+				if (leader_states.HasState(217)) {
+					const auto& state = leader_states.GetSStateByID(217);
+					const auto use_duration = state->lOnTick * 1000;
+					const auto remaining = (use_duration - (GetTickCount() - state->ulStartTick)) / 1000;
+					newCha->AddSkillState(g_uchFightID, newCha->GetID(), newCha->GetHandle(), enumSKILL_TYPE_SELF,
+										  enumSKILL_TAR_LORS, enumSKILL_EFF_HELPFUL, 217, state->GetStateLv(),
+										  remaining, enumSSTATE_ADD, true);
+					return;
+				}
+
+				if (leader_states.HasState(218)) {
+					const auto& state = leader_states.GetSStateByID(218);
+					const auto use_duration = state->lOnTick * 1000;
+					const auto remaining = (use_duration - (GetTickCount() - state->ulStartTick)) / 1000;
+					newCha->AddSkillState(g_uchFightID, newCha->GetID(), newCha->GetHandle(), enumSKILL_TYPE_SELF,
+										  enumSKILL_TAR_LORS, enumSKILL_EFF_HELPFUL, 218, state->GetStateLv(),
+										  remaining, enumSSTATE_ADD, true);
+					return;
+				}
+			}();
+		}
+		catch (...) {
+			ToLogService("errors", LogLevel::Error, "Exception handling: newPly invalid, cMemberCnt={}", cMemberCnt);
+		}
+	}
+
+	// ?????????????, ???cMember????1, ?????????????
+	for (int i = 0; i < nLeftMember; i++) {
+		if (PlayerList[i] == NULL) continue;
+
+		PlayerList[i]->ClearTeamMember();
+		for (int j = 0; j < nLeftMember; j++) {
+			if (i == j) continue;
+			PlayerList[i]->AddTeamMember(&Team[j]);
+		}
+		if (nLeftMember != 1) {
+			PlayerList[i]->setTeamLeaderID(Team[0].m_dwDBChaId);
+			PlayerList[i]->NoticeTeamLeaderID();
+		}
+		else {
+			// Remove party fruit to last person in party
+			PlayerList[0]->GetMainCha()->DelSkillState(217, true);
+			PlayerList[0]->GetMainCha()->DelSkillState(218, true);
+		}
+	}
+
+	CheckSeeWithTeamChange(CanSeenN, PlayerList, cMemberCnt);
+	RefreshTeamEyeshot(CanSeenO, CanSeenN, PlayerList, cMemberCnt, cTeamMsgType);
+
+	//add by jilinlee 2007/07/11
+
+	for (char i = 0; i < cMemberCnt; i++) {
+		if (i < 5) {
+			if (PlayerList[i]) {
+				CCharacter* pCtrlCha = PlayerList[i]->GetCtrlCha();
+				if (pCtrlCha) {
+					SubMap* pSubMap = pCtrlCha->GetSubMap();
+					if (pSubMap && pSubMap->GetMapRes()) {
+						if (!(pSubMap->GetMapRes()->CanTeam())) {
+							// pCtrlCha ->SystemNotice("?????????????????????????");
+							pCtrlCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00011));
+							pCtrlCha->MoveCity("garner");
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//if(nLeftMember==1) ToLogService("common", "nLeftMember==1, ??????!");
+
+	//ToLogService("common", "??????????????\n");
+}
+
+// ????????????
+void CGameApp::CheckSeeWithTeamChange(bool CanSeen[][2], CPlayer** pCPlayerList, char chMemberCnt) {
+	if (chMemberCnt <= 1)
+		return;
+
+	CPlayer* pCProcPly = pCPlayerList[chMemberCnt - 1];
+	if (!pCProcPly)
+		return;
+
+	CPlayer* pCCurPly;
+	CCharacter *pCProcCha = pCProcPly->GetCtrlCha(), *pCCurCha;
+	for (char i = 0; i < chMemberCnt - 1; i++) {
+		pCCurPly = pCPlayerList[i];
+		if (!pCCurPly)
+			continue;
+		pCCurCha = pCCurPly->GetCtrlCha();
+		if (pCProcCha->IsInEyeshot(pCCurCha)) {
+			pCProcCha->CanSeen(pCCurCha) ? CanSeen[i][0] = true : CanSeen[i][0] = false;
+			pCCurCha->CanSeen(pCProcCha) ? CanSeen[i][1] = true : CanSeen[i][1] = false;
+		}
+	}
+}
+
+// ??????????????????????????????
+void CGameApp::RefreshTeamEyeshot(bool CanSeenOld[][2], bool CanSeenNew[][2], CPlayer** pCPlayerList, char chMemberCnt,
+								  char chRefType) {
+	if (chMemberCnt <= 1)
+		return;
+
+	CPlayer* pCProcPly = pCPlayerList[chMemberCnt - 1];
+	if (!pCProcPly)
+		return;
+
+	CPlayer* pCCurPly;
+	CCharacter *pCProcCha = pCProcPly->GetCtrlCha(), *pCCurCha;
+	for (char i = 0; i < chMemberCnt - 1; i++) {
+		pCCurPly = pCPlayerList[i];
+		if (!pCCurPly)
+			continue;
+		pCCurCha = pCCurPly->GetCtrlCha();
+		if (pCProcCha->IsInEyeshot(pCCurCha)) {
+			if (chRefType == TEAM_MSG_ADD) {
+				if (!CanSeenOld[i][0] && CanSeenNew[i][0])
+					pCCurCha->BeginSee(pCProcCha);
+				if (!CanSeenOld[i][1] && CanSeenNew[i][1])
+					pCProcCha->BeginSee(pCCurCha);
+			}
+			else if (chRefType == TEAM_MSG_LEAVE) {
+				if (CanSeenOld[i][0] && !CanSeenNew[i][0])
+					pCCurCha->EndSee(pCProcCha);
+				if (CanSeenOld[i][1] && !CanSeenNew[i][1])
+					pCProcCha->EndSee(pCCurCha);
+			}
+		}
+	}
+}
+
+// ???????????????????
+void CGameApp::RefreshTeamEyeshot(CPlayer** pCPlayerList, char chMemberCnt, char chRefType) {
+	if (chMemberCnt <= 1)
+		return;
+
+	CPlayer* pCProcPly = pCPlayerList[chMemberCnt - 1];
+	if (!pCProcPly)
+		return;
+
+	CPlayer* pCCurPly;
+	CCharacter *pCProcCha = pCProcPly->GetCtrlCha(), *pCCurCha;
+	bool bCurChaHide;
+	bool bProcChaHide = pCProcCha->IsHide();
+	for (char i = 0; i < chMemberCnt - 1; i++) {
+		pCCurPly = pCPlayerList[i];
+		if (!pCCurPly)
+			continue;
+		pCCurCha = pCCurPly->GetCtrlCha();
+		bCurChaHide = pCCurCha->IsHide();
+		if (bProcChaHide || bCurChaHide) // ????????
+		{
+			if (pCProcCha->IsInEyeshot(pCCurCha)) {
+				if (chRefType == TEAM_MSG_ADD) {
+					if (bProcChaHide)
+						pCCurCha->BeginSee(pCProcCha);
+					if (bCurChaHide)
+						pCProcCha->BeginSee(pCCurCha);
+				}
+				else if (chRefType == TEAM_MSG_LEAVE) {
+					if (bProcChaHide)
+						pCCurCha->EndSee(pCProcCha);
+					if (bCurChaHide)
+						pCProcCha->EndSee(pCCurCha);
+				}
+			}
+		}
+	}
+}
+
+BOOL CGameApp::AddVolunteer(CCharacter* pCha) {
+	if (pCha->IsVolunteer())
+		return false;
+	pCha->SetVolunteer(true);
+
+	SVolunteer volNode;
+	volNode.lJob = (long)pCha->getAttr(ATTR_JOB);
+	volNode.lLevel = pCha->GetLevel();
+	volNode.ulID = pCha->GetID();
+	strncpy_s(volNode.szMapName, sizeof(volNode.szMapName), pCha->GetPlyCtrlCha()->GetSubMap()->GetName(), _TRUNCATE);
+	strcpy(volNode.szName, pCha->GetName());
+
+	m_vecVolunteerList.push_back(volNode);
+
+	return true;
+}
+
+BOOL CGameApp::DelVolunteer(CCharacter* pCha) {
+	if (!pCha->IsVolunteer())
+		return false;
+	pCha->SetVolunteer(false);
+
+	vector<SVolunteer>::iterator it;
+	for (it = m_vecVolunteerList.begin(); it != m_vecVolunteerList.end(); it++) {
+		if (!strcmp((*it).szName, pCha->GetName())) {
+			m_vecVolunteerList.erase(it);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int CGameApp::GetVolNum() {
+	return (int)m_vecVolunteerList.size();
+}
+
+SVolunteer* CGameApp::GetVolInfo(int nIndex) {
+	if (nIndex < 0 || nIndex >= (int)m_vecVolunteerList.size())
+		return NULL;
+
+	return &m_vecVolunteerList[nIndex];
+}
+
+SVolunteer* CGameApp::FindVolunteer(const char* szName) {
+	vector<SVolunteer>::iterator it;
+	for (it = m_vecVolunteerList.begin(); it != m_vecVolunteerList.end(); it++) {
+		if (!strcmp((*it).szName, szName)) {
+			return (SVolunteer*)&(*it);
+		}
+	}
+	return NULL;
+}
+
+void CGameApp::ProcessInterGameMsg(unsigned short usCmd, GateServer* pGate, Corsairs::Net::RPacket& pkt) {
+	long lSrcID = pkt.ReadInt64();
+	short sNum = pkt.ReverseReadInt64();
+	long lGatePlayerAddr = pkt.ReverseReadInt64();
+	long lGatePlayerID = pkt.ReverseReadInt64();
+
+	switch (usCmd) {
+	case CMD_MM_UPDATEGUILDBANK: {
+		Corsairs::Net::Msg::MmUpdateGuildBankMessage m;
+		Corsairs::Net::Msg::deserialize(pkt, m);
+		int guildID = static_cast<int>(m.guildId);
+
+		CKitbag bag;
+		if (!game_db.GetGuildBank(guildID, &bag)) {
+			return;
+		}
+
+		BEGINGETGATE();
+		GateServer* pGateServer;
+		while (pGateServer = GETNEXTGATE()) {
+			for (CPlayer* pCPlayer : pGateServer->m_playerlist) {
+				CCharacter* pCha = pCPlayer->GetMainCha();
+				if (!pCha)
+					continue;
+				if (pCha->GetGuildID() == guildID) {
+					pCPlayer->SynGuildBank(&bag, 0);
+				}
+			}
+		}
+		break;
+	}
+	case CMD_MM_UPDATEGUILDBANKGOLD: {
+		Corsairs::Net::Msg::MmUpdateGuildBankGoldMessage m;
+		Corsairs::Net::Msg::deserialize(pkt, m);
+		int guildID = static_cast<int>(m.guildId);
+
+		unsigned long long gold = game_db.GetGuildBankGold(guildID);
+
+		//  :
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McUpdateGuildGoldMessage{to_string(gold).c_str()});
+
+		BEGINGETGATE();
+		GateServer* pGateServer;
+		while (pGateServer = GETNEXTGATE()) {
+			for (CPlayer* pCPlayer : pGateServer->m_playerlist) {
+				CCharacter* pCha = pCPlayer->GetMainCha();
+				if (!pCha)
+					continue;
+				pCPlayer->GetGuildGold();
+				//int canSeeBank = (pCha->guildPermission & emGldPermViewBank);
+				//if (pCha->GetGuildID() == guildID && canSeeBank == emGldPermViewBank){
+				//	pCha->ReflectINFof(pCha, WtPk);
+				//}
+			}
+		}
+		break;
+	}
+	case CMD_MM_GUILD_MOTTO: {
+		Corsairs::Net::Msg::MmGuildMottoMessage mottoMsg;
+		mottoMsg.guildId = lSrcID;
+		mottoMsg.motto = pkt.ReadString();
+		uLong l_gldid = static_cast<uLong>(mottoMsg.guildId);
+		const std::string& pszMotto = mottoMsg.motto;
+		{
+			//  FindPlayerChaByID
+			BEGINGETGATE();
+			GateServer* pGateServer;
+			while (pGateServer = GETNEXTGATE()) {
+				for (CPlayer* pCPlayer : pGateServer->m_playerlist) {
+					CCharacter* pCha = pCPlayer->GetMainCha();
+					if (!pCha)
+						continue;
+					if (pCha->GetGuildID() == l_gldid)
+					{
+						pCha->SetGuildMotto(pszMotto.c_str());
+						pCha->SyncGuildInfo();
+					}
+				}
+			}
+		}
+	}
+	break;
+	case CMD_MM_GUILD_DISBAND: {
+		uLong l_gldid = lSrcID;
+		{
+			//  FindPlayerChaByID
+			BEGINGETGATE();
+			GateServer* pGateServer;
+			while (pGateServer = GETNEXTGATE()) {
+				for (CPlayer* pCPlayer : pGateServer->m_playerlist) {
+					CCharacter* pCha = pCPlayer->GetMainCha();
+					if (!pCha)
+						continue;
+					if (pCha->GetGuildID() == l_gldid)
+					{
+						pCha->m_CChaAttr.ResetChangeFlag();
+						pCha->guildPermission = 0;
+						pCha->SetGuildID(0);
+						pCha->SetGuildState(0);
+						pCha->SynAttr(enumATTRSYN_TRADE);
+
+						pCha->SetGuildName("");
+						pCha->SetGuildMotto("");
+						pCha->SyncGuildInfo();
+						pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00013));
+					}
+				}
+			}
+		}
+	}
+	break;
+	case CMD_MM_GUILD_KICK: {
+		Corsairs::Net::Msg::MmGuildKickMessage kickMsg;
+		kickMsg.srcId = lSrcID;
+		kickMsg.guildName = pkt.ReadString();
+		uLong l_chaid = static_cast<uLong>(kickMsg.srcId);
+		CCharacter* pCha = FindMainPlayerChaByID(l_chaid);
+		if (pCha) {
+			pCha->SetGuildName("");
+			const std::string& l_gldname = kickMsg.guildName;
+			pCha->guildPermission = 0;
+			pCha->SetGuildID(0); //??????ID
+			pCha->SetGuildState(0);
+			pCha->SetGuildName("");
+			pCha->SetGuildMotto("");
+			// pCha->SystemNotice("?????????????????[%s].",l_gldname);
+			pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00014), l_gldname.c_str());
+			pCha->SyncGuildInfo();
+		}
+	}
+	break;
+	case CMD_MM_GUILD_APPROVE: {
+		Corsairs::Net::Msg::MmGuildApproveMessage msg;
+		msg.srcId = lSrcID;
+		Corsairs::Net::Msg::deserializeBody(pkt, msg);
+		Handle_GuildApprove(msg);
+		break;
+	}
+	case CMD_MM_GUILD_REJECT: {
+		Corsairs::Net::Msg::MmGuildRejectMessage rejectMsg;
+		rejectMsg.srcId = lSrcID;
+		rejectMsg.guildName = pkt.ReadString();
+		uLong l_chaid = static_cast<uLong>(rejectMsg.srcId);
+		CCharacter* pCha = FindMainPlayerChaByID(l_chaid);
+		if (pCha) {
+			pCha->SetGuildID(0);
+			pCha->SetGuildState(0);
+			pCha->SetGuildName("");
+
+			//pCha->SystemNotice("??????[%s]????????????.",pkt.ReadString());
+			pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00016), rejectMsg.guildName.c_str());
+		}
+	}
+	break;
+	case CMD_MM_QUERY_CHAPING: {
+		Corsairs::Net::Msg::MmQueryChaPingMessage pingMsg;
+		pingMsg.srcId = lSrcID;
+		pingMsg.chaName = pkt.ReadString();
+		const std::string& cszChaName = pingMsg.chaName;
+		CCharacter* pCCha = FindPlayerChaByName(cszChaName.c_str());
+		if (!pCCha)
+			break;
+
+		//  :  +  trailer
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McPingMessage{
+			(int64_t)GetTickCount(), (int64_t)ToAddress(pGate), lSrcID, lGatePlayerID, lGatePlayerAddr
+		});
+		WtPk.WriteInt64(1);
+		pCCha->ReflectINFof(pCCha, WtPk);
+
+		break;
+	}
+	case CMD_MM_QUERY_CHA: {
+		Corsairs::Net::Msg::MmQueryChaMessage queryMsg;
+		queryMsg.srcId = lSrcID;
+		queryMsg.chaName = pkt.ReadString();
+		const std::string& cszChaName = queryMsg.chaName;
+		CCharacter* pCCha = FindPlayerChaByName(cszChaName.c_str());
+		if (!pCCha || !pCCha->GetSubMap())
+			break;
+
+		//  :      +  trailer
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McQueryChaMessage{
+			lSrcID, pCCha->GetName(), pCCha->GetSubMap()->GetName(), (int64_t)pCCha->GetPos().x,
+			(int64_t)pCCha->GetPos().y, pCCha->GetID()
+		});
+		WtPk.WriteInt64(lGatePlayerID);
+		WtPk.WriteInt64(lGatePlayerAddr);
+		WtPk.WriteInt64(1);
+		pGate->SendData(WtPk);
+
+		break;
+	}
+	case CMD_MM_QUERY_CHAITEM: {
+		Corsairs::Net::Msg::MmQueryChaItemMessage queryItemMsg;
+		queryItemMsg.srcId = lSrcID;
+		queryItemMsg.chaName = pkt.ReadString();
+		const std::string& cszChaName = queryItemMsg.chaName;
+		CCharacter* pCCha = FindPlayerChaByName(cszChaName.c_str());
+		if (!pCCha)
+			break;
+		pCCha->m_CKitbag.SetChangeFlag();
+
+		//  :      (-)
+		{
+			auto kitbag = pCCha->BuildKitbagInfo(pCCha->m_CKitbag, enumSYN_KITBAG_INIT);
+			auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McQueryChaKitbagMessage{
+				lSrcID, kitbag, lGatePlayerID, lGatePlayerAddr, 1
+			});
+			pGate->SendData(WtPk);
+		}
+
+		break;
+	}
+	case CMD_MM_CALL_CHA: {
+		Corsairs::Net::Msg::MmCallChaMessage msg;
+		msg.srcId = lSrcID;
+		Corsairs::Net::Msg::deserializeBody(pkt, msg);
+		Handle_CallCha(msg);
+		break;
+	}
+	case CMD_MM_GOTO_CHA: {
+		Corsairs::Net::Msg::MmGotoChaMessage msg;
+		msg.srcId = lSrcID;
+		Corsairs::Net::Msg::deserializeBody(pkt, msg);
+		Handle_GotoCha(pGate, lGatePlayerID, lGatePlayerAddr, msg);
+		break;
+	}
+	case CMD_MM_KICK_CHA: {
+		Corsairs::Net::Msg::MmKickChaMessage msg;
+		msg.srcId = lSrcID;
+		Corsairs::Net::Msg::deserializeBody(pkt, msg);
+		Handle_KickCha(msg);
+		break;
+	}
+	case CMD_MM_NOTICE: {
+		Corsairs::Net::Msg::MmNoticeMessage noticeMsg;
+		noticeMsg.content = pkt.ReadString();
+		LocalNotice(noticeMsg.content.c_str());
+
+		break;
+	}
+	case CMD_MM_CHA_NOTICE: {
+		Corsairs::Net::Msg::MmChaNoticeMessage chaNoticeMsg;
+		chaNoticeMsg.content = pkt.ReadString();
+		chaNoticeMsg.chaName = pkt.ReadString();
+		const std::string& cszNotiCont = chaNoticeMsg.content;
+		const std::string& cszChaName = chaNoticeMsg.chaName;
+
+		if (cszChaName.empty())
+			LocalNotice(cszNotiCont.c_str());
+		else {
+			CCharacter* pCCha = FindPlayerChaByName(cszChaName.c_str());
+			if (!pCCha)
+				break;
+
+			//  :  
+			auto wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McSysInfoMessage{cszNotiCont});
+			pCCha->ReflectINFof(pCCha, wpk);
+		}
+
+		break;
+	}
+	case CMD_MM_DO_STRING: {
+		Corsairs::Net::Msg::MmDoStringMessage doStrMsg;
+		doStrMsg.luaCode = pkt.ReadString();
+		luaL_dostring(g_pLuaState, doStrMsg.luaCode.c_str());
+		break;
+	}
+	case CMD_MM_LOGIN: {
+		Corsairs::Net::Msg::MmLoginMessage loginMsg;
+		loginMsg.chaName = pkt.ReadString();
+		g_pGameApp->AfterPlayerLogin(loginMsg.chaName.c_str());
+
+		break;
+	}
+	case CMD_MM_GUILD_CHALL_PRIZEMONEY: {
+		Corsairs::Net::Msg::MmGuildChallPrizeMoneyMessage msg;
+		Corsairs::Net::Msg::deserialize(pkt, msg);
+		Handle_GuildChallPrizeMoney(msg);
+		break;
+	}
+	case CMD_MM_ADDCREDIT: {
+		Corsairs::Net::Msg::MmAddCreditMessage msg;
+		Corsairs::Net::Msg::deserialize(pkt, msg);
+		Handle_AddCredit(msg);
+		break;
+	}
+	case CMD_MM_STORE_BUY: {
+		Corsairs::Net::Msg::MmStoreBuyMessage msg;
+		Corsairs::Net::Msg::deserialize(pkt, msg);
+		Handle_StoreBuy(msg);
+		break;
+	}
+	case CMD_MM_ADDMONEY: {
+		Corsairs::Net::Msg::MmAddMoneyMessage msg;
+		Corsairs::Net::Msg::deserialize(pkt, msg);
+		Handle_AddMoney(msg);
+		break;
+	}
+	case CMD_MM_AUCTION: {
+		Corsairs::Net::Msg::MmAuctionMessage msg;
+		Corsairs::Net::Msg::deserialize(pkt, msg);
+
+		CCharacter* pCha = NULL;
+		CPlayer* pPlayer = g_pGameApp->GetPlayerByDBID(msg.charDbId);
+		if (pPlayer) {
+			pCha = pPlayer->GetMainCha();
+		}
+		if (pCha) {
+			g_luaAPI.Call("AuctionEnd", pCha);
+		}
+
+		break;
+	}
+	}
+}
+
+void CGameApp::ProcessGroupBroadcast(unsigned short usCmd, GateServer* pGate, Corsairs::Net::RPacket& pkt) {
+}
+
+void CGameApp::Handle_StoreBuy(const Corsairs::Net::Msg::MmStoreBuyMessage& msg) {
+	// Trade Server (InfoNet)  -- CStoreSystem
+}
+
+void CGameApp::Handle_AddMoney(const Corsairs::Net::Msg::MmAddMoneyMessage& msg) {
+	CPlayer* pPlayer = g_pGameApp->GetPlayerByDBID(static_cast<DWORD>(msg.charDbId));
+	if (pPlayer) {
+		CCharacter* pCha = pPlayer->GetMainCha();
+		pCha->AddMoney("??", static_cast<DWORD>(msg.money));
+	}
+}
+
+void CGameApp::Handle_AddCredit(const Corsairs::Net::Msg::MmAddCreditMessage& msg) {
+	CPlayer* pPlayer = GetPlayerByDBID(static_cast<DWORD>(msg.charDbId));
+	if (pPlayer) {
+		CCharacter* pCha = pPlayer->GetMainCha();
+		pCha->SetCredit((long)pCha->GetCredit() + static_cast<long>(msg.amount));
+		pCha->SynAttr(enumATTRSYN_TASK);
+	}
+}
+
+void CGameApp::Handle_GuildChallPrizeMoney(const Corsairs::Net::Msg::MmGuildChallPrizeMoneyMessage& msg) {
+	DWORD dwChaDBID = static_cast<DWORD>(msg.charDbId);
+	DWORD dwMoney = static_cast<DWORD>(msg.money);
+	CPlayer* pPlayer = GetPlayerByDBID(dwChaDBID);
+	if (pPlayer) {
+		CCharacter* pCha = pPlayer->GetMainCha();
+		pCha->AddMoney(RES_STRING(GM_GAMEAPPNET_CPP_00017), dwMoney);
+		pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00010), pCha->GetGuildName(), dwMoney);
+		ToLogService(
+			"common",
+			"congratulate you leading consortia [{}] ID [{}] get win in consortia battle, gain bounty [{}]",
+			pCha->GetGuildName(),
+			pCha->GetGuildID(), dwMoney);
+	}
+}
+
+void CGameApp::Handle_KickCha(const Corsairs::Net::Msg::MmKickChaMessage& msg) {
+	CCharacter* pCCha = FindPlayerChaByName(msg.targetName.c_str());
+	if (!pCCha || !pCCha->GetSubMap())
+		return;
+	KICKPLAYER(pCCha->GetPlayer(), static_cast<long>(msg.kickDuration));
+	g_pGameApp->GoOutGame(pCCha->GetPlayer(), true);
+}
+
+void CGameApp::Handle_GotoCha(GateServer* pGate, long lGatePlayerID, long lGatePlayerAddr,
+							  const Corsairs::Net::Msg::MmGotoChaMessage& msg) {
+	CCharacter* pCCha = FindPlayerChaByName(msg.targetName.c_str());
+	if (!pCCha || !pCCha->GetSubMap())
+		return;
+	switch (msg.mode) {
+	case 1: {
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmGotoChaMessage{
+			msg.srcId, msg.srcName, 2, {}, pCCha->IsBoat() ? 1LL : 0LL, pCCha->GetSubMap()->GetName(),
+			(int64_t)pCCha->GetPos().x, (int64_t)pCCha->GetPos().y, (int64_t)pCCha->GetSubMap()->GetCopyNO()
+		});
+		WtPk.WriteInt64(lGatePlayerID);
+		WtPk.WriteInt64(lGatePlayerAddr);
+		WtPk.WriteInt64(1);
+		pGate->SendData(WtPk);
+		break;
+	}
+	case 2: {
+		if ((msg.isBoat != 0) != pCCha->IsBoat())
+			break;
+		pCCha->SwitchMap(pCCha->GetSubMap(), msg.mapName.c_str(),
+						 static_cast<Long>(msg.posX), static_cast<Long>(msg.posY), true, enumSWITCHMAP_CARRY,
+						 static_cast<Long>(msg.copyNo));
+		break;
+	}
+	}
+}
+
+void CGameApp::Handle_CallCha(const Corsairs::Net::Msg::MmCallChaMessage& msg) {
+	CCharacter* pCCha = FindPlayerChaByName(msg.targetName.c_str());
+	if (!pCCha || !pCCha->GetSubMap())
+		return;
+	if ((msg.isBoat != 0) != pCCha->IsBoat())
+		return;
+	pCCha->SwitchMap(pCCha->GetSubMap(), msg.mapName.c_str(),
+					 static_cast<Long>(msg.posX), static_cast<Long>(msg.posY), true, enumSWITCHMAP_CARRY,
+					 static_cast<Long>(msg.copyNo));
+}
+
+void CGameApp::Handle_GuildApprove(const Corsairs::Net::Msg::MmGuildApproveMessage& msg) {
+	CCharacter* pCha = FindMainPlayerChaByID(static_cast<uLong>(msg.srcId));
+	if (pCha) {
+		pCha->SetGuildID(static_cast<int>(msg.guildId));
+		pCha->SetGuildState(0);
+		pCha->SetGuildName(msg.guildName.c_str());
+		pCha->SetGuildMotto(msg.guildMotto.c_str());
+		pCha->SystemNotice(RES_STRING(GM_GAMEAPPNET_CPP_00015), msg.guildName.c_str());
+		pCha->SyncGuildInfo();
+	}
+}
+
+void CGameApp::ProcessGarner2Update(const Corsairs::Net::Msg::PmGarner2UpdateLegacyMessage& msg) {
+	long chaid[6];
+	CPlayer* pplay;
+	for (int i = 0; i < 6; ++i) chaid[i] = static_cast<long>(msg.chaIds[i]);
+	if (0 != chaid[0]) {
+		pplay = FindPlayerByDBChaID(chaid[0]);
+		if (pplay) {
+			pplay->SetGarnerWiner(0);
+		}
+	}
+
+	for (int i = 1; i < 6 && chaid[i]; i++) {
+		pplay = FindPlayerByDBChaID(chaid[0]);
+		if (pplay) {
+			pplay->SetGarnerWiner(i);
+		}
+	}
+}
+
+void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::MapEntryMessage& mapMsg) {
+	//  : 1-    = srcMapName (    szTarMapN),
+	// 2-  = targetMapName (    szSrcMapN).    .
+	const auto& szTarMapN = mapMsg.srcMapName;
+	const auto& szSrcMapN = mapMsg.targetMapName;
+
+	switch (mapMsg.subType) {
+	case enumMAPENTRY_CREATE: {
+		CMapRes* pCMapRes;
+		SubMap* pCMap;
+		pCMapRes = FindMapByName(szTarMapN.c_str());
+		if (!pCMapRes) {
+			break;
+		}
+		pCMap = pCMapRes->GetCopy();
+		Long lPosX = static_cast<Long>(mapMsg.posX);
+		Long lPosY = static_cast<Long>(mapMsg.posY);
+		Short sMapCopyNum = static_cast<Short>(mapMsg.mapCopyNum);
+		Short sCopyPlyNum = static_cast<Short>(mapMsg.copyPlayerNum);
+		CDynMapEntryCell CEntryCell;
+		CEntryCell.SetMapName(szTarMapN.c_str());
+		CEntryCell.SetTMapName(szSrcMapN.c_str());
+		CEntryCell.SetEntiPos(lPosX, lPosY);
+		CDynMapEntryCell* pCEntry = g_CDMapEntry.Add(&CEntryCell);
+		if (pCEntry) {
+			pCEntry->SetCopyNum(sMapCopyNum);
+			pCEntry->SetCopyPlyNum(sCopyPlyNum);
+			string strScript;
+			Short sLineNum = static_cast<Short>(mapMsg.luaScriptLines.size());
+			if (g_cchLogMapEntry)
+				//LG("??????????", "????????????????? %s --> %s[%u, %u]????????? %d\n", szSrcMapN, szTarMapN, lPosX, lPosY, sLineNum);
+				ToLogService("common", "receive request to create entry??position {} --> {}[{}, {}]??script line {}",
+							 szSrcMapN.c_str(), szTarMapN.c_str(), lPosX, lPosY, sLineNum);
+			for (const auto& line : mapMsg.luaScriptLines) {
+				strScript += line;
+				strScript += " ";
+			}
+			luaL_dostring(g_pLuaState, strScript.c_str());
+			g_luaAPI.Call("config_entry", pCEntry);
+
+			if (pCEntry->GetEntiID() > 0) {
+				SItemGrid SItemCont;
+				SItemCont.sID = (Short)pCEntry->GetEntiID();
+				SItemCont.sNum = 1;
+				SItemCont.SetDBParam(-1, 0);
+				SItemCont.chForgeLv = 0;
+				SItemCont.SetInstAttrInvalid();
+				CItem* pCItem = pCMap->ItemSpawn(&SItemCont, lPosX, lPosY, enumITEM_APPE_NATURAL, 0,
+												 g_pCSystemCha->GetID(), g_pCSystemCha->GetHandle(), -1, -1,
+												 pCEntry->GetEvent());
+				if (pCItem) {
+					pCItem->SetOnTick(0);
+					pCEntry->SetEnti(pCItem);
+				}
+				else {
+					if (g_cchLogMapEntry)
+						//LG("??????????", "?????????????? %s --> %s[%u, %u]?????? %u ???????\n", szSrcMapN, szTarMapN, lPosX, lPosY, SItemCont.sID);
+						ToLogService("common", "create entry failed??position {} --> {}[{}, {}]??item {} create failed",
+									 szSrcMapN.c_str(), szTarMapN.c_str(), lPosX, lPosY, SItemCont.sID);
+					g_CDMapEntry.Del(pCEntry);
+					break;
+				}
+			}
+			//  :     
+			auto wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmMapEntryResultMessage{
+				szSrcMapN, szTarMapN, (int64_t)enumMAPENTRY_RETURN, (int64_t)enumMAPENTRYO_CREATE_SUC
+			});
+
+			BEGINGETGATE();
+			GateServer* pGateServer = NULL;
+			while (pGateServer = GETNEXTGATE()) {
+				pGateServer->SendData(wpk);
+				break;
+			}
+			if (g_cchLogMapEntry)
+				//LG("??????????", "?????????????? %s --> %s[%u, %u] \n", szSrcMapN, szTarMapN, lPosX, lPosY);
+				ToLogService("common", "create entry success??position {} --> {}[{}, {}] ", szSrcMapN.c_str(),
+							 szTarMapN.c_str(), lPosX, lPosY);
+
+			g_luaAPI.Call("after_create_entry", pCEntry);
+		}
+	}
+	break;
+	case enumMAPENTRY_SUBPLAYER: {
+		Short sCopyNO = static_cast<Short>(mapMsg.copyNo);
+		Short sSubNum = static_cast<Short>(mapMsg.numPlayers);
+
+		CDynMapEntryCell* pCEntry = g_CDMapEntry.GetEntry(szSrcMapN.c_str());
+		if (pCEntry) {
+			CMapEntryCopyCell* pCCopyInfo = pCEntry->GetCopy(sCopyNO);
+			if (pCCopyInfo)
+				pCCopyInfo->AddCurPlyNum(-1 * sSubNum);
+		}
+	}
+	break;
+	case enumMAPENTRY_SUBCOPY: {
+		Short sCopyNO = static_cast<Short>(mapMsg.copyNo);
+
+		CDynMapEntryCell* pCEntry = g_CDMapEntry.GetEntry(szSrcMapN.c_str());
+		if (pCEntry) {
+			pCEntry->ReleaseCopy(sCopyNO);
+		}
+		//  :     
+		Corsairs::Net::Msg::MapEntryMessage meMsg;
+		meMsg.srcMapName = szSrcMapN;
+		meMsg.targetMapName = szTarMapN;
+		meMsg.subType = Corsairs::Net::Msg::MAPENTRY_RETURN;
+		meMsg.resultCode = enumMAPENTRYO_COPY_CLOSE_SUC;
+		meMsg.returnCopyNo = sCopyNO;
+		auto wpk = Corsairs::Net::Msg::serialize(meMsg, CMD_MT_MAPENTRY);
+
+		BEGINGETGATE();
+		GateServer* pGateServer = NULL;
+		while (pGateServer = GETNEXTGATE()) {
+			pGateServer->SendData(wpk);
+			break;
+		}
+	}
+	break;
+	case enumMAPENTRY_DESTROY: {
+		CDynMapEntryCell* pCEntry = g_CDMapEntry.GetEntry(szSrcMapN.c_str());
+		if (g_cchLogMapEntry)
+			//LG("??????????", "????????????????? %s --> %s\n", szSrcMapN, szTarMapN);
+			ToLogService("common", "receive request to destroy entry??position {} --> {}", szSrcMapN.c_str(),
+						 szTarMapN.c_str());
+		if (pCEntry) {
+			string strScript = "after_destroy_entry_";
+			strScript += szSrcMapN;
+			g_luaAPI.Call(strScript.c_str(), pCEntry);
+			g_CDMapEntry.Del(pCEntry);
+
+			//  :     
+			auto wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmMapEntryResultMessage{
+				szSrcMapN, szTarMapN, (int64_t)enumMAPENTRY_RETURN, (int64_t)enumMAPENTRYO_DESTROY_SUC
+			});
+
+			BEGINGETGATE();
+			GateServer* pGateServer = NULL;
+			while (pGateServer = GETNEXTGATE()) {
+				pGateServer->SendData(wpk);
+				break;
+			}
+			if (g_cchLogMapEntry)
+				//LG("??????????", "?????????????? %s --> %s\n", szSrcMapN, szTarMapN);
+				ToLogService("common", "destroy entry success??position {} --> {}", szSrcMapN.c_str(),
+							 szTarMapN.c_str());
+		}
+	}
+	break;
+	case enumMAPENTRY_COPYPARAM: {
+		CMapRes* pCMapRes;
+		SubMap* pCMap;
+		pCMapRes = FindMapByName(szTarMapN.c_str());
+		if (!pCMapRes)
+			break;
+		pCMap = pCMapRes->GetCopy(static_cast<Short>(mapMsg.copyId));
+		if (!pCMap)
+			break;
+		for (dbc::Char i = 0; i < defMAPCOPY_INFO_PARAM_NUM; i++)
+			pCMap->SetInfoParam(i, static_cast<Long>(mapMsg.params[i]));
+	}
+	break;
+	case enumMAPENTRY_COPYRUN: {
+		CMapRes* pCMapRes;
+		SubMap* pCMap;
+		pCMapRes = FindMapByName(szTarMapN.c_str());
+		if (!pCMapRes)
+			break;
+		pCMap = pCMapRes->GetCopy(static_cast<Short>(mapMsg.copyId));
+		if (!pCMap)
+			break;
+
+		Char chType = static_cast<Char>(mapMsg.condType);
+		Long lVal = static_cast<Long>(mapMsg.condValue);
+		pCMapRes->SetCopyStartCondition(chType, lVal);
+	}
+	break;
+	case enumMAPENTRY_RETURN: {
+		CMapRes* pCMap = FindMapByName(szTarMapN.c_str(), true);
+		if (!pCMap)
+			break;
+		switch (mapMsg.resultCode) {
+		case enumMAPENTRYO_CREATE_SUC: {
+			pCMap->CheckEntryState(enumMAPENTRY_STATE_OPEN);
+			if (g_cchLogMapEntry)
+				//LG("??????????", "????????????????? %s --> %s\n", szSrcMapN, szTarMapN);
+				ToLogService("common", "receive entry create success ??position {} --> {}", szSrcMapN.c_str(),
+							 szTarMapN.c_str());
+		}
+		break;
+		case enumMAPENTRYO_DESTROY_SUC: {
+			if (g_cchLogMapEntry)
+				//LG("??????????", "???????????????? %s --> %s\n", szSrcMapN, szTarMapN);
+				ToLogService("common", "receive entry destroy success??position {} --> {}", szSrcMapN.c_str(),
+							 szTarMapN.c_str());
+			pCMap->CheckEntryState(enumMAPENTRY_STATE_CLOSE_SUC);
+		}
+		break;
+		case enumMAPENTRYO_COPY_CLOSE_SUC: {
+			pCMap->CopyClose(static_cast<Short>(mapMsg.returnCopyNo));
+		}
+		break;
+		default:
+			break;
+		}
+	}
+	break;
+	default:
+		break;
+	};
+}

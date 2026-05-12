@@ -1,0 +1,22 @@
+#pragma once
+
+#include "Database/TableData.h"
+#include <string>
+#include <vector>
+
+#define MAX_GROUP_GATE   5
+#define MAX_REGION_GROUP 20
+#define MAX_REGION       20
+
+// Запись таблицы серверов (группа шлюзов)
+
+namespace Corsairs::Common::Server {
+
+class CServerGroupInfo : public EntityData {
+public:
+	std::string region{};
+	std::vector<std::string> gateIPs{};
+};
+
+} // namespace Corsairs::Common::Server
+

@@ -5,7 +5,7 @@
 // Header-only.     WriteInt64/WriteString/ReadInt64/ReadString.
 
 #include "Packet.h"
-#include "../../common/include/NetCommand.h"
+#include "../../common/include/Network/NetCommand.h"
 #include <string>
 #include <vector>
 #include <optional>
@@ -13,10 +13,10 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace net {
-	namespace msg {
+namespace Corsairs::Net {
+	namespace Msg {
 		// =================================================================
-		//   
+		//
 		// =================================================================
 
 		///    (C++: enumEQUIP_NUM).
@@ -768,20 +768,25 @@ namespace net {
 		};
 
 		///   GM-.
-		struct GmInfoStartData { std::vector<GmFrndEntry> entries; };
-		struct GmInfoChaIdData { int64_t chaId = 0; };
+		struct GmInfoStartData {
+			std::vector<GmFrndEntry> entries;
+		};
+
+		struct GmInfoChaIdData {
+			int64_t chaId = 0;
+		};
 
 		///   GM- (std::variant).
 		using GmInfoData = std::variant<
-			std::monostate,     // unknown
-			GmInfoStartData,    // START(1)
-			GmFrndAddEntry,     // ADD(2)
-			GmInfoChaIdData     // ONLINE(4) / OFFLINE(5) / DEL(3)
+			std::monostate, // unknown
+			GmInfoStartData, // START(1)
+			GmFrndAddEntry, // ADD(2)
+			GmInfoChaIdData // ONLINE(4) / OFFLINE(5) / DEL(3)
 		>;
 
 		///   PC_GM_INFO (std::variant).
 		struct PcGmInfoMessage {
-			int64_t type = 0; //   
+			int64_t type = 0; //
 			GmInfoData data;
 		};
 
@@ -800,20 +805,26 @@ namespace net {
 		};
 
 		///     .
-		struct FrndRefreshStartData { FrndSelfData self; std::vector<FrndGroupData> groups; };
-		struct FrndRefreshChaIdData { int64_t chaId = 0; };
+		struct FrndRefreshStartData {
+			FrndSelfData self;
+			std::vector<FrndGroupData> groups;
+		};
+
+		struct FrndRefreshChaIdData {
+			int64_t chaId = 0;
+		};
 
 		///     (std::variant).
 		using FrndRefreshData = std::variant<
-			std::monostate,         // unknown
-			FrndRefreshStartData,   // START(1)
-			GmFrndAddEntry,         // ADD(2)
-			FrndRefreshChaIdData    // ONLINE(4) / OFFLINE(5) / DEL(3)
+			std::monostate, // unknown
+			FrndRefreshStartData, // START(1)
+			GmFrndAddEntry, // ADD(2)
+			FrndRefreshChaIdData // ONLINE(4) / OFFLINE(5) / DEL(3)
 		>;
 
 		///   PC_FRND_REFRESH (std::variant).
 		struct PcFrndRefreshFullMessage {
-			int64_t type = 0; //   
+			int64_t type = 0; //
 			FrndRefreshData data;
 		};
 
@@ -880,35 +891,48 @@ namespace net {
 
 		///    (CMD_PC_GUILD: MSG_GUILD_START / MSG_GUILD_ADD).
 		struct GuildMemberEntry {
-			int64_t online = 0; int64_t chaId = 0;
-			std::string chaName; std::string motto; std::string job;
-			int64_t degree = 0; int64_t icon = 0; int64_t permission = 0;
+			int64_t online = 0;
+			int64_t chaId = 0;
+			std::string chaName;
+			std::string motto;
+			std::string job;
+			int64_t degree = 0;
+			int64_t icon = 0;
+			int64_t permission = 0;
 		};
 
 		///    .
-		struct GuildChaIdData { int64_t chaId = 0; };
-		struct GuildStopData {};
+		struct GuildChaIdData {
+			int64_t chaId = 0;
+		};
+
+		struct GuildStopData {
+		};
+
 		struct GuildStartData {
 			int64_t packetIndex = 0;
-			int64_t guildId = 0;       //   packetIndex==0
-			std::string guildName;     //   packetIndex==0
-			int64_t leaderId = 0;      //   packetIndex==0
+			int64_t guildId = 0; //   packetIndex==0
+			std::string guildName; //   packetIndex==0
+			int64_t leaderId = 0; //   packetIndex==0
 			std::vector<GuildMemberEntry> members;
 		};
-		struct GuildAddData { GuildMemberEntry member; };
+
+		struct GuildAddData {
+			GuildMemberEntry member;
+		};
 
 		///    (std::variant).
 		using PcGuildData = std::variant<
-			std::monostate,    // unknown
-			GuildChaIdData,    // ONLINE / OFFLINE / DEL
-			GuildStopData,     // STOP
-			GuildStartData,    // START
-			GuildAddData       // ADD
+			std::monostate, // unknown
+			GuildChaIdData, // ONLINE / OFFLINE / DEL
+			GuildStopData, // STOP
+			GuildStartData, // START
+			GuildAddData // ADD
 		>;
 
 		/// CMD_PC_GUILD     (std::variant).
 		struct PcGuildMessage {
-			int64_t msg = 0; // MSG_GUILD_*    
+			int64_t msg = 0; // MSG_GUILD_*
 			PcGuildData data;
 		};
 
@@ -927,8 +951,8 @@ namespace net {
 		};
 
 		struct PcSessCreateMessage {
-			int64_t sessId;          // 0 = , >0 = ID 
-			std::string errorMsg;    //  sessId == 0
+			int64_t sessId; // 0 = , >0 = ID
+			std::string errorMsg; //  sessId == 0
 			std::vector<SessMemberData> members; //  sessId > 0
 			int64_t notiPlyCount;
 		};
@@ -1037,7 +1061,7 @@ namespace net {
 		/// CMD_MT_LOGIN (1501): GameServer  GateServer.  GameServer  GateServer.
 		struct MtLoginMessage {
 			std::string serverName;
-			std::string mapNameList; //    
+			std::string mapNameList; //
 		};
 
 		/// CMD_TM_LOGIN_ACK (1005): GateServer  GameServer.   MT_LOGIN.
@@ -1246,13 +1270,13 @@ namespace net {
 
 		/// CMD_MM_GUILD_REJECT (4008):    .
 		struct MmGuildRejectMessage {
-			int64_t srcId = 0; // chaId 
+			int64_t srcId = 0; // chaId
 			std::string guildName;
 		};
 
 		/// CMD_MM_GUILD_APPROVE (4009):    .
 		struct MmGuildApproveMessage {
-			int64_t srcId = 0; // chaId 
+			int64_t srcId = 0; // chaId
 			int64_t guildId = 0;
 			std::string guildName;
 			std::string guildMotto;
@@ -1260,7 +1284,7 @@ namespace net {
 
 		/// CMD_MM_GUILD_KICK (4010):   .
 		struct MmGuildKickMessage {
-			int64_t srcId = 0; // chaId 
+			int64_t srcId = 0; // chaId
 			std::string guildName;
 		};
 
@@ -1346,7 +1370,7 @@ namespace net {
 		};
 
 		// =================================================================
-		//   J: GameServer -> Client (MC)   
+		//   J: GameServer -> Client (MC)
 		// =================================================================
 
 		/// CMD_MC_SYSINFO (517):   .
@@ -1355,7 +1379,7 @@ namespace net {
 		};
 
 		// =================================================================
-		//   G: Client -> GateServer (CM)  / 
+		//   G: Client -> GateServer (CM)  /
 		// =================================================================
 
 		struct CmLoginRequest {
@@ -1631,7 +1655,7 @@ namespace net {
 			int64_t ctrlChaId = 0;
 		};
 
-		/// Trailing- MC_ENTERMAP,  GateServer   
+		/// Trailing- MC_ENTERMAP,  GateServer
 		///    (loginFlag/playerCount/playerAddr).
 		///     .
 		struct McEnterMapTrailer {
@@ -2822,16 +2846,18 @@ namespace net {
 						w.WriteInt64(e.icon);
 						w.WriteInt64(e.status);
 					}
-				} else if constexpr (std::is_same_v<T, GmInfoChaIdData>) {
+				}
+				else if constexpr (std::is_same_v<T, GmInfoChaIdData>) {
 					w.WriteInt64(arg.chaId);
-				} else if constexpr (std::is_same_v<T, GmFrndAddEntry>) {
+				}
+				else if constexpr (std::is_same_v<T, GmFrndAddEntry>) {
 					w.WriteString(arg.group);
 					w.WriteInt64(arg.chaId);
 					w.WriteString(arg.chaName);
 					w.WriteString(arg.motto);
 					w.WriteInt64(arg.icon);
 				}
-				// std::monostate  
+				// std::monostate
 			}, msg.data);
 			return w;
 		}
@@ -2846,13 +2872,15 @@ namespace net {
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr (std::is_same_v<T, FrndRefreshChaIdData>) {
 					w.WriteInt64(arg.chaId);
-				} else if constexpr (std::is_same_v<T, GmFrndAddEntry>) {
+				}
+				else if constexpr (std::is_same_v<T, GmFrndAddEntry>) {
 					w.WriteString(arg.group);
 					w.WriteInt64(arg.chaId);
 					w.WriteString(arg.chaName);
 					w.WriteString(arg.motto);
 					w.WriteInt64(arg.icon);
-				} else if constexpr (std::is_same_v<T, FrndRefreshStartData>) {
+				}
+				else if constexpr (std::is_same_v<T, FrndRefreshStartData>) {
 					w.WriteInt64(arg.self.chaId);
 					w.WriteString(arg.self.chaName);
 					w.WriteString(arg.self.motto);
@@ -2870,7 +2898,7 @@ namespace net {
 						}
 					}
 				}
-				// std::monostate  
+				// std::monostate
 			}, msg.data);
 			return w;
 		}
@@ -2968,9 +2996,14 @@ namespace net {
 
 		/// :    .
 		inline void serializeGuildMemberEntry(WPacket& w, const GuildMemberEntry& e) {
-			w.WriteInt64(e.online); w.WriteInt64(e.chaId);
-			w.WriteString(e.chaName); w.WriteString(e.motto); w.WriteString(e.job);
-			w.WriteInt64(e.degree); w.WriteInt64(e.icon); w.WriteInt64(e.permission);
+			w.WriteInt64(e.online);
+			w.WriteInt64(e.chaId);
+			w.WriteString(e.chaName);
+			w.WriteString(e.motto);
+			w.WriteString(e.job);
+			w.WriteInt64(e.degree);
+			w.WriteInt64(e.icon);
+			w.WriteInt64(e.permission);
 		}
 
 		/// CMD_PC_GUILD    (  msg, std::variant).
@@ -2983,7 +3016,8 @@ namespace net {
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr (std::is_same_v<T, GuildChaIdData>) {
 					w.WriteInt64(arg.chaId);
-				} else if constexpr (std::is_same_v<T, GuildStartData>) {
+				}
+				else if constexpr (std::is_same_v<T, GuildStartData>) {
 					w.WriteInt64(static_cast<int64_t>(arg.members.size()));
 					w.WriteInt64(arg.packetIndex);
 					if (arg.packetIndex == 0 && !arg.members.empty()) {
@@ -2992,10 +3026,11 @@ namespace net {
 						w.WriteInt64(arg.leaderId);
 					}
 					for (const auto& m : arg.members) serializeGuildMemberEntry(w, m);
-				} else if constexpr (std::is_same_v<T, GuildAddData>) {
+				}
+				else if constexpr (std::is_same_v<T, GuildAddData>) {
 					serializeGuildMemberEntry(w, arg.member);
 				}
-				// GuildStopData / std::monostate    
+				// GuildStopData / std::monostate
 			}, msg.data);
 			return w;
 		}
@@ -3026,7 +3061,8 @@ namespace net {
 			w.WriteInt64(msg.sessId);
 			if (msg.sessId == 0) {
 				w.WriteString(msg.errorMsg);
-			} else {
+			}
+			else {
 				w.WriteInt64(static_cast<int64_t>(msg.members.size()));
 				for (const auto& m : msg.members) {
 					w.WriteInt64(m.chaId);
@@ -3981,7 +4017,7 @@ namespace net {
 		}
 
 		// =================================================================
-		//  Deserialize     RPacket  
+		//  Deserialize     RPacket
 		// =================================================================
 
 		// ---  A: TP/PT ---
@@ -4626,6 +4662,7 @@ namespace net {
 			r.gateAddr = static_cast<uint32_t>(pk.ReadInt64());
 			r.gpAddr = static_cast<uint32_t>(pk.ReadInt64());
 		}
+
 		inline void deserialize(RPacket& pk, PmGarner2UpdateLegacyMessage& r) {
 			r.chaIds[0] = pk.ReverseReadInt64();
 			for (int i = 1; i < 6; ++i) r.chaIds[i] = pk.ReadInt64();
@@ -4708,7 +4745,7 @@ namespace net {
 			case MSG_FRND_REFRESH_OFFLINE:
 			case MSG_FRND_REFRESH_ONLINE:
 			case MSG_FRND_REFRESH_DEL:
-				r.data = GmInfoChaIdData{ pk.ReadInt64() };
+				r.data = GmInfoChaIdData{pk.ReadInt64()};
 				break;
 			case MSG_FRND_REFRESH_ADD: {
 				GmFrndAddEntry d;
@@ -4733,7 +4770,7 @@ namespace net {
 			case MSG_FRND_REFRESH_ONLINE:
 			case MSG_FRND_REFRESH_OFFLINE:
 			case MSG_FRND_REFRESH_DEL:
-				r.data = FrndRefreshChaIdData{ pk.ReadInt64() };
+				r.data = FrndRefreshChaIdData{pk.ReadInt64()};
 				break;
 			case MSG_FRND_REFRESH_ADD: {
 				GmFrndAddEntry d;
@@ -4838,9 +4875,14 @@ namespace net {
 		/// :    .
 		inline GuildMemberEntry deserializeGuildMemberEntry(RPacket& pk) {
 			GuildMemberEntry e;
-			e.online = pk.ReadInt64(); e.chaId = pk.ReadInt64();
-			e.chaName = pk.ReadString(); e.motto = pk.ReadString(); e.job = pk.ReadString();
-			e.degree = pk.ReadInt64(); e.icon = pk.ReadInt64(); e.permission = pk.ReadInt64();
+			e.online = pk.ReadInt64();
+			e.chaId = pk.ReadInt64();
+			e.chaName = pk.ReadString();
+			e.motto = pk.ReadString();
+			e.job = pk.ReadString();
+			e.degree = pk.ReadInt64();
+			e.icon = pk.ReadInt64();
+			e.permission = pk.ReadInt64();
 			return e;
 		}
 
@@ -4851,7 +4893,7 @@ namespace net {
 			case MSG_GUILD_ONLINE:
 			case MSG_GUILD_OFFLINE:
 			case MSG_GUILD_DEL:
-				r.data = GuildChaIdData{ pk.ReadInt64() };
+				r.data = GuildChaIdData{pk.ReadInt64()};
 				break;
 			case MSG_GUILD_START: {
 				GuildStartData d;
@@ -4871,7 +4913,7 @@ namespace net {
 				r.data = GuildStopData{};
 				break;
 			case MSG_GUILD_ADD:
-				r.data = GuildAddData{ deserializeGuildMemberEntry(pk) };
+				r.data = GuildAddData{deserializeGuildMemberEntry(pk)};
 				break;
 			default:
 				r.data = std::monostate{};
@@ -4897,7 +4939,8 @@ namespace net {
 			r.sessId = pk.ReadInt64();
 			if (r.sessId == 0) {
 				r.errorMsg = pk.ReadString();
-			} else {
+			}
+			else {
 				int64_t count = pk.ReadInt64();
 				r.members.resize(static_cast<size_t>(count));
 				for (int64_t i = 0; i < count; ++i) {
@@ -5056,7 +5099,7 @@ namespace net {
 				r.posY = pk.ReadInt64();
 				r.mapCopyNum = pk.ReadInt64();
 				r.copyPlayerNum = pk.ReadInt64();
-				// Lua-: count  ReverseRead (  ),    
+				// Lua-: count  ReverseRead (  ),
 				int16_t lineNum = static_cast<int16_t>(pk.ReverseReadInt64());
 				r.luaScriptLines.reserve(static_cast<size_t>(lineNum));
 				for (int16_t i = 0; i < lineNum; ++i)
@@ -5183,6 +5226,7 @@ namespace net {
 			r.posY = pk.ReadInt64();
 			r.copyNo = pk.ReadInt64();
 		}
+
 		inline void deserializeBody(RPacket& pk, MmCallChaMessage& r) {
 			r.targetName = pk.ReadString();
 			r.isBoat = pk.ReadInt64();
@@ -5207,6 +5251,7 @@ namespace net {
 				r.copyNo = pk.ReadInt64();
 			}
 		}
+
 		inline void deserializeBody(RPacket& pk, MmGotoChaMessage& r) {
 			r.targetName = pk.ReadString();
 			r.mode = pk.ReadInt64();
@@ -5227,6 +5272,7 @@ namespace net {
 			r.targetName = pk.ReadString();
 			r.kickDuration = pk.ReadInt64();
 		}
+
 		inline void deserializeBody(RPacket& pk, MmKickChaMessage& r) {
 			r.targetName = pk.ReadString();
 			r.kickDuration = pk.ReadInt64();
@@ -5243,6 +5289,7 @@ namespace net {
 			r.guildName = pk.ReadString();
 			r.guildMotto = pk.ReadString();
 		}
+
 		/// Body-only: srcId    header ProcessInterGameMsg.
 		inline void deserializeBody(RPacket& pk, MmGuildApproveMessage& r) {
 			r.guildId = pk.ReadInt64();
@@ -5711,300 +5758,1103 @@ namespace net {
 		//    Client  GameServer ( 1  )
 		// =================================================================
 
-		//  CM   (1-3 ) 
+		//  CM   (1-3 )
 
-		struct CmDieReturnMessage { int64_t reliveType; };
-		struct CmAutoKitbagLockMessage { int64_t autoLock; };
-		struct CmStallSearchMessage { int64_t itemId; };
-		struct CmForgeItemMessage { int64_t index; };
-		struct CmEntityEventMessage { int64_t entityId; };
-		struct CmStallOpenMessage { int64_t charId; };
-		struct CmMisLogInfoMessage { int64_t id; };
-		struct CmMisLogClearMessage { int64_t id; };
-		struct CmStoreBuyAskMessage { int64_t comId; };
-		struct CmStoreChangeAskMessage { int64_t num; };
-		struct CmStoreQueryMessage { int64_t num; };
-		struct CmTeamFightAnswerMessage { int64_t accept; };
-		struct CmItemRepairAnswerMessage { int64_t accept; };
-		struct CmItemForgeAnswerMessage { int64_t accept; };
-		struct CmItemLotteryAnswerMessage { int64_t accept; };
-		struct CmVolunteerOpenMessage { int64_t num; };
-		struct CmVolunteerListMessage { int64_t page; int64_t num; };
-		struct CmStoreListAskMessage { int64_t clsId; int64_t page; int64_t num; };
-		struct CmCaptainConfirmAsrMessage { int64_t ret; int64_t teamId; };
-		struct CmMapMaskMessage { std::string mapName; };
-		struct CmStoreOpenAskMessage { std::string password; };
-		struct CmVolunteerSelMessage { std::string name; };
-		struct CmKitbagUnlockMessage { std::string password; };
+		struct CmDieReturnMessage {
+			int64_t reliveType;
+		};
 
-		//  MC   
+		struct CmAutoKitbagLockMessage {
+			int64_t autoLock;
+		};
 
-		struct McFailedActionMessage { int64_t worldId; int64_t actionType; int64_t reason; };
-		struct McChaEndSeeMessage { int64_t seeType; int64_t worldId; };
-		struct McItemDestroyMessage { int64_t worldId; };
-		struct McForgeResultMessage { int64_t result; };
-		struct McUniteResultMessage { int64_t result; };
-		struct McMillingResultMessage { int64_t result; };
-		struct McFusionResultMessage { int64_t result; };
-		struct McUpgradeResultMessage { int64_t result; };
-		struct McPurifyResultMessage { int64_t result; };
-		struct McFixResultMessage { int64_t result; };
-		struct McEidolonMetempsychosisMessage { int64_t result; };
-		struct McEidolonFusionMessage { int64_t result; };
-		struct McMessageMessage { std::string text; };
-		struct McBickerNoticeMessage { std::string text; };
-		struct McColourNoticeMessage { int64_t color; std::string text; };
-		struct McTriggerActionMessage { int64_t type; int64_t id; int64_t num; int64_t count; };
-		struct McNpcStateChangeMessage { int64_t npcId; int64_t state; };
-		struct McEntityStateChangeMessage { int64_t entityId; int64_t state; };
-		struct McCloseTalkMessage { int64_t npcId; };
-		struct McKitbagCheckAnswerMessage { int64_t locked; };
-		struct McPreMoveTimeMessage { int64_t time; };
-		struct McItemUseSuccMessage { int64_t worldId; int64_t itemId; };
-		struct McChaPlayEffectMessage { int64_t worldId; int64_t effectId; };
-		struct McSynDefaultSkillMessage { int64_t worldId; int64_t skillId; };
+		struct CmStallSearchMessage {
+			int64_t itemId;
+		};
 
-		//  MC  ReadSequenceReadString  
+		struct CmForgeItemMessage {
+			int64_t index;
+		};
 
-		struct McSayMessage { int64_t sourceId; std::string content; int64_t color; };
-		struct McPopupNoticeMessage { std::string notice; };
-		struct McPingMessage { int64_t v1; int64_t v2; int64_t v3; int64_t v4; int64_t v5; };
+		struct CmEntityEventMessage {
+			int64_t entityId;
+		};
+
+		struct CmStallOpenMessage {
+			int64_t charId;
+		};
+
+		struct CmMisLogInfoMessage {
+			int64_t id;
+		};
+
+		struct CmMisLogClearMessage {
+			int64_t id;
+		};
+
+		struct CmStoreBuyAskMessage {
+			int64_t comId;
+		};
+
+		struct CmStoreChangeAskMessage {
+			int64_t num;
+		};
+
+		struct CmStoreQueryMessage {
+			int64_t num;
+		};
+
+		struct CmTeamFightAnswerMessage {
+			int64_t accept;
+		};
+
+		struct CmItemRepairAnswerMessage {
+			int64_t accept;
+		};
+
+		struct CmItemForgeAnswerMessage {
+			int64_t accept;
+		};
+
+		struct CmItemLotteryAnswerMessage {
+			int64_t accept;
+		};
+
+		struct CmVolunteerOpenMessage {
+			int64_t num;
+		};
+
+		struct CmVolunteerListMessage {
+			int64_t page;
+			int64_t num;
+		};
+
+		struct CmStoreListAskMessage {
+			int64_t clsId;
+			int64_t page;
+			int64_t num;
+		};
+
+		struct CmCaptainConfirmAsrMessage {
+			int64_t ret;
+			int64_t teamId;
+		};
+
+		struct CmMapMaskMessage {
+			std::string mapName;
+		};
+
+		struct CmStoreOpenAskMessage {
+			std::string password;
+		};
+
+		struct CmVolunteerSelMessage {
+			std::string name;
+		};
+
+		struct CmKitbagUnlockMessage {
+			std::string password;
+		};
+
+		//  MC
+
+		struct McFailedActionMessage {
+			int64_t worldId;
+			int64_t actionType;
+			int64_t reason;
+		};
+
+		struct McChaEndSeeMessage {
+			int64_t seeType;
+			int64_t worldId;
+		};
+
+		struct McItemDestroyMessage {
+			int64_t worldId;
+		};
+
+		struct McForgeResultMessage {
+			int64_t result;
+		};
+
+		struct McUniteResultMessage {
+			int64_t result;
+		};
+
+		struct McMillingResultMessage {
+			int64_t result;
+		};
+
+		struct McFusionResultMessage {
+			int64_t result;
+		};
+
+		struct McUpgradeResultMessage {
+			int64_t result;
+		};
+
+		struct McPurifyResultMessage {
+			int64_t result;
+		};
+
+		struct McFixResultMessage {
+			int64_t result;
+		};
+
+		struct McEidolonMetempsychosisMessage {
+			int64_t result;
+		};
+
+		struct McEidolonFusionMessage {
+			int64_t result;
+		};
+
+		struct McMessageMessage {
+			std::string text;
+		};
+
+		struct McBickerNoticeMessage {
+			std::string text;
+		};
+
+		struct McColourNoticeMessage {
+			int64_t color;
+			std::string text;
+		};
+
+		struct McTriggerActionMessage {
+			int64_t type;
+			int64_t id;
+			int64_t num;
+			int64_t count;
+		};
+
+		struct McNpcStateChangeMessage {
+			int64_t npcId;
+			int64_t state;
+		};
+
+		struct McEntityStateChangeMessage {
+			int64_t entityId;
+			int64_t state;
+		};
+
+		struct McCloseTalkMessage {
+			int64_t npcId;
+		};
+
+		struct McKitbagCheckAnswerMessage {
+			int64_t locked;
+		};
+
+		struct McPreMoveTimeMessage {
+			int64_t time;
+		};
+
+		struct McItemUseSuccMessage {
+			int64_t worldId;
+			int64_t itemId;
+		};
+
+		struct McChaPlayEffectMessage {
+			int64_t worldId;
+			int64_t effectId;
+		};
+
+		struct McSynDefaultSkillMessage {
+			int64_t worldId;
+			int64_t skillId;
+		};
+
+		//  MC  ReadSequenceReadString
+
+		struct McSayMessage {
+			int64_t sourceId;
+			std::string content;
+			int64_t color;
+		};
+
+		struct McPopupNoticeMessage {
+			std::string notice;
+		};
+
+		struct McPingMessage {
+			int64_t v1;
+			int64_t v2;
+			int64_t v3;
+			int64_t v4;
+			int64_t v5;
+		};
 
 		// =================================================================
-		//   :  2  
+		//   :  2
 		// =================================================================
 
-		//  CM   
+		//  CM
 
-		struct CmChangePassMessage { std::string pass; std::string pin; };
-		struct CmGuildBankOperMessage { int64_t op; int64_t srcType; int64_t srcId; int64_t srcNum; int64_t tarType; int64_t tarId; };
-		struct CmGuildBankGoldMessage { int64_t op; int64_t direction; int64_t gold; };
+		struct CmChangePassMessage {
+			std::string pass;
+			std::string pin;
+		};
+
+		struct CmGuildBankOperMessage {
+			int64_t op;
+			int64_t srcType;
+			int64_t srcId;
+			int64_t srcNum;
+			int64_t tarType;
+			int64_t tarId;
+		};
+
+		struct CmGuildBankGoldMessage {
+			int64_t op;
+			int64_t direction;
+			int64_t gold;
+		};
+
 		/// - CMD_PM_GUILDBANK  bankType (  op).
-		struct PmGuildBankOperData { int64_t srcType = 0; int64_t srcGrid = 0; int64_t srcNum = 0; int64_t tarType = 0; int64_t tarGrid = 0; };
-		struct PmGuildBankGoldData { int64_t direction = 0; int64_t gold = 0; };
+		struct PmGuildBankOperData {
+			int64_t srcType = 0;
+			int64_t srcGrid = 0;
+			int64_t srcNum = 0;
+			int64_t tarType = 0;
+			int64_t tarGrid = 0;
+		};
+
+		struct PmGuildBankGoldData {
+			int64_t direction = 0;
+			int64_t gold = 0;
+		};
+
 		/// CMD_PM_GUILDBANK:    variant  bankType.
 		using PmGuildBankData = std::variant<std::monostate, PmGuildBankOperData, PmGuildBankGoldData>;
-		struct PmGuildBankMessage { int64_t bankType = 0; PmGuildBankData data; };
-		struct CmUpdateHairMessage { int64_t scriptId; int64_t gridLoc0; int64_t gridLoc1; int64_t gridLoc2; int64_t gridLoc3; };
-		struct CmTeamFightAskMessage { int64_t type; int64_t worldId; int64_t handle; };
+
+		struct PmGuildBankMessage {
+			int64_t bankType = 0;
+			PmGuildBankData data;
+		};
+
+		struct CmUpdateHairMessage {
+			int64_t scriptId;
+			int64_t gridLoc0;
+			int64_t gridLoc1;
+			int64_t gridLoc2;
+			int64_t gridLoc3;
+		};
+
+		struct CmTeamFightAskMessage {
+			int64_t type;
+			int64_t worldId;
+			int64_t handle;
+		};
+
 		///   ( CMD_MC_TEAM_FIGHT_ASK).
-		struct TeamFightPlayerEntry { std::string name; int64_t lv = 0; std::string job; int64_t fightNum = 0; int64_t victoryNum = 0; };
+		struct TeamFightPlayerEntry {
+			std::string name;
+			int64_t lv = 0;
+			std::string job;
+			int64_t fightNum = 0;
+			int64_t victoryNum = 0;
+		};
+
 		/// CMD_MC_TEAM_FIGHT_ASK:     (count-first).
-		struct McTeamFightAskMessage { int64_t srcCount = 0; int64_t tarCount = 0; std::vector<TeamFightPlayerEntry> players; };
-		struct CmItemRepairAskMessage { int64_t repairmanId; int64_t repairmanHandle; int64_t posType; int64_t posId; };
-		struct CmRequestTradeMessage { int64_t type; int64_t charId; };
-		struct CmAcceptTradeMessage { int64_t type; int64_t charId; };
-		struct CmCancelTradeMessage { int64_t type; int64_t charId; };
-		struct CmValidateTradeDataMessage { int64_t type; int64_t charId; };
-		struct CmValidateTradeMessage { int64_t type; int64_t charId; };
-		struct CmAddItemMessage { int64_t type; int64_t charId; int64_t opType; int64_t index; int64_t itemIndex; int64_t count; };
-		struct CmAddMoneyMessage { int64_t type; int64_t charId; int64_t opType; int64_t isImp; int64_t money; };
-		struct CmTigerStartMessage { int64_t npcId; int64_t sel1; int64_t sel2; int64_t sel3; };
-		struct CmTigerStopMessage { int64_t npcId; int64_t num; };
-		struct CmVolunteerAsrMessage { int64_t ret; std::string name; };
-		struct CmCreateBoatMessage { std::string boat; int64_t header; int64_t engine; int64_t cannon; int64_t equipment; };
-		struct CmUpdateBoatMessage { int64_t header; int64_t engine; int64_t cannon; int64_t equipment; };
-		struct CmSelectBoatListMessage { int64_t npcId; int64_t type; int64_t index; };
-		struct CmBoatLaunchMessage { int64_t npcId; int64_t index; };
-		struct CmBoatBagSelMessage { int64_t npcId; int64_t index; };
-		struct CmReportWgMessage { std::string info; };
-		struct CmSay2CampMessage { std::string content; };
-		struct CmStallBuyMessage { int64_t charId; int64_t index; int64_t count; int64_t gridId; };
-		struct CmSkillUpgradeMessage { int64_t skillId; int64_t addGrade; };
-		struct CmRefreshDataMessage { int64_t worldId; int64_t handle; };
-		struct CmPkCtrlMessage { int64_t ctrl; };
-		struct CmItemAmphitheaterAskMessage { int64_t sure; int64_t reId; };
-		struct CmMasterInviteMessage { std::string name; int64_t chaId; };
-		struct CmMasterAsrMessage { int64_t agree; std::string name; int64_t chaId; };
-		struct CmMasterDelMessage { std::string name; int64_t chaId; };
-		struct CmPrenticeInviteMessage { std::string name; int64_t chaId; };
-		struct CmPrenticeAsrMessage { int64_t agree; std::string name; int64_t chaId; };
-		struct CmPrenticeDelMessage { std::string name; int64_t chaId; };
+		struct McTeamFightAskMessage {
+			int64_t srcCount = 0;
+			int64_t tarCount = 0;
+			std::vector<TeamFightPlayerEntry> players;
+		};
 
-		//  NPC Talk   
-		struct CmRequestTalkMessage { int64_t npcId; int64_t cmd; };
-		struct CmSelFunctionMessage { int64_t npcId; int64_t pageId; int64_t index; };
-		struct CmSaleMessage { int64_t npcId; int64_t index; int64_t count; };
-		struct CmBuyMessage { int64_t npcId; int64_t itemType; int64_t index1; int64_t index2; int64_t count; };
-		struct CmMissionPageMessage { int64_t npcId; int64_t cmd; int64_t selItem; int64_t param; };
-		struct CmSelMissionMessage { int64_t npcId; int64_t index; };
-		struct CmBlackMarketExchangeReqMessage { int64_t npcId; int64_t timeNum; int64_t srcId; int64_t srcNum; int64_t tarId; int64_t tarNum; int64_t index; };
+		struct CmItemRepairAskMessage {
+			int64_t repairmanId;
+			int64_t repairmanHandle;
+			int64_t posType;
+			int64_t posId;
+		};
 
-		//   5:  CM- 
+		struct CmRequestTradeMessage {
+			int64_t type;
+			int64_t charId;
+		};
 
-		// / 
-		struct CmBgnPlayMessage { int64_t chaIndex; };
-		struct CmNewChaMessage { std::string chaName; std::string birth; int64_t type; int64_t hair; int64_t face; };
-		struct CmDelChaMessage { int64_t chaIndex; std::string password2; };
+		struct CmAcceptTradeMessage {
+			int64_t type;
+			int64_t charId;
+		};
 
-		// 
-		struct CmCreatePassword2Message { std::string password; };
-		struct CmUpdatePassword2Message { std::string oldPass; std::string newPass; };
+		struct CmCancelTradeMessage {
+			int64_t type;
+			int64_t charId;
+		};
 
-		// GM / 
-		struct CmGmSendMessage { int64_t npcId; std::string title; std::string content; };
-		struct CmGmRecvMessage { int64_t npcId; };
-		struct CmCheatCheckMessage { std::string answer; };
-		struct CmGuildPermMessage { int64_t id; int64_t perms; };
-		struct CmGameRequestPinMessage { std::string password; };
+		struct CmValidateTradeDataMessage {
+			int64_t type;
+			int64_t charId;
+		};
 
-		//  / 
-		struct CmItemLockAskMessage { int64_t slot; };
-		struct CmItemUnlockAskMessage { std::string password; int64_t slot; };
+		struct CmValidateTradeMessage {
+			int64_t type;
+			int64_t charId;
+		};
+
+		struct CmAddItemMessage {
+			int64_t type;
+			int64_t charId;
+			int64_t opType;
+			int64_t index;
+			int64_t itemIndex;
+			int64_t count;
+		};
+
+		struct CmAddMoneyMessage {
+			int64_t type;
+			int64_t charId;
+			int64_t opType;
+			int64_t isImp;
+			int64_t money;
+		};
+
+		struct CmTigerStartMessage {
+			int64_t npcId;
+			int64_t sel1;
+			int64_t sel2;
+			int64_t sel3;
+		};
+
+		struct CmTigerStopMessage {
+			int64_t npcId;
+			int64_t num;
+		};
+
+		struct CmVolunteerAsrMessage {
+			int64_t ret;
+			std::string name;
+		};
+
+		struct CmCreateBoatMessage {
+			std::string boat;
+			int64_t header;
+			int64_t engine;
+			int64_t cannon;
+			int64_t equipment;
+		};
+
+		struct CmUpdateBoatMessage {
+			int64_t header;
+			int64_t engine;
+			int64_t cannon;
+			int64_t equipment;
+		};
+
+		struct CmSelectBoatListMessage {
+			int64_t npcId;
+			int64_t type;
+			int64_t index;
+		};
+
+		struct CmBoatLaunchMessage {
+			int64_t npcId;
+			int64_t index;
+		};
+
+		struct CmBoatBagSelMessage {
+			int64_t npcId;
+			int64_t index;
+		};
+
+		struct CmReportWgMessage {
+			std::string info;
+		};
+
+		struct CmSay2CampMessage {
+			std::string content;
+		};
+
+		struct CmStallBuyMessage {
+			int64_t charId;
+			int64_t index;
+			int64_t count;
+			int64_t gridId;
+		};
+
+		struct CmSkillUpgradeMessage {
+			int64_t skillId;
+			int64_t addGrade;
+		};
+
+		struct CmRefreshDataMessage {
+			int64_t worldId;
+			int64_t handle;
+		};
+
+		struct CmPkCtrlMessage {
+			int64_t ctrl;
+		};
+
+		struct CmItemAmphitheaterAskMessage {
+			int64_t sure;
+			int64_t reId;
+		};
+
+		struct CmMasterInviteMessage {
+			std::string name;
+			int64_t chaId;
+		};
+
+		struct CmMasterAsrMessage {
+			int64_t agree;
+			std::string name;
+			int64_t chaId;
+		};
+
+		struct CmMasterDelMessage {
+			std::string name;
+			int64_t chaId;
+		};
+
+		struct CmPrenticeInviteMessage {
+			std::string name;
+			int64_t chaId;
+		};
+
+		struct CmPrenticeAsrMessage {
+			int64_t agree;
+			std::string name;
+			int64_t chaId;
+		};
+
+		struct CmPrenticeDelMessage {
+			std::string name;
+			int64_t chaId;
+		};
+
+		//  NPC Talk
+		struct CmRequestTalkMessage {
+			int64_t npcId;
+			int64_t cmd;
+		};
+
+		struct CmSelFunctionMessage {
+			int64_t npcId;
+			int64_t pageId;
+			int64_t index;
+		};
+
+		struct CmSaleMessage {
+			int64_t npcId;
+			int64_t index;
+			int64_t count;
+		};
+
+		struct CmBuyMessage {
+			int64_t npcId;
+			int64_t itemType;
+			int64_t index1;
+			int64_t index2;
+			int64_t count;
+		};
+
+		struct CmMissionPageMessage {
+			int64_t npcId;
+			int64_t cmd;
+			int64_t selItem;
+			int64_t param;
+		};
+
+		struct CmSelMissionMessage {
+			int64_t npcId;
+			int64_t index;
+		};
+
+		struct CmBlackMarketExchangeReqMessage {
+			int64_t npcId;
+			int64_t timeNum;
+			int64_t srcId;
+			int64_t srcNum;
+			int64_t tarId;
+			int64_t tarNum;
+			int64_t index;
+		};
+
+		//   5:  CM-
+
+		// /
+		struct CmBgnPlayMessage {
+			int64_t chaIndex;
+		};
+
+		struct CmNewChaMessage {
+			std::string chaName;
+			std::string birth;
+			int64_t type;
+			int64_t hair;
+			int64_t face;
+		};
+
+		struct CmDelChaMessage {
+			int64_t chaIndex;
+			std::string password2;
+		};
+
+		//
+		struct CmCreatePassword2Message {
+			std::string password;
+		};
+
+		struct CmUpdatePassword2Message {
+			std::string oldPass;
+			std::string newPass;
+		};
+
+		// GM /
+		struct CmGmSendMessage {
+			int64_t npcId;
+			std::string title;
+			std::string content;
+		};
+
+		struct CmGmRecvMessage {
+			int64_t npcId;
+		};
+
+		struct CmCheatCheckMessage {
+			std::string answer;
+		};
+
+		struct CmGuildPermMessage {
+			int64_t id;
+			int64_t perms;
+		};
+
+		struct CmGameRequestPinMessage {
+			std::string password;
+		};
+
+		//  /
+		struct CmItemLockAskMessage {
+			int64_t slot;
+		};
+
+		struct CmItemUnlockAskMessage {
+			std::string password;
+			int64_t slot;
+		};
 
 		// NPC  ( CMD_CM_REQUESTTRADE)
-		struct CmSelectTradeBoatMessage { int64_t npcId; int64_t index; };
-		struct CmSaleGoodsMessage { int64_t npcId; int64_t boatId; int64_t index; int64_t count; };
-		struct CmBuyGoodsMessage { int64_t npcId; int64_t boatId; int64_t itemType; int64_t index1; int64_t index2; int64_t count; };
+		struct CmSelectTradeBoatMessage {
+			int64_t npcId;
+			int64_t index;
+		};
+
+		struct CmSaleGoodsMessage {
+			int64_t npcId;
+			int64_t boatId;
+			int64_t index;
+			int64_t count;
+		};
+
+		struct CmBuyGoodsMessage {
+			int64_t npcId;
+			int64_t boatId;
+			int64_t itemType;
+			int64_t index1;
+			int64_t index2;
+			int64_t count;
+		};
 
 		//  ( CMD_CM_REQUESTTALK)
-		struct CmMissionTalkMessage { int64_t npcId; int64_t cmd; };
-		struct CmSelMissionFuncMessage { int64_t npcId; int64_t pageId; int64_t index; };
+		struct CmMissionTalkMessage {
+			int64_t npcId;
+			int64_t cmd;
+		};
+
+		struct CmSelMissionFuncMessage {
+			int64_t npcId;
+			int64_t pageId;
+			int64_t index;
+		};
 
 		// CP (  GroupServer  GateServer)
-		struct CmCpMasterRefreshInfoMessage { int64_t chaId; };
-		struct CmCpPrenticeRefreshInfoMessage { int64_t chaId; };
+		struct CmCpMasterRefreshInfoMessage {
+			int64_t chaId;
+		};
+
+		struct CmCpPrenticeRefreshInfoMessage {
+			int64_t chaId;
+		};
 
 		//  (  )
-		struct CmStallInfoEntry { int64_t grid; int64_t money; int64_t count; int64_t index; };
-		struct CmStallInfoMessage { std::string name; int64_t num; std::vector<CmStallInfoEntry> items; };
+		struct CmStallInfoEntry {
+			int64_t grid;
+			int64_t money;
+			int64_t count;
+			int64_t index;
+		};
 
-		//  
-		struct CmLifeSkillMessage { int64_t type; int64_t npcId; };
+		struct CmStallInfoMessage {
+			std::string name;
+			int64_t num;
+			std::vector<CmStallInfoEntry> items;
+		};
 
-		// 
-		struct CmBidUpMessage { int64_t npcId; int64_t itemId; int64_t price; };
+		//
+		struct CmLifeSkillMessage {
+			int64_t type;
+			int64_t npcId;
+		};
 
-		//    
-		struct CmUnlockCharacterMessage { int64_t flag; };
+		//
+		struct CmBidUpMessage {
+			int64_t npcId;
+			int64_t itemId;
+			int64_t price;
+		};
+
+		//
+		struct CmUnlockCharacterMessage {
+			int64_t flag;
+		};
 
 		//  (   MC_PING)
-		struct CmPingResponseMessage { int64_t v1; int64_t v2; int64_t v3; int64_t v4; int64_t v5; };
+		struct CmPingResponseMessage {
+			int64_t v1;
+			int64_t v2;
+			int64_t v3;
+			int64_t v4;
+			int64_t v5;
+		};
 
-		//  MC   
-		struct McSay2CampMessage { std::string chaName; std::string content; };
-		struct McTalkInfoMessage { int64_t npcId; int64_t cmd; std::string text; };
-		struct McTradeDataMessage { int64_t npcId; int64_t page; int64_t index; int64_t itemId; int64_t count; int64_t price; };
-		struct McTradeResultMessage { int64_t type; int64_t index; int64_t count; int64_t itemId; int64_t money; };
-		struct McUpdateHairResMessage { int64_t worldId; int64_t scriptId; std::string reason; };
-		struct McSynTLeaderIdMessage { int64_t worldId; int64_t leaderId; };
-		struct McKitbagCapacityMessage { int64_t worldId; int64_t capacity; };
-		struct McItemForgeAskMessage { int64_t type; int64_t money; };
-		struct McItemForgeAnswerMessage { int64_t worldId; int64_t type; int64_t result; };
-		struct McQueryChaMessage { int64_t chaId; std::string name; std::string mapName; int64_t posX; int64_t posY; int64_t chaId2; };
-		struct McQueryChaPingMessage { int64_t chaId; std::string name; std::string mapName; int64_t ping; };
-		struct McQueryReliveMessage { int64_t chaId; std::string sourceName; int64_t reliveType; };
-		struct McGmMailMessage { std::string title; std::string content; int64_t time; };
-		struct McSynStallNameMessage { int64_t charId; std::string name; };
-		struct McMapCrashMessage { std::string text; };
-		struct McVolunteerStateMessage { int64_t state; };
-		struct McVolunteerAskMessage { std::string name; };
-		struct McMasterAskMessage { std::string name; int64_t chaId; };
-		struct McPrenticeAskMessage { std::string name; int64_t chaId; };
-		struct McItemRepairAskMcMessage { std::string itemName; int64_t repairCost; };
-		struct McItemLotteryAsrMessage { int64_t success; };
+		//  MC
+		struct McSay2CampMessage {
+			std::string chaName;
+			std::string content;
+		};
 
-		//  MC/CM   4:  
-		struct McChaEmotionMessage { int64_t worldId; int64_t emotion; };
-		struct McStartExitMessage { int64_t exitTime; };
+		struct McTalkInfoMessage {
+			int64_t npcId;
+			int64_t cmd;
+			std::string text;
+		};
+
+		struct McTradeDataMessage {
+			int64_t npcId;
+			int64_t page;
+			int64_t index;
+			int64_t itemId;
+			int64_t count;
+			int64_t price;
+		};
+
+		struct McTradeResultMessage {
+			int64_t type;
+			int64_t index;
+			int64_t count;
+			int64_t itemId;
+			int64_t money;
+		};
+
+		struct McUpdateHairResMessage {
+			int64_t worldId;
+			int64_t scriptId;
+			std::string reason;
+		};
+
+		struct McSynTLeaderIdMessage {
+			int64_t worldId;
+			int64_t leaderId;
+		};
+
+		struct McKitbagCapacityMessage {
+			int64_t worldId;
+			int64_t capacity;
+		};
+
+		struct McItemForgeAskMessage {
+			int64_t type;
+			int64_t money;
+		};
+
+		struct McItemForgeAnswerMessage {
+			int64_t worldId;
+			int64_t type;
+			int64_t result;
+		};
+
+		struct McQueryChaMessage {
+			int64_t chaId;
+			std::string name;
+			std::string mapName;
+			int64_t posX;
+			int64_t posY;
+			int64_t chaId2;
+		};
+
+		struct McQueryChaPingMessage {
+			int64_t chaId;
+			std::string name;
+			std::string mapName;
+			int64_t ping;
+		};
+
+		struct McQueryReliveMessage {
+			int64_t chaId;
+			std::string sourceName;
+			int64_t reliveType;
+		};
+
+		struct McGmMailMessage {
+			std::string title;
+			std::string content;
+			int64_t time;
+		};
+
+		struct McSynStallNameMessage {
+			int64_t charId;
+			std::string name;
+		};
+
+		struct McMapCrashMessage {
+			std::string text;
+		};
+
+		struct McVolunteerStateMessage {
+			int64_t state;
+		};
+
+		struct McVolunteerAskMessage {
+			std::string name;
+		};
+
+		struct McMasterAskMessage {
+			std::string name;
+			int64_t chaId;
+		};
+
+		struct McPrenticeAskMessage {
+			std::string name;
+			int64_t chaId;
+		};
+
+		struct McItemRepairAskMcMessage {
+			std::string itemName;
+			int64_t repairCost;
+		};
+
+		struct McItemLotteryAsrMessage {
+			int64_t success;
+		};
+
+		//  MC/CM   4:
+		struct McChaEmotionMessage {
+			int64_t worldId;
+			int64_t emotion;
+		};
+
+		struct McStartExitMessage {
+			int64_t exitTime;
+		};
+
 		// CMD_MC_CANCELEXIT  cmd-only
 		// CMD_MC_OPENHAIR  cmd-only
 		// CMD_MC_BEGIN_ITEM_REPAIR  cmd-only
 		// CMD_MC_BEGIN_GM_SEND  cmd-only
-		struct McGmRecvMessage { int64_t npcId; };
-		struct McStallDelGoodsMessage { int64_t charId; int64_t grid; int64_t count; };
-		struct McStallCloseMessage { int64_t charId; };
-		struct McStallSuccessMessage { int64_t charId; };
-		struct McUpdateGuildGoldMessage { std::string data; };
-		struct McQueryChaItemMessage { int64_t chaId; };
-		struct McDisconnectMessage { int64_t reason; };
-		struct McLifeSkillShowMessage { int64_t type; };
-		struct McLifeSkillMessage { int64_t type; int64_t result; std::string text; };
-		struct McLifeSkillAsrMessage { int64_t type; int64_t time; std::string text; };
-		struct McDropLockAsrMessage { int64_t success; };
-		struct McUnlockItemAsrMessage { int64_t result; };
-		struct McStoreBuyAnswerMessage { int64_t success; int64_t newMoney; };
-		struct McStoreChangeAnswerMessage { int64_t success; int64_t moBean; int64_t replMoney; };
-		struct McDailyBuffInfoMessage { std::string imgName; std::string labelInfo; };
-		struct McRequestDropRateMessage { float rate; };
-		struct McRequestExpRateMessage { float rate; };
-		struct McTigerItemIdMessage { int64_t num; int64_t itemId0; int64_t itemId1; int64_t itemId2; };
-		struct McUpdateImpMessage { int64_t imp; };
-		struct McBoatAddMessage { int64_t worldId; };
-		struct McBoatClearMessage { int64_t worldId; };
-		struct McTigerStopMessage { std::string text; };
+		struct McGmRecvMessage {
+			int64_t npcId;
+		};
 
-		//  MC    (CMD_MC_CHARTRADE + ) 
+		struct McStallDelGoodsMessage {
+			int64_t charId;
+			int64_t grid;
+			int64_t count;
+		};
 
-		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_REQUEST:   
-		struct McCharTradeRequestMessage { int64_t subCmd; int64_t tradeType; int64_t chaId; };
-		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_CANCEL:  
-		struct McCharTradeCancelMessage { int64_t subCmd; int64_t chaId; };
-		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_MONEY:    
-		struct McCharTradeMoneyMessage { int64_t subCmd; int64_t chaId; int64_t money; int64_t isIMP; };
-		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_VALIDATEDATA:   
-		struct McCharTradeValidateDataMessage { int64_t subCmd; int64_t chaId; };
-		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_RESULT:  
-		struct McCharTradeResultMessage { int64_t subCmd; int64_t result; };
+		struct McStallCloseMessage {
+			int64_t charId;
+		};
 
-		//    (CM/MC) 
+		struct McStallSuccessMessage {
+			int64_t charId;
+		};
 
-		// CM    
-		struct CmGuildPutNameMessage { int64_t confirm; std::string guildName; std::string passwd; };
-		struct CmGuildTryForMessage { int64_t guildId; };
-		struct CmGuildTryForCfmMessage { int64_t confirm; };
-		// CMD_CM_GUILD_LISTTRYPLAYER  cmd-only,  
-		struct CmGuildApproveMessage { int64_t chaId; };
-		struct CmGuildRejectMessage { int64_t chaId; };
-		struct CmGuildKickMessage { int64_t chaId; };
-		// CMD_CM_GUILD_LEAVE  cmd-only,  
-		struct CmGuildDisbandMessage { std::string passwd; };
-		struct CmGuildMottoMessage { std::string motto; };
-		struct CmGuildChallMessage { int64_t level; int64_t money; };
-		struct CmGuildLeizhuMessage { int64_t level; int64_t money; };
+		struct McUpdateGuildGoldMessage {
+			std::string data;
+		};
 
-		// MC    
-		// CMD_MC_GUILD_GETNAME  cmd-only,  
-		struct McGuildTryForCfmMessage { std::string name; };
-		struct McGuildMottoMessage { std::string motto; };
-		// CMD_MC_GUILD_LEAVE  cmd-only,  
-		// CMD_MC_GUILD_KICK  cmd-only,  
-		struct McGuildInfoMessage { int64_t charId; int64_t guildId; std::string guildName; std::string guildMotto; int64_t guildPermission; };
+		struct McQueryChaItemMessage {
+			int64_t chaId;
+		};
+
+		struct McDisconnectMessage {
+			int64_t reason;
+		};
+
+		struct McLifeSkillShowMessage {
+			int64_t type;
+		};
+
+		struct McLifeSkillMessage {
+			int64_t type;
+			int64_t result;
+			std::string text;
+		};
+
+		struct McLifeSkillAsrMessage {
+			int64_t type;
+			int64_t time;
+			std::string text;
+		};
+
+		struct McDropLockAsrMessage {
+			int64_t success;
+		};
+
+		struct McUnlockItemAsrMessage {
+			int64_t result;
+		};
+
+		struct McStoreBuyAnswerMessage {
+			int64_t success;
+			int64_t newMoney;
+		};
+
+		struct McStoreChangeAnswerMessage {
+			int64_t success;
+			int64_t moBean;
+			int64_t replMoney;
+		};
+
+		struct McDailyBuffInfoMessage {
+			std::string imgName;
+			std::string labelInfo;
+		};
+
+		struct McRequestDropRateMessage {
+			float rate;
+		};
+
+		struct McRequestExpRateMessage {
+			float rate;
+		};
+
+		struct McTigerItemIdMessage {
+			int64_t num;
+			int64_t itemId0;
+			int64_t itemId1;
+			int64_t itemId2;
+		};
+
+		struct McUpdateImpMessage {
+			int64_t imp;
+		};
+
+		struct McBoatAddMessage {
+			int64_t worldId;
+		};
+
+		struct McBoatClearMessage {
+			int64_t worldId;
+		};
+
+		struct McTigerStopMessage {
+			std::string text;
+		};
+
+		//  MC    (CMD_MC_CHARTRADE + )
+
+		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_REQUEST:
+		struct McCharTradeRequestMessage {
+			int64_t subCmd;
+			int64_t tradeType;
+			int64_t chaId;
+		};
+
+		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_CANCEL:
+		struct McCharTradeCancelMessage {
+			int64_t subCmd;
+			int64_t chaId;
+		};
+
+		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_MONEY:
+		struct McCharTradeMoneyMessage {
+			int64_t subCmd;
+			int64_t chaId;
+			int64_t money;
+			int64_t isIMP;
+		};
+
+		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_VALIDATEDATA:
+		struct McCharTradeValidateDataMessage {
+			int64_t subCmd;
+			int64_t chaId;
+		};
+
+		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_RESULT:
+		struct McCharTradeResultMessage {
+			int64_t subCmd;
+			int64_t result;
+		};
+
+		//    (CM/MC)
+
+		// CM
+		struct CmGuildPutNameMessage {
+			int64_t confirm;
+			std::string guildName;
+			std::string passwd;
+		};
+
+		struct CmGuildTryForMessage {
+			int64_t guildId;
+		};
+
+		struct CmGuildTryForCfmMessage {
+			int64_t confirm;
+		};
+
+		// CMD_CM_GUILD_LISTTRYPLAYER  cmd-only,
+		struct CmGuildApproveMessage {
+			int64_t chaId;
+		};
+
+		struct CmGuildRejectMessage {
+			int64_t chaId;
+		};
+
+		struct CmGuildKickMessage {
+			int64_t chaId;
+		};
+
+		// CMD_CM_GUILD_LEAVE  cmd-only,
+		struct CmGuildDisbandMessage {
+			std::string passwd;
+		};
+
+		struct CmGuildMottoMessage {
+			std::string motto;
+		};
+
+		struct CmGuildChallMessage {
+			int64_t level;
+			int64_t money;
+		};
+
+		struct CmGuildLeizhuMessage {
+			int64_t level;
+			int64_t money;
+		};
+
+		// MC
+		// CMD_MC_GUILD_GETNAME  cmd-only,
+		struct McGuildTryForCfmMessage {
+			std::string name;
+		};
+
+		struct McGuildMottoMessage {
+			std::string motto;
+		};
+
+		// CMD_MC_GUILD_LEAVE  cmd-only,
+		// CMD_MC_GUILD_KICK  cmd-only,
+		struct McGuildInfoMessage {
+			int64_t charId;
+			int64_t guildId;
+			std::string guildName;
+			std::string guildMotto;
+			int64_t guildPermission;
+		};
 
 		///     (  level != 0).
-		struct GuildChallEntry { int64_t level; int64_t start; std::string guildName; std::string challName; int64_t money; };
-		struct McGuildListChallMessage { int64_t isLeader; GuildChallEntry entries[3]; };
+		struct GuildChallEntry {
+			int64_t level;
+			int64_t start;
+			std::string guildName;
+			std::string challName;
+			int64_t money;
+		};
+
+		struct McGuildListChallMessage {
+			int64_t isLeader;
+			GuildChallEntry entries[3];
+		};
 
 		// =================================================================
-		//   :  3  
+		//   :  3
 		// =================================================================
 
-		struct McSynAttributeMessage { int64_t worldId; ChaAttrInfo attr; };
-		struct McSynSkillStateMessage { int64_t worldId; ChaSkillStateInfo skillState; };
+		struct McSynAttributeMessage {
+			int64_t worldId;
+			ChaAttrInfo attr;
+		};
 
-		struct McAStateEndSeeMessage { int64_t areaX; int64_t areaY; };
+		struct McSynSkillStateMessage {
+			int64_t worldId;
+			ChaSkillStateInfo skillState;
+		};
 
-		struct AStateBeginSeeEntry { int64_t stateId; int64_t stateLv; int64_t worldId; int64_t fightId; };
-		struct McAStateBeginSeeMessage { int64_t areaX; int64_t areaY; std::vector<AStateBeginSeeEntry> states; };
+		struct McAStateEndSeeMessage {
+			int64_t areaX;
+			int64_t areaY;
+		};
 
-		struct McDelItemChaMessage { int64_t mainChaId; int64_t worldId; };
+		struct AStateBeginSeeEntry {
+			int64_t stateId;
+			int64_t stateLv;
+			int64_t worldId;
+			int64_t fightId;
+		};
 
-		struct McSynEventInfoMessage { int64_t entityId; int64_t entityType; int64_t eventId; std::string eventName; };
-		struct McSynSideInfoMessage { int64_t worldId; ChaSideInfo side; };
+		struct McAStateBeginSeeMessage {
+			int64_t areaX;
+			int64_t areaY;
+			std::vector<AStateBeginSeeEntry> states;
+		};
+
+		struct McDelItemChaMessage {
+			int64_t mainChaId;
+			int64_t worldId;
+		};
+
+		struct McSynEventInfoMessage {
+			int64_t entityId;
+			int64_t entityType;
+			int64_t eventId;
+			std::string eventName;
+		};
+
+		struct McSynSideInfoMessage {
+			int64_t worldId;
+			ChaSideInfo side;
+		};
 
 		/// CMD_MC_ITEMBEGINSEE      (9  + ChaEventInfo).
 		struct McItemCreateMessage {
-			int64_t worldId = 0; int64_t handle = 0; int64_t itemId = 0;
-			int64_t posX = 0; int64_t posY = 0; int64_t angle = 0; int64_t num = 0;
-			int64_t appeType = 0; int64_t fromId = 0;
+			int64_t worldId = 0;
+			int64_t handle = 0;
+			int64_t itemId = 0;
+			int64_t posX = 0;
+			int64_t posY = 0;
+			int64_t angle = 0;
+			int64_t num = 0;
+			int64_t appeType = 0;
+			int64_t fromId = 0;
 			ChaEventInfo event;
 		};
 
 		/// CMD_MC_SYNSKILLBAG    .
-		struct McSynSkillBagMessage { int64_t worldId = 0; ChaSkillBagInfo skillBag; };
+		struct McSynSkillBagMessage {
+			int64_t worldId = 0;
+			ChaSkillBagInfo skillBag;
+		};
 
-		//   
-		struct McMissionInfoMessage { int64_t npcId; int64_t listType; int64_t prev; int64_t next; int64_t prevCmd; int64_t nextCmd; std::vector<std::string> items; };
+		//
+		struct McMissionInfoMessage {
+			int64_t npcId;
+			int64_t listType;
+			int64_t prev;
+			int64_t next;
+			int64_t prevCmd;
+			int64_t nextCmd;
+			std::vector<std::string> items;
+		};
 
 		///     (mission::MIS_NEED_TYPE).
 		constexpr int64_t MIS_NEED_ITEM = 0;
@@ -6014,127 +6864,316 @@ namespace net {
 		///    (   needType).
 		struct MisNeedEntry {
 			int64_t needType = 0;
-			int64_t param1 = 0; int64_t param2 = 0; int64_t param3 = 0; // MIS_NEED_ITEM/KILL
+			int64_t param1 = 0;
+			int64_t param2 = 0;
+			int64_t param3 = 0; // MIS_NEED_ITEM/KILL
 			std::string desp; // MIS_NEED_DESP
 		};
 
 		///   .
-		struct MisPrizeEntry { int64_t type = 0; int64_t param1 = 0; int64_t param2 = 0; };
+		struct MisPrizeEntry {
+			int64_t type = 0;
+			int64_t param1 = 0;
+			int64_t param2 = 0;
+		};
 
 		/// CMD_MC_MISPAGE    (    ).
 		struct McMisPageMessage {
-			int64_t cmd = 0; int64_t npcId = 0; std::string name;
+			int64_t cmd = 0;
+			int64_t npcId = 0;
+			std::string name;
 			std::vector<MisNeedEntry> needs;
-			int64_t prizeSelType = 0; std::vector<MisPrizeEntry> prizes;
+			int64_t prizeSelType = 0;
+			std::vector<MisPrizeEntry> prizes;
 			std::string description;
 		};
 
-		struct MisLogEntry { int64_t misId; int64_t state; };
-		struct McMisLogMessage { std::vector<MisLogEntry> logs; };
+		struct MisLogEntry {
+			int64_t misId;
+			int64_t state;
+		};
+
+		struct McMisLogMessage {
+			std::vector<MisLogEntry> logs;
+		};
 
 		/// CMD_MC_MISLOGINFO      (  MisPage).
 		struct McMisLogInfoMessage {
-			int64_t misId = 0; std::string name;
+			int64_t misId = 0;
+			std::string name;
 			std::vector<MisNeedEntry> needs;
-			int64_t prizeSelType = 0; std::vector<MisPrizeEntry> prizes;
+			int64_t prizeSelType = 0;
+			std::vector<MisPrizeEntry> prizes;
 			std::string description;
 		};
-		struct McMisLogClearMcMessage { int64_t missionId; };
-		struct McMisLogAddMessage { int64_t missionId; int64_t state; };
-		struct McMisLogStateMessage { int64_t index; int64_t missionId; int64_t state; };
 
-		//  NPC  
-		struct FuncInfoFuncItem { std::string name; };
-		struct FuncInfoMissionItem { std::string name; int64_t state; };
+		struct McMisLogClearMcMessage {
+			int64_t missionId;
+		};
+
+		struct McMisLogAddMessage {
+			int64_t missionId;
+			int64_t state;
+		};
+
+		struct McMisLogStateMessage {
+			int64_t index;
+			int64_t missionId;
+			int64_t state;
+		};
+
+		//  NPC
+		struct FuncInfoFuncItem {
+			std::string name;
+		};
+
+		struct FuncInfoMissionItem {
+			std::string name;
+			int64_t state;
+		};
+
 		struct McFuncInfoMessage {
-			int64_t npcId; int64_t page; std::string talkText;
+			int64_t npcId;
+			int64_t page;
+			std::string talkText;
 			std::vector<FuncInfoFuncItem> funcItems;
 			std::vector<FuncInfoMissionItem> missionItems;
 		};
 
-		//  Volunteer   
-		struct VolunteerEntry { std::string name; int64_t level; int64_t job; std::string map; };
-		struct McVolunteerListMessage { int64_t pageTotal; int64_t page; std::vector<VolunteerEntry> volunteers; };
-		struct McVolunteerOpenMessage { int64_t state; int64_t pageTotal; std::vector<VolunteerEntry> volunteers; };
+		//  Volunteer
+		struct VolunteerEntry {
+			std::string name;
+			int64_t level;
+			int64_t job;
+			std::string map;
+		};
 
-		//  StallSearch / Ranking (count     ) 
-		struct StallSearchEntry { std::string name; std::string stallName; std::string location; int64_t count; int64_t cost; };
-		struct McShowStallSearchMessage { std::vector<StallSearchEntry> entries; };
+		struct McVolunteerListMessage {
+			int64_t pageTotal;
+			int64_t page;
+			std::vector<VolunteerEntry> volunteers;
+		};
 
-		struct RankingEntry { std::string name; std::string guild; int64_t level; int64_t job; int64_t score; };
-		struct McShowRankingMessage { std::vector<RankingEntry> entries; };
+		struct McVolunteerOpenMessage {
+			int64_t state;
+			int64_t pageTotal;
+			std::vector<VolunteerEntry> volunteers;
+		};
 
-		//  EspeItem 
-		struct EspeItemEntry { int64_t position; int64_t endure; int64_t energy; int64_t tradable; int64_t expiration; };
-		struct McEspeItemMessage { int64_t worldId; std::vector<EspeItemEntry> items; };
+		//  StallSearch / Ranking (count     )
+		struct StallSearchEntry {
+			std::string name;
+			std::string stallName;
+			std::string location;
+			int64_t count;
+			int64_t cost;
+		};
 
-		//  BlackMarket/Exchange 
-		struct BlackMarketExchangeEntry { int64_t srcId; int64_t srcCount; int64_t tarId; int64_t tarCount; int64_t timeValue; };
-		struct McBlackMarketExchangeDataMessage { int64_t npcId; std::vector<BlackMarketExchangeEntry> exchanges; };
+		struct McShowStallSearchMessage {
+			std::vector<StallSearchEntry> entries;
+		};
 
-		struct ExchangeEntry { int64_t srcId; int64_t srcCount; int64_t tarId; int64_t tarCount; };
-		struct McExchangeDataMessage { int64_t npcId; std::vector<ExchangeEntry> exchanges; };
+		struct RankingEntry {
+			std::string name;
+			std::string guild;
+			int64_t level;
+			int64_t job;
+			int64_t score;
+		};
 
-		struct McBlackMarketExchangeUpdateMessage { int64_t npcId; std::vector<BlackMarketExchangeEntry> exchanges; };
+		struct McShowRankingMessage {
+			std::vector<RankingEntry> entries;
+		};
 
-		struct McBlackMarketExchangeAsrMessage { int64_t success; int64_t srcId; int64_t srcCount; int64_t tarId; int64_t tarCount; };
+		//  EspeItem
+		struct EspeItemEntry {
+			int64_t position;
+			int64_t endure;
+			int64_t energy;
+			int64_t tradable;
+			int64_t expiration;
+		};
 
-		//  MC   NPC ( ) 
+		struct McEspeItemMessage {
+			int64_t worldId;
+			std::vector<EspeItemEntry> items;
+		};
+
+		//  BlackMarket/Exchange
+		struct BlackMarketExchangeEntry {
+			int64_t srcId;
+			int64_t srcCount;
+			int64_t tarId;
+			int64_t tarCount;
+			int64_t timeValue;
+		};
+
+		struct McBlackMarketExchangeDataMessage {
+			int64_t npcId;
+			std::vector<BlackMarketExchangeEntry> exchanges;
+		};
+
+		struct ExchangeEntry {
+			int64_t srcId;
+			int64_t srcCount;
+			int64_t tarId;
+			int64_t tarCount;
+		};
+
+		struct McExchangeDataMessage {
+			int64_t npcId;
+			std::vector<ExchangeEntry> exchanges;
+		};
+
+		struct McBlackMarketExchangeUpdateMessage {
+			int64_t npcId;
+			std::vector<BlackMarketExchangeEntry> exchanges;
+		};
+
+		struct McBlackMarketExchangeAsrMessage {
+			int64_t success;
+			int64_t srcId;
+			int64_t srcCount;
+			int64_t tarId;
+			int64_t tarCount;
+		};
+
+		//  MC   NPC ( )
 
 		///     ( NPC).
-		struct TradePageItem { int64_t itemId = 0; int64_t count = 0; int64_t price = 0; int64_t level = 0; };
+		struct TradePageItem {
+			int64_t itemId = 0;
+			int64_t count = 0;
+			int64_t price = 0;
+			int64_t level = 0;
+		};
+
 		///   NPC    +  .
-		struct TradePage { int64_t itemType = 0; std::vector<TradePageItem> items; };
+		struct TradePage {
+			int64_t itemType = 0;
+			std::vector<TradePageItem> items;
+		};
+
 		/// CMD_MC_TRADE_ALLDATA     NPC.
-		struct McTradeAllDataMessage { int64_t npcId = 0; int64_t tradeType = 0; int64_t param = 0; std::vector<TradePage> pages; };
+		struct McTradeAllDataMessage {
+			int64_t npcId = 0;
+			int64_t tradeType = 0;
+			int64_t param = 0;
+			std::vector<TradePage> pages;
+		};
 
-		//  MC   (Store) 
+		//  MC   (Store)
 
 		///   .
-		struct StoreAfficheEntry { int64_t afficheId = 0; std::string title; std::string comId; };
+		struct StoreAfficheEntry {
+			int64_t afficheId = 0;
+			std::string title;
+			std::string comId;
+		};
+
 		///   .
-		struct StoreClassEntry { int64_t classId = 0; std::string className; int64_t parentId = 0; };
+		struct StoreClassEntry {
+			int64_t classId = 0;
+			std::string className;
+			int64_t parentId = 0;
+		};
+
 		/// CMD_MC_STORE_OPEN_ASR     .
 		struct McStoreOpenAnswerMessage {
-			bool isValid = false; int64_t vip = 0; int64_t moBean = 0; int64_t replMoney = 0;
-			std::vector<StoreAfficheEntry> affiches; std::vector<StoreClassEntry> classes;
+			bool isValid = false;
+			int64_t vip = 0;
+			int64_t moBean = 0;
+			int64_t replMoney = 0;
+			std::vector<StoreAfficheEntry> affiches;
+			std::vector<StoreClassEntry> classes;
 		};
 
 		///   .
-		struct StoreAttrEntry { int64_t attrId = 0; int64_t attrVal = 0; };
+		struct StoreAttrEntry {
+			int64_t attrId = 0;
+			int64_t attrVal = 0;
+		};
+
 		///   (   ),  5 .
-		struct StoreVariantEntry { int64_t itemId = 0; int64_t itemNum = 0; int64_t flute = 0; StoreAttrEntry attrs[5]; };
+		struct StoreVariantEntry {
+			int64_t itemId = 0;
+			int64_t itemNum = 0;
+			int64_t flute = 0;
+			StoreAttrEntry attrs[5];
+		};
+
 		///  .
 		struct StoreProductEntry {
-			int64_t comId = 0; std::string comName; int64_t price = 0; std::string remark;
-			bool isHot = false; int64_t time = 0; int64_t quantity = 0; int64_t expire = 0;
+			int64_t comId = 0;
+			std::string comName;
+			int64_t price = 0;
+			std::string remark;
+			bool isHot = false;
+			int64_t time = 0;
+			int64_t quantity = 0;
+			int64_t expire = 0;
 			std::vector<StoreVariantEntry> variants;
 		};
+
 		/// CMD_MC_STORE_LIST_ASR    .
-		struct McStoreListAnswerMessage { int64_t pageTotal = 0; int64_t pageCurrent = 0; std::vector<StoreProductEntry> products; };
+		struct McStoreListAnswerMessage {
+			int64_t pageTotal = 0;
+			int64_t pageCurrent = 0;
+			std::vector<StoreProductEntry> products;
+		};
 
 		///    .
-		struct StoreHistoryEntry { std::string time; int64_t itemId = 0; std::string name; int64_t money = 0; };
+		struct StoreHistoryEntry {
+			std::string time;
+			int64_t itemId = 0;
+			std::string name;
+			int64_t money = 0;
+		};
+
 		/// CMD_MC_STORE_QUERY    .
-		struct McStoreHistoryMessage { std::vector<StoreHistoryEntry> records; };
+		struct McStoreHistoryMessage {
+			std::vector<StoreHistoryEntry> records;
+		};
 
 		/// CMD_MC_STORE_VIP  VIP- .
-		struct McStoreVipMessage { int64_t success = 0; int64_t vipId = 0; int64_t months = 0; int64_t shuijing = 0; int64_t modou = 0; };
+		struct McStoreVipMessage {
+			int64_t success = 0;
+			int64_t vipId = 0;
+			int64_t months = 0;
+			int64_t shuijing = 0;
+			int64_t modou = 0;
+		};
 
-		//  MC    () 
+		//  MC    ()
 
 		/// CMD_MC_TEAM     .
 		struct McSynTeamMessage {
-			int64_t memberId = 0; int64_t hp = 0; int64_t maxHP = 0; int64_t sp = 0; int64_t maxSP = 0; int64_t level = 0;
+			int64_t memberId = 0;
+			int64_t hp = 0;
+			int64_t maxHP = 0;
+			int64_t sp = 0;
+			int64_t maxSP = 0;
+			int64_t level = 0;
 			ChaLookInfo look;
 		};
 
-		//  McChaBeginSee 
+		//  McChaBeginSee
 
 		///    (poseType == 1).
-		struct LeanInfo { int64_t leanState = 0; int64_t pose = 0; int64_t angle = 0; int64_t posX = 0; int64_t posY = 0; int64_t height = 0; };
+		struct LeanInfo {
+			int64_t leanState = 0;
+			int64_t pose = 0;
+			int64_t angle = 0;
+			int64_t posX = 0;
+			int64_t posY = 0;
+			int64_t height = 0;
+		};
+
 		///     (poseType == 2).
-		struct SeatInfo { int64_t seatAngle = 0; int64_t seatPose = 0; };
+		struct SeatInfo {
+			int64_t seatAngle = 0;
+			int64_t seatPose = 0;
+		};
 
 		///     (std::variant).
 		using PoseData = std::variant<std::monostate, LeanInfo, SeatInfo>;
@@ -6145,7 +7184,7 @@ namespace net {
 			ChaBaseInfo base;
 			int64_t npcType = 0;
 			int64_t npcState = 0;
-			int64_t poseType = 0; //   
+			int64_t poseType = 0; //
 			PoseData pose;
 			ChaAttrInfo attr;
 			ChaSkillStateInfo skillState;
@@ -6160,44 +7199,44 @@ namespace net {
 			ChaSkillStateInfo skillState;
 		};
 
-		//  McCharacterAction (CMD_MC_NOTIACTION) 
+		//  McCharacterAction (CMD_MC_NOTIACTION)
 
 		///    (enumACTION_*).
 		namespace ActionType {
-			constexpr int64_t NONE       = 0;
-			constexpr int64_t MOVE       = 1;
-			constexpr int64_t SKILL      = 2;
-			constexpr int64_t SKILL_SRC  = 3;
-			constexpr int64_t SKILL_TAR  = 4;
-			constexpr int64_t LOOK       = 5;
-			constexpr int64_t KITBAG     = 6;
-			constexpr int64_t SKILLBAG   = 7;
-			constexpr int64_t ITEM_PICK  = 8;
+			constexpr int64_t NONE = 0;
+			constexpr int64_t MOVE = 1;
+			constexpr int64_t SKILL = 2;
+			constexpr int64_t SKILL_SRC = 3;
+			constexpr int64_t SKILL_TAR = 4;
+			constexpr int64_t LOOK = 5;
+			constexpr int64_t KITBAG = 6;
+			constexpr int64_t SKILLBAG = 7;
+			constexpr int64_t ITEM_PICK = 8;
 			constexpr int64_t ITEM_THROW = 9;
 			constexpr int64_t ITEM_UNFIX = 10;
-			constexpr int64_t ITEM_USE   = 11;
-			constexpr int64_t ITEM_POS   = 12;
+			constexpr int64_t ITEM_USE = 11;
+			constexpr int64_t ITEM_POS = 12;
 			constexpr int64_t ITEM_DELETE = 13;
-			constexpr int64_t ITEM_INFO  = 14;
+			constexpr int64_t ITEM_INFO = 14;
 			constexpr int64_t ITEM_FAILED = 15;
-			constexpr int64_t LEAN       = 16;
+			constexpr int64_t LEAN = 16;
 			constexpr int64_t CHANGE_CHA = 17;
-			constexpr int64_t EVENT      = 18;
-			constexpr int64_t FACE       = 19;
+			constexpr int64_t EVENT = 18;
+			constexpr int64_t FACE = 19;
 			constexpr int64_t STOP_STATE = 20;
 			constexpr int64_t SKILL_POSE = 21;
-			constexpr int64_t PK_CTRL    = 22;
+			constexpr int64_t PK_CTRL = 22;
 			constexpr int64_t LOOK_ENERGY = 23;
-			constexpr int64_t TEMP       = 24;
-			constexpr int64_t SHORTCUT   = 25;
-			constexpr int64_t BANK       = 26;
+			constexpr int64_t TEMP = 24;
+			constexpr int64_t SHORTCUT = 25;
+			constexpr int64_t BANK = 26;
 			constexpr int64_t CLOSE_BANK = 27;
-			constexpr int64_t KITBAGTMP  = 28;
+			constexpr int64_t KITBAGTMP = 28;
 			constexpr int64_t KITBAGTMP_DRAG = 29;
-			constexpr int64_t GUILDBANK  = 30;
+			constexpr int64_t GUILDBANK = 30;
 			constexpr int64_t REQUESTGUILDBANK = 31;
 			constexpr int64_t REQUESTGUILDLOGS = 32;
-			constexpr int64_t UPDATEGUILDLOGS  = 33;
+			constexpr int64_t UPDATEGUILDLOGS = 33;
 		}
 
 		///  .
@@ -6295,44 +7334,72 @@ namespace net {
 		};
 
 		///   TEMP (  ).
-		struct ActionTempData { int64_t itemId = 0; int64_t partId = 0; };
+		struct ActionTempData {
+			int64_t itemId = 0;
+			int64_t partId = 0;
+		};
+
 		///   CHANGE_CHA (  ).
-		struct ActionChangeChaData { int64_t mainChaId = 0; };
+		struct ActionChangeChaData {
+			int64_t mainChaId = 0;
+		};
+
 		///   ITEM_FAILED (   ).
-		struct ActionItemFailedData { int64_t failedId = 0; };
+		struct ActionItemFailedData {
+			int64_t failedId = 0;
+		};
+
 		///   PK_CTRL (PK-).
-		struct ActionPkCtrlData { int64_t pkCtrl = 0; };
+		struct ActionPkCtrlData {
+			int64_t pkCtrl = 0;
+		};
+
 		///   LOOK_ENERGY ( ).
-		struct ActionLookEnergyData { int64_t energy[EQUIP_NUM] = {}; };
+		struct ActionLookEnergyData {
+			int64_t energy[EQUIP_NUM] = {};
+		};
 
 		///     (  ActionUpdateGuildLogsData/ActionRequestGuildLogsData).
-		struct GuildBankLogEntry { int64_t type = 0; int64_t time = 0; int64_t parameter = 0; int64_t quantity = 0; int64_t userId = 0; };
+		struct GuildBankLogEntry {
+			int64_t type = 0;
+			int64_t time = 0;
+			int64_t parameter = 0;
+			int64_t quantity = 0;
+			int64_t userId = 0;
+		};
 
 		///   UPDATEGUILDLOGS (   ).
-		struct ActionUpdateGuildLogsData { int64_t totalSize = 0; std::vector<GuildBankLogEntry> logs; bool terminated = false; };
+		struct ActionUpdateGuildLogsData {
+			int64_t totalSize = 0;
+			std::vector<GuildBankLogEntry> logs;
+			bool terminated = false;
+		};
 
 		///   REQUESTGUILDLOGS (   ).
-		struct ActionRequestGuildLogsData { std::vector<GuildBankLogEntry> logs; bool terminated = false; };
+		struct ActionRequestGuildLogsData {
+			std::vector<GuildBankLogEntry> logs;
+			bool terminated = false;
+		};
 
 		///     (C++23 std::variant).
 		///     actionType.
 		using CharacterActionData = std::variant<
-			std::monostate,        // unknown / ITEM_INFO ()
-			ActionMoveData,        // MOVE
-			ActionSkillSrcData,    // SKILL_SRC
-			ActionSkillTarData,    // SKILL_TAR
-			ActionLeanData,        // LEAN
-			ActionFaceData,        // FACE & SKILL_POSE
-			ChaLookInfo,           // LOOK
-			ChaKitbagInfo,         // KITBAG, BANK, GUILDBANK, KITBAGTMP
-			ChaShortcutInfo,       // SHORTCUT
-			ActionTempData,        // TEMP
-			ActionChangeChaData,   // CHANGE_CHA
-			ActionItemFailedData,  // ITEM_FAILED
-			ActionPkCtrlData,      // PK_CTRL
-			ActionLookEnergyData,  // LOOK_ENERGY
-			ActionUpdateGuildLogsData,  // UPDATEGUILDLOGS
-			ActionRequestGuildLogsData  // REQUESTGUILDLOGS
+			std::monostate, // unknown / ITEM_INFO ()
+			ActionMoveData, // MOVE
+			ActionSkillSrcData, // SKILL_SRC
+			ActionSkillTarData, // SKILL_TAR
+			ActionLeanData, // LEAN
+			ActionFaceData, // FACE & SKILL_POSE
+			ChaLookInfo, // LOOK
+			ChaKitbagInfo, // KITBAG, BANK, GUILDBANK, KITBAGTMP
+			ChaShortcutInfo, // SHORTCUT
+			ActionTempData, // TEMP
+			ActionChangeChaData, // CHANGE_CHA
+			ActionItemFailedData, // ITEM_FAILED
+			ActionPkCtrlData, // PK_CTRL
+			ActionLookEnergyData, // LOOK_ENERGY
+			ActionUpdateGuildLogsData, // UPDATEGUILDLOGS
+			ActionRequestGuildLogsData // REQUESTGUILDLOGS
 		>;
 
 		/// CMD_MC_NOTIACTION     .
@@ -6340,202 +7407,435 @@ namespace net {
 		struct McCharacterActionMessage {
 			int64_t worldId = 0;
 			int64_t packetId = 0;
-			int64_t actionType = 0; //   
+			int64_t actionType = 0; //
 			CharacterActionData data;
 		};
 
-		//   :  (CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_PAGE) 
+		//   :  (CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_PAGE)
 
 		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_PAGE:   .
-		struct McCharTradePageMessage { int64_t subCmd = 0; int64_t tradeType = 0; int64_t mainChaId = 0; int64_t otherChaId = 0; };
+		struct McCharTradePageMessage {
+			int64_t subCmd = 0;
+			int64_t tradeType = 0;
+			int64_t mainChaId = 0;
+			int64_t otherChaId = 0;
+		};
 
-		//     (- MM) 
+		//     (- MM)
 
 		/// CMD_MM_STORE_BUY (4020):     (- GameServerGameServer).
-		struct MmStoreBuyRelayMessage { int64_t charId = 0; int64_t targetChaId = 0; int64_t comId = 0; int64_t money = 0; };
+		struct MmStoreBuyRelayMessage {
+			int64_t charId = 0;
+			int64_t targetChaId = 0;
+			int64_t comId = 0;
+			int64_t money = 0;
+		};
 
-		//    GameServerGroup ( gateAddr/gpAddr) 
+		//    GameServerGroup ( gateAddr/gpAddr)
 
 		/// CMD_MP_GUILD_CREATE:   (GameServerGateServerGroup).
 		/// gateAddr/gpAddr  ReflectINFof / .
-		struct GmGuildCreateMessage { int64_t guildId = 0; std::string guildName; std::string job; int64_t degree = 0; };
+		struct GmGuildCreateMessage {
+			int64_t guildId = 0;
+			std::string guildName;
+			std::string job;
+			int64_t degree = 0;
+		};
 
 		/// CMD_MP_GUILD_APPROVE:   (GameServerGroup).
-		struct GmGuildApproveMessage { int64_t chaId = 0; };
+		struct GmGuildApproveMessage {
+			int64_t chaId = 0;
+		};
 
 		/// CMD_MP_GUILD_KICK:    (GameServerGroup).
-		struct GmGuildKickMessage { int64_t chaId = 0; };
+		struct GmGuildKickMessage {
+			int64_t chaId = 0;
+		};
 
 		/// CMD_MP_GUILD_MOTTO:    (GameServerGroup).
-		struct GmGuildMottoMessage { std::string motto; };
+		struct GmGuildMottoMessage {
+			std::string motto;
+		};
 
 		/// CMD_MP_GUILD_CHALLMONEY:      (GameServerGroup).
-		struct GmGuildChallMoneyMessage { int64_t guildId = 0; int64_t money = 0; std::string guildName1; std::string guildName2; };
+		struct GmGuildChallMoneyMessage {
+			int64_t guildId = 0;
+			int64_t money = 0;
+			std::string guildName1;
+			std::string guildName2;
+		};
 
 		/// CMD_MP_SAY2ALL:   (GameServerGroup), success +  + .
-		struct GmSay2AllMessage { int64_t success = 0; std::string chaName; std::string content; };
+		struct GmSay2AllMessage {
+			int64_t success = 0;
+			std::string chaName;
+			std::string content;
+		};
 
 		/// CMD_MP_SAY2TRADE:    (GameServerGroup).
-		struct GmSay2TradeMessage { int64_t success = 0; std::string chaName; std::string content; };
+		struct GmSay2TradeMessage {
+			int64_t success = 0;
+			std::string chaName;
+			std::string content;
+		};
 
 		/// CMD_MM_GUILD_CHALL_PRIZEMONEY:    (GameServerGateServer broadcast).
-		struct GmGuildChallPrizeMoneyBroadcast { int64_t zero1 = 0; int64_t guildId = 0; int64_t money = 0; int64_t zero2 = 0; int64_t zero3 = 0; int64_t zero4 = 0; };
+		struct GmGuildChallPrizeMoneyBroadcast {
+			int64_t zero1 = 0;
+			int64_t guildId = 0;
+			int64_t money = 0;
+			int64_t zero2 = 0;
+			int64_t zero3 = 0;
+			int64_t zero4 = 0;
+		};
 
 		/// CMD_MT_MAPENTRY:   /    (GameServerGateServer).
-		struct GmMapEntryResultMessage { std::string srcMapName; std::string targetMapName; int64_t subType = 0; int64_t resultCode = 0; };
+		struct GmMapEntryResultMessage {
+			std::string srcMapName;
+			std::string targetMapName;
+			int64_t subType = 0;
+			int64_t resultCode = 0;
+		};
 
 		/// CMD_MP_GUILDNOTICE:   (GameServerGroup  trailer).
-		struct GmGuildNoticeMessage { int64_t guildId = 0; std::string content; };
+		struct GmGuildNoticeMessage {
+			int64_t guildId = 0;
+			std::string content;
+		};
 
 		/// CMD_MP_GM1SAY1:   (GameServerGroup).
-		struct GmScrollNoticeMessage { std::string content; int64_t setNum = 0; int64_t color = 0; };
+		struct GmScrollNoticeMessage {
+			std::string content;
+			int64_t setNum = 0;
+			int64_t color = 0;
+		};
 
 		/// CMD_MP_GM1SAY: GM- (GameServerGroup).
-		struct GmGMNoticeMessage { std::string content; };
+		struct GmGMNoticeMessage {
+			std::string content;
+		};
 
 		/// CMD_MM_CHA_NOTICE:    (GameServerGateServer broadcast).
-		struct GmChaNoticeMessage { int64_t zero = 0; std::string noticeText; std::string chaName; };
+		struct GmChaNoticeMessage {
+			int64_t zero = 0;
+			std::string noticeText;
+			std::string chaName;
+		};
 
 		/// CMD_MP_GMBANACCOUNT:   (GameServerGroup).
-		struct GmBanAccountMessage { std::string actName; };
+		struct GmBanAccountMessage {
+			std::string actName;
+		};
 
 		/// CMD_MP_GMUNBANACCOUNT:   (GameServerGroup).
-		struct GmUnbanAccountMessage { std::string actName; };
+		struct GmUnbanAccountMessage {
+			std::string actName;
+		};
 
 		/// CMD_MP_CANRECEIVEREQUESTS:    (GameServerGroup).
-		struct GmCanReceiveRequestsMessage { int64_t chaId = 0; int64_t canSend = 0; };
+		struct GmCanReceiveRequestsMessage {
+			int64_t chaId = 0;
+			int64_t canSend = 0;
+		};
 
 		/// CMD_MP_MUTE_PLAYER:   (GameServerGroup,  gateAddr/gpAddr  ReflectINFof ).
-		struct GmMutePlayerMessage { std::string chaName; int64_t time = 0; };
+		struct GmMutePlayerMessage {
+			std::string chaName;
+			int64_t time = 0;
+		};
 
 		///    (CMD_MC_LISTAUCTION).
-		struct AuctionListEntry { int64_t itemId = 0; std::string name; std::string curChaName; int64_t itemCount = 0; int64_t basePrice = 0; int64_t minBid = 0; int64_t curPrice = 0; };
+		struct AuctionListEntry {
+			int64_t itemId = 0;
+			std::string name;
+			std::string curChaName;
+			int64_t itemCount = 0;
+			int64_t basePrice = 0;
+			int64_t minBid = 0;
+			int64_t curPrice = 0;
+		};
+
 		/// CMD_MC_LISTAUCTION:    (count-first ).
-		struct McListAuctionMessage { std::vector<AuctionListEntry> items; };
+		struct McListAuctionMessage {
+			std::vector<AuctionListEntry> items;
+		};
 
 		/// CMD_MT_MAPENTRY + MAPENTRY_CREATE:    Lua- (count-last).
 		struct GmMapEntryCreateMessage {
-			std::string targetMapName; std::string srcMapName;
-			int64_t posX = 0; int64_t posY = 0; int64_t copyNum = 0; int64_t copyPlyNum = 0;
+			std::string targetMapName;
+			std::string srcMapName;
+			int64_t posX = 0;
+			int64_t posY = 0;
+			int64_t copyNum = 0;
+			int64_t copyPlyNum = 0;
 			std::vector<std::string> scriptLines;
 		};
 
 		/// CMD_MT_MAPENTRY + MAPENTRY_COPYPARAM:   .
 		struct GmMapEntryCopyParamMessage {
-			std::string targetMapName; std::string srcMapName;
+			std::string targetMapName;
+			std::string srcMapName;
 			int64_t copyId = 0;
 			int64_t params[16] = {};
 		};
 
 		///    CMD_MC_LISTGUILD ().
-		struct GuildListEntry { int64_t guildId = 0; std::string guildName; std::string motto; std::string leaderName; int64_t memberCount = 0; int64_t exp = 0; };
+		struct GuildListEntry {
+			int64_t guildId = 0;
+			std::string guildName;
+			std::string motto;
+			std::string leaderName;
+			int64_t memberCount = 0;
+			int64_t exp = 0;
+		};
+
 		/// CMD_MC_LISTGUILD:   (  count-first).
-		struct McListGuildMessage { std::vector<GuildListEntry> entries; };
+		struct McListGuildMessage {
+			std::vector<GuildListEntry> entries;
+		};
 
 		///    .
-		struct GuildTryPlayerEntry { int64_t chaId = 0; std::string name; std::string job; int64_t degree = 0; };
+		struct GuildTryPlayerEntry {
+			int64_t chaId = 0;
+			std::string name;
+			std::string job;
+			int64_t degree = 0;
+		};
+
 		/// CMD_MC_GUILD_LISTTRYPLAYER:   .
 		struct McGuildListTryPlayerMessage {
-			int64_t guildId = 0; std::string guildName; std::string motto; std::string leaderName;
-			int64_t memberTotal = 0; int64_t maxMembers = 0; int64_t exp = 0;
-			int64_t reserved = 0; int64_t level = 0;
+			int64_t guildId = 0;
+			std::string guildName;
+			std::string motto;
+			std::string leaderName;
+			int64_t memberTotal = 0;
+			int64_t maxMembers = 0;
+			int64_t exp = 0;
+			int64_t reserved = 0;
+			int64_t level = 0;
 			std::vector<GuildTryPlayerEntry> players;
 		};
 
 		///    (stall sync data).
 		struct StallSyncBoatData {
-			std::string name; int64_t ship = 0; int64_t lv = 0; int64_t cexp = 0;
-			int64_t hp = 0; int64_t mxhp = 0; int64_t sp = 0; int64_t mxsp = 0;
-			int64_t mnatk = 0; int64_t mxatk = 0; int64_t def = 0; int64_t mspd = 0; int64_t aspd = 0;
-			int64_t useGridNum = 0; int64_t capacity = 0; int64_t price = 0;
+			std::string name;
+			int64_t ship = 0;
+			int64_t lv = 0;
+			int64_t cexp = 0;
+			int64_t hp = 0;
+			int64_t mxhp = 0;
+			int64_t sp = 0;
+			int64_t mxsp = 0;
+			int64_t mnatk = 0;
+			int64_t mxatk = 0;
+			int64_t def = 0;
+			int64_t mspd = 0;
+			int64_t aspd = 0;
+			int64_t useGridNum = 0;
+			int64_t capacity = 0;
+			int64_t price = 0;
 		};
+
 		struct StallSyncItemData {
-			int64_t endure0 = 0; int64_t endure1 = 0; int64_t energy0 = 0; int64_t energy1 = 0;
-			int64_t forgeLv = 0; int64_t valid = 0; int64_t tradable = 0; int64_t expiration = 0;
-			int64_t forgeParam = 0; int64_t instId = 0;
+			int64_t endure0 = 0;
+			int64_t endure1 = 0;
+			int64_t energy0 = 0;
+			int64_t energy1 = 0;
+			int64_t forgeLv = 0;
+			int64_t valid = 0;
+			int64_t tradable = 0;
+			int64_t expiration = 0;
+			int64_t forgeParam = 0;
+			int64_t instId = 0;
 			bool hasInstAttr = false;
 			int64_t instAttr[ITEM_INSTANCE_ATTR_NUM][2] = {};
 		};
+
 		struct StallSyncGoodsEntry {
-			int64_t grid = 0; int64_t itemId = 0; int64_t count = 0; int64_t money = 0;
+			int64_t grid = 0;
+			int64_t itemId = 0;
+			int64_t count = 0;
+			int64_t money = 0;
 			int64_t itemType = 0;
 			bool isBoat = false;
 			bool hasBoat = false;
 			StallSyncBoatData boat;
 			StallSyncItemData item;
 		};
+
 		/// CMD_MC_STALL_ALLDATA:    ( ).
 		struct McStallSyncDataMessage {
-			int64_t stallerId = 0; int64_t num = 0; std::string name;
+			int64_t stallerId = 0;
+			int64_t num = 0;
+			std::string name;
 			std::vector<StallSyncGoodsEntry> goods;
 		};
 
 		///    CMD_MC_CREATEBOAT / CMD_MC_BOATINFO / CMD_MC_UPDATEBOAT.
-		struct BoatPartEntry { int64_t partId = 0; int64_t model = 0; std::string name; };
+		struct BoatPartEntry {
+			int64_t partId = 0;
+			int64_t model = 0;
+			std::string name;
+		};
+
 		/// CMD_MC_CREATEBOAT / CMD_MC_BOATINFO / CMD_MC_UPDATEBOAT:   .
 		struct McBoatSyncAttrMessage {
-			int64_t cmd = 0; int64_t boatId = 0;
-			std::string boatName; std::string shipName; std::string shipDesc; std::string berthName;
+			int64_t cmd = 0;
+			int64_t boatId = 0;
+			std::string boatName;
+			std::string shipName;
+			std::string shipDesc;
+			std::string berthName;
 			int64_t isUpdate = 0;
 			BoatPartEntry body;
 			bool hasUpdateParts = false;
-			BoatPartEntry header; BoatPartEntry engine;
+			BoatPartEntry header;
+			BoatPartEntry engine;
 			int64_t motorModels[4] = {};
-			int64_t cannonId = 0; std::string cannonName;
-			int64_t equipmentId = 0; std::string equipmentName;
-			int64_t money = 0; int64_t minAttack = 0; int64_t maxAttack = 0;
-			int64_t curEndure = 0; int64_t maxEndure = 0;
-			int64_t speed = 0; int64_t distance = 0; int64_t defence = 0;
-			int64_t curSupply = 0; int64_t maxSupply = 0;
-			int64_t consume = 0; int64_t attackTime = 0; int64_t boatCapacity = 0;
+			int64_t cannonId = 0;
+			std::string cannonName;
+			int64_t equipmentId = 0;
+			std::string equipmentName;
+			int64_t money = 0;
+			int64_t minAttack = 0;
+			int64_t maxAttack = 0;
+			int64_t curEndure = 0;
+			int64_t maxEndure = 0;
+			int64_t speed = 0;
+			int64_t distance = 0;
+			int64_t defence = 0;
+			int64_t curSupply = 0;
+			int64_t maxSupply = 0;
+			int64_t consume = 0;
+			int64_t attackTime = 0;
+			int64_t boatCapacity = 0;
 		};
 
-		//  CM  - BeginAction (sub-types  CMD_CM_BEGINACTION) 
+		//  CM  - BeginAction (sub-types  CMD_CM_BEGINACTION)
 
-		struct CmActionMoveInputData { std::string pathData; };
+		struct CmActionMoveInputData {
+			std::string pathData;
+		};
+
 		struct CmActionSkillInputData {
-			int64_t chMove = 0; int64_t fightId = 0;
+			int64_t chMove = 0;
+			int64_t fightId = 0;
 			std::string pathData; //  blob Point[],   chMove == 2
-			int64_t skillId = 0; int64_t tarInfo1 = 0; int64_t tarInfo2 = 0;
+			int64_t skillId = 0;
+			int64_t tarInfo1 = 0;
+			int64_t tarInfo2 = 0;
 		};
-		struct CmActionStopStateData { int64_t stateId = 0; };
-		struct CmActionLeanData { int64_t pose = 0; int64_t angle = 0; int64_t posX = 0; int64_t posY = 0; int64_t height = 0; };
-		struct CmActionItemPickData { int64_t worldId = 0; int64_t handle = 0; };
-		struct CmActionItemThrowData { int64_t gridId = 0; int64_t num = 0; int64_t posX = 0; int64_t posY = 0; };
-		struct CmActionItemUseData { int64_t fromGridId = 0; int64_t toGridId = 0; };
-		struct CmActionItemUnfixData { int64_t linkId = 0; int64_t gridId = 0; int64_t param1 = 0; int64_t param2 = 0; };
-		struct CmActionItemPosData { int64_t srcGrid = 0; int64_t srcNum = 0; int64_t tarGrid = 0; };
-		struct CmActionItemDeleteData { int64_t fromGridId = 0; };
-		struct CmActionBankData { int64_t srcType = 0; int64_t srcGrid = 0; int64_t srcNum = 0; int64_t tarType = 0; int64_t tarGrid = 0; };
-		struct CmActionShortcutData { int64_t index = 0; int64_t type = 0; int64_t grid = 0; };
-		struct CmActionTempData { int64_t itemId = 0; int64_t partId = 0; };
-		struct CmActionEventData { int64_t worldId = 0; int64_t handle = 0; int64_t eventId = 0; };
-		struct CmActionFaceData { int64_t angle = 0; int64_t pose = 0; };
-		struct CmActionPkCtrlData { int64_t ctrl = 0; };
-		struct CmActionRequestGuildLogsData { int64_t curSize = 0; };
-		struct CmActionViewItemData { int64_t viewType = 0; int64_t param = 0; };
+
+		struct CmActionStopStateData {
+			int64_t stateId = 0;
+		};
+
+		struct CmActionLeanData {
+			int64_t pose = 0;
+			int64_t angle = 0;
+			int64_t posX = 0;
+			int64_t posY = 0;
+			int64_t height = 0;
+		};
+
+		struct CmActionItemPickData {
+			int64_t worldId = 0;
+			int64_t handle = 0;
+		};
+
+		struct CmActionItemThrowData {
+			int64_t gridId = 0;
+			int64_t num = 0;
+			int64_t posX = 0;
+			int64_t posY = 0;
+		};
+
+		struct CmActionItemUseData {
+			int64_t fromGridId = 0;
+			int64_t toGridId = 0;
+		};
+
+		struct CmActionItemUnfixData {
+			int64_t linkId = 0;
+			int64_t gridId = 0;
+			int64_t param1 = 0;
+			int64_t param2 = 0;
+		};
+
+		struct CmActionItemPosData {
+			int64_t srcGrid = 0;
+			int64_t srcNum = 0;
+			int64_t tarGrid = 0;
+		};
+
+		struct CmActionItemDeleteData {
+			int64_t fromGridId = 0;
+		};
+
+		struct CmActionBankData {
+			int64_t srcType = 0;
+			int64_t srcGrid = 0;
+			int64_t srcNum = 0;
+			int64_t tarType = 0;
+			int64_t tarGrid = 0;
+		};
+
+		struct CmActionShortcutData {
+			int64_t index = 0;
+			int64_t type = 0;
+			int64_t grid = 0;
+		};
+
+		struct CmActionTempData {
+			int64_t itemId = 0;
+			int64_t partId = 0;
+		};
+
+		struct CmActionEventData {
+			int64_t worldId = 0;
+			int64_t handle = 0;
+			int64_t eventId = 0;
+		};
+
+		struct CmActionFaceData {
+			int64_t angle = 0;
+			int64_t pose = 0;
+		};
+
+		struct CmActionPkCtrlData {
+			int64_t ctrl = 0;
+		};
+
+		struct CmActionRequestGuildLogsData {
+			int64_t curSize = 0;
+		};
+
+		struct CmActionViewItemData {
+			int64_t viewType = 0;
+			int64_t param = 0;
+		};
 
 		/// CMD_CM_BEGINACTION: variant   .
 		using CmBeginActionData = std::variant<
-			std::monostate,              // CLOSE_BANK, REQUESTGUILDBANK, UPDATEGUILDLOGS, LOOK  .
-			CmActionMoveInputData,       // enumACTION_MOVE
-			CmActionSkillInputData,      // enumACTION_SKILL
-			CmActionStopStateData,       // enumACTION_STOP_STATE
-			CmActionLeanData,            // enumACTION_LEAN
-			CmActionItemPickData,        // enumACTION_ITEM_PICK
-			CmActionItemThrowData,       // enumACTION_ITEM_THROW
-			CmActionItemUseData,         // enumACTION_ITEM_USE
-			CmActionItemUnfixData,       // enumACTION_ITEM_UNFIX
-			CmActionItemPosData,         // enumACTION_ITEM_POS, KITBAGTMP_DRAG
-			CmActionItemDeleteData,      // enumACTION_ITEM_DELETE
-			CmActionViewItemData,        // enumACTION_ITEM_INFO
-			CmActionBankData,            // enumACTION_BANK
-			CmActionRequestGuildLogsData,// enumACTION_REQUESTGUILDLOGS
-			CmActionShortcutData,        // enumACTION_SHORTCUT
-			CmActionTempData,            // enumACTION_TEMP
-			CmActionEventData,           // enumACTION_EVENT
-			CmActionFaceData,            // enumACTION_FACE, SKILL_POSE
-			CmActionPkCtrlData           // enumACTION_PK_CTRL
+			std::monostate, // CLOSE_BANK, REQUESTGUILDBANK, UPDATEGUILDLOGS, LOOK  .
+			CmActionMoveInputData, // enumACTION_MOVE
+			CmActionSkillInputData, // enumACTION_SKILL
+			CmActionStopStateData, // enumACTION_STOP_STATE
+			CmActionLeanData, // enumACTION_LEAN
+			CmActionItemPickData, // enumACTION_ITEM_PICK
+			CmActionItemThrowData, // enumACTION_ITEM_THROW
+			CmActionItemUseData, // enumACTION_ITEM_USE
+			CmActionItemUnfixData, // enumACTION_ITEM_UNFIX
+			CmActionItemPosData, // enumACTION_ITEM_POS, KITBAGTMP_DRAG
+			CmActionItemDeleteData, // enumACTION_ITEM_DELETE
+			CmActionViewItemData, // enumACTION_ITEM_INFO
+			CmActionBankData, // enumACTION_BANK
+			CmActionRequestGuildLogsData, // enumACTION_REQUESTGUILDLOGS
+			CmActionShortcutData, // enumACTION_SHORTCUT
+			CmActionTempData, // enumACTION_TEMP
+			CmActionEventData, // enumACTION_EVENT
+			CmActionFaceData, // enumACTION_FACE, SKILL_POSE
+			CmActionPkCtrlData // enumACTION_PK_CTRL
 		>;
 
 		/// CMD_CM_BEGINACTION:  .
@@ -6549,317 +7849,1633 @@ namespace net {
 		///   (  ).
 		using CmBeginActionHeader = CmBeginActionMessage;
 
-		//  CM       
+		//  CM
 
 		/// CMD_CM_SAY:   ().
-		struct CmSayMessage { std::string content; };
+		struct CmSayMessage {
+			std::string content;
+		};
 
 		/// CMD_CM_SYNATTR:    ().
-		struct CmSynAttrEntry { int64_t attrId = 0; int64_t value = 0; };
-		struct CmSynAttrMessage { std::vector<CmSynAttrEntry> attrs; };
+		struct CmSynAttrEntry {
+			int64_t attrId = 0;
+			int64_t value = 0;
+		};
+
+		struct CmSynAttrMessage {
+			std::vector<CmSynAttrEntry> attrs;
+		};
 
 		/// /  (forge group).
-		struct ForgeGroupCell { int64_t posId = 0; int64_t num = 0; };
-		struct ForgeGroup { std::vector<ForgeGroupCell> cells; };
+		struct ForgeGroupCell {
+			int64_t posId = 0;
+			int64_t num = 0;
+		};
+
+		struct ForgeGroup {
+			std::vector<ForgeGroupCell> cells;
+		};
 
 		/// CMD_CM_ITEM_FORGE_CANACTION: / .
-		struct CmItemForgeCanActionMessage { int64_t canAction = 0; };
+		struct CmItemForgeCanActionMessage {
+			int64_t canAction = 0;
+		};
 
 		/// CMD_CM_ITEM_FORGE_ASK:   ( ).
-		struct CmItemForgeGroupAskMessage { int64_t sure = 0; int64_t type = 0; ForgeGroup groups[6]; };
+		struct CmItemForgeGroupAskMessage {
+			int64_t sure = 0;
+			int64_t type = 0;
+			ForgeGroup groups[6];
+		};
 
 		/// CMD_CM_ITEM_FORGE_ASK:   (  ).
-		struct CmItemForgePosAskMessage { int64_t sure = 0; int64_t type = 0; int64_t positions[6] = {}; int64_t posCount = 0; };
+		struct CmItemForgePosAskMessage {
+			int64_t sure = 0;
+			int64_t type = 0;
+			int64_t positions[6] = {};
+			int64_t posCount = 0;
+		};
 
 		/// CMD_CM_ITEM_LOTTERY_ASK:   ( ).
-		struct CmItemLotteryGroupAskMessage { int64_t sure = 0; ForgeGroup groups[3]; };
+		struct CmItemLotteryGroupAskMessage {
+			int64_t sure = 0;
+			ForgeGroup groups[3];
+		};
 
 		///       (0..3).
-		constexpr short kLifeSkillNeedItemNum[4] = { 6, 4, 6, 6 };
+		constexpr short kLifeSkillNeedItemNum[4] = {6, 4, 6, 6};
 
 		/// CMD_CM_LIFESKILL_ASK / CMD_CM_LIFESKILL_ASR:   (  ).
-		struct CmLifeSkillCraftMessage { bool isAnswer = false; int64_t skillType = 0; int64_t npcId = 0; std::vector<int64_t> positions; int64_t extraParam = 0; bool hasExtra = false; };
+		struct CmLifeSkillCraftMessage {
+			bool isAnswer = false;
+			int64_t skillType = 0;
+			int64_t npcId = 0;
+			std::vector<int64_t> positions;
+			int64_t extraParam = 0;
+			bool hasExtra = false;
+		};
 
-		//  Serialize: cmd-only 
+		//  Serialize: cmd-only
 
-		inline WPacket serializeCmOfflineModeCmd() { WPacket w(8); w.WriteCmd(CMD_CM_OFFLINE_MODE); return w; }
-		inline WPacket serializeCmCancelExitCmd() { WPacket w(8); w.WriteCmd(CMD_CM_CANCELEXIT); return w; }
-		inline WPacket serializeCmKitbagLockCmd() { WPacket w(8); w.WriteCmd(CMD_CM_KITBAG_LOCK); return w; }
-		inline WPacket serializeCmKitbagCheckCmd() { WPacket w(8); w.WriteCmd(CMD_CM_KITBAG_CHECK); return w; }
-		inline WPacket serializeCmKitbagTempSyncCmd() { WPacket w(8); w.WriteCmd(CMD_CM_KITBAGTEMP_SYNC); return w; }
-		inline WPacket serializeCmReadBookStartCmd() { WPacket w(8); w.WriteCmd(CMD_CM_READBOOK_START); return w; }
-		inline WPacket serializeCmReadBookCloseCmd() { WPacket w(8); w.WriteCmd(CMD_CM_READBOOK_CLOSE); return w; }
-		inline WPacket serializeCmBoatCancelCmd() { WPacket w(8); w.WriteCmd(CMD_CM_BOAT_CANCEL); return w; }
-		inline WPacket serializeCmBoatGetInfoCmd() { WPacket w(8); w.WriteCmd(CMD_CM_BOAT_GETINFO); return w; }
-		inline WPacket serializeCmVolunteerAddCmd() { WPacket w(8); w.WriteCmd(CMD_CM_VOLUNTER_ADD); return w; }
-		inline WPacket serializeCmVolunteerDelCmd() { WPacket w(8); w.WriteCmd(CMD_CM_VOLUNTER_DEL); return w; }
-		inline WPacket serializeCmStoreCloseCmd() { WPacket w(8); w.WriteCmd(CMD_CM_STORE_CLOSE); return w; }
-		inline WPacket serializeCmStallCloseCmd() { WPacket w(8); w.WriteCmd(CMD_CM_STALL_CLOSE); return w; }
-		inline WPacket serializeCmMisLogCmd() { WPacket w(8); w.WriteCmd(CMD_CM_MISLOG); return w; }
-		inline WPacket serializeCmDailyBuffRequestCmd() { WPacket w(8); w.WriteCmd(CMD_CM_DailyBuffRequest); return w; }
-		inline WPacket serializeCmRequestDropRateCmd() { WPacket w(8); w.WriteCmd(CMD_CM_REQUEST_DROP_RATE); return w; }
-		inline WPacket serializeCmRequestExpRateCmd() { WPacket w(8); w.WriteCmd(CMD_CM_REQUEST_EXP_RATE); return w; }
+		inline WPacket serializeCmOfflineModeCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_OFFLINE_MODE);
+			return w;
+		}
 
-		//  Serialize: cmd-only (GameServerGateServer/Group) 
+		inline WPacket serializeCmCancelExitCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_CANCELEXIT);
+			return w;
+		}
+
+		inline WPacket serializeCmKitbagLockCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_KITBAG_LOCK);
+			return w;
+		}
+
+		inline WPacket serializeCmKitbagCheckCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_KITBAG_CHECK);
+			return w;
+		}
+
+		inline WPacket serializeCmKitbagTempSyncCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_KITBAGTEMP_SYNC);
+			return w;
+		}
+
+		inline WPacket serializeCmReadBookStartCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_READBOOK_START);
+			return w;
+		}
+
+		inline WPacket serializeCmReadBookCloseCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_READBOOK_CLOSE);
+			return w;
+		}
+
+		inline WPacket serializeCmBoatCancelCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_BOAT_CANCEL);
+			return w;
+		}
+
+		inline WPacket serializeCmBoatGetInfoCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_BOAT_GETINFO);
+			return w;
+		}
+
+		inline WPacket serializeCmVolunteerAddCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_VOLUNTER_ADD);
+			return w;
+		}
+
+		inline WPacket serializeCmVolunteerDelCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_VOLUNTER_DEL);
+			return w;
+		}
+
+		inline WPacket serializeCmStoreCloseCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_STORE_CLOSE);
+			return w;
+		}
+
+		inline WPacket serializeCmStallCloseCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_STALL_CLOSE);
+			return w;
+		}
+
+		inline WPacket serializeCmMisLogCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_MISLOG);
+			return w;
+		}
+
+		inline WPacket serializeCmDailyBuffRequestCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_DailyBuffRequest);
+			return w;
+		}
+
+		inline WPacket serializeCmRequestDropRateCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_REQUEST_DROP_RATE);
+			return w;
+		}
+
+		inline WPacket serializeCmRequestExpRateCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_REQUEST_EXP_RATE);
+			return w;
+		}
+
+		//  Serialize: cmd-only (GameServerGateServer/Group)
 
 		/// CMD_MP_GUILD_LEAVE:    (GameServerGroup).  CMD.
-		inline WPacket serializeGmGuildLeaveCmd() { WPacket w(8); w.WriteCmd(CMD_MP_GUILD_LEAVE); return w; }
+		inline WPacket serializeGmGuildLeaveCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MP_GUILD_LEAVE);
+			return w;
+		}
+
 		/// CMD_MP_GUILD_DISBAND:   (GameServerGroup).  CMD.
-		inline WPacket serializeGmGuildDisbandCmd() { WPacket w(8); w.WriteCmd(CMD_MP_GUILD_DISBAND); return w; }
+		inline WPacket serializeGmGuildDisbandCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MP_GUILD_DISBAND);
+			return w;
+		}
+
 		/// CMD_MT_PALYEREXIT:   (GameServerGateServer).  CMD.
-		inline WPacket serializeGmPlayerExitCmd() { WPacket w(8); w.WriteCmd(CMD_MT_PALYEREXIT); return w; }
+		inline WPacket serializeGmPlayerExitCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MT_PALYEREXIT);
+			return w;
+		}
+
 		/// CMD_MC_STORE_BUY_ASR:     ( success=0).
-		inline WPacket serializeMcStoreBuyFailCmd() { WPacket w(16); w.WriteCmd(CMD_MC_STORE_BUY_ASR); w.WriteInt64(0); return w; }
+		inline WPacket serializeMcStoreBuyFailCmd() {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_STORE_BUY_ASR);
+			w.WriteInt64(0);
+			return w;
+		}
+
 		/// CMD_MC_STORE_BUY_ASR:     (success=1 + newMoney).
-		inline WPacket serializeMcStoreBuySucc(int64_t money) { WPacket w(24); w.WriteCmd(CMD_MC_STORE_BUY_ASR); w.WriteInt64(1); w.WriteInt64(money); return w; }
+		inline WPacket serializeMcStoreBuySucc(int64_t money) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_STORE_BUY_ASR);
+			w.WriteInt64(1);
+			w.WriteInt64(money);
+			return w;
+		}
+
 		/// CMD_MC_STORE_VIP:    VIP ( success=0).
-		inline WPacket serializeMcStoreVipFailCmd() { WPacket w(16); w.WriteCmd(CMD_MC_STORE_VIP); w.WriteInt64(0); return w; }
+		inline WPacket serializeMcStoreVipFailCmd() {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_STORE_VIP);
+			w.WriteInt64(0);
+			return w;
+		}
+
 		/// CMD_MC_STORE_CHANGE_ASR:     ( success=0).
-		inline WPacket serializeMcStoreChangeFailCmd() { WPacket w(16); w.WriteCmd(CMD_MC_STORE_CHANGE_ASR); w.WriteInt64(0); return w; }
+		inline WPacket serializeMcStoreChangeFailCmd() {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_STORE_CHANGE_ASR);
+			w.WriteInt64(0);
+			return w;
+		}
+
 		/// CMD_MC_STORE_QUERY:      ( success=0).
-		inline WPacket serializeMcStoreQueryFailCmd() { WPacket w(16); w.WriteCmd(CMD_MC_STORE_QUERY); w.WriteInt64(0); return w; }
+		inline WPacket serializeMcStoreQueryFailCmd() {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_STORE_QUERY);
+			w.WriteInt64(0);
+			return w;
+		}
 
-		//  Serialize: CM   
+		//  Serialize: CM
 
-		inline WPacket serialize(const CmDieReturnMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_DIE_RETURN); w.WriteInt64(m.reliveType); return w; }
-		inline WPacket serialize(const CmAutoKitbagLockMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_KITBAG_AUTOLOCK); w.WriteInt64(m.autoLock); return w; }
-		inline WPacket serialize(const CmStallSearchMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_STALLSEARCH); w.WriteInt64(m.itemId); return w; }
-		inline WPacket serialize(const CmForgeItemMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_FORGE); w.WriteInt64(m.index); return w; }
-		inline WPacket serialize(const CmEntityEventMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_ENTITY_EVENT); w.WriteInt64(m.entityId); return w; }
-		inline WPacket serialize(const CmStallOpenMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_STALL_OPEN); w.WriteInt64(m.charId); return w; }
-		inline WPacket serialize(const CmMisLogInfoMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_MISLOGINFO); w.WriteInt64(m.id); return w; }
-		inline WPacket serialize(const CmMisLogClearMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_MISLOG_CLEAR); w.WriteInt64(m.id); return w; }
-		inline WPacket serialize(const CmStoreBuyAskMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_STORE_BUY_ASK); w.WriteInt64(m.comId); return w; }
-		inline WPacket serialize(const CmStoreChangeAskMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_STORE_CHANGE_ASK); w.WriteInt64(m.num); return w; }
-		inline WPacket serialize(const CmStoreQueryMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_STORE_QUERY); w.WriteInt64(m.num); return w; }
-		inline WPacket serialize(const CmTeamFightAnswerMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_TEAM_FIGHT_ASR); w.WriteInt64(m.accept); return w; }
-		inline WPacket serialize(const CmItemRepairAnswerMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_ITEM_REPAIR_ASR); w.WriteInt64(m.accept); return w; }
-		inline WPacket serialize(const CmItemForgeAnswerMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_ITEM_FORGE_ASR); w.WriteInt64(m.accept); return w; }
-		inline WPacket serialize(const CmItemLotteryAnswerMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_ITEM_LOTTERY_ASR); w.WriteInt64(m.accept); return w; }
-		inline WPacket serialize(const CmVolunteerOpenMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_VOLUNTER_OPEN); w.WriteInt64(m.num); return w; }
-		inline WPacket serialize(const CmVolunteerListMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_VOLUNTER_LIST); w.WriteInt64(m.page); w.WriteInt64(m.num); return w; }
-		inline WPacket serialize(const CmStoreListAskMessage& m) { WPacket w(32); w.WriteCmd(CMD_CM_STORE_LIST_ASK); w.WriteInt64(m.clsId); w.WriteInt64(m.page); w.WriteInt64(m.num); return w; }
-		inline WPacket serialize(const CmCaptainConfirmAsrMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_CAPTAIN_CONFIRM_ASR); w.WriteInt64(m.ret); w.WriteInt64(m.teamId); return w; }
-		inline WPacket serialize(const CmMapMaskMessage& m) { WPacket w(64); w.WriteCmd(CMD_CM_MAP_MASK); w.WriteString(m.mapName); return w; }
-		inline WPacket serialize(const CmStoreOpenAskMessage& m) { WPacket w(64); w.WriteCmd(CMD_CM_STORE_OPEN_ASK); w.WriteString(m.password); return w; }
-		inline WPacket serialize(const CmVolunteerSelMessage& m) { WPacket w(64); w.WriteCmd(CMD_CM_VOLUNTER_SEL); w.WriteString(m.name); return w; }
-		inline WPacket serialize(const CmKitbagUnlockMessage& m) { WPacket w(64); w.WriteCmd(CMD_CM_KITBAG_UNLOCK); w.WriteString(m.password); return w; }
+		inline WPacket serialize(const CmDieReturnMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_DIE_RETURN);
+			w.WriteInt64(m.reliveType);
+			return w;
+		}
 
-		//  Serialize: MC  
+		inline WPacket serialize(const CmAutoKitbagLockMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_KITBAG_AUTOLOCK);
+			w.WriteInt64(m.autoLock);
+			return w;
+		}
 
-		inline WPacket serialize(const McFailedActionMessage& m) { WPacket w(32); w.WriteCmd(CMD_MC_FAILEDACTION); w.WriteInt64(m.worldId); w.WriteInt64(m.actionType); w.WriteInt64(m.reason); return w; }
-		inline WPacket serialize(const McChaEndSeeMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_CHAENDSEE); w.WriteInt64(m.seeType); w.WriteInt64(m.worldId); return w; }
-		inline WPacket serialize(const McItemDestroyMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_ITEMENDSEE); w.WriteInt64(m.worldId); return w; }
-		inline WPacket serialize(const McForgeResultMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_FORGE); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McUniteResultMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_UNITE); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McMillingResultMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_MILLING); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McFusionResultMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_FUSION); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McUpgradeResultMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_UPGRADE); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McPurifyResultMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_PURIFY); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McFixResultMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_FIX); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McEidolonMetempsychosisMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_EIDOLON_METEMPSYCHOSIS); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McEidolonFusionMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_ITEM_EIDOLON_FUSION); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McMessageMessage& m) { WPacket w(64); w.WriteCmd(CMD_MC_MESSAGE); w.WriteString(m.text); return w; }
-		inline WPacket serialize(const McBickerNoticeMessage& m) { WPacket w(64); w.WriteCmd(CMD_MC_BICKER_NOTICE); w.WriteString(m.text); return w; }
-		inline WPacket serialize(const McColourNoticeMessage& m) { WPacket w(64); w.WriteCmd(CMD_MC_COLOUR_NOTICE); w.WriteInt64(m.color); w.WriteString(m.text); return w; }
-		inline WPacket serialize(const McTriggerActionMessage& m) { WPacket w(40); w.WriteCmd(CMD_MC_TRIGGER_ACTION); w.WriteInt64(m.type); w.WriteInt64(m.id); w.WriteInt64(m.num); w.WriteInt64(m.count); return w; }
-		inline WPacket serialize(const McNpcStateChangeMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_NPCSTATECHG); w.WriteInt64(m.npcId); w.WriteInt64(m.state); return w; }
-		inline WPacket serialize(const McEntityStateChangeMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_ENTITY_CHGSTATE); w.WriteInt64(m.entityId); w.WriteInt64(m.state); return w; }
-		inline WPacket serialize(const McCloseTalkMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_CLOSETALK); w.WriteInt64(m.npcId); return w; }
-		inline WPacket serialize(const McKitbagCheckAnswerMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_KITBAG_CHECK_ASR); w.WriteInt64(m.locked); return w; }
-		inline WPacket serialize(const McPreMoveTimeMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_PREMOVE_TIME); w.WriteInt64(m.time); return w; }
-		inline WPacket serialize(const McItemUseSuccMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_ITEM_USE_SUC); w.WriteInt64(m.worldId); w.WriteInt64(m.itemId); return w; }
-		inline WPacket serialize(const McChaPlayEffectMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_CHAPLAYEFFECT); w.WriteInt64(m.worldId); w.WriteInt64(m.effectId); return w; }
-		inline WPacket serialize(const McSynDefaultSkillMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_SYNDEFAULTSKILL); w.WriteInt64(m.worldId); w.WriteInt64(m.skillId); return w; }
+		inline WPacket serialize(const CmStallSearchMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_STALLSEARCH);
+			w.WriteInt64(m.itemId);
+			return w;
+		}
 
-		//  Serialize: MC  ReadSequenceReadString 
+		inline WPacket serialize(const CmForgeItemMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_FORGE);
+			w.WriteInt64(m.index);
+			return w;
+		}
 
-		inline WPacket serialize(const McSayMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_SAY); w.WriteInt64(m.sourceId); w.WriteString(m.content); w.WriteInt64(m.color); return w; }
-		inline WPacket serialize(const McPopupNoticeMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_ALARM); w.WriteString(m.notice); return w; }
-		inline WPacket serialize(const McPingMessage& m) { WPacket w(48); w.WriteCmd(CMD_MC_PING); w.WriteInt64(m.v1); w.WriteInt64(m.v2); w.WriteInt64(m.v3); w.WriteInt64(m.v4); w.WriteInt64(m.v5); return w; }
+		inline WPacket serialize(const CmEntityEventMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_ENTITY_EVENT);
+			w.WriteInt64(m.entityId);
+			return w;
+		}
 
-		//  Serialize: CM   ( 2) 
+		inline WPacket serialize(const CmStallOpenMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_STALL_OPEN);
+			w.WriteInt64(m.charId);
+			return w;
+		}
 
-		inline WPacket serialize(const CmChangePassMessage& m) { WPacket w(128); w.WriteCmd(CMD_CP_CHANGEPASS); w.WriteString(m.pass); w.WriteString(m.pin); return w; }
-		inline WPacket serialize(const CmGuildBankOperMessage& m) { WPacket w(56); w.WriteCmd(CMD_CP_GUILDBANK); w.WriteInt64(m.op); w.WriteInt64(m.srcType); w.WriteInt64(m.srcId); w.WriteInt64(m.srcNum); w.WriteInt64(m.tarType); w.WriteInt64(m.tarId); return w; }
-		inline WPacket serialize(const CmGuildBankGoldMessage& m) { WPacket w(32); w.WriteCmd(CMD_CP_GUILDBANK); w.WriteInt64(m.op); w.WriteInt64(m.direction); w.WriteInt64(m.gold); return w; }
-		inline WPacket serialize(const CmUpdateHairMessage& m) { WPacket w(48); w.WriteCmd(CMD_CM_UPDATEHAIR); w.WriteInt64(m.scriptId); w.WriteInt64(m.gridLoc0); w.WriteInt64(m.gridLoc1); w.WriteInt64(m.gridLoc2); w.WriteInt64(m.gridLoc3); return w; }
-		inline WPacket serialize(const CmTeamFightAskMessage& m) { WPacket w(32); w.WriteCmd(CMD_CM_TEAM_FIGHT_ASK); w.WriteInt64(m.type); w.WriteInt64(m.worldId); w.WriteInt64(m.handle); return w; }
+		inline WPacket serialize(const CmMisLogInfoMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_MISLOGINFO);
+			w.WriteInt64(m.id);
+			return w;
+		}
+
+		inline WPacket serialize(const CmMisLogClearMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_MISLOG_CLEAR);
+			w.WriteInt64(m.id);
+			return w;
+		}
+
+		inline WPacket serialize(const CmStoreBuyAskMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_STORE_BUY_ASK);
+			w.WriteInt64(m.comId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmStoreChangeAskMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_STORE_CHANGE_ASK);
+			w.WriteInt64(m.num);
+			return w;
+		}
+
+		inline WPacket serialize(const CmStoreQueryMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_STORE_QUERY);
+			w.WriteInt64(m.num);
+			return w;
+		}
+
+		inline WPacket serialize(const CmTeamFightAnswerMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_TEAM_FIGHT_ASR);
+			w.WriteInt64(m.accept);
+			return w;
+		}
+
+		inline WPacket serialize(const CmItemRepairAnswerMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_ITEM_REPAIR_ASR);
+			w.WriteInt64(m.accept);
+			return w;
+		}
+
+		inline WPacket serialize(const CmItemForgeAnswerMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_ITEM_FORGE_ASR);
+			w.WriteInt64(m.accept);
+			return w;
+		}
+
+		inline WPacket serialize(const CmItemLotteryAnswerMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_ITEM_LOTTERY_ASR);
+			w.WriteInt64(m.accept);
+			return w;
+		}
+
+		inline WPacket serialize(const CmVolunteerOpenMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_VOLUNTER_OPEN);
+			w.WriteInt64(m.num);
+			return w;
+		}
+
+		inline WPacket serialize(const CmVolunteerListMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_VOLUNTER_LIST);
+			w.WriteInt64(m.page);
+			w.WriteInt64(m.num);
+			return w;
+		}
+
+		inline WPacket serialize(const CmStoreListAskMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_CM_STORE_LIST_ASK);
+			w.WriteInt64(m.clsId);
+			w.WriteInt64(m.page);
+			w.WriteInt64(m.num);
+			return w;
+		}
+
+		inline WPacket serialize(const CmCaptainConfirmAsrMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_CAPTAIN_CONFIRM_ASR);
+			w.WriteInt64(m.ret);
+			w.WriteInt64(m.teamId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmMapMaskMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_MAP_MASK);
+			w.WriteString(m.mapName);
+			return w;
+		}
+
+		inline WPacket serialize(const CmStoreOpenAskMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_STORE_OPEN_ASK);
+			w.WriteString(m.password);
+			return w;
+		}
+
+		inline WPacket serialize(const CmVolunteerSelMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_VOLUNTER_SEL);
+			w.WriteString(m.name);
+			return w;
+		}
+
+		inline WPacket serialize(const CmKitbagUnlockMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_KITBAG_UNLOCK);
+			w.WriteString(m.password);
+			return w;
+		}
+
+		//  Serialize: MC
+
+		inline WPacket serialize(const McFailedActionMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_MC_FAILEDACTION);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.actionType);
+			w.WriteInt64(m.reason);
+			return w;
+		}
+
+		inline WPacket serialize(const McChaEndSeeMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_CHAENDSEE);
+			w.WriteInt64(m.seeType);
+			w.WriteInt64(m.worldId);
+			return w;
+		}
+
+		inline WPacket serialize(const McItemDestroyMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_ITEMENDSEE);
+			w.WriteInt64(m.worldId);
+			return w;
+		}
+
+		inline WPacket serialize(const McForgeResultMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_FORGE);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McUniteResultMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_UNITE);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McMillingResultMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_MILLING);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McFusionResultMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_FUSION);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McUpgradeResultMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_UPGRADE);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McPurifyResultMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_PURIFY);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McFixResultMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_FIX);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McEidolonMetempsychosisMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_EIDOLON_METEMPSYCHOSIS);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McEidolonFusionMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_EIDOLON_FUSION);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McMessageMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_MESSAGE);
+			w.WriteString(m.text);
+			return w;
+		}
+
+		inline WPacket serialize(const McBickerNoticeMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_BICKER_NOTICE);
+			w.WriteString(m.text);
+			return w;
+		}
+
+		inline WPacket serialize(const McColourNoticeMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_COLOUR_NOTICE);
+			w.WriteInt64(m.color);
+			w.WriteString(m.text);
+			return w;
+		}
+
+		inline WPacket serialize(const McTriggerActionMessage& m) {
+			WPacket w(40);
+			w.WriteCmd(CMD_MC_TRIGGER_ACTION);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.id);
+			w.WriteInt64(m.num);
+			w.WriteInt64(m.count);
+			return w;
+		}
+
+		inline WPacket serialize(const McNpcStateChangeMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_NPCSTATECHG);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.state);
+			return w;
+		}
+
+		inline WPacket serialize(const McEntityStateChangeMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_ENTITY_CHGSTATE);
+			w.WriteInt64(m.entityId);
+			w.WriteInt64(m.state);
+			return w;
+		}
+
+		inline WPacket serialize(const McCloseTalkMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_CLOSETALK);
+			w.WriteInt64(m.npcId);
+			return w;
+		}
+
+		inline WPacket serialize(const McKitbagCheckAnswerMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_KITBAG_CHECK_ASR);
+			w.WriteInt64(m.locked);
+			return w;
+		}
+
+		inline WPacket serialize(const McPreMoveTimeMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_PREMOVE_TIME);
+			w.WriteInt64(m.time);
+			return w;
+		}
+
+		inline WPacket serialize(const McItemUseSuccMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_ITEM_USE_SUC);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.itemId);
+			return w;
+		}
+
+		inline WPacket serialize(const McChaPlayEffectMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_CHAPLAYEFFECT);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.effectId);
+			return w;
+		}
+
+		inline WPacket serialize(const McSynDefaultSkillMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_SYNDEFAULTSKILL);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.skillId);
+			return w;
+		}
+
+		//  Serialize: MC  ReadSequenceReadString
+
+		inline WPacket serialize(const McSayMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_SAY);
+			w.WriteInt64(m.sourceId);
+			w.WriteString(m.content);
+			w.WriteInt64(m.color);
+			return w;
+		}
+
+		inline WPacket serialize(const McPopupNoticeMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_ALARM);
+			w.WriteString(m.notice);
+			return w;
+		}
+
+		inline WPacket serialize(const McPingMessage& m) {
+			WPacket w(48);
+			w.WriteCmd(CMD_MC_PING);
+			w.WriteInt64(m.v1);
+			w.WriteInt64(m.v2);
+			w.WriteInt64(m.v3);
+			w.WriteInt64(m.v4);
+			w.WriteInt64(m.v5);
+			return w;
+		}
+
+		//  Serialize: CM   ( 2)
+
+		inline WPacket serialize(const CmChangePassMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CP_CHANGEPASS);
+			w.WriteString(m.pass);
+			w.WriteString(m.pin);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildBankOperMessage& m) {
+			WPacket w(56);
+			w.WriteCmd(CMD_CP_GUILDBANK);
+			w.WriteInt64(m.op);
+			w.WriteInt64(m.srcType);
+			w.WriteInt64(m.srcId);
+			w.WriteInt64(m.srcNum);
+			w.WriteInt64(m.tarType);
+			w.WriteInt64(m.tarId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildBankGoldMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_CP_GUILDBANK);
+			w.WriteInt64(m.op);
+			w.WriteInt64(m.direction);
+			w.WriteInt64(m.gold);
+			return w;
+		}
+
+		inline WPacket serialize(const CmUpdateHairMessage& m) {
+			WPacket w(48);
+			w.WriteCmd(CMD_CM_UPDATEHAIR);
+			w.WriteInt64(m.scriptId);
+			w.WriteInt64(m.gridLoc0);
+			w.WriteInt64(m.gridLoc1);
+			w.WriteInt64(m.gridLoc2);
+			w.WriteInt64(m.gridLoc3);
+			return w;
+		}
+
+		inline WPacket serialize(const CmTeamFightAskMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_CM_TEAM_FIGHT_ASK);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.handle);
+			return w;
+		}
+
 		inline WPacket serialize(const McTeamFightAskMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_TEAM_FIGHT_ASK);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_TEAM_FIGHT_ASK);
 			//        (count-first)
-			w.WriteInt64(m.srcCount); w.WriteInt64(m.tarCount);
+			w.WriteInt64(m.srcCount);
+			w.WriteInt64(m.tarCount);
 			for (const auto& p : m.players) {
-				w.WriteString(p.name); w.WriteInt64(p.lv); w.WriteString(p.job);
-				w.WriteInt64(p.fightNum); w.WriteInt64(p.victoryNum);
+				w.WriteString(p.name);
+				w.WriteInt64(p.lv);
+				w.WriteString(p.job);
+				w.WriteInt64(p.fightNum);
+				w.WriteInt64(p.victoryNum);
 			}
 			return w;
 		}
-		inline WPacket serialize(const CmItemRepairAskMessage& m) { WPacket w(40); w.WriteCmd(CMD_CM_ITEM_REPAIR_ASK); w.WriteInt64(m.repairmanId); w.WriteInt64(m.repairmanHandle); w.WriteInt64(m.posType); w.WriteInt64(m.posId); return w; }
-		inline WPacket serialize(const CmRequestTradeMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_CHARTRADE_REQUEST); w.WriteInt64(m.type); w.WriteInt64(m.charId); return w; }
-		inline WPacket serialize(const CmAcceptTradeMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_CHARTRADE_ACCEPT); w.WriteInt64(m.type); w.WriteInt64(m.charId); return w; }
-		inline WPacket serialize(const CmCancelTradeMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_CHARTRADE_CANCEL); w.WriteInt64(m.type); w.WriteInt64(m.charId); return w; }
-		inline WPacket serialize(const CmValidateTradeDataMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_CHARTRADE_VALIDATEDATA); w.WriteInt64(m.type); w.WriteInt64(m.charId); return w; }
-		inline WPacket serialize(const CmValidateTradeMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_CHARTRADE_VALIDATE); w.WriteInt64(m.type); w.WriteInt64(m.charId); return w; }
-		inline WPacket serialize(const CmAddItemMessage& m) { WPacket w(56); w.WriteCmd(CMD_CM_CHARTRADE_ITEM); w.WriteInt64(m.type); w.WriteInt64(m.charId); w.WriteInt64(m.opType); w.WriteInt64(m.index); w.WriteInt64(m.itemIndex); w.WriteInt64(m.count); return w; }
-		inline WPacket serialize(const CmAddMoneyMessage& m) { WPacket w(48); w.WriteCmd(CMD_CM_CHARTRADE_MONEY); w.WriteInt64(m.type); w.WriteInt64(m.charId); w.WriteInt64(m.opType); w.WriteInt64(m.isImp); w.WriteInt64(m.money); return w; }
-		inline WPacket serialize(const CmTigerStartMessage& m) { WPacket w(40); w.WriteCmd(CMD_CM_TIGER_START); w.WriteInt64(m.npcId); w.WriteInt64(m.sel1); w.WriteInt64(m.sel2); w.WriteInt64(m.sel3); return w; }
-		inline WPacket serialize(const CmTigerStopMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_TIGER_STOP); w.WriteInt64(m.npcId); w.WriteInt64(m.num); return w; }
-		inline WPacket serialize(const CmVolunteerAsrMessage& m) { WPacket w(80); w.WriteCmd(CMD_CM_VOLUNTER_ASR); w.WriteInt64(m.ret); w.WriteString(m.name); return w; }
-		inline WPacket serialize(const CmCreateBoatMessage& m) { WPacket w(96); w.WriteCmd(CMD_CM_CREATE_BOAT); w.WriteString(m.boat); w.WriteInt64(m.header); w.WriteInt64(m.engine); w.WriteInt64(m.cannon); w.WriteInt64(m.equipment); return w; }
-		inline WPacket serialize(const CmUpdateBoatMessage& m) { WPacket w(40); w.WriteCmd(CMD_CM_UPDATEBOAT_PART); w.WriteInt64(m.header); w.WriteInt64(m.engine); w.WriteInt64(m.cannon); w.WriteInt64(m.equipment); return w; }
-		inline WPacket serialize(const CmSelectBoatListMessage& m) { WPacket w(32); w.WriteCmd(CMD_CM_BOAT_SELECT); w.WriteInt64(m.npcId); w.WriteInt64(m.type); w.WriteInt64(m.index); return w; }
-		inline WPacket serialize(const CmBoatLaunchMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_BOAT_LUANCH); w.WriteInt64(m.npcId); w.WriteInt64(m.index); return w; }
-		inline WPacket serialize(const CmBoatBagSelMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_BOAT_BAGSEL); w.WriteInt64(m.npcId); w.WriteInt64(m.index); return w; }
-		inline WPacket serialize(const CmReportWgMessage& m) { WPacket w(128); w.WriteCmd(CMD_CP_REPORT_WG); w.WriteString(m.info); return w; }
-		inline WPacket serialize(const CmSay2CampMessage& m) { WPacket w(128); w.WriteCmd(CMD_CM_SAY2CAMP); w.WriteString(m.content); return w; }
-		inline WPacket serialize(const CmStallBuyMessage& m) { WPacket w(40); w.WriteCmd(CMD_CM_STALL_BUY); w.WriteInt64(m.charId); w.WriteInt64(m.index); w.WriteInt64(m.count); w.WriteInt64(m.gridId); return w; }
-		inline WPacket serialize(const CmSkillUpgradeMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_SKILLUPGRADE); w.WriteInt64(m.skillId); w.WriteInt64(m.addGrade); return w; }
-		inline WPacket serialize(const CmRefreshDataMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_REFRESH_DATA); w.WriteInt64(m.worldId); w.WriteInt64(m.handle); return w; }
-		inline WPacket serialize(const CmPkCtrlMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_PK_CTRL); w.WriteInt64(m.ctrl); return w; }
-		inline WPacket serialize(const CmItemAmphitheaterAskMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_ITEM_AMPHITHEATER_ASK); w.WriteInt64(m.sure); w.WriteInt64(m.reId); return w; }
-		inline WPacket serialize(const CmMasterInviteMessage& m) { WPacket w(80); w.WriteCmd(CMD_CM_MASTER_INVITE); w.WriteString(m.name); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const CmMasterAsrMessage& m) { WPacket w(88); w.WriteCmd(CMD_CM_MASTER_ASR); w.WriteInt64(m.agree); w.WriteString(m.name); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const CmMasterDelMessage& m) { WPacket w(80); w.WriteCmd(CMD_CM_MASTER_DEL); w.WriteString(m.name); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const CmPrenticeInviteMessage& m) { WPacket w(80); w.WriteCmd(CMD_CM_PRENTICE_INVITE); w.WriteString(m.name); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const CmPrenticeAsrMessage& m) { WPacket w(88); w.WriteCmd(CMD_CM_PRENTICE_ASR); w.WriteInt64(m.agree); w.WriteString(m.name); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const CmPrenticeDelMessage& m) { WPacket w(80); w.WriteCmd(CMD_CM_PRENTICE_DEL); w.WriteString(m.name); w.WriteInt64(m.chaId); return w; }
 
-		//  Serialize: NPC Talk  ( 2) 
+		inline WPacket serialize(const CmItemRepairAskMessage& m) {
+			WPacket w(40);
+			w.WriteCmd(CMD_CM_ITEM_REPAIR_ASK);
+			w.WriteInt64(m.repairmanId);
+			w.WriteInt64(m.repairmanHandle);
+			w.WriteInt64(m.posType);
+			w.WriteInt64(m.posId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmRequestTradeMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_CHARTRADE_REQUEST);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.charId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmAcceptTradeMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_CHARTRADE_ACCEPT);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.charId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmCancelTradeMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_CHARTRADE_CANCEL);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.charId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmValidateTradeDataMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_CHARTRADE_VALIDATEDATA);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.charId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmValidateTradeMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_CHARTRADE_VALIDATE);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.charId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmAddItemMessage& m) {
+			WPacket w(56);
+			w.WriteCmd(CMD_CM_CHARTRADE_ITEM);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.charId);
+			w.WriteInt64(m.opType);
+			w.WriteInt64(m.index);
+			w.WriteInt64(m.itemIndex);
+			w.WriteInt64(m.count);
+			return w;
+		}
+
+		inline WPacket serialize(const CmAddMoneyMessage& m) {
+			WPacket w(48);
+			w.WriteCmd(CMD_CM_CHARTRADE_MONEY);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.charId);
+			w.WriteInt64(m.opType);
+			w.WriteInt64(m.isImp);
+			w.WriteInt64(m.money);
+			return w;
+		}
+
+		inline WPacket serialize(const CmTigerStartMessage& m) {
+			WPacket w(40);
+			w.WriteCmd(CMD_CM_TIGER_START);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.sel1);
+			w.WriteInt64(m.sel2);
+			w.WriteInt64(m.sel3);
+			return w;
+		}
+
+		inline WPacket serialize(const CmTigerStopMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_TIGER_STOP);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.num);
+			return w;
+		}
+
+		inline WPacket serialize(const CmVolunteerAsrMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_CM_VOLUNTER_ASR);
+			w.WriteInt64(m.ret);
+			w.WriteString(m.name);
+			return w;
+		}
+
+		inline WPacket serialize(const CmCreateBoatMessage& m) {
+			WPacket w(96);
+			w.WriteCmd(CMD_CM_CREATE_BOAT);
+			w.WriteString(m.boat);
+			w.WriteInt64(m.header);
+			w.WriteInt64(m.engine);
+			w.WriteInt64(m.cannon);
+			w.WriteInt64(m.equipment);
+			return w;
+		}
+
+		inline WPacket serialize(const CmUpdateBoatMessage& m) {
+			WPacket w(40);
+			w.WriteCmd(CMD_CM_UPDATEBOAT_PART);
+			w.WriteInt64(m.header);
+			w.WriteInt64(m.engine);
+			w.WriteInt64(m.cannon);
+			w.WriteInt64(m.equipment);
+			return w;
+		}
+
+		inline WPacket serialize(const CmSelectBoatListMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_CM_BOAT_SELECT);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.index);
+			return w;
+		}
+
+		inline WPacket serialize(const CmBoatLaunchMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_BOAT_LUANCH);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.index);
+			return w;
+		}
+
+		inline WPacket serialize(const CmBoatBagSelMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_BOAT_BAGSEL);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.index);
+			return w;
+		}
+
+		inline WPacket serialize(const CmReportWgMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CP_REPORT_WG);
+			w.WriteString(m.info);
+			return w;
+		}
+
+		inline WPacket serialize(const CmSay2CampMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CM_SAY2CAMP);
+			w.WriteString(m.content);
+			return w;
+		}
+
+		inline WPacket serialize(const CmStallBuyMessage& m) {
+			WPacket w(40);
+			w.WriteCmd(CMD_CM_STALL_BUY);
+			w.WriteInt64(m.charId);
+			w.WriteInt64(m.index);
+			w.WriteInt64(m.count);
+			w.WriteInt64(m.gridId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmSkillUpgradeMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_SKILLUPGRADE);
+			w.WriteInt64(m.skillId);
+			w.WriteInt64(m.addGrade);
+			return w;
+		}
+
+		inline WPacket serialize(const CmRefreshDataMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_REFRESH_DATA);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.handle);
+			return w;
+		}
+
+		inline WPacket serialize(const CmPkCtrlMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_PK_CTRL);
+			w.WriteInt64(m.ctrl);
+			return w;
+		}
+
+		inline WPacket serialize(const CmItemAmphitheaterAskMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_ITEM_AMPHITHEATER_ASK);
+			w.WriteInt64(m.sure);
+			w.WriteInt64(m.reId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmMasterInviteMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_CM_MASTER_INVITE);
+			w.WriteString(m.name);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmMasterAsrMessage& m) {
+			WPacket w(88);
+			w.WriteCmd(CMD_CM_MASTER_ASR);
+			w.WriteInt64(m.agree);
+			w.WriteString(m.name);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmMasterDelMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_CM_MASTER_DEL);
+			w.WriteString(m.name);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmPrenticeInviteMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_CM_PRENTICE_INVITE);
+			w.WriteString(m.name);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmPrenticeAsrMessage& m) {
+			WPacket w(88);
+			w.WriteCmd(CMD_CM_PRENTICE_ASR);
+			w.WriteInt64(m.agree);
+			w.WriteString(m.name);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmPrenticeDelMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_CM_PRENTICE_DEL);
+			w.WriteString(m.name);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		//  Serialize: NPC Talk  ( 2)
 
 		// CmRequestTalkMessage: [npcId, CMD_CM_TALKPAGE, cmd]
 		inline WPacket serialize(const CmRequestTalkMessage& m) {
-			WPacket w(32); w.WriteCmd(CMD_CM_REQUESTTALK);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_TALKPAGE); w.WriteInt64(m.cmd); return w;
+			WPacket w(32);
+			w.WriteCmd(CMD_CM_REQUESTTALK);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_TALKPAGE);
+			w.WriteInt64(m.cmd);
+			return w;
 		}
+
 		// CmSelFunctionMessage: [npcId, CMD_CM_FUNCITEM, pageId, index]
 		inline WPacket serialize(const CmSelFunctionMessage& m) {
-			WPacket w(40); w.WriteCmd(CMD_CM_REQUESTTALK);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_FUNCITEM); w.WriteInt64(m.pageId); w.WriteInt64(m.index); return w;
+			WPacket w(40);
+			w.WriteCmd(CMD_CM_REQUESTTALK);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_FUNCITEM);
+			w.WriteInt64(m.pageId);
+			w.WriteInt64(m.index);
+			return w;
 		}
+
 		// CmSaleMessage: [npcId, CMD_CM_TRADEITEM, ROLE_TRADE_SALE(0), index, count]
 		inline WPacket serialize(const CmSaleMessage& m) {
-			WPacket w(48); w.WriteCmd(CMD_CM_REQUESTTRADE);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_TRADEITEM); w.WriteInt64(0); w.WriteInt64(m.index); w.WriteInt64(m.count); return w;
+			WPacket w(48);
+			w.WriteCmd(CMD_CM_REQUESTTRADE);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_TRADEITEM);
+			w.WriteInt64(0);
+			w.WriteInt64(m.index);
+			w.WriteInt64(m.count);
+			return w;
 		}
+
 		// CmBuyMessage: [npcId, CMD_CM_TRADEITEM, ROLE_TRADE_BUY(1), itemType, index1, index2, count]
 		inline WPacket serialize(const CmBuyMessage& m) {
-			WPacket w(64); w.WriteCmd(CMD_CM_REQUESTTRADE);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_TRADEITEM); w.WriteInt64(1); w.WriteInt64(m.itemType); w.WriteInt64(m.index1); w.WriteInt64(m.index2); w.WriteInt64(m.count); return w;
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_REQUESTTRADE);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_TRADEITEM);
+			w.WriteInt64(1);
+			w.WriteInt64(m.itemType);
+			w.WriteInt64(m.index1);
+			w.WriteInt64(m.index2);
+			w.WriteInt64(m.count);
+			return w;
 		}
+
 		// CmMissionPageMessage: [npcId, CMD_CM_MISSION, cmd, selItem, param]
 		inline WPacket serialize(const CmMissionPageMessage& m) {
-			WPacket w(48); w.WriteCmd(CMD_CM_REQUESTTALK);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_MISSION); w.WriteInt64(m.cmd); w.WriteInt64(m.selItem); w.WriteInt64(m.param); return w;
+			WPacket w(48);
+			w.WriteCmd(CMD_CM_REQUESTTALK);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_MISSION);
+			w.WriteInt64(m.cmd);
+			w.WriteInt64(m.selItem);
+			w.WriteInt64(m.param);
+			return w;
 		}
+
 		// CmSelMissionMessage: [npcId, CMD_CM_MISSION, ROLE_MIS_SEL(4), index]
 		inline WPacket serialize(const CmSelMissionMessage& m) {
-			WPacket w(40); w.WriteCmd(CMD_CM_REQUESTTALK);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_MISSION); w.WriteInt64(4); w.WriteInt64(m.index); return w;
+			WPacket w(40);
+			w.WriteCmd(CMD_CM_REQUESTTALK);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_MISSION);
+			w.WriteInt64(4);
+			w.WriteInt64(m.index);
+			return w;
 		}
+
 		// CmBlackMarketExchangeReqMessage: [npcId, CMD_CM_BLACKMARKET_EXCHANGE_REQ, timeNum, srcId, srcNum, tarId, tarNum, index]
 		inline WPacket serialize(const CmBlackMarketExchangeReqMessage& m) {
-			WPacket w(72); w.WriteCmd(CMD_CM_REQUESTTRADE);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_BLACKMARKET_EXCHANGE_REQ); w.WriteInt64(m.timeNum);
-			w.WriteInt64(m.srcId); w.WriteInt64(m.srcNum); w.WriteInt64(m.tarId); w.WriteInt64(m.tarNum); w.WriteInt64(m.index); return w;
+			WPacket w(72);
+			w.WriteCmd(CMD_CM_REQUESTTRADE);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_BLACKMARKET_EXCHANGE_REQ);
+			w.WriteInt64(m.timeNum);
+			w.WriteInt64(m.srcId);
+			w.WriteInt64(m.srcNum);
+			w.WriteInt64(m.tarId);
+			w.WriteInt64(m.tarNum);
+			w.WriteInt64(m.index);
+			return w;
 		}
 
-		//  Serialize: MC   ( 2) 
+		//  Serialize: MC   ( 2)
 
-		inline WPacket serialize(const McSay2CampMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_SAY2CAMP); w.WriteString(m.chaName); w.WriteString(m.content); return w; }
-		inline WPacket serialize(const McTalkInfoMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_TALKPAGE); w.WriteInt64(m.npcId); w.WriteInt64(m.cmd); w.WriteString(m.text); return w; }
-		inline WPacket serialize(const McTradeDataMessage& m) { WPacket w(56); w.WriteCmd(CMD_MC_TRADE_DATA); w.WriteInt64(m.npcId); w.WriteInt64(m.page); w.WriteInt64(m.index); w.WriteInt64(m.itemId); w.WriteInt64(m.count); w.WriteInt64(m.price); return w; }
-		inline WPacket serialize(const McTradeResultMessage& m) { WPacket w(48); w.WriteCmd(CMD_MC_TRADERESULT); w.WriteInt64(m.type); w.WriteInt64(m.index); w.WriteInt64(m.count); w.WriteInt64(m.itemId); w.WriteInt64(m.money); return w; }
-		inline WPacket serialize(const McUpdateHairResMessage& m) { WPacket w(96); w.WriteCmd(CMD_MC_UPDATEHAIR_RES); w.WriteInt64(m.worldId); w.WriteInt64(m.scriptId); w.WriteString(m.reason); return w; }
-		inline WPacket serialize(const McSynTLeaderIdMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_TLEADER_ID); w.WriteInt64(m.worldId); w.WriteInt64(m.leaderId); return w; }
-		inline WPacket serialize(const McKitbagCapacityMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_KITBAG_CAPACITY); w.WriteInt64(m.worldId); w.WriteInt64(m.capacity); return w; }
-		inline WPacket serialize(const McItemForgeAskMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_ITEM_FORGE_ASK); w.WriteInt64(m.type); w.WriteInt64(m.money); return w; }
-		inline WPacket serialize(const McItemForgeAnswerMessage& m) { WPacket w(32); w.WriteCmd(CMD_MC_ITEM_FORGE_ASR); w.WriteInt64(m.worldId); w.WriteInt64(m.type); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McQueryChaMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_QUERY_CHA); w.WriteInt64(m.chaId); w.WriteString(m.name); w.WriteString(m.mapName); w.WriteInt64(m.posX); w.WriteInt64(m.posY); w.WriteInt64(m.chaId2); return w; }
-		inline WPacket serialize(const McQueryChaPingMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_QUERY_CHAPING); w.WriteInt64(m.chaId); w.WriteString(m.name); w.WriteString(m.mapName); w.WriteInt64(m.ping); return w; }
-		inline WPacket serialize(const McQueryReliveMessage& m) { WPacket w(96); w.WriteCmd(CMD_MC_QUERY_RELIVE); w.WriteInt64(m.chaId); w.WriteString(m.sourceName); w.WriteInt64(m.reliveType); return w; }
-		inline WPacket serialize(const McGmMailMessage& m) { WPacket w(256); w.WriteCmd(CMD_MC_GM_MAIL); w.WriteString(m.title); w.WriteString(m.content); w.WriteInt64(m.time); return w; }
-		inline WPacket serialize(const McSynStallNameMessage& m) { WPacket w(64); w.WriteCmd(CMD_MC_STALL_NAME); w.WriteInt64(m.charId); w.WriteString(m.name); return w; }
-		inline WPacket serialize(const McMapCrashMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_MAPCRASH); w.WriteString(m.text); return w; }
-		inline WPacket serialize(const McVolunteerStateMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_VOLUNTER_STATE); w.WriteInt64(m.state); return w; }
-		inline WPacket serialize(const McVolunteerAskMessage& m) { WPacket w(64); w.WriteCmd(CMD_MC_VOLUNTER_ASK); w.WriteString(m.name); return w; }
-		inline WPacket serialize(const McMasterAskMessage& m) { WPacket w(80); w.WriteCmd(CMD_MC_MASTER_ASK); w.WriteString(m.name); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const McPrenticeAskMessage& m) { WPacket w(80); w.WriteCmd(CMD_MC_PRENTICE_ASK); w.WriteString(m.name); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const McItemRepairAskMcMessage& m) { WPacket w(80); w.WriteCmd(CMD_MC_ITEM_REPAIR_ASK); w.WriteString(m.itemName); w.WriteInt64(m.repairCost); return w; }
-		inline WPacket serialize(const McItemLotteryAsrMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_ITEM_LOTTERY_ASR); w.WriteInt64(m.success); return w; }
+		inline WPacket serialize(const McSay2CampMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_SAY2CAMP);
+			w.WriteString(m.chaName);
+			w.WriteString(m.content);
+			return w;
+		}
 
-		//  Serialize: MC/CM   4 
-		inline WPacket serialize(const McChaEmotionMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_CHA_EMOTION); w.WriteInt64(m.worldId); w.WriteInt64(m.emotion); return w; }
-		inline WPacket serialize(const McStartExitMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_STARTEXIT); w.WriteInt64(m.exitTime); return w; }
-		inline WPacket serializeMcCancelExitCmd() { WPacket w(8); w.WriteCmd(CMD_MC_CANCELEXIT); return w; }
-		inline WPacket serializeMcOpenHairCutCmd() { WPacket w(8); w.WriteCmd(CMD_MC_OPENHAIR); return w; }
-		inline WPacket serializeMcBeginItemRepairCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_REPAIR); return w; }
-		inline WPacket serializeMcGmSendCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_GM_SEND); return w; }
-		inline WPacket serializeMcBeginItemForgeCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_FORGE); return w; }
-		inline WPacket serializeMcBeginItemLotteryCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_LOTTERY); return w; }
-		inline WPacket serializeMcBeginItemUniteCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_UNITE); return w; }
-		inline WPacket serializeMcBeginItemMillingCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_MILLING); return w; }
-		inline WPacket serializeMcBeginItemFusionCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_FUSION); return w; }
-		inline WPacket serializeMcBeginItemUpgradeCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_UPGRADE); return w; }
-		inline WPacket serializeMcBeginItemEidolonMetempsychosisCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_EIDOLON_METEMPSYCHOSIS); return w; }
-		inline WPacket serializeMcBeginItemEidolonFusionCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_EIDOLON_FUSION); return w; }
-		inline WPacket serializeMcBeginItemPurifyCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_PURIFY); return w; }
-		inline WPacket serializeMcBeginItemFixCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_FIX); return w; }
-		inline WPacket serializeMcBeginItemEnergyCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_ITEM_ENERGY); return w; }
-		inline WPacket serializeMcBeginGetStoneCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_GET_STONE); return w; }
-		inline WPacket serializeMcBeginTigerCmd() { WPacket w(8); w.WriteCmd(CMD_MC_BEGIN_TIGER); return w; }
-		inline WPacket serializeMcGuildGetNameCmd() { WPacket w(8); w.WriteCmd(CMD_MC_GUILD_GETNAME); return w; }
-		inline WPacket serializeMcGuildLeaveCmd() { WPacket w(8); w.WriteCmd(CMD_MC_GUILD_LEAVE); return w; }
-		inline WPacket serializeMcGuildKickCmd() { WPacket w(8); w.WriteCmd(CMD_MC_GUILD_KICK); return w; }
-		inline WPacket serializeMcRequestPinCmd() { WPacket w(8); w.WriteCmd(CMD_MC_REQUESTPIN); return w; }
-		inline WPacket serialize(const McUpdateImpMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_UPDATEIMP); w.WriteInt64(m.imp); return w; }
-		inline WPacket serialize(const McBoatAddMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BOAT_ADD); w.WriteInt64(m.worldId); return w; }
-		inline WPacket serialize(const McBoatClearMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BOAT_CLEAR); w.WriteInt64(m.worldId); return w; }
-		inline WPacket serialize(const McTigerStopMessage& m) { WPacket w(64); w.WriteCmd(CMD_MC_TIGER_STOP); w.WriteString(m.text); return w; }
-		inline WPacket serialize(const McGmRecvMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_BEGIN_GM_RECV); w.WriteInt64(m.npcId); return w; }
-		inline WPacket serialize(const McStallDelGoodsMessage& m) { WPacket w(32); w.WriteCmd(CMD_MC_STALL_DELGOODS); w.WriteInt64(m.charId); w.WriteInt64(m.grid); w.WriteInt64(m.count); return w; }
-		inline WPacket serialize(const McStallCloseMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_STALL_CLOSE); w.WriteInt64(m.charId); return w; }
-		inline WPacket serialize(const McStallSuccessMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_STALL_START); w.WriteInt64(m.charId); return w; }
-		inline WPacket serialize(const McUpdateGuildGoldMessage& m) { WPacket w(64); w.WriteCmd(CMD_MC_UPDATEGUILDBANKGOLD); w.WriteString(m.data); return w; }
-		inline WPacket serialize(const McQueryChaItemMessage& m) { WPacket w(16); w.WriteCmd(CMD_MM_QUERY_CHAITEM); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const McDisconnectMessage& m) { WPacket w(16); w.WriteCmd(CMD_TC_DISCONNECT); w.WriteInt64(m.reason); return w; }
-		inline WPacket serialize(const McLifeSkillShowMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_LIFESKILL_BGING); w.WriteInt64(m.type); return w; }
-		inline WPacket serialize(const McLifeSkillMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_LIFESKILL_ASK); w.WriteInt64(m.type); w.WriteInt64(m.result); w.WriteString(m.text); return w; }
-		inline WPacket serialize(const McLifeSkillAsrMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_LIFESKILL_ASR); w.WriteInt64(m.type); w.WriteInt64(m.time); w.WriteString(m.text); return w; }
-		inline WPacket serialize(const McDropLockAsrMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_ITEM_LOCK_ASR); w.WriteInt64(m.success); return w; }
-		inline WPacket serialize(const McUnlockItemAsrMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_ITEM_UNLOCK_ASR); w.WriteInt64(m.result); return w; }
-		inline WPacket serialize(const McStoreBuyAnswerMessage& m) { WPacket w(24); w.WriteCmd(CMD_MC_STORE_BUY_ASR); w.WriteInt64(m.success); w.WriteInt64(m.newMoney); return w; }
-		inline WPacket serialize(const McStoreChangeAnswerMessage& m) { WPacket w(32); w.WriteCmd(CMD_MC_STORE_CHANGE_ASR); w.WriteInt64(m.success); w.WriteInt64(m.moBean); w.WriteInt64(m.replMoney); return w; }
-		inline WPacket serialize(const McDailyBuffInfoMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_RecDailyBuffInfo); w.WriteString(m.imgName); w.WriteString(m.labelInfo); return w; }
-		inline WPacket serialize(const McRequestDropRateMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_REQUEST_DROP_RATE); w.WriteFloat32(m.rate); return w; }
-		inline WPacket serialize(const McRequestExpRateMessage& m) { WPacket w(16); w.WriteCmd(CMD_MC_REQUEST_EXP_RATE); w.WriteFloat32(m.rate); return w; }
-		inline WPacket serialize(const McTigerItemIdMessage& m) { WPacket w(40); w.WriteCmd(CMD_MC_TIGER_ITEM_ID); w.WriteInt64(m.num); w.WriteInt64(m.itemId0); w.WriteInt64(m.itemId1); w.WriteInt64(m.itemId2); return w; }
+		inline WPacket serialize(const McTalkInfoMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_TALKPAGE);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.cmd);
+			w.WriteString(m.text);
+			return w;
+		}
 
-		//  Serialize:  CM 
+		inline WPacket serialize(const McTradeDataMessage& m) {
+			WPacket w(56);
+			w.WriteCmd(CMD_MC_TRADE_DATA);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.page);
+			w.WriteInt64(m.index);
+			w.WriteInt64(m.itemId);
+			w.WriteInt64(m.count);
+			w.WriteInt64(m.price);
+			return w;
+		}
 
-		inline WPacket serialize(const CmGuildPutNameMessage& m) { WPacket w(128); w.WriteCmd(CMD_CM_GUILD_PUTNAME); w.WriteInt64(m.confirm); w.WriteString(m.guildName); w.WriteString(m.passwd); return w; }
-		inline WPacket serialize(const CmGuildTryForMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_GUILD_TRYFOR); w.WriteInt64(m.guildId); return w; }
-		inline WPacket serialize(const CmGuildTryForCfmMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_GUILD_TRYFORCFM); w.WriteInt64(m.confirm); return w; }
-		inline WPacket serializeCmGuildListTryPlayerCmd() { WPacket w(8); w.WriteCmd(CMD_CM_GUILD_LISTTRYPLAYER); return w; }
-		inline WPacket serialize(const CmGuildApproveMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_GUILD_APPROVE); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const CmGuildRejectMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_GUILD_REJECT); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const CmGuildKickMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_GUILD_KICK); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serializeCmGuildLeaveCmd() { WPacket w(8); w.WriteCmd(CMD_CM_GUILD_LEAVE); return w; }
-		inline WPacket serialize(const CmGuildDisbandMessage& m) { WPacket w(64); w.WriteCmd(CMD_CM_GUILD_DISBAND); w.WriteString(m.passwd); return w; }
-		inline WPacket serialize(const CmGuildMottoMessage& m) { WPacket w(128); w.WriteCmd(CMD_CM_GUILD_MOTTO); w.WriteString(m.motto); return w; }
-		inline WPacket serialize(const CmGuildChallMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_GUILD_CHALLENGE); w.WriteInt64(m.level); w.WriteInt64(m.money); return w; }
-		inline WPacket serialize(const CmGuildLeizhuMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_GUILD_LEIZHU); w.WriteInt64(m.level); w.WriteInt64(m.money); return w; }
+		inline WPacket serialize(const McTradeResultMessage& m) {
+			WPacket w(48);
+			w.WriteCmd(CMD_MC_TRADERESULT);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.index);
+			w.WriteInt64(m.count);
+			w.WriteInt64(m.itemId);
+			w.WriteInt64(m.money);
+			return w;
+		}
 
-		//  Serialize:  MC 
+		inline WPacket serialize(const McUpdateHairResMessage& m) {
+			WPacket w(96);
+			w.WriteCmd(CMD_MC_UPDATEHAIR_RES);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.scriptId);
+			w.WriteString(m.reason);
+			return w;
+		}
 
-		inline WPacket serialize(const McGuildTryForCfmMessage& m) { WPacket w(64); w.WriteCmd(CMD_MC_GUILD_TRYFORCFM); w.WriteString(m.name); return w; }
-		inline WPacket serialize(const McGuildMottoMessage& m) { WPacket w(128); w.WriteCmd(CMD_MC_GUILD_MOTTO); w.WriteString(m.motto); return w; }
+		inline WPacket serialize(const McSynTLeaderIdMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_TLEADER_ID);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.leaderId);
+			return w;
+		}
+
+		inline WPacket serialize(const McKitbagCapacityMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_KITBAG_CAPACITY);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.capacity);
+			return w;
+		}
+
+		inline WPacket serialize(const McItemForgeAskMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_ITEM_FORGE_ASK);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.money);
+			return w;
+		}
+
+		inline WPacket serialize(const McItemForgeAnswerMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_MC_ITEM_FORGE_ASR);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McQueryChaMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_QUERY_CHA);
+			w.WriteInt64(m.chaId);
+			w.WriteString(m.name);
+			w.WriteString(m.mapName);
+			w.WriteInt64(m.posX);
+			w.WriteInt64(m.posY);
+			w.WriteInt64(m.chaId2);
+			return w;
+		}
+
+		inline WPacket serialize(const McQueryChaPingMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_QUERY_CHAPING);
+			w.WriteInt64(m.chaId);
+			w.WriteString(m.name);
+			w.WriteString(m.mapName);
+			w.WriteInt64(m.ping);
+			return w;
+		}
+
+		inline WPacket serialize(const McQueryReliveMessage& m) {
+			WPacket w(96);
+			w.WriteCmd(CMD_MC_QUERY_RELIVE);
+			w.WriteInt64(m.chaId);
+			w.WriteString(m.sourceName);
+			w.WriteInt64(m.reliveType);
+			return w;
+		}
+
+		inline WPacket serialize(const McGmMailMessage& m) {
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_GM_MAIL);
+			w.WriteString(m.title);
+			w.WriteString(m.content);
+			w.WriteInt64(m.time);
+			return w;
+		}
+
+		inline WPacket serialize(const McSynStallNameMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_STALL_NAME);
+			w.WriteInt64(m.charId);
+			w.WriteString(m.name);
+			return w;
+		}
+
+		inline WPacket serialize(const McMapCrashMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_MAPCRASH);
+			w.WriteString(m.text);
+			return w;
+		}
+
+		inline WPacket serialize(const McVolunteerStateMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_VOLUNTER_STATE);
+			w.WriteInt64(m.state);
+			return w;
+		}
+
+		inline WPacket serialize(const McVolunteerAskMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_VOLUNTER_ASK);
+			w.WriteString(m.name);
+			return w;
+		}
+
+		inline WPacket serialize(const McMasterAskMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_MC_MASTER_ASK);
+			w.WriteString(m.name);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const McPrenticeAskMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_MC_PRENTICE_ASK);
+			w.WriteString(m.name);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const McItemRepairAskMcMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_MC_ITEM_REPAIR_ASK);
+			w.WriteString(m.itemName);
+			w.WriteInt64(m.repairCost);
+			return w;
+		}
+
+		inline WPacket serialize(const McItemLotteryAsrMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_ITEM_LOTTERY_ASR);
+			w.WriteInt64(m.success);
+			return w;
+		}
+
+		//  Serialize: MC/CM   4
+		inline WPacket serialize(const McChaEmotionMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_CHA_EMOTION);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.emotion);
+			return w;
+		}
+
+		inline WPacket serialize(const McStartExitMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_STARTEXIT);
+			w.WriteInt64(m.exitTime);
+			return w;
+		}
+
+		inline WPacket serializeMcCancelExitCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_CANCELEXIT);
+			return w;
+		}
+
+		inline WPacket serializeMcOpenHairCutCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_OPENHAIR);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemRepairCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_REPAIR);
+			return w;
+		}
+
+		inline WPacket serializeMcGmSendCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_GM_SEND);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemForgeCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_FORGE);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemLotteryCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_LOTTERY);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemUniteCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_UNITE);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemMillingCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_MILLING);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemFusionCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_FUSION);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemUpgradeCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_UPGRADE);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemEidolonMetempsychosisCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_EIDOLON_METEMPSYCHOSIS);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemEidolonFusionCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_EIDOLON_FUSION);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemPurifyCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_PURIFY);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemFixCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_FIX);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginItemEnergyCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_ITEM_ENERGY);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginGetStoneCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_GET_STONE);
+			return w;
+		}
+
+		inline WPacket serializeMcBeginTigerCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_BEGIN_TIGER);
+			return w;
+		}
+
+		inline WPacket serializeMcGuildGetNameCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_GUILD_GETNAME);
+			return w;
+		}
+
+		inline WPacket serializeMcGuildLeaveCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_GUILD_LEAVE);
+			return w;
+		}
+
+		inline WPacket serializeMcGuildKickCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_GUILD_KICK);
+			return w;
+		}
+
+		inline WPacket serializeMcRequestPinCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MC_REQUESTPIN);
+			return w;
+		}
+
+		inline WPacket serialize(const McUpdateImpMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_UPDATEIMP);
+			w.WriteInt64(m.imp);
+			return w;
+		}
+
+		inline WPacket serialize(const McBoatAddMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BOAT_ADD);
+			w.WriteInt64(m.worldId);
+			return w;
+		}
+
+		inline WPacket serialize(const McBoatClearMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BOAT_CLEAR);
+			w.WriteInt64(m.worldId);
+			return w;
+		}
+
+		inline WPacket serialize(const McTigerStopMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_TIGER_STOP);
+			w.WriteString(m.text);
+			return w;
+		}
+
+		inline WPacket serialize(const McGmRecvMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_BEGIN_GM_RECV);
+			w.WriteInt64(m.npcId);
+			return w;
+		}
+
+		inline WPacket serialize(const McStallDelGoodsMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_MC_STALL_DELGOODS);
+			w.WriteInt64(m.charId);
+			w.WriteInt64(m.grid);
+			w.WriteInt64(m.count);
+			return w;
+		}
+
+		inline WPacket serialize(const McStallCloseMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_STALL_CLOSE);
+			w.WriteInt64(m.charId);
+			return w;
+		}
+
+		inline WPacket serialize(const McStallSuccessMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_STALL_START);
+			w.WriteInt64(m.charId);
+			return w;
+		}
+
+		inline WPacket serialize(const McUpdateGuildGoldMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_UPDATEGUILDBANKGOLD);
+			w.WriteString(m.data);
+			return w;
+		}
+
+		inline WPacket serialize(const McQueryChaItemMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MM_QUERY_CHAITEM);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const McDisconnectMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_TC_DISCONNECT);
+			w.WriteInt64(m.reason);
+			return w;
+		}
+
+		inline WPacket serialize(const McLifeSkillShowMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_LIFESKILL_BGING);
+			w.WriteInt64(m.type);
+			return w;
+		}
+
+		inline WPacket serialize(const McLifeSkillMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_LIFESKILL_ASK);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.result);
+			w.WriteString(m.text);
+			return w;
+		}
+
+		inline WPacket serialize(const McLifeSkillAsrMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_LIFESKILL_ASR);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.time);
+			w.WriteString(m.text);
+			return w;
+		}
+
+		inline WPacket serialize(const McDropLockAsrMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_ITEM_LOCK_ASR);
+			w.WriteInt64(m.success);
+			return w;
+		}
+
+		inline WPacket serialize(const McUnlockItemAsrMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_ITEM_UNLOCK_ASR);
+			w.WriteInt64(m.result);
+			return w;
+		}
+
+		inline WPacket serialize(const McStoreBuyAnswerMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_STORE_BUY_ASR);
+			w.WriteInt64(m.success);
+			w.WriteInt64(m.newMoney);
+			return w;
+		}
+
+		inline WPacket serialize(const McStoreChangeAnswerMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_MC_STORE_CHANGE_ASR);
+			w.WriteInt64(m.success);
+			w.WriteInt64(m.moBean);
+			w.WriteInt64(m.replMoney);
+			return w;
+		}
+
+		inline WPacket serialize(const McDailyBuffInfoMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_RecDailyBuffInfo);
+			w.WriteString(m.imgName);
+			w.WriteString(m.labelInfo);
+			return w;
+		}
+
+		inline WPacket serialize(const McRequestDropRateMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_REQUEST_DROP_RATE);
+			w.WriteFloat32(m.rate);
+			return w;
+		}
+
+		inline WPacket serialize(const McRequestExpRateMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_REQUEST_EXP_RATE);
+			w.WriteFloat32(m.rate);
+			return w;
+		}
+
+		inline WPacket serialize(const McTigerItemIdMessage& m) {
+			WPacket w(40);
+			w.WriteCmd(CMD_MC_TIGER_ITEM_ID);
+			w.WriteInt64(m.num);
+			w.WriteInt64(m.itemId0);
+			w.WriteInt64(m.itemId1);
+			w.WriteInt64(m.itemId2);
+			return w;
+		}
+
+		//  Serialize:  CM
+
+		inline WPacket serialize(const CmGuildPutNameMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CM_GUILD_PUTNAME);
+			w.WriteInt64(m.confirm);
+			w.WriteString(m.guildName);
+			w.WriteString(m.passwd);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildTryForMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_GUILD_TRYFOR);
+			w.WriteInt64(m.guildId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildTryForCfmMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_GUILD_TRYFORCFM);
+			w.WriteInt64(m.confirm);
+			return w;
+		}
+
+		inline WPacket serializeCmGuildListTryPlayerCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_GUILD_LISTTRYPLAYER);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildApproveMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_GUILD_APPROVE);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildRejectMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_GUILD_REJECT);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildKickMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_GUILD_KICK);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serializeCmGuildLeaveCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_GUILD_LEAVE);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildDisbandMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_GUILD_DISBAND);
+			w.WriteString(m.passwd);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildMottoMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CM_GUILD_MOTTO);
+			w.WriteString(m.motto);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildChallMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_GUILD_CHALLENGE);
+			w.WriteInt64(m.level);
+			w.WriteInt64(m.money);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildLeizhuMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_GUILD_LEIZHU);
+			w.WriteInt64(m.level);
+			w.WriteInt64(m.money);
+			return w;
+		}
+
+		//  Serialize:  MC
+
+		inline WPacket serialize(const McGuildTryForCfmMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_GUILD_TRYFORCFM);
+			w.WriteString(m.name);
+			return w;
+		}
+
+		inline WPacket serialize(const McGuildMottoMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_GUILD_MOTTO);
+			w.WriteString(m.motto);
+			return w;
+		}
+
 		inline WPacket serialize(const McGuildInfoMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_GUILD_INFO);
-			w.WriteInt64(m.charId); w.WriteInt64(m.guildId); w.WriteString(m.guildName); w.WriteString(m.guildMotto); w.WriteInt64(m.guildPermission); return w;
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_GUILD_INFO);
+			w.WriteInt64(m.charId);
+			w.WriteInt64(m.guildId);
+			w.WriteString(m.guildName);
+			w.WriteString(m.guildMotto);
+			w.WriteInt64(m.guildPermission);
+			return w;
 		}
+
 		inline WPacket serialize(const McGuildListChallMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_GUILD_LISTCHALL);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_GUILD_LISTCHALL);
 			w.WriteInt64(m.isLeader);
 			for (int i = 0; i < 3; ++i) {
 				w.WriteInt64(m.entries[i].level);
@@ -6873,316 +9489,1211 @@ namespace net {
 			return w;
 		}
 
-		//  Serialize/Deserialize:  5   CM- 
+		//  Serialize/Deserialize:  5   CM-
 
 		// Cmd-only
-		inline WPacket serializeCmLogoutCmd() { WPacket w(8); w.WriteCmd(CMD_CM_LOGOUT); return w; }
-		inline WPacket serializeCmEndPlayCmd() { WPacket w(8); w.WriteCmd(CMD_CM_ENDPLAY); return w; }
-		inline WPacket serializeCmEndActionCmd() { WPacket w(8); w.WriteCmd(CMD_CM_ENDACTION); return w; }
-		inline WPacket serializeCmRankCmd() { WPacket w(8); w.WriteCmd(CMD_CM_RANK); return w; }
-		inline WPacket serializeCmAntiIndulgenceCmd() { WPacket w(8); w.WriteCmd(CMD_CM_ANTIINDULGENCE); return w; }
-		inline WPacket serializeCpPingCmd() { WPacket w(8); w.WriteCmd(CMD_CP_PING); return w; }
-		inline WPacket serializeCmCheckPingCmd() { WPacket w(8); w.WriteCmd(CMD_CM_CHECK_PING); return w; }
+		inline WPacket serializeCmLogoutCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_LOGOUT);
+			return w;
+		}
 
-		// / 
-		inline WPacket serialize(const CmBgnPlayMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_BGNPLAY); w.WriteInt64(m.chaIndex); return w; }
-		inline WPacket serialize(const CmNewChaMessage& m) { WPacket w(128); w.WriteCmd(CMD_CM_NEWCHA); w.WriteString(m.chaName); w.WriteString(m.birth); w.WriteInt64(m.type); w.WriteInt64(m.hair); w.WriteInt64(m.face); return w; }
-		inline WPacket serialize(const CmDelChaMessage& m) { WPacket w(80); w.WriteCmd(CMD_CM_DELCHA); w.WriteInt64(m.chaIndex); w.WriteString(m.password2); return w; }
+		inline WPacket serializeCmEndPlayCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_ENDPLAY);
+			return w;
+		}
 
-		// 
-		inline WPacket serialize(const CmCreatePassword2Message& m) { WPacket w(64); w.WriteCmd(CMD_CM_CREATE_PASSWORD2); w.WriteString(m.password); return w; }
-		inline WPacket serialize(const CmUpdatePassword2Message& m) { WPacket w(128); w.WriteCmd(CMD_CM_UPDATE_PASSWORD2); w.WriteString(m.oldPass); w.WriteString(m.newPass); return w; }
+		inline WPacket serializeCmEndActionCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_ENDACTION);
+			return w;
+		}
 
-		// GM / 
-		inline WPacket serialize(const CmGmSendMessage& m) { WPacket w(256); w.WriteCmd(CMD_CM_GM_SEND); w.WriteInt64(m.npcId); w.WriteString(m.title); w.WriteString(m.content); return w; }
-		inline WPacket serialize(const CmGmRecvMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_GM_RECV); w.WriteInt64(m.npcId); return w; }
-		inline WPacket serialize(const CmCheatCheckMessage& m) { WPacket w(64); w.WriteCmd(CMD_CM_CHEAT_CHECK); w.WriteString(m.answer); return w; }
-		inline WPacket serialize(const CmGuildPermMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_GUILD_PERM); w.WriteInt64(m.id); w.WriteInt64(m.perms); return w; }
-		inline WPacket serialize(const CmGameRequestPinMessage& m) { WPacket w(64); w.WriteCmd(CMD_CM_GAME_REQUEST_PIN); w.WriteString(m.password); return w; }
+		inline WPacket serializeCmRankCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_RANK);
+			return w;
+		}
 
-		//  / 
-		inline WPacket serialize(const CmItemLockAskMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_ITEM_LOCK_ASK); w.WriteInt64(m.slot); return w; }
-		inline WPacket serialize(const CmItemUnlockAskMessage& m) { WPacket w(72); w.WriteCmd(CMD_CM_ITEM_UNLOCK_ASK); w.WriteString(m.password); w.WriteInt64(m.slot); return w; }
+		inline WPacket serializeCmAntiIndulgenceCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_ANTIINDULGENCE);
+			return w;
+		}
+
+		inline WPacket serializeCpPingCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CP_PING);
+			return w;
+		}
+
+		inline WPacket serializeCmCheckPingCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_CM_CHECK_PING);
+			return w;
+		}
+
+		// /
+		inline WPacket serialize(const CmBgnPlayMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_BGNPLAY);
+			w.WriteInt64(m.chaIndex);
+			return w;
+		}
+
+		inline WPacket serialize(const CmNewChaMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CM_NEWCHA);
+			w.WriteString(m.chaName);
+			w.WriteString(m.birth);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.hair);
+			w.WriteInt64(m.face);
+			return w;
+		}
+
+		inline WPacket serialize(const CmDelChaMessage& m) {
+			WPacket w(80);
+			w.WriteCmd(CMD_CM_DELCHA);
+			w.WriteInt64(m.chaIndex);
+			w.WriteString(m.password2);
+			return w;
+		}
+
+		//
+		inline WPacket serialize(const CmCreatePassword2Message& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_CREATE_PASSWORD2);
+			w.WriteString(m.password);
+			return w;
+		}
+
+		inline WPacket serialize(const CmUpdatePassword2Message& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CM_UPDATE_PASSWORD2);
+			w.WriteString(m.oldPass);
+			w.WriteString(m.newPass);
+			return w;
+		}
+
+		// GM /
+		inline WPacket serialize(const CmGmSendMessage& m) {
+			WPacket w(256);
+			w.WriteCmd(CMD_CM_GM_SEND);
+			w.WriteInt64(m.npcId);
+			w.WriteString(m.title);
+			w.WriteString(m.content);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGmRecvMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_GM_RECV);
+			w.WriteInt64(m.npcId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmCheatCheckMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_CHEAT_CHECK);
+			w.WriteString(m.answer);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGuildPermMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_GUILD_PERM);
+			w.WriteInt64(m.id);
+			w.WriteInt64(m.perms);
+			return w;
+		}
+
+		inline WPacket serialize(const CmGameRequestPinMessage& m) {
+			WPacket w(64);
+			w.WriteCmd(CMD_CM_GAME_REQUEST_PIN);
+			w.WriteString(m.password);
+			return w;
+		}
+
+		//  /
+		inline WPacket serialize(const CmItemLockAskMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_ITEM_LOCK_ASK);
+			w.WriteInt64(m.slot);
+			return w;
+		}
+
+		inline WPacket serialize(const CmItemUnlockAskMessage& m) {
+			WPacket w(72);
+			w.WriteCmd(CMD_CM_ITEM_UNLOCK_ASK);
+			w.WriteString(m.password);
+			w.WriteInt64(m.slot);
+			return w;
+		}
 
 		// NPC  ( CMD_CM_REQUESTTRADE)
 		inline WPacket serialize(const CmSelectTradeBoatMessage& m) {
-			WPacket w(40); w.WriteCmd(CMD_CM_REQUESTTRADE);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_TRADEITEM); w.WriteInt64(4) /*ROLE_TRADE_SELECT_BOAT*/; w.WriteInt64(m.index); return w;
+			WPacket w(40);
+			w.WriteCmd(CMD_CM_REQUESTTRADE);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_TRADEITEM);
+			w.WriteInt64(4) /*ROLE_TRADE_SELECT_BOAT*/;
+			w.WriteInt64(m.index);
+			return w;
 		}
+
 		inline WPacket serialize(const CmSaleGoodsMessage& m) {
-			WPacket w(56); w.WriteCmd(CMD_CM_REQUESTTRADE);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_TRADEITEM); w.WriteInt64(2) /*ROLE_TRADE_SALE_GOODS*/; w.WriteInt64(m.boatId); w.WriteInt64(m.index); w.WriteInt64(m.count); return w;
+			WPacket w(56);
+			w.WriteCmd(CMD_CM_REQUESTTRADE);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_TRADEITEM);
+			w.WriteInt64(2) /*ROLE_TRADE_SALE_GOODS*/;
+			w.WriteInt64(m.boatId);
+			w.WriteInt64(m.index);
+			w.WriteInt64(m.count);
+			return w;
 		}
+
 		inline WPacket serialize(const CmBuyGoodsMessage& m) {
-			WPacket w(72); w.WriteCmd(CMD_CM_REQUESTTRADE);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_TRADEITEM); w.WriteInt64(3) /*ROLE_TRADE_BUY_GOODS*/; w.WriteInt64(m.boatId); w.WriteInt64(m.itemType); w.WriteInt64(m.index1); w.WriteInt64(m.index2); w.WriteInt64(m.count); return w;
+			WPacket w(72);
+			w.WriteCmd(CMD_CM_REQUESTTRADE);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_TRADEITEM);
+			w.WriteInt64(3) /*ROLE_TRADE_BUY_GOODS*/;
+			w.WriteInt64(m.boatId);
+			w.WriteInt64(m.itemType);
+			w.WriteInt64(m.index1);
+			w.WriteInt64(m.index2);
+			w.WriteInt64(m.count);
+			return w;
 		}
 
 		//  ( CMD_CM_REQUESTTALK)
 		inline WPacket serialize(const CmMissionTalkMessage& m) {
-			WPacket w(48); w.WriteCmd(CMD_CM_REQUESTTALK);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_MISSION); w.WriteInt64(5) /*ROLE_MIS_TALK*/; w.WriteInt64(CMD_CM_TALKPAGE); w.WriteInt64(m.cmd); return w;
+			WPacket w(48);
+			w.WriteCmd(CMD_CM_REQUESTTALK);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_MISSION);
+			w.WriteInt64(5) /*ROLE_MIS_TALK*/;
+			w.WriteInt64(CMD_CM_TALKPAGE);
+			w.WriteInt64(m.cmd);
+			return w;
 		}
+
 		inline WPacket serialize(const CmSelMissionFuncMessage& m) {
-			WPacket w(56); w.WriteCmd(CMD_CM_REQUESTTALK);
-			w.WriteInt64(m.npcId); w.WriteInt64(CMD_CM_MISSION); w.WriteInt64(5) /*ROLE_MIS_TALK*/; w.WriteInt64(CMD_CM_FUNCITEM); w.WriteInt64(m.pageId); w.WriteInt64(m.index); return w;
+			WPacket w(56);
+			w.WriteCmd(CMD_CM_REQUESTTALK);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(CMD_CM_MISSION);
+			w.WriteInt64(5) /*ROLE_MIS_TALK*/;
+			w.WriteInt64(CMD_CM_FUNCITEM);
+			w.WriteInt64(m.pageId);
+			w.WriteInt64(m.index);
+			return w;
 		}
 
 		// CP (  GroupServer  GateServer)
-		inline WPacket serialize(const CmCpMasterRefreshInfoMessage& m) { WPacket w(16); w.WriteCmd(CMD_CP_MASTER_REFRESH_INFO); w.WriteInt64(m.chaId); return w; }
-		inline WPacket serialize(const CmCpPrenticeRefreshInfoMessage& m) { WPacket w(16); w.WriteCmd(CMD_CP_PRENTICE_REFRESH_INFO); w.WriteInt64(m.chaId); return w; }
+		inline WPacket serialize(const CmCpMasterRefreshInfoMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CP_MASTER_REFRESH_INFO);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
+
+		inline WPacket serialize(const CmCpPrenticeRefreshInfoMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CP_PRENTICE_REFRESH_INFO);
+			w.WriteInt64(m.chaId);
+			return w;
+		}
 
 		//  (  )
 		inline WPacket serialize(const CmStallInfoMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_CM_STALL_ALLDATA);
-			w.WriteString(m.name); w.WriteInt64(m.num);
+			WPacket w(256);
+			w.WriteCmd(CMD_CM_STALL_ALLDATA);
+			w.WriteString(m.name);
+			w.WriteInt64(m.num);
 			for (int64_t i = 0; i < m.num; ++i) {
-				w.WriteInt64(m.items[i].grid); w.WriteInt64(m.items[i].money);
-				w.WriteInt64(m.items[i].count); w.WriteInt64(m.items[i].index);
+				w.WriteInt64(m.items[i].grid);
+				w.WriteInt64(m.items[i].money);
+				w.WriteInt64(m.items[i].count);
+				w.WriteInt64(m.items[i].index);
 			}
 			return w;
 		}
 
-		//  
-		inline WPacket serialize(const CmLifeSkillMessage& m) { WPacket w(24); w.WriteCmd(CMD_CM_LIFESKILL_ASR); w.WriteInt64(m.type); w.WriteInt64(m.npcId); return w; }
+		//
+		inline WPacket serialize(const CmLifeSkillMessage& m) {
+			WPacket w(24);
+			w.WriteCmd(CMD_CM_LIFESKILL_ASR);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.npcId);
+			return w;
+		}
 
-		// 
-		inline WPacket serialize(const CmBidUpMessage& m) { WPacket w(32); w.WriteCmd(CMD_CM_BIDUP); w.WriteInt64(m.npcId); w.WriteInt64(m.itemId); w.WriteInt64(m.price); return w; }
+		//
+		inline WPacket serialize(const CmBidUpMessage& m) {
+			WPacket w(32);
+			w.WriteCmd(CMD_CM_BIDUP);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.itemId);
+			w.WriteInt64(m.price);
+			return w;
+		}
 
-		//    
-		inline WPacket serialize(const CmUnlockCharacterMessage& m) { WPacket w(16); w.WriteCmd(CMD_CM_ITEM_FORGE_CANACTION); w.WriteInt64(m.flag); return w; }
+		//
+		inline WPacket serialize(const CmUnlockCharacterMessage& m) {
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_ITEM_FORGE_CANACTION);
+			w.WriteInt64(m.flag);
+			return w;
+		}
 
 		//  (   MC_PING)
-		inline WPacket serialize(const CmPingResponseMessage& m) { WPacket w(48); w.WriteCmd(CMD_CM_PING); w.WriteInt64(m.v1); w.WriteInt64(m.v2); w.WriteInt64(m.v3); w.WriteInt64(m.v4); w.WriteInt64(m.v5); return w; }
+		inline WPacket serialize(const CmPingResponseMessage& m) {
+			WPacket w(48);
+			w.WriteCmd(CMD_CM_PING);
+			w.WriteInt64(m.v1);
+			w.WriteInt64(m.v2);
+			w.WriteInt64(m.v3);
+			w.WriteInt64(m.v4);
+			w.WriteInt64(m.v5);
+			return w;
+		}
 
-		//  Deserialize: CM   
+		//  Deserialize: CM
 
-		inline void deserialize(RPacket& pk, CmDieReturnMessage& m) { m.reliveType = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmAutoKitbagLockMessage& m) { m.autoLock = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmStallSearchMessage& m) { m.itemId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmForgeItemMessage& m) { m.index = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmEntityEventMessage& m) { m.entityId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmStallOpenMessage& m) { m.charId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmMisLogInfoMessage& m) { m.id = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmMisLogClearMessage& m) { m.id = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmStoreBuyAskMessage& m) { m.comId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmStoreChangeAskMessage& m) { m.num = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmStoreQueryMessage& m) { m.num = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmTeamFightAnswerMessage& m) { m.accept = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmItemRepairAnswerMessage& m) { m.accept = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmItemForgeAnswerMessage& m) { m.accept = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmItemLotteryAnswerMessage& m) { m.accept = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmVolunteerOpenMessage& m) { m.num = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmVolunteerListMessage& m) { m.page = pk.ReadInt64(); m.num = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmStoreListAskMessage& m) { m.clsId = pk.ReadInt64(); m.page = pk.ReadInt64(); m.num = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmCaptainConfirmAsrMessage& m) { m.ret = pk.ReadInt64(); m.teamId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmMapMaskMessage& m) { m.mapName = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmStoreOpenAskMessage& m) { m.password = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmVolunteerSelMessage& m) { m.name = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmKitbagUnlockMessage& m) { m.password = pk.ReadString(); }
+		inline void deserialize(RPacket& pk, CmDieReturnMessage& m) {
+			m.reliveType = pk.ReadInt64();
+		}
 
-		//  Deserialize: MC  
+		inline void deserialize(RPacket& pk, CmAutoKitbagLockMessage& m) {
+			m.autoLock = pk.ReadInt64();
+		}
 
-		inline void deserialize(RPacket& pk, McFailedActionMessage& m) { m.worldId = pk.ReadInt64(); m.actionType = pk.ReadInt64(); m.reason = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McChaEndSeeMessage& m) { m.seeType = pk.ReadInt64(); m.worldId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McItemDestroyMessage& m) { m.worldId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McForgeResultMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McUniteResultMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McMillingResultMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McFusionResultMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McUpgradeResultMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McPurifyResultMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McFixResultMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McEidolonMetempsychosisMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McEidolonFusionMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McMessageMessage& m) { m.text = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McBickerNoticeMessage& m) { m.text = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McColourNoticeMessage& m) { m.color = pk.ReadInt64(); m.text = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McTriggerActionMessage& m) { m.type = pk.ReadInt64(); m.id = pk.ReadInt64(); m.num = pk.ReadInt64(); m.count = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McNpcStateChangeMessage& m) { m.npcId = pk.ReadInt64(); m.state = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McEntityStateChangeMessage& m) { m.entityId = pk.ReadInt64(); m.state = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McCloseTalkMessage& m) { m.npcId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McKitbagCheckAnswerMessage& m) { m.locked = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McPreMoveTimeMessage& m) { m.time = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McItemUseSuccMessage& m) { m.worldId = pk.ReadInt64(); m.itemId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McChaPlayEffectMessage& m) { m.worldId = pk.ReadInt64(); m.effectId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McSynDefaultSkillMessage& m) { m.worldId = pk.ReadInt64(); m.skillId = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, CmStallSearchMessage& m) {
+			m.itemId = pk.ReadInt64();
+		}
 
-		//  Deserialize: MC  ReadSequenceReadString 
+		inline void deserialize(RPacket& pk, CmForgeItemMessage& m) {
+			m.index = pk.ReadInt64();
+		}
 
-		inline void deserialize(RPacket& pk, McSayMessage& m) { m.sourceId = pk.ReadInt64(); m.content = pk.ReadString(); m.color = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McPopupNoticeMessage& m) { m.notice = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McPingMessage& m) { m.v1 = pk.ReadInt64(); m.v2 = pk.ReadInt64(); m.v3 = pk.ReadInt64(); m.v4 = pk.ReadInt64(); m.v5 = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, CmEntityEventMessage& m) {
+			m.entityId = pk.ReadInt64();
+		}
 
-		//  Deserialize: CM   ( 2) 
+		inline void deserialize(RPacket& pk, CmStallOpenMessage& m) {
+			m.charId = pk.ReadInt64();
+		}
 
-		inline void deserialize(RPacket& pk, CmChangePassMessage& m) { m.pass = pk.ReadString(); m.pin = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmGuildBankOperMessage& m) { m.op = pk.ReadInt64(); m.srcType = pk.ReadInt64(); m.srcId = pk.ReadInt64(); m.srcNum = pk.ReadInt64(); m.tarType = pk.ReadInt64(); m.tarId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmGuildBankGoldMessage& m) { m.op = pk.ReadInt64(); m.direction = pk.ReadInt64(); m.gold = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, PmGuildBankOperData& m) { m.srcType = pk.ReadInt64(); m.srcGrid = pk.ReadInt64(); m.srcNum = pk.ReadInt64(); m.tarType = pk.ReadInt64(); m.tarGrid = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, PmGuildBankGoldData& m) { m.direction = pk.ReadInt64(); m.gold = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, CmMisLogInfoMessage& m) {
+			m.id = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmMisLogClearMessage& m) {
+			m.id = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmStoreBuyAskMessage& m) {
+			m.comId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmStoreChangeAskMessage& m) {
+			m.num = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmStoreQueryMessage& m) {
+			m.num = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmTeamFightAnswerMessage& m) {
+			m.accept = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmItemRepairAnswerMessage& m) {
+			m.accept = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmItemForgeAnswerMessage& m) {
+			m.accept = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmItemLotteryAnswerMessage& m) {
+			m.accept = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmVolunteerOpenMessage& m) {
+			m.num = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmVolunteerListMessage& m) {
+			m.page = pk.ReadInt64();
+			m.num = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmStoreListAskMessage& m) {
+			m.clsId = pk.ReadInt64();
+			m.page = pk.ReadInt64();
+			m.num = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmCaptainConfirmAsrMessage& m) {
+			m.ret = pk.ReadInt64();
+			m.teamId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmMapMaskMessage& m) {
+			m.mapName = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmStoreOpenAskMessage& m) {
+			m.password = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmVolunteerSelMessage& m) {
+			m.name = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmKitbagUnlockMessage& m) {
+			m.password = pk.ReadString();
+		}
+
+		//  Deserialize: MC
+
+		inline void deserialize(RPacket& pk, McFailedActionMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.actionType = pk.ReadInt64();
+			m.reason = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McChaEndSeeMessage& m) {
+			m.seeType = pk.ReadInt64();
+			m.worldId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McItemDestroyMessage& m) {
+			m.worldId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McForgeResultMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McUniteResultMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McMillingResultMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McFusionResultMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McUpgradeResultMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McPurifyResultMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McFixResultMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McEidolonMetempsychosisMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McEidolonFusionMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McMessageMessage& m) {
+			m.text = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McBickerNoticeMessage& m) {
+			m.text = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McColourNoticeMessage& m) {
+			m.color = pk.ReadInt64();
+			m.text = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McTriggerActionMessage& m) {
+			m.type = pk.ReadInt64();
+			m.id = pk.ReadInt64();
+			m.num = pk.ReadInt64();
+			m.count = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McNpcStateChangeMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.state = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McEntityStateChangeMessage& m) {
+			m.entityId = pk.ReadInt64();
+			m.state = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McCloseTalkMessage& m) {
+			m.npcId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McKitbagCheckAnswerMessage& m) {
+			m.locked = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McPreMoveTimeMessage& m) {
+			m.time = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McItemUseSuccMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.itemId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McChaPlayEffectMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.effectId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McSynDefaultSkillMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.skillId = pk.ReadInt64();
+		}
+
+		//  Deserialize: MC  ReadSequenceReadString
+
+		inline void deserialize(RPacket& pk, McSayMessage& m) {
+			m.sourceId = pk.ReadInt64();
+			m.content = pk.ReadString();
+			m.color = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McPopupNoticeMessage& m) {
+			m.notice = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McPingMessage& m) {
+			m.v1 = pk.ReadInt64();
+			m.v2 = pk.ReadInt64();
+			m.v3 = pk.ReadInt64();
+			m.v4 = pk.ReadInt64();
+			m.v5 = pk.ReadInt64();
+		}
+
+		//  Deserialize: CM   ( 2)
+
+		inline void deserialize(RPacket& pk, CmChangePassMessage& m) {
+			m.pass = pk.ReadString();
+			m.pin = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildBankOperMessage& m) {
+			m.op = pk.ReadInt64();
+			m.srcType = pk.ReadInt64();
+			m.srcId = pk.ReadInt64();
+			m.srcNum = pk.ReadInt64();
+			m.tarType = pk.ReadInt64();
+			m.tarId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildBankGoldMessage& m) {
+			m.op = pk.ReadInt64();
+			m.direction = pk.ReadInt64();
+			m.gold = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, PmGuildBankOperData& m) {
+			m.srcType = pk.ReadInt64();
+			m.srcGrid = pk.ReadInt64();
+			m.srcNum = pk.ReadInt64();
+			m.tarType = pk.ReadInt64();
+			m.tarGrid = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, PmGuildBankGoldData& m) {
+			m.direction = pk.ReadInt64();
+			m.gold = pk.ReadInt64();
+		}
+
 		inline void deserialize(RPacket& pk, PmGuildBankMessage& m) {
 			m.bankType = pk.ReadInt64();
 			switch (m.bankType) {
-			case 0: { PmGuildBankOperData d; deserialize(pk, d); m.data = d; break; }
-			case 1: { PmGuildBankGoldData d; deserialize(pk, d); m.data = d; break; }
+			case 0: {
+				PmGuildBankOperData d;
+				deserialize(pk, d);
+				m.data = d;
+				break;
+			}
+			case 1: {
+				PmGuildBankGoldData d;
+				deserialize(pk, d);
+				m.data = d;
+				break;
+			}
 			}
 		}
-		inline void deserialize(RPacket& pk, CmUpdateHairMessage& m) { m.scriptId = pk.ReadInt64(); m.gridLoc0 = pk.ReadInt64(); m.gridLoc1 = pk.ReadInt64(); m.gridLoc2 = pk.ReadInt64(); m.gridLoc3 = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmTeamFightAskMessage& m) { m.type = pk.ReadInt64(); m.worldId = pk.ReadInt64(); m.handle = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmItemRepairAskMessage& m) { m.repairmanId = pk.ReadInt64(); m.repairmanHandle = pk.ReadInt64(); m.posType = pk.ReadInt64(); m.posId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmRequestTradeMessage& m) { m.type = pk.ReadInt64(); m.charId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmAcceptTradeMessage& m) { m.type = pk.ReadInt64(); m.charId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmCancelTradeMessage& m) { m.type = pk.ReadInt64(); m.charId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmValidateTradeDataMessage& m) { m.type = pk.ReadInt64(); m.charId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmValidateTradeMessage& m) { m.type = pk.ReadInt64(); m.charId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmAddItemMessage& m) { m.type = pk.ReadInt64(); m.charId = pk.ReadInt64(); m.opType = pk.ReadInt64(); m.index = pk.ReadInt64(); m.itemIndex = pk.ReadInt64(); m.count = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmAddMoneyMessage& m) { m.type = pk.ReadInt64(); m.charId = pk.ReadInt64(); m.opType = pk.ReadInt64(); m.isImp = pk.ReadInt64(); m.money = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmTigerStartMessage& m) { m.npcId = pk.ReadInt64(); m.sel1 = pk.ReadInt64(); m.sel2 = pk.ReadInt64(); m.sel3 = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmTigerStopMessage& m) { m.npcId = pk.ReadInt64(); m.num = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmVolunteerAsrMessage& m) { m.ret = pk.ReadInt64(); m.name = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmCreateBoatMessage& m) { m.boat = pk.ReadString(); m.header = pk.ReadInt64(); m.engine = pk.ReadInt64(); m.cannon = pk.ReadInt64(); m.equipment = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmUpdateBoatMessage& m) { m.header = pk.ReadInt64(); m.engine = pk.ReadInt64(); m.cannon = pk.ReadInt64(); m.equipment = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmSelectBoatListMessage& m) { m.npcId = pk.ReadInt64(); m.type = pk.ReadInt64(); m.index = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmBoatLaunchMessage& m) { m.npcId = pk.ReadInt64(); m.index = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmBoatBagSelMessage& m) { m.npcId = pk.ReadInt64(); m.index = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmReportWgMessage& m) { m.info = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmSay2CampMessage& m) { m.content = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmStallBuyMessage& m) { m.charId = pk.ReadInt64(); m.index = pk.ReadInt64(); m.count = pk.ReadInt64(); m.gridId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmSkillUpgradeMessage& m) { m.skillId = pk.ReadInt64(); m.addGrade = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmRefreshDataMessage& m) { m.worldId = pk.ReadInt64(); m.handle = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmPkCtrlMessage& m) { m.ctrl = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmItemAmphitheaterAskMessage& m) { m.sure = pk.ReadInt64(); m.reId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmMasterInviteMessage& m) { m.name = pk.ReadString(); m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmMasterAsrMessage& m) { m.agree = pk.ReadInt64(); m.name = pk.ReadString(); m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmMasterDelMessage& m) { m.name = pk.ReadString(); m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmPrenticeInviteMessage& m) { m.name = pk.ReadString(); m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmPrenticeAsrMessage& m) { m.agree = pk.ReadInt64(); m.name = pk.ReadString(); m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmPrenticeDelMessage& m) { m.name = pk.ReadString(); m.chaId = pk.ReadInt64(); }
 
-		//  Deserialize:  5   CM- 
+		inline void deserialize(RPacket& pk, CmUpdateHairMessage& m) {
+			m.scriptId = pk.ReadInt64();
+			m.gridLoc0 = pk.ReadInt64();
+			m.gridLoc1 = pk.ReadInt64();
+			m.gridLoc2 = pk.ReadInt64();
+			m.gridLoc3 = pk.ReadInt64();
+		}
 
-		inline void deserialize(RPacket& pk, CmBgnPlayMessage& m) { m.chaIndex = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmNewChaMessage& m) { m.chaName = pk.ReadString(); m.birth = pk.ReadString(); m.type = pk.ReadInt64(); m.hair = pk.ReadInt64(); m.face = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmDelChaMessage& m) { m.chaIndex = pk.ReadInt64(); m.password2 = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmCreatePassword2Message& m) { m.password = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmUpdatePassword2Message& m) { m.oldPass = pk.ReadString(); m.newPass = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmGmSendMessage& m) { m.npcId = pk.ReadInt64(); m.title = pk.ReadString(); m.content = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmGmRecvMessage& m) { m.npcId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmCheatCheckMessage& m) { m.answer = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmGuildPermMessage& m) { m.id = pk.ReadInt64(); m.perms = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmGameRequestPinMessage& m) { m.password = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmItemLockAskMessage& m) { m.slot = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmItemUnlockAskMessage& m) { m.password = pk.ReadString(); m.slot = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmCpMasterRefreshInfoMessage& m) { m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmCpPrenticeRefreshInfoMessage& m) { m.chaId = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, CmTeamFightAskMessage& m) {
+			m.type = pk.ReadInt64();
+			m.worldId = pk.ReadInt64();
+			m.handle = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmItemRepairAskMessage& m) {
+			m.repairmanId = pk.ReadInt64();
+			m.repairmanHandle = pk.ReadInt64();
+			m.posType = pk.ReadInt64();
+			m.posId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmRequestTradeMessage& m) {
+			m.type = pk.ReadInt64();
+			m.charId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmAcceptTradeMessage& m) {
+			m.type = pk.ReadInt64();
+			m.charId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmCancelTradeMessage& m) {
+			m.type = pk.ReadInt64();
+			m.charId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmValidateTradeDataMessage& m) {
+			m.type = pk.ReadInt64();
+			m.charId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmValidateTradeMessage& m) {
+			m.type = pk.ReadInt64();
+			m.charId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmAddItemMessage& m) {
+			m.type = pk.ReadInt64();
+			m.charId = pk.ReadInt64();
+			m.opType = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+			m.itemIndex = pk.ReadInt64();
+			m.count = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmAddMoneyMessage& m) {
+			m.type = pk.ReadInt64();
+			m.charId = pk.ReadInt64();
+			m.opType = pk.ReadInt64();
+			m.isImp = pk.ReadInt64();
+			m.money = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmTigerStartMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.sel1 = pk.ReadInt64();
+			m.sel2 = pk.ReadInt64();
+			m.sel3 = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmTigerStopMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.num = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmVolunteerAsrMessage& m) {
+			m.ret = pk.ReadInt64();
+			m.name = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmCreateBoatMessage& m) {
+			m.boat = pk.ReadString();
+			m.header = pk.ReadInt64();
+			m.engine = pk.ReadInt64();
+			m.cannon = pk.ReadInt64();
+			m.equipment = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmUpdateBoatMessage& m) {
+			m.header = pk.ReadInt64();
+			m.engine = pk.ReadInt64();
+			m.cannon = pk.ReadInt64();
+			m.equipment = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmSelectBoatListMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.type = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmBoatLaunchMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmBoatBagSelMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmReportWgMessage& m) {
+			m.info = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmSay2CampMessage& m) {
+			m.content = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmStallBuyMessage& m) {
+			m.charId = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+			m.count = pk.ReadInt64();
+			m.gridId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmSkillUpgradeMessage& m) {
+			m.skillId = pk.ReadInt64();
+			m.addGrade = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmRefreshDataMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.handle = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmPkCtrlMessage& m) {
+			m.ctrl = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmItemAmphitheaterAskMessage& m) {
+			m.sure = pk.ReadInt64();
+			m.reId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmMasterInviteMessage& m) {
+			m.name = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmMasterAsrMessage& m) {
+			m.agree = pk.ReadInt64();
+			m.name = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmMasterDelMessage& m) {
+			m.name = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmPrenticeInviteMessage& m) {
+			m.name = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmPrenticeAsrMessage& m) {
+			m.agree = pk.ReadInt64();
+			m.name = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmPrenticeDelMessage& m) {
+			m.name = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+		}
+
+		//  Deserialize:  5   CM-
+
+		inline void deserialize(RPacket& pk, CmBgnPlayMessage& m) {
+			m.chaIndex = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmNewChaMessage& m) {
+			m.chaName = pk.ReadString();
+			m.birth = pk.ReadString();
+			m.type = pk.ReadInt64();
+			m.hair = pk.ReadInt64();
+			m.face = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmDelChaMessage& m) {
+			m.chaIndex = pk.ReadInt64();
+			m.password2 = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmCreatePassword2Message& m) {
+			m.password = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmUpdatePassword2Message& m) {
+			m.oldPass = pk.ReadString();
+			m.newPass = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmGmSendMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.title = pk.ReadString();
+			m.content = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmGmRecvMessage& m) {
+			m.npcId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmCheatCheckMessage& m) {
+			m.answer = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildPermMessage& m) {
+			m.id = pk.ReadInt64();
+			m.perms = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmGameRequestPinMessage& m) {
+			m.password = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmItemLockAskMessage& m) {
+			m.slot = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmItemUnlockAskMessage& m) {
+			m.password = pk.ReadString();
+			m.slot = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmCpMasterRefreshInfoMessage& m) {
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmCpPrenticeRefreshInfoMessage& m) {
+			m.chaId = pk.ReadInt64();
+		}
+
 		inline void deserialize(RPacket& pk, CmStallInfoMessage& m) {
-			m.name = pk.ReadString(); m.num = pk.ReadInt64();
+			m.name = pk.ReadString();
+			m.num = pk.ReadInt64();
 			m.items.resize(m.num);
 			for (int64_t i = 0; i < m.num; ++i) {
-				m.items[i].grid = pk.ReadInt64(); m.items[i].money = pk.ReadInt64();
-				m.items[i].count = pk.ReadInt64(); m.items[i].index = pk.ReadInt64();
+				m.items[i].grid = pk.ReadInt64();
+				m.items[i].money = pk.ReadInt64();
+				m.items[i].count = pk.ReadInt64();
+				m.items[i].index = pk.ReadInt64();
 			}
 		}
-		inline void deserialize(RPacket& pk, CmLifeSkillMessage& m) { m.type = pk.ReadInt64(); m.npcId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmBidUpMessage& m) { m.npcId = pk.ReadInt64(); m.itemId = pk.ReadInt64(); m.price = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmUnlockCharacterMessage& m) { m.flag = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmPingResponseMessage& m) { m.v1 = pk.ReadInt64(); m.v2 = pk.ReadInt64(); m.v3 = pk.ReadInt64(); m.v4 = pk.ReadInt64(); m.v5 = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmSelectTradeBoatMessage& m) { m.npcId = pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); m.index = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmSaleGoodsMessage& m) { m.npcId = pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); m.boatId = pk.ReadInt64(); m.index = pk.ReadInt64(); m.count = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmBuyGoodsMessage& m) { m.npcId = pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); m.boatId = pk.ReadInt64(); m.itemType = pk.ReadInt64(); m.index1 = pk.ReadInt64(); m.index2 = pk.ReadInt64(); m.count = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmMissionTalkMessage& m) { m.npcId = pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); m.cmd = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmSelMissionFuncMessage& m) { m.npcId = pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); m.pageId = pk.ReadInt64(); m.index = pk.ReadInt64(); }
 
-		//  Deserialize: NPC Talk  ( 2) 
+		inline void deserialize(RPacket& pk, CmLifeSkillMessage& m) {
+			m.type = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmBidUpMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.itemId = pk.ReadInt64();
+			m.price = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmUnlockCharacterMessage& m) {
+			m.flag = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmPingResponseMessage& m) {
+			m.v1 = pk.ReadInt64();
+			m.v2 = pk.ReadInt64();
+			m.v3 = pk.ReadInt64();
+			m.v4 = pk.ReadInt64();
+			m.v5 = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmSelectTradeBoatMessage& m) {
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			m.index = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmSaleGoodsMessage& m) {
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			m.boatId = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+			m.count = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmBuyGoodsMessage& m) {
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			m.boatId = pk.ReadInt64();
+			m.itemType = pk.ReadInt64();
+			m.index1 = pk.ReadInt64();
+			m.index2 = pk.ReadInt64();
+			m.count = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmMissionTalkMessage& m) {
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			m.cmd = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmSelMissionFuncMessage& m) {
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			m.pageId = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+		}
+
+		//  Deserialize: NPC Talk  ( 2)
 
 		inline void deserialize(RPacket& pk, CmRequestTalkMessage& m) {
-			m.npcId = pk.ReadInt64(); pk.ReadInt64(); m.cmd = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			m.cmd = pk.ReadInt64();
 		}
+
 		inline void deserialize(RPacket& pk, CmSelFunctionMessage& m) {
-			m.npcId = pk.ReadInt64(); pk.ReadInt64(); m.pageId = pk.ReadInt64(); m.index = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			m.pageId = pk.ReadInt64();
+			m.index = pk.ReadInt64();
 		}
+
 		inline void deserialize(RPacket& pk, CmSaleMessage& m) {
-			m.npcId = pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); m.index = pk.ReadInt64(); m.count = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			m.index = pk.ReadInt64();
+			m.count = pk.ReadInt64();
 		}
+
 		inline void deserialize(RPacket& pk, CmBuyMessage& m) {
-			m.npcId = pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); m.itemType = pk.ReadInt64(); m.index1 = pk.ReadInt64(); m.index2 = pk.ReadInt64(); m.count = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			m.itemType = pk.ReadInt64();
+			m.index1 = pk.ReadInt64();
+			m.index2 = pk.ReadInt64();
+			m.count = pk.ReadInt64();
 		}
+
 		inline void deserialize(RPacket& pk, CmMissionPageMessage& m) {
-			m.npcId = pk.ReadInt64(); pk.ReadInt64(); m.cmd = pk.ReadInt64(); m.selItem = pk.ReadInt64(); m.param = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			m.cmd = pk.ReadInt64();
+			m.selItem = pk.ReadInt64();
+			m.param = pk.ReadInt64();
 		}
+
 		inline void deserialize(RPacket& pk, CmSelMissionMessage& m) {
-			m.npcId = pk.ReadInt64(); pk.ReadInt64(); pk.ReadInt64(); m.index = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			pk.ReadInt64();
+			m.index = pk.ReadInt64();
 		}
+
 		inline void deserialize(RPacket& pk, CmBlackMarketExchangeReqMessage& m) {
-			m.npcId = pk.ReadInt64(); pk.ReadInt64(); m.timeNum = pk.ReadInt64();
-			m.srcId = pk.ReadInt64(); m.srcNum = pk.ReadInt64(); m.tarId = pk.ReadInt64(); m.tarNum = pk.ReadInt64(); m.index = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			pk.ReadInt64();
+			m.timeNum = pk.ReadInt64();
+			m.srcId = pk.ReadInt64();
+			m.srcNum = pk.ReadInt64();
+			m.tarId = pk.ReadInt64();
+			m.tarNum = pk.ReadInt64();
+			m.index = pk.ReadInt64();
 		}
 
-		//  Deserialize: MC   ( 2) 
+		//  Deserialize: MC   ( 2)
 
-		inline void deserialize(RPacket& pk, McSay2CampMessage& m) { m.chaName = pk.ReadString(); m.content = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McTalkInfoMessage& m) { m.npcId = pk.ReadInt64(); m.cmd = pk.ReadInt64(); m.text = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McTradeDataMessage& m) { m.npcId = pk.ReadInt64(); m.page = pk.ReadInt64(); m.index = pk.ReadInt64(); m.itemId = pk.ReadInt64(); m.count = pk.ReadInt64(); m.price = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McTradeResultMessage& m) { m.type = pk.ReadInt64(); m.index = pk.ReadInt64(); m.count = pk.ReadInt64(); m.itemId = pk.ReadInt64(); m.money = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McUpdateHairResMessage& m) { m.worldId = pk.ReadInt64(); m.scriptId = pk.ReadInt64(); m.reason = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McSynTLeaderIdMessage& m) { m.worldId = pk.ReadInt64(); m.leaderId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McKitbagCapacityMessage& m) { m.worldId = pk.ReadInt64(); m.capacity = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McItemForgeAskMessage& m) { m.type = pk.ReadInt64(); m.money = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McItemForgeAnswerMessage& m) { m.worldId = pk.ReadInt64(); m.type = pk.ReadInt64(); m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McQueryChaMessage& m) { m.chaId = pk.ReadInt64(); m.name = pk.ReadString(); m.mapName = pk.ReadString(); m.posX = pk.ReadInt64(); m.posY = pk.ReadInt64(); m.chaId2 = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McQueryChaPingMessage& m) { m.chaId = pk.ReadInt64(); m.name = pk.ReadString(); m.mapName = pk.ReadString(); m.ping = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McQueryReliveMessage& m) { m.chaId = pk.ReadInt64(); m.sourceName = pk.ReadString(); m.reliveType = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McGmMailMessage& m) { m.title = pk.ReadString(); m.content = pk.ReadString(); m.time = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McSynStallNameMessage& m) { m.charId = pk.ReadInt64(); m.name = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McMapCrashMessage& m) { m.text = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McVolunteerStateMessage& m) { m.state = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McVolunteerAskMessage& m) { m.name = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McMasterAskMessage& m) { m.name = pk.ReadString(); m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McPrenticeAskMessage& m) { m.name = pk.ReadString(); m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McItemRepairAskMcMessage& m) { m.itemName = pk.ReadString(); m.repairCost = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McItemLotteryAsrMessage& m) { m.success = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, McSay2CampMessage& m) {
+			m.chaName = pk.ReadString();
+			m.content = pk.ReadString();
+		}
 
-		//  Deserialize: MC/CM   4 
-		inline void deserialize(RPacket& pk, McChaEmotionMessage& m) { m.worldId = pk.ReadInt64(); m.emotion = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McStartExitMessage& m) { m.exitTime = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McGmRecvMessage& m) { m.npcId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McStallDelGoodsMessage& m) { m.charId = pk.ReadInt64(); m.grid = pk.ReadInt64(); m.count = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McStallCloseMessage& m) { m.charId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McStallSuccessMessage& m) { m.charId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McUpdateGuildGoldMessage& m) { m.data = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McQueryChaItemMessage& m) { m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McDisconnectMessage& m) { m.reason = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McLifeSkillShowMessage& m) { m.type = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McLifeSkillMessage& m) { m.type = pk.ReadInt64(); m.result = pk.ReadInt64(); m.text = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McLifeSkillAsrMessage& m) { m.type = pk.ReadInt64(); m.time = pk.ReadInt64(); m.text = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McDropLockAsrMessage& m) { m.success = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McUnlockItemAsrMessage& m) { m.result = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McStoreBuyAnswerMessage& m) { m.success = pk.ReadInt64(); m.newMoney = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McStoreChangeAnswerMessage& m) { m.success = pk.ReadInt64(); m.moBean = pk.ReadInt64(); m.replMoney = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McDailyBuffInfoMessage& m) { m.imgName = pk.ReadString(); m.labelInfo = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McRequestDropRateMessage& m) { m.rate = pk.ReadFloat32(); }
-		inline void deserialize(RPacket& pk, McRequestExpRateMessage& m) { m.rate = pk.ReadFloat32(); }
-		inline void deserialize(RPacket& pk, McTigerItemIdMessage& m) { m.num = pk.ReadInt64(); m.itemId0 = pk.ReadInt64(); m.itemId1 = pk.ReadInt64(); m.itemId2 = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, McTalkInfoMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.cmd = pk.ReadInt64();
+			m.text = pk.ReadString();
+		}
 
-		//  Deserialize:  CM 
+		inline void deserialize(RPacket& pk, McTradeDataMessage& m) {
+			m.npcId = pk.ReadInt64();
+			m.page = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+			m.itemId = pk.ReadInt64();
+			m.count = pk.ReadInt64();
+			m.price = pk.ReadInt64();
+		}
 
-		inline void deserialize(RPacket& pk, CmGuildPutNameMessage& m) { m.confirm = pk.ReadInt64(); m.guildName = pk.ReadString(); m.passwd = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmGuildTryForMessage& m) { m.guildId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmGuildTryForCfmMessage& m) { m.confirm = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmGuildApproveMessage& m) { m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmGuildRejectMessage& m) { m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmGuildKickMessage& m) { m.chaId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmGuildDisbandMessage& m) { m.passwd = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmGuildMottoMessage& m) { m.motto = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, CmGuildChallMessage& m) { m.level = pk.ReadInt64(); m.money = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, CmGuildLeizhuMessage& m) { m.level = pk.ReadInt64(); m.money = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, McTradeResultMessage& m) {
+			m.type = pk.ReadInt64();
+			m.index = pk.ReadInt64();
+			m.count = pk.ReadInt64();
+			m.itemId = pk.ReadInt64();
+			m.money = pk.ReadInt64();
+		}
 
-		//  Deserialize:  CM ( ) 
+		inline void deserialize(RPacket& pk, McUpdateHairResMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.scriptId = pk.ReadInt64();
+			m.reason = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McSynTLeaderIdMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.leaderId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McKitbagCapacityMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.capacity = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McItemForgeAskMessage& m) {
+			m.type = pk.ReadInt64();
+			m.money = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McItemForgeAnswerMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.type = pk.ReadInt64();
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McQueryChaMessage& m) {
+			m.chaId = pk.ReadInt64();
+			m.name = pk.ReadString();
+			m.mapName = pk.ReadString();
+			m.posX = pk.ReadInt64();
+			m.posY = pk.ReadInt64();
+			m.chaId2 = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McQueryChaPingMessage& m) {
+			m.chaId = pk.ReadInt64();
+			m.name = pk.ReadString();
+			m.mapName = pk.ReadString();
+			m.ping = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McQueryReliveMessage& m) {
+			m.chaId = pk.ReadInt64();
+			m.sourceName = pk.ReadString();
+			m.reliveType = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McGmMailMessage& m) {
+			m.title = pk.ReadString();
+			m.content = pk.ReadString();
+			m.time = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McSynStallNameMessage& m) {
+			m.charId = pk.ReadInt64();
+			m.name = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McMapCrashMessage& m) {
+			m.text = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McVolunteerStateMessage& m) {
+			m.state = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McVolunteerAskMessage& m) {
+			m.name = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McMasterAskMessage& m) {
+			m.name = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McPrenticeAskMessage& m) {
+			m.name = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McItemRepairAskMcMessage& m) {
+			m.itemName = pk.ReadString();
+			m.repairCost = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McItemLotteryAsrMessage& m) {
+			m.success = pk.ReadInt64();
+		}
+
+		//  Deserialize: MC/CM   4
+		inline void deserialize(RPacket& pk, McChaEmotionMessage& m) {
+			m.worldId = pk.ReadInt64();
+			m.emotion = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McStartExitMessage& m) {
+			m.exitTime = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McGmRecvMessage& m) {
+			m.npcId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McStallDelGoodsMessage& m) {
+			m.charId = pk.ReadInt64();
+			m.grid = pk.ReadInt64();
+			m.count = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McStallCloseMessage& m) {
+			m.charId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McStallSuccessMessage& m) {
+			m.charId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McUpdateGuildGoldMessage& m) {
+			m.data = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McQueryChaItemMessage& m) {
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McDisconnectMessage& m) {
+			m.reason = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McLifeSkillShowMessage& m) {
+			m.type = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McLifeSkillMessage& m) {
+			m.type = pk.ReadInt64();
+			m.result = pk.ReadInt64();
+			m.text = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McLifeSkillAsrMessage& m) {
+			m.type = pk.ReadInt64();
+			m.time = pk.ReadInt64();
+			m.text = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McDropLockAsrMessage& m) {
+			m.success = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McUnlockItemAsrMessage& m) {
+			m.result = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McStoreBuyAnswerMessage& m) {
+			m.success = pk.ReadInt64();
+			m.newMoney = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McStoreChangeAnswerMessage& m) {
+			m.success = pk.ReadInt64();
+			m.moBean = pk.ReadInt64();
+			m.replMoney = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McDailyBuffInfoMessage& m) {
+			m.imgName = pk.ReadString();
+			m.labelInfo = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McRequestDropRateMessage& m) {
+			m.rate = pk.ReadFloat32();
+		}
+
+		inline void deserialize(RPacket& pk, McRequestExpRateMessage& m) {
+			m.rate = pk.ReadFloat32();
+		}
+
+		inline void deserialize(RPacket& pk, McTigerItemIdMessage& m) {
+			m.num = pk.ReadInt64();
+			m.itemId0 = pk.ReadInt64();
+			m.itemId1 = pk.ReadInt64();
+			m.itemId2 = pk.ReadInt64();
+		}
+
+		//  Deserialize:  CM
+
+		inline void deserialize(RPacket& pk, CmGuildPutNameMessage& m) {
+			m.confirm = pk.ReadInt64();
+			m.guildName = pk.ReadString();
+			m.passwd = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildTryForMessage& m) {
+			m.guildId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildTryForCfmMessage& m) {
+			m.confirm = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildApproveMessage& m) {
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildRejectMessage& m) {
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildKickMessage& m) {
+			m.chaId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildDisbandMessage& m) {
+			m.passwd = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildMottoMessage& m) {
+			m.motto = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildChallMessage& m) {
+			m.level = pk.ReadInt64();
+			m.money = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, CmGuildLeizhuMessage& m) {
+			m.level = pk.ReadInt64();
+			m.money = pk.ReadInt64();
+		}
+
+		//  Deserialize:  CM ( )
 
 		inline void deserialize(RPacket& pk, CmSayMessage& m) {
 			m.content = pk.ReadString();
 		}
+
 		inline void deserialize(RPacket& pk, CmSynAttrMessage& m) {
 			int64_t count = pk.ReadInt64();
 			m.attrs.reserve(static_cast<size_t>(count));
@@ -7193,7 +10704,11 @@ namespace net {
 				m.attrs.push_back(e);
 			}
 		}
-		inline void deserialize(RPacket& pk, CmItemForgeCanActionMessage& m) { m.canAction = pk.ReadInt64(); }
+
+		inline void deserialize(RPacket& pk, CmItemForgeCanActionMessage& m) {
+			m.canAction = pk.ReadInt64();
+		}
+
 		inline void deserialize(RPacket& pk, CmItemForgeGroupAskMessage& m) {
 			m.sure = pk.ReadInt64();
 			if (m.sure) {
@@ -7210,6 +10725,7 @@ namespace net {
 				}
 			}
 		}
+
 		inline void deserialize(RPacket& pk, CmItemLotteryGroupAskMessage& m) {
 			m.sure = pk.ReadInt64();
 			if (m.sure) {
@@ -7225,6 +10741,7 @@ namespace net {
 				}
 			}
 		}
+
 		/// CMD_CM_LIFESKILL_ASK
 		inline bool deserializeLifeSkillAsk(RPacket& pk, CmLifeSkillCraftMessage& m) {
 			m.isAnswer = false;
@@ -7243,6 +10760,7 @@ namespace net {
 			}
 			return true;
 		}
+
 		/// CMD_CM_LIFESKILL_ASR
 		inline bool deserializeLifeSkillAsr(RPacket& pk, CmLifeSkillCraftMessage& m) {
 			m.isAnswer = true;
@@ -7263,7 +10781,7 @@ namespace net {
 			return true;
 		}
 
-		//  Deserialize: BeginAction sub-data 
+		//  Deserialize: BeginAction sub-data
 
 		inline void deserialize(RPacket& pk, CmBeginActionMessage& m) {
 			m.worldId = pk.ReadInt64();
@@ -7274,64 +10792,174 @@ namespace net {
 			switch (m.actionType) {
 			case ActionType::MOVE: {
 				CmActionMoveInputData d;
-				unsigned short len; const char* p = pk.ReadSequence(len);
+				unsigned short len;
+				const char* p = pk.ReadSequence(len);
 				if (p && len > 0) d.pathData.assign(p, len);
-				m.data = std::move(d); break;
+				m.data = std::move(d);
+				break;
 			}
 			case ActionType::SKILL: {
 				CmActionSkillInputData d;
-				d.chMove = pk.ReadInt64(); d.fightId = pk.ReadInt64();
+				d.chMove = pk.ReadInt64();
+				d.fightId = pk.ReadInt64();
 				if (d.chMove == 2) {
-					unsigned short len; const char* p = pk.ReadSequence(len);
+					unsigned short len;
+					const char* p = pk.ReadSequence(len);
 					if (p && len > 0) d.pathData.assign(p, len);
 				}
-				d.skillId = pk.ReadInt64(); d.tarInfo1 = pk.ReadInt64(); d.tarInfo2 = pk.ReadInt64();
-				m.data = std::move(d); break;
+				d.skillId = pk.ReadInt64();
+				d.tarInfo1 = pk.ReadInt64();
+				d.tarInfo2 = pk.ReadInt64();
+				m.data = std::move(d);
+				break;
 			}
-			case ActionType::STOP_STATE: { CmActionStopStateData d; d.stateId = pk.ReadInt64(); m.data = d; break; }
+			case ActionType::STOP_STATE: {
+				CmActionStopStateData d;
+				d.stateId = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
 			case ActionType::LEAN: {
 				CmActionLeanData d;
-				d.pose = pk.ReadInt64(); d.angle = pk.ReadInt64(); d.posX = pk.ReadInt64(); d.posY = pk.ReadInt64(); d.height = pk.ReadInt64();
-				m.data = d; break;
+				d.pose = pk.ReadInt64();
+				d.angle = pk.ReadInt64();
+				d.posX = pk.ReadInt64();
+				d.posY = pk.ReadInt64();
+				d.height = pk.ReadInt64();
+				m.data = d;
+				break;
 			}
-			case ActionType::ITEM_PICK: { CmActionItemPickData d; d.worldId = pk.ReadInt64(); d.handle = pk.ReadInt64(); m.data = d; break; }
+			case ActionType::ITEM_PICK: {
+				CmActionItemPickData d;
+				d.worldId = pk.ReadInt64();
+				d.handle = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
 			case ActionType::ITEM_THROW: {
 				CmActionItemThrowData d;
-				d.gridId = pk.ReadInt64(); d.num = pk.ReadInt64(); d.posX = pk.ReadInt64(); d.posY = pk.ReadInt64();
-				m.data = d; break;
+				d.gridId = pk.ReadInt64();
+				d.num = pk.ReadInt64();
+				d.posX = pk.ReadInt64();
+				d.posY = pk.ReadInt64();
+				m.data = d;
+				break;
 			}
-			case ActionType::ITEM_USE: { CmActionItemUseData d; d.fromGridId = pk.ReadInt64(); d.toGridId = pk.ReadInt64(); m.data = d; break; }
+			case ActionType::ITEM_USE: {
+				CmActionItemUseData d;
+				d.fromGridId = pk.ReadInt64();
+				d.toGridId = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
 			case ActionType::ITEM_UNFIX: {
 				CmActionItemUnfixData d;
-				d.linkId = pk.ReadInt64(); d.gridId = pk.ReadInt64();
-				if (d.gridId == -2) { d.param1 = pk.ReadInt64(); d.param2 = pk.ReadInt64(); }
-				m.data = d; break;
+				d.linkId = pk.ReadInt64();
+				d.gridId = pk.ReadInt64();
+				if (d.gridId == -2) {
+					d.param1 = pk.ReadInt64();
+					d.param2 = pk.ReadInt64();
+				}
+				m.data = d;
+				break;
 			}
-			case ActionType::ITEM_POS: case ActionType::KITBAGTMP_DRAG: {
-				CmActionItemPosData d; d.srcGrid = pk.ReadInt64(); d.srcNum = pk.ReadInt64(); d.tarGrid = pk.ReadInt64(); m.data = d; break;
+			case ActionType::ITEM_POS:
+			case ActionType::KITBAGTMP_DRAG: {
+				CmActionItemPosData d;
+				d.srcGrid = pk.ReadInt64();
+				d.srcNum = pk.ReadInt64();
+				d.tarGrid = pk.ReadInt64();
+				m.data = d;
+				break;
 			}
-			case ActionType::ITEM_DELETE: { CmActionItemDeleteData d; d.fromGridId = pk.ReadInt64(); m.data = d; break; }
-			case ActionType::ITEM_INFO: { CmActionViewItemData d; d.viewType = pk.ReadInt64(); d.param = pk.ReadInt64(); m.data = d; break; }
+			case ActionType::ITEM_DELETE: {
+				CmActionItemDeleteData d;
+				d.fromGridId = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
+			case ActionType::ITEM_INFO: {
+				CmActionViewItemData d;
+				d.viewType = pk.ReadInt64();
+				d.param = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
 			case ActionType::BANK: {
 				CmActionBankData d;
-				d.srcType = pk.ReadInt64(); d.srcGrid = pk.ReadInt64(); d.srcNum = pk.ReadInt64(); d.tarType = pk.ReadInt64(); d.tarGrid = pk.ReadInt64();
-				m.data = d; break;
+				d.srcType = pk.ReadInt64();
+				d.srcGrid = pk.ReadInt64();
+				d.srcNum = pk.ReadInt64();
+				d.tarType = pk.ReadInt64();
+				d.tarGrid = pk.ReadInt64();
+				m.data = d;
+				break;
 			}
-			case ActionType::REQUESTGUILDLOGS: { CmActionRequestGuildLogsData d; d.curSize = pk.ReadInt64(); m.data = d; break; }
-			case ActionType::SHORTCUT: { CmActionShortcutData d; d.index = pk.ReadInt64(); d.type = pk.ReadInt64(); d.grid = pk.ReadInt64(); m.data = d; break; }
-			case ActionType::TEMP: { CmActionTempData d; d.itemId = pk.ReadInt64(); d.partId = pk.ReadInt64(); m.data = d; break; }
-			case ActionType::EVENT: { CmActionEventData d; d.worldId = pk.ReadInt64(); d.handle = pk.ReadInt64(); d.eventId = pk.ReadInt64(); m.data = d; break; }
-			case ActionType::FACE: case ActionType::SKILL_POSE: { CmActionFaceData d; d.angle = pk.ReadInt64(); d.pose = pk.ReadInt64(); m.data = d; break; }
-			case ActionType::PK_CTRL: { CmActionPkCtrlData d; d.ctrl = pk.ReadInt64(); m.data = d; break; }
+			case ActionType::REQUESTGUILDLOGS: {
+				CmActionRequestGuildLogsData d;
+				d.curSize = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
+			case ActionType::SHORTCUT: {
+				CmActionShortcutData d;
+				d.index = pk.ReadInt64();
+				d.type = pk.ReadInt64();
+				d.grid = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
+			case ActionType::TEMP: {
+				CmActionTempData d;
+				d.itemId = pk.ReadInt64();
+				d.partId = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
+			case ActionType::EVENT: {
+				CmActionEventData d;
+				d.worldId = pk.ReadInt64();
+				d.handle = pk.ReadInt64();
+				d.eventId = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
+			case ActionType::FACE:
+			case ActionType::SKILL_POSE: {
+				CmActionFaceData d;
+				d.angle = pk.ReadInt64();
+				d.pose = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
+			case ActionType::PK_CTRL: {
+				CmActionPkCtrlData d;
+				d.ctrl = pk.ReadInt64();
+				m.data = d;
+				break;
+			}
 			default: break;
 			}
 		}
 
-		//  Deserialize:  MC 
+		//  Deserialize:  MC
 
-		inline void deserialize(RPacket& pk, McGuildTryForCfmMessage& m) { m.name = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McGuildMottoMessage& m) { m.motto = pk.ReadString(); }
-		inline void deserialize(RPacket& pk, McGuildInfoMessage& m) { m.charId = pk.ReadInt64(); m.guildId = pk.ReadInt64(); m.guildName = pk.ReadString(); m.guildMotto = pk.ReadString(); m.guildPermission = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, McGuildTryForCfmMessage& m) {
+			m.name = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McGuildMottoMessage& m) {
+			m.motto = pk.ReadString();
+		}
+
+		inline void deserialize(RPacket& pk, McGuildInfoMessage& m) {
+			m.charId = pk.ReadInt64();
+			m.guildId = pk.ReadInt64();
+			m.guildName = pk.ReadString();
+			m.guildMotto = pk.ReadString();
+			m.guildPermission = pk.ReadInt64();
+		}
+
 		inline void deserialize(RPacket& pk, McGuildListChallMessage& m) {
 			m.isLeader = pk.ReadInt64();
 			for (int i = 0; i < 3; ++i) {
@@ -7346,14 +10974,19 @@ namespace net {
 			}
 		}
 
-		//  Deserialize: , ,  (count-first) 
+		//  Deserialize: , ,  (count-first)
 
 		inline void deserialize(RPacket& pk, McListAuctionMessage& m) {
 			auto count = pk.ReadInt64();
 			m.items.resize(static_cast<size_t>(count));
 			for (auto& e : m.items) {
-				e.itemId = pk.ReadInt64(); e.name = pk.ReadString(); e.curChaName = pk.ReadString();
-				e.itemCount = pk.ReadInt64(); e.basePrice = pk.ReadInt64(); e.minBid = pk.ReadInt64(); e.curPrice = pk.ReadInt64();
+				e.itemId = pk.ReadInt64();
+				e.name = pk.ReadString();
+				e.curChaName = pk.ReadString();
+				e.itemCount = pk.ReadInt64();
+				e.basePrice = pk.ReadInt64();
+				e.minBid = pk.ReadInt64();
+				e.curPrice = pk.ReadInt64();
 			}
 		}
 
@@ -7361,56 +10994,79 @@ namespace net {
 			auto count = pk.ReadInt64();
 			m.entries.resize(static_cast<size_t>(count));
 			for (auto& e : m.entries) {
-				e.guildId = pk.ReadInt64(); e.guildName = pk.ReadString(); e.motto = pk.ReadString();
-				e.leaderName = pk.ReadString(); e.memberCount = pk.ReadInt64(); e.exp = pk.ReadInt64();
+				e.guildId = pk.ReadInt64();
+				e.guildName = pk.ReadString();
+				e.motto = pk.ReadString();
+				e.leaderName = pk.ReadString();
+				e.memberCount = pk.ReadInt64();
+				e.exp = pk.ReadInt64();
 			}
 		}
 
 		inline void deserialize(RPacket& pk, McGuildListTryPlayerMessage& m) {
-			m.guildId = pk.ReadInt64(); m.guildName = pk.ReadString(); m.motto = pk.ReadString();
-			m.leaderName = pk.ReadString(); m.memberTotal = pk.ReadInt64(); m.maxMembers = pk.ReadInt64();
-			m.exp = pk.ReadInt64(); m.reserved = pk.ReadInt64(); m.level = pk.ReadInt64();
+			m.guildId = pk.ReadInt64();
+			m.guildName = pk.ReadString();
+			m.motto = pk.ReadString();
+			m.leaderName = pk.ReadString();
+			m.memberTotal = pk.ReadInt64();
+			m.maxMembers = pk.ReadInt64();
+			m.exp = pk.ReadInt64();
+			m.reserved = pk.ReadInt64();
+			m.level = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.players.resize(static_cast<size_t>(count));
 			for (auto& p : m.players) {
-				p.chaId = pk.ReadInt64(); p.name = pk.ReadString(); p.job = pk.ReadString(); p.degree = pk.ReadInt64();
+				p.chaId = pk.ReadInt64();
+				p.name = pk.ReadString();
+				p.job = pk.ReadString();
+				p.degree = pk.ReadInt64();
 			}
 		}
 
 		inline void deserialize(RPacket& pk, McTeamFightAskMessage& m) {
-			m.srcCount = pk.ReadInt64(); m.tarCount = pk.ReadInt64();
+			m.srcCount = pk.ReadInt64();
+			m.tarCount = pk.ReadInt64();
 			m.players.resize(static_cast<size_t>(m.srcCount + m.tarCount));
 			for (auto& p : m.players) {
-				p.name = pk.ReadString(); p.lv = pk.ReadInt64(); p.job = pk.ReadString();
-				p.fightNum = pk.ReadInt64(); p.victoryNum = pk.ReadInt64();
+				p.name = pk.ReadString();
+				p.lv = pk.ReadInt64();
+				p.job = pk.ReadString();
+				p.fightNum = pk.ReadInt64();
+				p.victoryNum = pk.ReadInt64();
 			}
 		}
 
-		//  Serialize:  3 
+		//  Serialize:  3
 
 		inline WPacket serialize(const McSynAttributeMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_SYNATTR);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_SYNATTR);
 			w.WriteInt64(m.worldId);
 			serializeChaAttrInfo(w, m.attr);
 			return w;
 		}
 
 		inline WPacket serialize(const McSynSkillStateMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_SYNASKILLSTATE);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_SYNASKILLSTATE);
 			w.WriteInt64(m.worldId);
 			serializeChaSkillStateInfo(w, m.skillState);
 			return w;
 		}
 
 		inline WPacket serialize(const McAStateEndSeeMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MC_ASTATEENDSEE);
-			w.WriteInt64(m.areaX); w.WriteInt64(m.areaY);
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_ASTATEENDSEE);
+			w.WriteInt64(m.areaX);
+			w.WriteInt64(m.areaY);
 			return w;
 		}
 
 		inline WPacket serialize(const McAStateBeginSeeMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MC_ASTATEBEGINSEE);
-			w.WriteInt64(m.areaX); w.WriteInt64(m.areaY);
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_ASTATEBEGINSEE);
+			w.WriteInt64(m.areaX);
+			w.WriteInt64(m.areaY);
 			w.WriteInt64(static_cast<int64_t>(m.states.size()));
 			for (auto& s : m.states) {
 				w.WriteInt64(s.stateId);
@@ -7424,42 +11080,64 @@ namespace net {
 		}
 
 		inline WPacket serialize(const McDelItemChaMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MC_DEL_ITEM_CHA);
-			w.WriteInt64(m.mainChaId); w.WriteInt64(m.worldId); return w;
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_DEL_ITEM_CHA);
+			w.WriteInt64(m.mainChaId);
+			w.WriteInt64(m.worldId);
+			return w;
 		}
 
 		inline WPacket serialize(const McSynEventInfoMessage& m) {
-			WPacket w(64); w.WriteCmd(CMD_MC_EVENT_INFO);
-			w.WriteInt64(m.entityId); w.WriteInt64(m.entityType);
-			w.WriteInt64(m.eventId); w.WriteString(m.eventName); return w;
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_EVENT_INFO);
+			w.WriteInt64(m.entityId);
+			w.WriteInt64(m.entityType);
+			w.WriteInt64(m.eventId);
+			w.WriteString(m.eventName);
+			return w;
 		}
 
 		inline WPacket serialize(const McSynSideInfoMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MC_SIDE_INFO);
-			w.WriteInt64(m.worldId); w.WriteInt64(m.side.sideId); return w;
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_SIDE_INFO);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.side.sideId);
+			return w;
 		}
 
 		inline WPacket serialize(const McItemCreateMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_ITEMBEGINSEE);
-			w.WriteInt64(m.worldId); w.WriteInt64(m.handle); w.WriteInt64(m.itemId);
-			w.WriteInt64(m.posX); w.WriteInt64(m.posY); w.WriteInt64(m.angle);
-			w.WriteInt64(m.num); w.WriteInt64(m.appeType); w.WriteInt64(m.fromId);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_ITEMBEGINSEE);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.handle);
+			w.WriteInt64(m.itemId);
+			w.WriteInt64(m.posX);
+			w.WriteInt64(m.posY);
+			w.WriteInt64(m.angle);
+			w.WriteInt64(m.num);
+			w.WriteInt64(m.appeType);
+			w.WriteInt64(m.fromId);
 			serializeChaEventInfo(w, m.event);
 			return w;
 		}
 
 		inline WPacket serialize(const McSynSkillBagMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_SYNSKILLBAG);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_SYNSKILLBAG);
 			w.WriteInt64(m.worldId);
 			serializeChaSkillBagInfo(w, m.skillBag);
 			return w;
 		}
 
 		inline WPacket serialize(const McMissionInfoMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_MISSION);
-			w.WriteInt64(m.npcId); w.WriteInt64(m.listType);
-			w.WriteInt64(m.prev); w.WriteInt64(m.next);
-			w.WriteInt64(m.prevCmd); w.WriteInt64(m.nextCmd);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_MISSION);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.listType);
+			w.WriteInt64(m.prev);
+			w.WriteInt64(m.next);
+			w.WriteInt64(m.prevCmd);
+			w.WriteInt64(m.nextCmd);
 			w.WriteInt64(static_cast<int64_t>(m.items.size()));
 			for (auto& item : m.items) w.WriteString(item);
 			return w;
@@ -7474,7 +11152,8 @@ namespace net {
 					w.WriteInt64(n.param1);
 					w.WriteInt64(n.param2);
 					w.WriteInt64(n.param3);
-				} else if (n.needType == MIS_NEED_DESP) {
+				}
+				else if (n.needType == MIS_NEED_DESP) {
 					w.WriteString(n.desp);
 				}
 			}
@@ -7491,8 +11170,11 @@ namespace net {
 		}
 
 		inline WPacket serialize(const McMisPageMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_MISPAGE);
-			w.WriteInt64(m.cmd); w.WriteInt64(m.npcId); w.WriteString(m.name);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_MISPAGE);
+			w.WriteInt64(m.cmd);
+			w.WriteInt64(m.npcId);
+			w.WriteString(m.name);
 			serializeMisNeeds(w, m.needs);
 			w.WriteInt64(m.prizeSelType);
 			serializeMisPrizes(w, m.prizes);
@@ -7501,15 +11183,21 @@ namespace net {
 		}
 
 		inline WPacket serialize(const McMisLogMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_MISLOG);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_MISLOG);
 			w.WriteInt64(static_cast<int64_t>(m.logs.size()));
-			for (auto& l : m.logs) { w.WriteInt64(l.misId); w.WriteInt64(l.state); }
+			for (auto& l : m.logs) {
+				w.WriteInt64(l.misId);
+				w.WriteInt64(l.state);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McMisLogInfoMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_MISLOGINFO);
-			w.WriteInt64(m.misId); w.WriteString(m.name);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_MISLOGINFO);
+			w.WriteInt64(m.misId);
+			w.WriteString(m.name);
 			serializeMisNeeds(w, m.needs);
 			w.WriteInt64(m.prizeSelType);
 			serializeMisPrizes(w, m.prizes);
@@ -7518,169 +11206,293 @@ namespace net {
 		}
 
 		inline WPacket serialize(const McMisLogClearMcMessage& m) {
-			WPacket w(16); w.WriteCmd(CMD_MC_MISLOG_CLEAR);
-			w.WriteInt64(m.missionId); return w;
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_MISLOG_CLEAR);
+			w.WriteInt64(m.missionId);
+			return w;
 		}
 
 		inline WPacket serialize(const McMisLogAddMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MC_MISLOG_ADD);
-			w.WriteInt64(m.missionId); w.WriteInt64(m.state); return w;
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_MISLOG_ADD);
+			w.WriteInt64(m.missionId);
+			w.WriteInt64(m.state);
+			return w;
 		}
 
 		inline WPacket serialize(const McMisLogStateMessage& m) {
-			WPacket w(32); w.WriteCmd(CMD_MC_MISLOG_CHANGE);
-			w.WriteInt64(m.index); w.WriteInt64(m.missionId); w.WriteInt64(m.state); return w;
+			WPacket w(32);
+			w.WriteCmd(CMD_MC_MISLOG_CHANGE);
+			w.WriteInt64(m.index);
+			w.WriteInt64(m.missionId);
+			w.WriteInt64(m.state);
+			return w;
 		}
 
 		inline WPacket serialize(const McFuncInfoMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_FUNCPAGE);
-			w.WriteInt64(m.npcId); w.WriteInt64(m.page); w.WriteString(m.talkText);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_FUNCPAGE);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.page);
+			w.WriteString(m.talkText);
 			w.WriteInt64(static_cast<int64_t>(m.funcItems.size()));
 			for (auto& f : m.funcItems) w.WriteString(f.name);
 			w.WriteInt64(static_cast<int64_t>(m.missionItems.size()));
-			for (auto& mi : m.missionItems) { w.WriteString(mi.name); w.WriteInt64(mi.state); }
+			for (auto& mi : m.missionItems) {
+				w.WriteString(mi.name);
+				w.WriteInt64(mi.state);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McVolunteerListMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_VOLUNTER_LIST);
-			w.WriteInt64(m.pageTotal); w.WriteInt64(m.page);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_VOLUNTER_LIST);
+			w.WriteInt64(m.pageTotal);
+			w.WriteInt64(m.page);
 			w.WriteInt64(static_cast<int64_t>(m.volunteers.size()));
-			for (auto& v : m.volunteers) { w.WriteString(v.name); w.WriteInt64(v.level); w.WriteInt64(v.job); w.WriteString(v.map); }
+			for (auto& v : m.volunteers) {
+				w.WriteString(v.name);
+				w.WriteInt64(v.level);
+				w.WriteInt64(v.job);
+				w.WriteString(v.map);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McVolunteerOpenMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_VOLUNTER_OPEN);
-			w.WriteInt64(m.state); w.WriteInt64(m.pageTotal);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_VOLUNTER_OPEN);
+			w.WriteInt64(m.state);
+			w.WriteInt64(m.pageTotal);
 			w.WriteInt64(static_cast<int64_t>(m.volunteers.size()));
-			for (auto& v : m.volunteers) { w.WriteString(v.name); w.WriteInt64(v.level); w.WriteInt64(v.job); w.WriteString(v.map); }
+			for (auto& v : m.volunteers) {
+				w.WriteString(v.name);
+				w.WriteInt64(v.level);
+				w.WriteInt64(v.job);
+				w.WriteString(v.map);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McShowStallSearchMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_STALLSEARCH);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_STALLSEARCH);
 			w.WriteInt64(static_cast<int64_t>(m.entries.size()));
-			for (auto& e : m.entries) { w.WriteString(e.name); w.WriteString(e.stallName); w.WriteString(e.location); w.WriteInt64(e.count); w.WriteInt64(e.cost); }
+			for (auto& e : m.entries) {
+				w.WriteString(e.name);
+				w.WriteString(e.stallName);
+				w.WriteString(e.location);
+				w.WriteInt64(e.count);
+				w.WriteInt64(e.cost);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McShowRankingMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_RANK);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_RANK);
 			w.WriteInt64(static_cast<int64_t>(m.entries.size()));
-			for (auto& e : m.entries) { w.WriteString(e.name); w.WriteString(e.guild); w.WriteInt64(e.level); w.WriteInt64(e.job); w.WriteInt64(e.score); }
+			for (auto& e : m.entries) {
+				w.WriteString(e.name);
+				w.WriteString(e.guild);
+				w.WriteInt64(e.level);
+				w.WriteInt64(e.job);
+				w.WriteInt64(e.score);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McEspeItemMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MC_ESPE_ITEM);
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_ESPE_ITEM);
 			w.WriteInt64(m.worldId);
 			w.WriteInt64(static_cast<int64_t>(m.items.size()));
-			for (auto& i : m.items) { w.WriteInt64(i.position); w.WriteInt64(i.endure); w.WriteInt64(i.energy); w.WriteInt64(i.tradable); w.WriteInt64(i.expiration); }
+			for (auto& i : m.items) {
+				w.WriteInt64(i.position);
+				w.WriteInt64(i.endure);
+				w.WriteInt64(i.energy);
+				w.WriteInt64(i.tradable);
+				w.WriteInt64(i.expiration);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McBlackMarketExchangeDataMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MC_BLACKMARKET_EXCHANGEDATA);
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_BLACKMARKET_EXCHANGEDATA);
 			w.WriteInt64(m.npcId);
 			w.WriteInt64(static_cast<int64_t>(m.exchanges.size()));
-			for (auto& e : m.exchanges) { w.WriteInt64(e.srcId); w.WriteInt64(e.srcCount); w.WriteInt64(e.tarId); w.WriteInt64(e.tarCount); w.WriteInt64(e.timeValue); }
+			for (auto& e : m.exchanges) {
+				w.WriteInt64(e.srcId);
+				w.WriteInt64(e.srcCount);
+				w.WriteInt64(e.tarId);
+				w.WriteInt64(e.tarCount);
+				w.WriteInt64(e.timeValue);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McExchangeDataMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MC_EXCHANGEDATA);
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_EXCHANGEDATA);
 			w.WriteInt64(m.npcId);
 			w.WriteInt64(static_cast<int64_t>(m.exchanges.size()));
-			for (auto& e : m.exchanges) { w.WriteInt64(e.srcId); w.WriteInt64(e.srcCount); w.WriteInt64(e.tarId); w.WriteInt64(e.tarCount); }
+			for (auto& e : m.exchanges) {
+				w.WriteInt64(e.srcId);
+				w.WriteInt64(e.srcCount);
+				w.WriteInt64(e.tarId);
+				w.WriteInt64(e.tarCount);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McBlackMarketExchangeUpdateMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MC_BLACKMARKET_EXCHANGEUPDATE);
+			WPacket w(128);
+			w.WriteCmd(CMD_MC_BLACKMARKET_EXCHANGEUPDATE);
 			w.WriteInt64(m.npcId);
 			w.WriteInt64(static_cast<int64_t>(m.exchanges.size()));
-			for (auto& e : m.exchanges) { w.WriteInt64(e.srcId); w.WriteInt64(e.srcCount); w.WriteInt64(e.tarId); w.WriteInt64(e.tarCount); w.WriteInt64(e.timeValue); }
+			for (auto& e : m.exchanges) {
+				w.WriteInt64(e.srcId);
+				w.WriteInt64(e.srcCount);
+				w.WriteInt64(e.tarId);
+				w.WriteInt64(e.tarCount);
+				w.WriteInt64(e.timeValue);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McBlackMarketExchangeAsrMessage& m) {
-			WPacket w(48); w.WriteCmd(CMD_MC_BLACKMARKET_EXCHANGE_ASR);
-			w.WriteInt64(m.success); w.WriteInt64(m.srcId); w.WriteInt64(m.srcCount); w.WriteInt64(m.tarId); w.WriteInt64(m.tarCount);
+			WPacket w(48);
+			w.WriteCmd(CMD_MC_BLACKMARKET_EXCHANGE_ASR);
+			w.WriteInt64(m.success);
+			w.WriteInt64(m.srcId);
+			w.WriteInt64(m.srcCount);
+			w.WriteInt64(m.tarId);
+			w.WriteInt64(m.tarCount);
 			return w;
 		}
 
-		//  MC   NPC ( ) 
+		//  MC   NPC ( )
 
 		inline WPacket serialize(const McTradeAllDataMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_TRADE_ALLDATA);
-			w.WriteInt64(m.npcId); w.WriteInt64(m.tradeType); w.WriteInt64(m.param);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_TRADE_ALLDATA);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.tradeType);
+			w.WriteInt64(m.param);
 			w.WriteInt64(static_cast<int64_t>(m.pages.size()));
 			for (auto& page : m.pages) {
 				w.WriteInt64(page.itemType);
 				w.WriteInt64(static_cast<int64_t>(page.items.size()));
-				for (auto& item : page.items) { w.WriteInt64(item.itemId); }
+				for (auto& item : page.items) {
+					w.WriteInt64(item.itemId);
+				}
 				//  TRADE_GOODS (type==1)  .  count/price/level
 				if (m.tradeType == 1) {
-					for (auto& item : page.items) { w.WriteInt64(item.count); w.WriteInt64(item.price); w.WriteInt64(item.level); }
+					for (auto& item : page.items) {
+						w.WriteInt64(item.count);
+						w.WriteInt64(item.price);
+						w.WriteInt64(item.level);
+					}
 				}
 			}
 			return w;
 		}
 
-		//  MC   (Store) 
+		//  MC   (Store)
 
 		inline WPacket serialize(const McStoreOpenAnswerMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_STORE_OPEN_ASR);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_STORE_OPEN_ASR);
 			w.WriteInt64(m.isValid ? 1 : 0);
 			if (m.isValid) {
-				w.WriteInt64(m.vip); w.WriteInt64(m.moBean); w.WriteInt64(m.replMoney);
+				w.WriteInt64(m.vip);
+				w.WriteInt64(m.moBean);
+				w.WriteInt64(m.replMoney);
 				w.WriteInt64(static_cast<int64_t>(m.affiches.size()));
-				for (auto& a : m.affiches) { w.WriteInt64(a.afficheId); w.WriteString(a.title); w.WriteString(a.comId); }
+				for (auto& a : m.affiches) {
+					w.WriteInt64(a.afficheId);
+					w.WriteString(a.title);
+					w.WriteString(a.comId);
+				}
 				w.WriteInt64(static_cast<int64_t>(m.classes.size()));
-				for (auto& c : m.classes) { w.WriteInt64(c.classId); w.WriteString(c.className); w.WriteInt64(c.parentId); }
+				for (auto& c : m.classes) {
+					w.WriteInt64(c.classId);
+					w.WriteString(c.className);
+					w.WriteInt64(c.parentId);
+				}
 			}
 			return w;
 		}
 
 		inline WPacket serialize(const McStoreListAnswerMessage& m) {
-			WPacket w(1024); w.WriteCmd(CMD_MC_STORE_LIST_ASR);
-			w.WriteInt64(m.pageTotal); w.WriteInt64(m.pageCurrent);
+			WPacket w(1024);
+			w.WriteCmd(CMD_MC_STORE_LIST_ASR);
+			w.WriteInt64(m.pageTotal);
+			w.WriteInt64(m.pageCurrent);
 			w.WriteInt64(static_cast<int64_t>(m.products.size()));
 			for (auto& p : m.products) {
-				w.WriteInt64(p.comId); w.WriteString(p.comName); w.WriteInt64(p.price);
-				w.WriteString(p.remark); w.WriteInt64(p.isHot ? 1 : 0);
-				w.WriteInt64(p.time); w.WriteInt64(p.quantity); w.WriteInt64(p.expire);
+				w.WriteInt64(p.comId);
+				w.WriteString(p.comName);
+				w.WriteInt64(p.price);
+				w.WriteString(p.remark);
+				w.WriteInt64(p.isHot ? 1 : 0);
+				w.WriteInt64(p.time);
+				w.WriteInt64(p.quantity);
+				w.WriteInt64(p.expire);
 				w.WriteInt64(static_cast<int64_t>(p.variants.size()));
 				//      ( 5   )
 				for (auto& v : p.variants) {
-					w.WriteInt64(v.itemId); w.WriteInt64(v.itemNum); w.WriteInt64(v.flute);
-					for (int i = 0; i < 5; ++i) { w.WriteInt64(v.attrs[i].attrId); w.WriteInt64(v.attrs[i].attrVal); }
+					w.WriteInt64(v.itemId);
+					w.WriteInt64(v.itemNum);
+					w.WriteInt64(v.flute);
+					for (int i = 0; i < 5; ++i) {
+						w.WriteInt64(v.attrs[i].attrId);
+						w.WriteInt64(v.attrs[i].attrVal);
+					}
 				}
 			}
 			return w;
 		}
 
 		inline WPacket serialize(const McStoreHistoryMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_STORE_QUERY);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_STORE_QUERY);
 			w.WriteInt64(static_cast<int64_t>(m.records.size()));
-			for (auto& r : m.records) { w.WriteString(r.time); w.WriteInt64(r.itemId); w.WriteString(r.name); w.WriteInt64(r.money); }
+			for (auto& r : m.records) {
+				w.WriteString(r.time);
+				w.WriteInt64(r.itemId);
+				w.WriteString(r.name);
+				w.WriteInt64(r.money);
+			}
 			return w;
 		}
 
 		inline WPacket serialize(const McStoreVipMessage& m) {
-			WPacket w(48); w.WriteCmd(CMD_MC_STORE_VIP);
+			WPacket w(48);
+			w.WriteCmd(CMD_MC_STORE_VIP);
 			w.WriteInt64(m.success);
-			if (m.success != 0) { w.WriteInt64(m.vipId); w.WriteInt64(m.months); w.WriteInt64(m.shuijing); w.WriteInt64(m.modou); }
+			if (m.success != 0) {
+				w.WriteInt64(m.vipId);
+				w.WriteInt64(m.months);
+				w.WriteInt64(m.shuijing);
+				w.WriteInt64(m.modou);
+			}
 			return w;
 		}
 
-		//  MC    () 
+		//  MC    ()
 
 		inline WPacket serialize(const McSynTeamMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_TEAM);
-			w.WriteInt64(m.memberId); w.WriteInt64(m.hp); w.WriteInt64(m.maxHP);
-			w.WriteInt64(m.sp); w.WriteInt64(m.maxSP); w.WriteInt64(m.level);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_TEAM);
+			w.WriteInt64(m.memberId);
+			w.WriteInt64(m.hp);
+			w.WriteInt64(m.maxHP);
+			w.WriteInt64(m.sp);
+			w.WriteInt64(m.maxSP);
+			w.WriteInt64(m.level);
 			serializeChaLookInfo(w, m.look);
 			return w;
 		}
@@ -7697,12 +11509,18 @@ namespace net {
 			std::visit([&w](auto&& arg) {
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr (std::is_same_v<T, LeanInfo>) {
-					w.WriteInt64(arg.leanState); w.WriteInt64(arg.pose); w.WriteInt64(arg.angle);
-					w.WriteInt64(arg.posX); w.WriteInt64(arg.posY); w.WriteInt64(arg.height);
-				} else if constexpr (std::is_same_v<T, SeatInfo>) {
-					w.WriteInt64(arg.seatAngle); w.WriteInt64(arg.seatPose);
+					w.WriteInt64(arg.leanState);
+					w.WriteInt64(arg.pose);
+					w.WriteInt64(arg.angle);
+					w.WriteInt64(arg.posX);
+					w.WriteInt64(arg.posY);
+					w.WriteInt64(arg.height);
 				}
-				// std::monostate    
+				else if constexpr (std::is_same_v<T, SeatInfo>) {
+					w.WriteInt64(arg.seatAngle);
+					w.WriteInt64(arg.seatPose);
+				}
+				// std::monostate
 			}, m.pose);
 			serializeChaAttrInfo(w, m.attr);
 			serializeChaSkillStateInfo(w, m.skillState);
@@ -7720,7 +11538,7 @@ namespace net {
 			return w;
 		}
 
-		//  McCharacterAction (CMD_MC_NOTIACTION)  Serialize 
+		//  McCharacterAction (CMD_MC_NOTIACTION)  Serialize
 
 		///    MOVE.
 		inline void serializeActionMove(WPacket& w, const ActionMoveData& d) {
@@ -7732,71 +11550,105 @@ namespace net {
 
 		///    SKILL_SRC.
 		inline void serializeActionSkillSrc(WPacket& w, const ActionSkillSrcData& d) {
-			w.WriteInt64(d.fightId); w.WriteInt64(d.angle); w.WriteInt64(d.state);
+			w.WriteInt64(d.fightId);
+			w.WriteInt64(d.angle);
+			w.WriteInt64(d.state);
 			if (d.state != FSTATE_ON)
 				w.WriteInt64(d.stopState);
-			w.WriteInt64(d.skillId); w.WriteInt64(d.skillSpeed);
+			w.WriteInt64(d.skillId);
+			w.WriteInt64(d.skillSpeed);
 			w.WriteInt64(d.targetType);
 			if (d.targetType == 1) {
-				w.WriteInt64(d.targetId); w.WriteInt64(d.targetX); w.WriteInt64(d.targetY);
-			} else if (d.targetType == 2) {
-				w.WriteInt64(d.targetX); w.WriteInt64(d.targetY);
+				w.WriteInt64(d.targetId);
+				w.WriteInt64(d.targetX);
+				w.WriteInt64(d.targetY);
+			}
+			else if (d.targetType == 2) {
+				w.WriteInt64(d.targetX);
+				w.WriteInt64(d.targetY);
 			}
 			w.WriteInt64(d.execTime);
-			//  
+			//
 			w.WriteInt64(static_cast<int64_t>(d.effects.size()));
-			for (const auto& e : d.effects) { w.WriteInt64(e.attrId); w.WriteInt64(e.attrVal); }
-			//  
+			for (const auto& e : d.effects) {
+				w.WriteInt64(e.attrId);
+				w.WriteInt64(e.attrVal);
+			}
+			//
 			w.WriteInt64(static_cast<int64_t>(d.states.size()));
-			for (const auto& s : d.states) { w.WriteInt64(s.stateId); w.WriteInt64(s.stateLv); }
+			for (const auto& s : d.states) {
+				w.WriteInt64(s.stateId);
+				w.WriteInt64(s.stateLv);
+			}
 		}
 
 		///    SKILL_TAR.
 		inline void serializeActionSkillTar(WPacket& w, const ActionSkillTarData& d) {
-			w.WriteInt64(d.fightId); w.WriteInt64(d.state);
+			w.WriteInt64(d.fightId);
+			w.WriteInt64(d.state);
 			w.WriteInt64(d.doubleAttack ? 1 : 0);
 			w.WriteInt64(d.miss ? 1 : 0);
 			w.WriteInt64(d.beatBack ? 1 : 0);
-			if (d.beatBack) { w.WriteInt64(d.beatBackX); w.WriteInt64(d.beatBackY); }
-			w.WriteInt64(d.srcId); w.WriteInt64(d.srcPosX); w.WriteInt64(d.srcPosY);
-			w.WriteInt64(d.skillId); w.WriteInt64(d.skillTargetX); w.WriteInt64(d.skillTargetY);
+			if (d.beatBack) {
+				w.WriteInt64(d.beatBackX);
+				w.WriteInt64(d.beatBackY);
+			}
+			w.WriteInt64(d.srcId);
+			w.WriteInt64(d.srcPosX);
+			w.WriteInt64(d.srcPosY);
+			w.WriteInt64(d.skillId);
+			w.WriteInt64(d.skillTargetX);
+			w.WriteInt64(d.skillTargetY);
 			w.WriteInt64(d.execTime);
 			//  : synType + count + entries
 			w.WriteInt64(d.synType);
 			w.WriteInt64(static_cast<int64_t>(d.effects.size()));
-			for (const auto& e : d.effects) { w.WriteInt64(e.attrId); w.WriteInt64(e.attrVal); }
-			//  
+			for (const auto& e : d.effects) {
+				w.WriteInt64(e.attrId);
+				w.WriteInt64(e.attrVal);
+			}
+			//
 			if (d.hasStates) {
 				w.WriteInt64(1);
 				w.WriteInt64(d.stateTime);
 				w.WriteInt64(static_cast<int64_t>(d.states.size()));
 				for (const auto& s : d.states) {
-					w.WriteInt64(s.stateId); w.WriteInt64(s.stateLv);
-					w.WriteInt64(s.duration); w.WriteInt64(s.startTime);
+					w.WriteInt64(s.stateId);
+					w.WriteInt64(s.stateLv);
+					w.WriteInt64(s.duration);
+					w.WriteInt64(s.startTime);
 				}
-			} else {
+			}
+			else {
 				w.WriteInt64(0);
 			}
-			//  
+			//
 			if (d.hasSrcEffect) {
 				w.WriteInt64(1);
 				w.WriteInt64(d.srcState);
 				w.WriteInt64(d.srcSynType);
 				w.WriteInt64(static_cast<int64_t>(d.srcEffects.size()));
-				for (const auto& e : d.srcEffects) { w.WriteInt64(e.attrId); w.WriteInt64(e.attrVal); }
-				//  
+				for (const auto& e : d.srcEffects) {
+					w.WriteInt64(e.attrId);
+					w.WriteInt64(e.attrVal);
+				}
+				//
 				if (d.srcHasStates) {
 					w.WriteInt64(1);
 					w.WriteInt64(d.srcStateTime);
 					w.WriteInt64(static_cast<int64_t>(d.srcStates.size()));
 					for (const auto& s : d.srcStates) {
-						w.WriteInt64(s.stateId); w.WriteInt64(s.stateLv);
-						w.WriteInt64(s.duration); w.WriteInt64(s.startTime);
+						w.WriteInt64(s.stateId);
+						w.WriteInt64(s.stateLv);
+						w.WriteInt64(s.duration);
+						w.WriteInt64(s.startTime);
 					}
-				} else {
+				}
+				else {
 					w.WriteInt64(0);
 				}
-			} else {
+			}
+			else {
 				w.WriteInt64(0);
 			}
 		}
@@ -7813,42 +11665,59 @@ namespace net {
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr (std::is_same_v<T, ActionMoveData>) {
 					serializeActionMove(w, arg);
-				} else if constexpr (std::is_same_v<T, ActionSkillSrcData>) {
+				}
+				else if constexpr (std::is_same_v<T, ActionSkillSrcData>) {
 					serializeActionSkillSrc(w, arg);
-				} else if constexpr (std::is_same_v<T, ActionSkillTarData>) {
+				}
+				else if constexpr (std::is_same_v<T, ActionSkillTarData>) {
 					serializeActionSkillTar(w, arg);
-				} else if constexpr (std::is_same_v<T, ActionLeanData>) {
+				}
+				else if constexpr (std::is_same_v<T, ActionLeanData>) {
 					w.WriteInt64(arg.leanState);
 					if (arg.leanState == 0) {
-						w.WriteInt64(arg.pose); w.WriteInt64(arg.angle);
-						w.WriteInt64(arg.posX); w.WriteInt64(arg.posY); w.WriteInt64(arg.height);
+						w.WriteInt64(arg.pose);
+						w.WriteInt64(arg.angle);
+						w.WriteInt64(arg.posX);
+						w.WriteInt64(arg.posY);
+						w.WriteInt64(arg.height);
 					}
-				} else if constexpr (std::is_same_v<T, ActionFaceData>) {
-					w.WriteInt64(arg.angle); w.WriteInt64(arg.pose);
-				} else if constexpr (std::is_same_v<T, ActionItemFailedData>) {
+				}
+				else if constexpr (std::is_same_v<T, ActionFaceData>) {
+					w.WriteInt64(arg.angle);
+					w.WriteInt64(arg.pose);
+				}
+				else if constexpr (std::is_same_v<T, ActionItemFailedData>) {
 					w.WriteInt64(arg.failedId);
-				} else if constexpr (std::is_same_v<T, ActionTempData>) {
-					w.WriteInt64(arg.itemId); w.WriteInt64(arg.partId);
-				} else if constexpr (std::is_same_v<T, ActionChangeChaData>) {
+				}
+				else if constexpr (std::is_same_v<T, ActionTempData>) {
+					w.WriteInt64(arg.itemId);
+					w.WriteInt64(arg.partId);
+				}
+				else if constexpr (std::is_same_v<T, ActionChangeChaData>) {
 					w.WriteInt64(arg.mainChaId);
-				} else if constexpr (std::is_same_v<T, ChaLookInfo>) {
+				}
+				else if constexpr (std::is_same_v<T, ChaLookInfo>) {
 					serializeChaLookInfo(w, arg);
-				} else if constexpr (std::is_same_v<T, ChaKitbagInfo>) {
+				}
+				else if constexpr (std::is_same_v<T, ChaKitbagInfo>) {
 					serializeChaKitbagInfo(w, arg);
-				} else if constexpr (std::is_same_v<T, ChaShortcutInfo>) {
+				}
+				else if constexpr (std::is_same_v<T, ChaShortcutInfo>) {
 					serializeChaShortcutInfo(w, arg);
-				} else if constexpr (std::is_same_v<T, ActionPkCtrlData>) {
+				}
+				else if constexpr (std::is_same_v<T, ActionPkCtrlData>) {
 					w.WriteInt64(arg.pkCtrl);
-				} else if constexpr (std::is_same_v<T, ActionLookEnergyData>) {
+				}
+				else if constexpr (std::is_same_v<T, ActionLookEnergyData>) {
 					for (int i = 0; i < EQUIP_NUM; ++i)
 						w.WriteInt64(arg.energy[i]);
 				}
-				// std::monostate  ITEM_INFO       
+				// std::monostate  ITEM_INFO
 			}, m.data);
 			return w;
 		}
 
-		//  Deserialize:  3 
+		//  Deserialize:  3
 
 		inline void deserialize(RPacket& pk, McSynAttributeMessage& m) {
 			m.worldId = pk.ReadInt64();
@@ -7861,11 +11730,13 @@ namespace net {
 		}
 
 		inline void deserialize(RPacket& pk, McAStateEndSeeMessage& m) {
-			m.areaX = pk.ReadInt64(); m.areaY = pk.ReadInt64();
+			m.areaX = pk.ReadInt64();
+			m.areaY = pk.ReadInt64();
 		}
 
 		inline void deserialize(RPacket& pk, McAStateBeginSeeMessage& m) {
-			m.areaX = pk.ReadInt64(); m.areaY = pk.ReadInt64();
+			m.areaX = pk.ReadInt64();
+			m.areaY = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.states.resize(static_cast<size_t>(count));
 			for (auto& s : m.states) {
@@ -7874,27 +11745,42 @@ namespace net {
 					s.stateLv = pk.ReadInt64();
 					s.worldId = pk.ReadInt64();
 					s.fightId = pk.ReadInt64();
-				} else {
-					s.stateLv = 0; s.worldId = 0; s.fightId = 0;
+				}
+				else {
+					s.stateLv = 0;
+					s.worldId = 0;
+					s.fightId = 0;
 				}
 			}
 		}
 
-		inline void deserialize(RPacket& pk, McDelItemChaMessage& m) { m.mainChaId = pk.ReadInt64(); m.worldId = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, McDelItemChaMessage& m) {
+			m.mainChaId = pk.ReadInt64();
+			m.worldId = pk.ReadInt64();
+		}
 
 		inline void deserialize(RPacket& pk, McSynEventInfoMessage& m) {
-			m.entityId = pk.ReadInt64(); m.entityType = pk.ReadInt64();
-			m.eventId = pk.ReadInt64(); m.eventName = pk.ReadString();
+			m.entityId = pk.ReadInt64();
+			m.entityType = pk.ReadInt64();
+			m.eventId = pk.ReadInt64();
+			m.eventName = pk.ReadString();
 		}
 
 		inline void deserialize(RPacket& pk, McSynSideInfoMessage& m) {
-			m.worldId = pk.ReadInt64(); m.side.sideId = pk.ReadInt64();
+			m.worldId = pk.ReadInt64();
+			m.side.sideId = pk.ReadInt64();
 		}
 
 		inline void deserialize(RPacket& pk, McItemCreateMessage& m) {
-			m.worldId = pk.ReadInt64(); m.handle = pk.ReadInt64(); m.itemId = pk.ReadInt64();
-			m.posX = pk.ReadInt64(); m.posY = pk.ReadInt64(); m.angle = pk.ReadInt64();
-			m.num = pk.ReadInt64(); m.appeType = pk.ReadInt64(); m.fromId = pk.ReadInt64();
+			m.worldId = pk.ReadInt64();
+			m.handle = pk.ReadInt64();
+			m.itemId = pk.ReadInt64();
+			m.posX = pk.ReadInt64();
+			m.posY = pk.ReadInt64();
+			m.angle = pk.ReadInt64();
+			m.num = pk.ReadInt64();
+			m.appeType = pk.ReadInt64();
+			m.fromId = pk.ReadInt64();
 			deserializeChaEventInfo(pk, m.event);
 		}
 
@@ -7904,9 +11790,12 @@ namespace net {
 		}
 
 		inline void deserialize(RPacket& pk, McMissionInfoMessage& m) {
-			m.npcId = pk.ReadInt64(); m.listType = pk.ReadInt64();
-			m.prev = pk.ReadInt64(); m.next = pk.ReadInt64();
-			m.prevCmd = pk.ReadInt64(); m.nextCmd = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			m.listType = pk.ReadInt64();
+			m.prev = pk.ReadInt64();
+			m.next = pk.ReadInt64();
+			m.prevCmd = pk.ReadInt64();
+			m.nextCmd = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.items.resize(static_cast<size_t>(count));
 			for (auto& item : m.items) item = pk.ReadString();
@@ -7922,7 +11811,8 @@ namespace net {
 					n.param1 = pk.ReadInt64();
 					n.param2 = pk.ReadInt64();
 					n.param3 = pk.ReadInt64();
-				} else if (n.needType == MIS_NEED_DESP) {
+				}
+				else if (n.needType == MIS_NEED_DESP) {
 					n.desp = pk.ReadString();
 				}
 			}
@@ -7940,7 +11830,9 @@ namespace net {
 		}
 
 		inline void deserialize(RPacket& pk, McMisPageMessage& m) {
-			m.cmd = pk.ReadInt64(); m.npcId = pk.ReadInt64(); m.name = pk.ReadString();
+			m.cmd = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			m.name = pk.ReadString();
 			deserializeMisNeeds(pk, m.needs);
 			m.prizeSelType = pk.ReadInt64();
 			deserializeMisPrizes(pk, m.prizes);
@@ -7950,136 +11842,237 @@ namespace net {
 		inline void deserialize(RPacket& pk, McMisLogMessage& m) {
 			auto count = pk.ReadInt64();
 			m.logs.resize(static_cast<size_t>(count));
-			for (auto& l : m.logs) { l.misId = pk.ReadInt64(); l.state = pk.ReadInt64(); }
+			for (auto& l : m.logs) {
+				l.misId = pk.ReadInt64();
+				l.state = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McMisLogInfoMessage& m) {
-			m.misId = pk.ReadInt64(); m.name = pk.ReadString();
+			m.misId = pk.ReadInt64();
+			m.name = pk.ReadString();
 			deserializeMisNeeds(pk, m.needs);
 			m.prizeSelType = pk.ReadInt64();
 			deserializeMisPrizes(pk, m.prizes);
 			m.description = pk.ReadString();
 		}
-		inline void deserialize(RPacket& pk, McMisLogClearMcMessage& m) { m.missionId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McMisLogAddMessage& m) { m.missionId = pk.ReadInt64(); m.state = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McMisLogStateMessage& m) { m.index = pk.ReadInt64(); m.missionId = pk.ReadInt64(); m.state = pk.ReadInt64(); }
+
+		inline void deserialize(RPacket& pk, McMisLogClearMcMessage& m) {
+			m.missionId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McMisLogAddMessage& m) {
+			m.missionId = pk.ReadInt64();
+			m.state = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McMisLogStateMessage& m) {
+			m.index = pk.ReadInt64();
+			m.missionId = pk.ReadInt64();
+			m.state = pk.ReadInt64();
+		}
 
 		inline void deserialize(RPacket& pk, McFuncInfoMessage& m) {
-			m.npcId = pk.ReadInt64(); m.page = pk.ReadInt64(); m.talkText = pk.ReadString();
+			m.npcId = pk.ReadInt64();
+			m.page = pk.ReadInt64();
+			m.talkText = pk.ReadString();
 			auto fCount = pk.ReadInt64();
 			m.funcItems.resize(static_cast<size_t>(fCount));
 			for (auto& f : m.funcItems) f.name = pk.ReadString();
 			auto mCount = pk.ReadInt64();
 			m.missionItems.resize(static_cast<size_t>(mCount));
-			for (auto& mi : m.missionItems) { mi.name = pk.ReadString(); mi.state = pk.ReadInt64(); }
+			for (auto& mi : m.missionItems) {
+				mi.name = pk.ReadString();
+				mi.state = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McVolunteerListMessage& m) {
-			m.pageTotal = pk.ReadInt64(); m.page = pk.ReadInt64();
+			m.pageTotal = pk.ReadInt64();
+			m.page = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.volunteers.resize(static_cast<size_t>(count));
-			for (auto& v : m.volunteers) { v.name = pk.ReadString(); v.level = pk.ReadInt64(); v.job = pk.ReadInt64(); v.map = pk.ReadString(); }
+			for (auto& v : m.volunteers) {
+				v.name = pk.ReadString();
+				v.level = pk.ReadInt64();
+				v.job = pk.ReadInt64();
+				v.map = pk.ReadString();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McVolunteerOpenMessage& m) {
-			m.state = pk.ReadInt64(); m.pageTotal = pk.ReadInt64();
+			m.state = pk.ReadInt64();
+			m.pageTotal = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.volunteers.resize(static_cast<size_t>(count));
-			for (auto& v : m.volunteers) { v.name = pk.ReadString(); v.level = pk.ReadInt64(); v.job = pk.ReadInt64(); v.map = pk.ReadString(); }
+			for (auto& v : m.volunteers) {
+				v.name = pk.ReadString();
+				v.level = pk.ReadInt64();
+				v.job = pk.ReadInt64();
+				v.map = pk.ReadString();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McShowStallSearchMessage& m) {
 			auto count = pk.ReadInt64();
 			m.entries.resize(static_cast<size_t>(count));
-			for (auto& e : m.entries) { e.name = pk.ReadString(); e.stallName = pk.ReadString(); e.location = pk.ReadString(); e.count = pk.ReadInt64(); e.cost = pk.ReadInt64(); }
+			for (auto& e : m.entries) {
+				e.name = pk.ReadString();
+				e.stallName = pk.ReadString();
+				e.location = pk.ReadString();
+				e.count = pk.ReadInt64();
+				e.cost = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McShowRankingMessage& m) {
 			auto count = pk.ReadInt64();
 			m.entries.resize(static_cast<size_t>(count));
-			for (auto& e : m.entries) { e.name = pk.ReadString(); e.guild = pk.ReadString(); e.level = pk.ReadInt64(); e.job = pk.ReadInt64(); e.score = pk.ReadInt64(); }
+			for (auto& e : m.entries) {
+				e.name = pk.ReadString();
+				e.guild = pk.ReadString();
+				e.level = pk.ReadInt64();
+				e.job = pk.ReadInt64();
+				e.score = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McEspeItemMessage& m) {
 			m.worldId = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.items.resize(static_cast<size_t>(count));
-			for (auto& i : m.items) { i.position = pk.ReadInt64(); i.endure = pk.ReadInt64(); i.energy = pk.ReadInt64(); i.tradable = pk.ReadInt64(); i.expiration = pk.ReadInt64(); }
+			for (auto& i : m.items) {
+				i.position = pk.ReadInt64();
+				i.endure = pk.ReadInt64();
+				i.energy = pk.ReadInt64();
+				i.tradable = pk.ReadInt64();
+				i.expiration = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McBlackMarketExchangeDataMessage& m) {
 			m.npcId = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.exchanges.resize(static_cast<size_t>(count));
-			for (auto& e : m.exchanges) { e.srcId = pk.ReadInt64(); e.srcCount = pk.ReadInt64(); e.tarId = pk.ReadInt64(); e.tarCount = pk.ReadInt64(); e.timeValue = pk.ReadInt64(); }
+			for (auto& e : m.exchanges) {
+				e.srcId = pk.ReadInt64();
+				e.srcCount = pk.ReadInt64();
+				e.tarId = pk.ReadInt64();
+				e.tarCount = pk.ReadInt64();
+				e.timeValue = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McExchangeDataMessage& m) {
 			m.npcId = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.exchanges.resize(static_cast<size_t>(count));
-			for (auto& e : m.exchanges) { e.srcId = pk.ReadInt64(); e.srcCount = pk.ReadInt64(); e.tarId = pk.ReadInt64(); e.tarCount = pk.ReadInt64(); }
+			for (auto& e : m.exchanges) {
+				e.srcId = pk.ReadInt64();
+				e.srcCount = pk.ReadInt64();
+				e.tarId = pk.ReadInt64();
+				e.tarCount = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McBlackMarketExchangeUpdateMessage& m) {
 			m.npcId = pk.ReadInt64();
 			auto count = pk.ReadInt64();
 			m.exchanges.resize(static_cast<size_t>(count));
-			for (auto& e : m.exchanges) { e.srcId = pk.ReadInt64(); e.srcCount = pk.ReadInt64(); e.tarId = pk.ReadInt64(); e.tarCount = pk.ReadInt64(); e.timeValue = pk.ReadInt64(); }
+			for (auto& e : m.exchanges) {
+				e.srcId = pk.ReadInt64();
+				e.srcCount = pk.ReadInt64();
+				e.tarId = pk.ReadInt64();
+				e.tarCount = pk.ReadInt64();
+				e.timeValue = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McBlackMarketExchangeAsrMessage& m) {
-			m.success = pk.ReadInt64(); m.srcId = pk.ReadInt64(); m.srcCount = pk.ReadInt64(); m.tarId = pk.ReadInt64(); m.tarCount = pk.ReadInt64();
+			m.success = pk.ReadInt64();
+			m.srcId = pk.ReadInt64();
+			m.srcCount = pk.ReadInt64();
+			m.tarId = pk.ReadInt64();
+			m.tarCount = pk.ReadInt64();
 		}
 
-		//  MC   NPC ( ) 
+		//  MC   NPC ( )
 
 		inline void deserialize(RPacket& pk, McTradeAllDataMessage& m) {
-			m.npcId = pk.ReadInt64(); m.tradeType = pk.ReadInt64(); m.param = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			m.tradeType = pk.ReadInt64();
+			m.param = pk.ReadInt64();
 			auto pageCount = static_cast<size_t>(pk.ReadInt64());
 			m.pages.resize(pageCount);
 			for (auto& page : m.pages) {
 				page.itemType = pk.ReadInt64();
 				auto itemCount = static_cast<size_t>(pk.ReadInt64());
 				page.items.resize(itemCount);
-				//   itemId   
-				for (auto& item : page.items) { item.itemId = pk.ReadInt64(); }
+				//   itemId
+				for (auto& item : page.items) {
+					item.itemId = pk.ReadInt64();
+				}
 				//  TRADE_GOODS (type==1)  .  count/price/level
 				if (m.tradeType == 1) {
-					for (auto& item : page.items) { item.count = pk.ReadInt64(); item.price = pk.ReadInt64(); item.level = pk.ReadInt64(); }
+					for (auto& item : page.items) {
+						item.count = pk.ReadInt64();
+						item.price = pk.ReadInt64();
+						item.level = pk.ReadInt64();
+					}
 				}
 			}
 		}
 
-		//  MC   (Store) 
+		//  MC   (Store)
 
 		inline void deserialize(RPacket& pk, McStoreOpenAnswerMessage& m) {
 			m.isValid = pk.ReadInt64() != 0;
 			if (m.isValid) {
-				m.vip = pk.ReadInt64(); m.moBean = pk.ReadInt64(); m.replMoney = pk.ReadInt64();
+				m.vip = pk.ReadInt64();
+				m.moBean = pk.ReadInt64();
+				m.replMoney = pk.ReadInt64();
 				auto afficheCount = static_cast<size_t>(pk.ReadInt64());
 				m.affiches.resize(afficheCount);
-				for (auto& a : m.affiches) { a.afficheId = pk.ReadInt64(); a.title = pk.ReadString(); a.comId = pk.ReadString(); }
+				for (auto& a : m.affiches) {
+					a.afficheId = pk.ReadInt64();
+					a.title = pk.ReadString();
+					a.comId = pk.ReadString();
+				}
 				auto classCount = static_cast<size_t>(pk.ReadInt64());
 				m.classes.resize(classCount);
-				for (auto& c : m.classes) { c.classId = pk.ReadInt64(); c.className = pk.ReadString(); c.parentId = pk.ReadInt64(); }
+				for (auto& c : m.classes) {
+					c.classId = pk.ReadInt64();
+					c.className = pk.ReadString();
+					c.parentId = pk.ReadInt64();
+				}
 			}
 		}
 
 		inline void deserialize(RPacket& pk, McStoreListAnswerMessage& m) {
-			m.pageTotal = pk.ReadInt64(); m.pageCurrent = pk.ReadInt64();
+			m.pageTotal = pk.ReadInt64();
+			m.pageCurrent = pk.ReadInt64();
 			auto productCount = static_cast<size_t>(pk.ReadInt64());
 			m.products.resize(productCount);
 			for (auto& p : m.products) {
-				p.comId = pk.ReadInt64(); p.comName = pk.ReadString(); p.price = pk.ReadInt64();
-				p.remark = pk.ReadString(); p.isHot = pk.ReadInt64() != 0;
-				p.time = pk.ReadInt64(); p.quantity = pk.ReadInt64(); p.expire = pk.ReadInt64();
+				p.comId = pk.ReadInt64();
+				p.comName = pk.ReadString();
+				p.price = pk.ReadInt64();
+				p.remark = pk.ReadString();
+				p.isHot = pk.ReadInt64() != 0;
+				p.time = pk.ReadInt64();
+				p.quantity = pk.ReadInt64();
+				p.expire = pk.ReadInt64();
 				auto variantCount = static_cast<size_t>(pk.ReadInt64());
 				p.variants.resize(variantCount);
 				//      ( 5   )
 				for (auto& v : p.variants) {
-					v.itemId = pk.ReadInt64(); v.itemNum = pk.ReadInt64(); v.flute = pk.ReadInt64();
-					for (int i = 0; i < 5; ++i) { v.attrs[i].attrId = pk.ReadInt64(); v.attrs[i].attrVal = pk.ReadInt64(); }
+					v.itemId = pk.ReadInt64();
+					v.itemNum = pk.ReadInt64();
+					v.flute = pk.ReadInt64();
+					for (int i = 0; i < 5; ++i) {
+						v.attrs[i].attrId = pk.ReadInt64();
+						v.attrs[i].attrVal = pk.ReadInt64();
+					}
 				}
 			}
 		}
@@ -8087,19 +12080,33 @@ namespace net {
 		inline void deserialize(RPacket& pk, McStoreHistoryMessage& m) {
 			auto recordCount = static_cast<size_t>(pk.ReadInt64());
 			m.records.resize(recordCount);
-			for (auto& r : m.records) { r.time = pk.ReadString(); r.itemId = pk.ReadInt64(); r.name = pk.ReadString(); r.money = pk.ReadInt64(); }
+			for (auto& r : m.records) {
+				r.time = pk.ReadString();
+				r.itemId = pk.ReadInt64();
+				r.name = pk.ReadString();
+				r.money = pk.ReadInt64();
+			}
 		}
 
 		inline void deserialize(RPacket& pk, McStoreVipMessage& m) {
 			m.success = pk.ReadInt64();
-			if (m.success != 0) { m.vipId = pk.ReadInt64(); m.months = pk.ReadInt64(); m.shuijing = pk.ReadInt64(); m.modou = pk.ReadInt64(); }
+			if (m.success != 0) {
+				m.vipId = pk.ReadInt64();
+				m.months = pk.ReadInt64();
+				m.shuijing = pk.ReadInt64();
+				m.modou = pk.ReadInt64();
+			}
 		}
 
-		//  MC    () 
+		//  MC    ()
 
 		inline void deserialize(RPacket& pk, McSynTeamMessage& m) {
-			m.memberId = pk.ReadInt64(); m.hp = pk.ReadInt64(); m.maxHP = pk.ReadInt64();
-			m.sp = pk.ReadInt64(); m.maxSP = pk.ReadInt64(); m.level = pk.ReadInt64();
+			m.memberId = pk.ReadInt64();
+			m.hp = pk.ReadInt64();
+			m.maxHP = pk.ReadInt64();
+			m.sp = pk.ReadInt64();
+			m.maxSP = pk.ReadInt64();
+			m.level = pk.ReadInt64();
 			deserializeChaLookInfo(pk, m.look);
 		}
 
@@ -8112,14 +12119,21 @@ namespace net {
 			//    std::variant  poseType
 			if (m.poseType == 1) {
 				LeanInfo lean;
-				lean.leanState = pk.ReadInt64(); lean.pose = pk.ReadInt64(); lean.angle = pk.ReadInt64();
-				lean.posX = pk.ReadInt64(); lean.posY = pk.ReadInt64(); lean.height = pk.ReadInt64();
+				lean.leanState = pk.ReadInt64();
+				lean.pose = pk.ReadInt64();
+				lean.angle = pk.ReadInt64();
+				lean.posX = pk.ReadInt64();
+				lean.posY = pk.ReadInt64();
+				lean.height = pk.ReadInt64();
 				m.pose = lean;
-			} else if (m.poseType == 2) {
+			}
+			else if (m.poseType == 2) {
 				SeatInfo seat;
-				seat.seatAngle = pk.ReadInt64(); seat.seatPose = pk.ReadInt64();
+				seat.seatAngle = pk.ReadInt64();
+				seat.seatPose = pk.ReadInt64();
 				m.pose = seat;
-			} else {
+			}
+			else {
 				m.pose = std::monostate{};
 			}
 			deserializeChaAttrInfo(pk, m.attr);
@@ -8134,7 +12148,7 @@ namespace net {
 			deserializeChaSkillStateInfo(pk, m.skillState);
 		}
 
-		//  McCharacterAction (CMD_MC_NOTIACTION)  Deserialize 
+		//  McCharacterAction (CMD_MC_NOTIACTION)  Deserialize
 
 		///    MOVE.
 		inline void deserializeActionMove(RPacket& pk, ActionMoveData& d) {
@@ -8148,67 +12162,99 @@ namespace net {
 
 		///    SKILL_SRC.
 		inline void deserializeActionSkillSrc(RPacket& pk, ActionSkillSrcData& d) {
-			d.fightId = pk.ReadInt64(); d.angle = pk.ReadInt64(); d.state = pk.ReadInt64();
+			d.fightId = pk.ReadInt64();
+			d.angle = pk.ReadInt64();
+			d.state = pk.ReadInt64();
 			d.stopState = (d.state != FSTATE_ON) ? pk.ReadInt64() : 0;
-			d.skillId = pk.ReadInt64(); d.skillSpeed = pk.ReadInt64();
+			d.skillId = pk.ReadInt64();
+			d.skillSpeed = pk.ReadInt64();
 			d.targetType = pk.ReadInt64();
 			if (d.targetType == 1) {
-				d.targetId = pk.ReadInt64(); d.targetX = pk.ReadInt64(); d.targetY = pk.ReadInt64();
-			} else if (d.targetType == 2) {
-				d.targetId = 0; d.targetX = pk.ReadInt64(); d.targetY = pk.ReadInt64();
+				d.targetId = pk.ReadInt64();
+				d.targetX = pk.ReadInt64();
+				d.targetY = pk.ReadInt64();
+			}
+			else if (d.targetType == 2) {
+				d.targetId = 0;
+				d.targetX = pk.ReadInt64();
+				d.targetY = pk.ReadInt64();
 			}
 			d.execTime = pk.ReadInt64();
 			auto effCount = static_cast<size_t>(pk.ReadInt64());
 			d.effects.resize(effCount);
-			for (auto& e : d.effects) { e.attrId = pk.ReadInt64(); e.attrVal = pk.ReadInt64(); }
+			for (auto& e : d.effects) {
+				e.attrId = pk.ReadInt64();
+				e.attrVal = pk.ReadInt64();
+			}
 			auto stCount = static_cast<size_t>(pk.ReadInt64());
 			d.states.resize(stCount);
-			for (auto& s : d.states) { s.stateId = pk.ReadInt64(); s.stateLv = pk.ReadInt64(); }
+			for (auto& s : d.states) {
+				s.stateId = pk.ReadInt64();
+				s.stateLv = pk.ReadInt64();
+			}
 		}
 
 		///    SKILL_TAR.
 		inline void deserializeActionSkillTar(RPacket& pk, ActionSkillTarData& d) {
-			d.fightId = pk.ReadInt64(); d.state = pk.ReadInt64();
+			d.fightId = pk.ReadInt64();
+			d.state = pk.ReadInt64();
 			d.doubleAttack = pk.ReadInt64() != 0;
 			d.miss = pk.ReadInt64() != 0;
 			d.beatBack = pk.ReadInt64() != 0;
-			if (d.beatBack) { d.beatBackX = pk.ReadInt64(); d.beatBackY = pk.ReadInt64(); }
-			d.srcId = pk.ReadInt64(); d.srcPosX = pk.ReadInt64(); d.srcPosY = pk.ReadInt64();
-			d.skillId = pk.ReadInt64(); d.skillTargetX = pk.ReadInt64(); d.skillTargetY = pk.ReadInt64();
+			if (d.beatBack) {
+				d.beatBackX = pk.ReadInt64();
+				d.beatBackY = pk.ReadInt64();
+			}
+			d.srcId = pk.ReadInt64();
+			d.srcPosX = pk.ReadInt64();
+			d.srcPosY = pk.ReadInt64();
+			d.skillId = pk.ReadInt64();
+			d.skillTargetX = pk.ReadInt64();
+			d.skillTargetY = pk.ReadInt64();
 			d.execTime = pk.ReadInt64();
 			//  : synType + count + entries
 			d.synType = pk.ReadInt64();
 			auto effCount = static_cast<size_t>(pk.ReadInt64());
 			d.effects.resize(effCount);
-			for (auto& e : d.effects) { e.attrId = pk.ReadInt64(); e.attrVal = pk.ReadInt64(); }
-			//  
+			for (auto& e : d.effects) {
+				e.attrId = pk.ReadInt64();
+				e.attrVal = pk.ReadInt64();
+			}
+			//
 			d.hasStates = pk.ReadInt64() == 1;
 			if (d.hasStates) {
 				d.stateTime = pk.ReadInt64();
 				auto stCount = static_cast<size_t>(pk.ReadInt64());
 				d.states.resize(stCount);
 				for (auto& s : d.states) {
-					s.stateId = pk.ReadInt64(); s.stateLv = pk.ReadInt64();
-					s.duration = pk.ReadInt64(); s.startTime = pk.ReadInt64();
+					s.stateId = pk.ReadInt64();
+					s.stateLv = pk.ReadInt64();
+					s.duration = pk.ReadInt64();
+					s.startTime = pk.ReadInt64();
 				}
 			}
-			//  
+			//
 			d.hasSrcEffect = pk.ReadInt64() != 0;
 			if (d.hasSrcEffect) {
 				d.srcState = pk.ReadInt64();
 				d.srcSynType = pk.ReadInt64();
 				auto srcCount = static_cast<size_t>(pk.ReadInt64());
 				d.srcEffects.resize(srcCount);
-				for (auto& e : d.srcEffects) { e.attrId = pk.ReadInt64(); e.attrVal = pk.ReadInt64(); }
-				//  
+				for (auto& e : d.srcEffects) {
+					e.attrId = pk.ReadInt64();
+					e.attrVal = pk.ReadInt64();
+				}
+				//
 				d.srcHasStates = pk.ReadInt64() == 1;
 				if (d.srcHasStates) {
 					d.srcStateTime = pk.ReadInt64();
 					auto srcStCount = static_cast<size_t>(pk.ReadInt64());
 					d.srcStates.resize(srcStCount);
 					for (auto& s : d.srcStates) {
-						s.stateId = pk.ReadInt64(); s.stateLv = pk.ReadInt64();
-						s.duration = pk.ReadInt64(); s.startTime = pk.ReadInt64();
+						s.stateId = pk.ReadInt64();
+						s.stateLv = pk.ReadInt64();
+						s.duration = pk.ReadInt64();
+						s.startTime = pk.ReadInt64();
 					}
 				}
 			}
@@ -8220,51 +12266,85 @@ namespace net {
 			m.packetId = pk.ReadInt64();
 			m.actionType = pk.ReadInt64();
 			if (m.actionType == ActionType::MOVE) {
-				ActionMoveData d; deserializeActionMove(pk, d); m.data = std::move(d);
-			} else if (m.actionType == ActionType::SKILL_SRC) {
-				ActionSkillSrcData d; deserializeActionSkillSrc(pk, d); m.data = std::move(d);
-			} else if (m.actionType == ActionType::SKILL_TAR) {
-				ActionSkillTarData d; deserializeActionSkillTar(pk, d); m.data = std::move(d);
-			} else if (m.actionType == ActionType::LEAN) {
+				ActionMoveData d;
+				deserializeActionMove(pk, d);
+				m.data = std::move(d);
+			}
+			else if (m.actionType == ActionType::SKILL_SRC) {
+				ActionSkillSrcData d;
+				deserializeActionSkillSrc(pk, d);
+				m.data = std::move(d);
+			}
+			else if (m.actionType == ActionType::SKILL_TAR) {
+				ActionSkillTarData d;
+				deserializeActionSkillTar(pk, d);
+				m.data = std::move(d);
+			}
+			else if (m.actionType == ActionType::LEAN) {
 				ActionLeanData d;
 				d.leanState = pk.ReadInt64();
 				if (d.leanState == 0) {
-					d.pose = pk.ReadInt64(); d.angle = pk.ReadInt64();
-					d.posX = pk.ReadInt64(); d.posY = pk.ReadInt64(); d.height = pk.ReadInt64();
+					d.pose = pk.ReadInt64();
+					d.angle = pk.ReadInt64();
+					d.posX = pk.ReadInt64();
+					d.posY = pk.ReadInt64();
+					d.height = pk.ReadInt64();
 				}
 				m.data = d;
-			} else if (m.actionType == ActionType::FACE || m.actionType == ActionType::SKILL_POSE) {
+			}
+			else if (m.actionType == ActionType::FACE || m.actionType == ActionType::SKILL_POSE) {
 				ActionFaceData d;
-				d.angle = pk.ReadInt64(); d.pose = pk.ReadInt64();
+				d.angle = pk.ReadInt64();
+				d.pose = pk.ReadInt64();
 				m.data = d;
-			} else if (m.actionType == ActionType::ITEM_FAILED) {
-				m.data = ActionItemFailedData{ pk.ReadInt64() };
-			} else if (m.actionType == ActionType::TEMP) {
-				ActionTempData d; d.itemId = pk.ReadInt64(); d.partId = pk.ReadInt64();
+			}
+			else if (m.actionType == ActionType::ITEM_FAILED) {
+				m.data = ActionItemFailedData{pk.ReadInt64()};
+			}
+			else if (m.actionType == ActionType::TEMP) {
+				ActionTempData d;
+				d.itemId = pk.ReadInt64();
+				d.partId = pk.ReadInt64();
 				m.data = d;
-			} else if (m.actionType == ActionType::CHANGE_CHA) {
-				m.data = ActionChangeChaData{ pk.ReadInt64() };
-			} else if (m.actionType == ActionType::LOOK) {
-				ChaLookInfo d; deserializeChaLookInfo(pk, d); m.data = std::move(d);
-			} else if (m.actionType == ActionType::KITBAG || m.actionType == ActionType::BANK
-					|| m.actionType == ActionType::GUILDBANK || m.actionType == ActionType::KITBAGTMP) {
-				ChaKitbagInfo d; deserializeChaKitbagInfo(pk, d); m.data = std::move(d);
-			} else if (m.actionType == ActionType::SHORTCUT) {
-				ChaShortcutInfo d; deserializeChaShortcutInfo(pk, d); m.data = std::move(d);
-			} else if (m.actionType == ActionType::PK_CTRL) {
-				m.data = ActionPkCtrlData{ pk.ReadInt64() };
-			} else if (m.actionType == ActionType::LOOK_ENERGY) {
+			}
+			else if (m.actionType == ActionType::CHANGE_CHA) {
+				m.data = ActionChangeChaData{pk.ReadInt64()};
+			}
+			else if (m.actionType == ActionType::LOOK) {
+				ChaLookInfo d;
+				deserializeChaLookInfo(pk, d);
+				m.data = std::move(d);
+			}
+			else if (m.actionType == ActionType::KITBAG || m.actionType == ActionType::BANK
+				|| m.actionType == ActionType::GUILDBANK || m.actionType == ActionType::KITBAGTMP) {
+				ChaKitbagInfo d;
+				deserializeChaKitbagInfo(pk, d);
+				m.data = std::move(d);
+			}
+			else if (m.actionType == ActionType::SHORTCUT) {
+				ChaShortcutInfo d;
+				deserializeChaShortcutInfo(pk, d);
+				m.data = std::move(d);
+			}
+			else if (m.actionType == ActionType::PK_CTRL) {
+				m.data = ActionPkCtrlData{pk.ReadInt64()};
+			}
+			else if (m.actionType == ActionType::LOOK_ENERGY) {
 				ActionLookEnergyData d;
 				for (int i = 0; i < EQUIP_NUM; ++i)
 					d.energy[i] = pk.ReadInt64();
 				m.data = d;
-			} else if (m.actionType == ActionType::UPDATEGUILDLOGS) {
+			}
+			else if (m.actionType == ActionType::UPDATEGUILDLOGS) {
 				ActionUpdateGuildLogsData d;
 				d.totalSize = pk.ReadInt64();
 				for (int i = 0; i < 13; ++i) {
 					GuildBankLogEntry e;
 					e.type = pk.ReadInt64();
-					if (e.type == 9) { d.terminated = true; break; }
+					if (e.type == 9) {
+						d.terminated = true;
+						break;
+					}
 					e.time = pk.ReadInt64();
 					e.parameter = pk.ReadInt64();
 					e.quantity = pk.ReadInt64();
@@ -8272,12 +12352,16 @@ namespace net {
 					d.logs.push_back(std::move(e));
 				}
 				m.data = std::move(d);
-			} else if (m.actionType == ActionType::REQUESTGUILDLOGS) {
+			}
+			else if (m.actionType == ActionType::REQUESTGUILDLOGS) {
 				ActionRequestGuildLogsData d;
 				for (int i = 0; i < 13; ++i) {
 					GuildBankLogEntry e;
 					e.type = pk.ReadInt64();
-					if (e.type == 9) { d.terminated = true; break; }
+					if (e.type == 9) {
+						d.terminated = true;
+						break;
+					}
 					e.time = pk.ReadInt64();
 					e.parameter = pk.ReadInt64();
 					e.quantity = pk.ReadInt64();
@@ -8285,7 +12369,8 @@ namespace net {
 					d.logs.push_back(std::move(e));
 				}
 				m.data = std::move(d);
-			} else {
+			}
+			else {
 				m.data = std::monostate{};
 			}
 		}
@@ -8293,189 +12378,345 @@ namespace net {
 		// --- MC    ---
 
 		inline WPacket serialize(const McCharTradeRequestMessage& m) {
-			WPacket w(32); w.WriteCmd(CMD_MC_CHARTRADE);
-			w.WriteInt64(m.subCmd); w.WriteInt64(m.tradeType); w.WriteInt64(m.chaId); return w;
+			WPacket w(32);
+			w.WriteCmd(CMD_MC_CHARTRADE);
+			w.WriteInt64(m.subCmd);
+			w.WriteInt64(m.tradeType);
+			w.WriteInt64(m.chaId);
+			return w;
 		}
+
 		inline WPacket serialize(const McCharTradeCancelMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MC_CHARTRADE);
-			w.WriteInt64(m.subCmd); w.WriteInt64(m.chaId); return w;
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_CHARTRADE);
+			w.WriteInt64(m.subCmd);
+			w.WriteInt64(m.chaId);
+			return w;
 		}
+
 		inline WPacket serialize(const McCharTradeMoneyMessage& m) {
-			WPacket w(40); w.WriteCmd(CMD_MC_CHARTRADE);
-			w.WriteInt64(m.subCmd); w.WriteInt64(m.chaId); w.WriteInt64(m.money); w.WriteInt64(m.isIMP); return w;
+			WPacket w(40);
+			w.WriteCmd(CMD_MC_CHARTRADE);
+			w.WriteInt64(m.subCmd);
+			w.WriteInt64(m.chaId);
+			w.WriteInt64(m.money);
+			w.WriteInt64(m.isIMP);
+			return w;
 		}
+
 		inline WPacket serialize(const McCharTradeValidateDataMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MC_CHARTRADE);
-			w.WriteInt64(m.subCmd); w.WriteInt64(m.chaId); return w;
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_CHARTRADE);
+			w.WriteInt64(m.subCmd);
+			w.WriteInt64(m.chaId);
+			return w;
 		}
+
 		inline WPacket serialize(const McCharTradeResultMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MC_CHARTRADE);
-			w.WriteInt64(m.subCmd); w.WriteInt64(m.result); return w;
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_CHARTRADE);
+			w.WriteInt64(m.subCmd);
+			w.WriteInt64(m.result);
+			return w;
 		}
 
 		// --- MC   :   ---
 
 		inline WPacket serialize(const McCharTradePageMessage& m) {
-			WPacket w(40); w.WriteCmd(CMD_MC_CHARTRADE);
-			w.WriteInt64(m.subCmd); w.WriteInt64(m.tradeType); w.WriteInt64(m.mainChaId); w.WriteInt64(m.otherChaId); return w;
+			WPacket w(40);
+			w.WriteCmd(CMD_MC_CHARTRADE);
+			w.WriteInt64(m.subCmd);
+			w.WriteInt64(m.tradeType);
+			w.WriteInt64(m.mainChaId);
+			w.WriteInt64(m.otherChaId);
+			return w;
 		}
 
 		// --- MM     ---
 
 		inline WPacket serialize(const MmStoreBuyRelayMessage& m) {
-			WPacket w(40); w.WriteCmd(CMD_MM_STORE_BUY);
-			w.WriteInt64(m.charId); w.WriteInt64(m.targetChaId); w.WriteInt64(m.comId); w.WriteInt64(m.money); return w;
+			WPacket w(40);
+			w.WriteCmd(CMD_MM_STORE_BUY);
+			w.WriteInt64(m.charId);
+			w.WriteInt64(m.targetChaId);
+			w.WriteInt64(m.comId);
+			w.WriteInt64(m.money);
+			return w;
 		}
 
 		// --- GameServerGroup (Gm*)   gateAddr/gpAddr ---
 
 		inline WPacket serialize(const GmGuildCreateMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MP_GUILD_CREATE);
-			w.WriteInt64(m.guildId); w.WriteString(m.guildName); w.WriteString(m.job); w.WriteInt64(m.degree); return w;
+			WPacket w(128);
+			w.WriteCmd(CMD_MP_GUILD_CREATE);
+			w.WriteInt64(m.guildId);
+			w.WriteString(m.guildName);
+			w.WriteString(m.job);
+			w.WriteInt64(m.degree);
+			return w;
 		}
+
 		inline WPacket serialize(const GmGuildApproveMessage& m) {
-			WPacket w(16); w.WriteCmd(CMD_MP_GUILD_APPROVE);
-			w.WriteInt64(m.chaId); return w;
+			WPacket w(16);
+			w.WriteCmd(CMD_MP_GUILD_APPROVE);
+			w.WriteInt64(m.chaId);
+			return w;
 		}
+
 		inline WPacket serialize(const GmGuildKickMessage& m) {
-			WPacket w(16); w.WriteCmd(CMD_MP_GUILD_KICK);
-			w.WriteInt64(m.chaId); return w;
+			WPacket w(16);
+			w.WriteCmd(CMD_MP_GUILD_KICK);
+			w.WriteInt64(m.chaId);
+			return w;
 		}
+
 		inline WPacket serialize(const GmGuildMottoMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MP_GUILD_MOTTO);
-			w.WriteString(m.motto); return w;
+			WPacket w(128);
+			w.WriteCmd(CMD_MP_GUILD_MOTTO);
+			w.WriteString(m.motto);
+			return w;
 		}
+
 		inline WPacket serialize(const GmGuildChallMoneyMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MP_GUILD_CHALLMONEY);
-			w.WriteInt64(m.guildId); w.WriteInt64(m.money); w.WriteString(m.guildName1); w.WriteString(m.guildName2); return w;
+			WPacket w(256);
+			w.WriteCmd(CMD_MP_GUILD_CHALLMONEY);
+			w.WriteInt64(m.guildId);
+			w.WriteInt64(m.money);
+			w.WriteString(m.guildName1);
+			w.WriteString(m.guildName2);
+			return w;
 		}
+
 		inline WPacket serialize(const GmSay2AllMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MP_SAY2ALL);
+			WPacket w(256);
+			w.WriteCmd(CMD_MP_SAY2ALL);
 			w.WriteInt64(m.success);
-			if (m.success) { w.WriteString(m.chaName); w.WriteString(m.content); }
+			if (m.success) {
+				w.WriteString(m.chaName);
+				w.WriteString(m.content);
+			}
 			return w;
 		}
+
 		inline WPacket serialize(const GmSay2TradeMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MP_SAY2TRADE);
+			WPacket w(256);
+			w.WriteCmd(CMD_MP_SAY2TRADE);
 			w.WriteInt64(m.success);
-			if (m.success) { w.WriteString(m.chaName); w.WriteString(m.content); }
+			if (m.success) {
+				w.WriteString(m.chaName);
+				w.WriteString(m.content);
+			}
 			return w;
 		}
+
 		inline WPacket serialize(const GmGuildChallPrizeMoneyBroadcast& m) {
-			WPacket w(64); w.WriteCmd(CMD_MM_GUILD_CHALL_PRIZEMONEY);
-			w.WriteInt64(m.zero1); w.WriteInt64(m.guildId); w.WriteInt64(m.money);
-			w.WriteInt64(m.zero2); w.WriteInt64(m.zero3); w.WriteInt64(m.zero4); return w;
+			WPacket w(64);
+			w.WriteCmd(CMD_MM_GUILD_CHALL_PRIZEMONEY);
+			w.WriteInt64(m.zero1);
+			w.WriteInt64(m.guildId);
+			w.WriteInt64(m.money);
+			w.WriteInt64(m.zero2);
+			w.WriteInt64(m.zero3);
+			w.WriteInt64(m.zero4);
+			return w;
 		}
+
 		inline WPacket serialize(const GmMapEntryResultMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MT_MAPENTRY);
-			w.WriteString(m.srcMapName); w.WriteString(m.targetMapName);
-			w.WriteInt64(m.subType); w.WriteInt64(m.resultCode); return w;
+			WPacket w(256);
+			w.WriteCmd(CMD_MT_MAPENTRY);
+			w.WriteString(m.srcMapName);
+			w.WriteString(m.targetMapName);
+			w.WriteInt64(m.subType);
+			w.WriteInt64(m.resultCode);
+			return w;
 		}
+
 		inline WPacket serialize(const GmGuildNoticeMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MP_GUILDNOTICE);
-			w.WriteInt64(m.guildId); w.WriteString(m.content); return w;
+			WPacket w(256);
+			w.WriteCmd(CMD_MP_GUILDNOTICE);
+			w.WriteInt64(m.guildId);
+			w.WriteString(m.content);
+			return w;
 		}
+
 		inline WPacket serialize(const GmScrollNoticeMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MP_GM1SAY1);
-			w.WriteString(m.content); w.WriteInt64(m.setNum); w.WriteInt64(m.color); return w;
+			WPacket w(256);
+			w.WriteCmd(CMD_MP_GM1SAY1);
+			w.WriteString(m.content);
+			w.WriteInt64(m.setNum);
+			w.WriteInt64(m.color);
+			return w;
 		}
+
 		inline WPacket serialize(const GmGMNoticeMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MP_GM1SAY);
-			w.WriteString(m.content); return w;
+			WPacket w(256);
+			w.WriteCmd(CMD_MP_GM1SAY);
+			w.WriteString(m.content);
+			return w;
 		}
+
 		inline WPacket serialize(const GmChaNoticeMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MM_CHA_NOTICE);
-			w.WriteInt64(m.zero); w.WriteString(m.noticeText); w.WriteString(m.chaName); return w;
+			WPacket w(512);
+			w.WriteCmd(CMD_MM_CHA_NOTICE);
+			w.WriteInt64(m.zero);
+			w.WriteString(m.noticeText);
+			w.WriteString(m.chaName);
+			return w;
 		}
+
 		inline WPacket serialize(const GmBanAccountMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MP_GMBANACCOUNT);
-			w.WriteString(m.actName); return w;
+			WPacket w(128);
+			w.WriteCmd(CMD_MP_GMBANACCOUNT);
+			w.WriteString(m.actName);
+			return w;
 		}
+
 		inline WPacket serialize(const GmUnbanAccountMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MP_GMUNBANACCOUNT);
-			w.WriteString(m.actName); return w;
+			WPacket w(128);
+			w.WriteCmd(CMD_MP_GMUNBANACCOUNT);
+			w.WriteString(m.actName);
+			return w;
 		}
+
 		inline WPacket serialize(const GmCanReceiveRequestsMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MP_CANRECEIVEREQUESTS);
-			w.WriteInt64(m.chaId); w.WriteInt64(m.canSend); return w;
+			WPacket w(24);
+			w.WriteCmd(CMD_MP_CANRECEIVEREQUESTS);
+			w.WriteInt64(m.chaId);
+			w.WriteInt64(m.canSend);
+			return w;
 		}
 
 		// --- CM    ---
 
 		inline WPacket serialize(const CmSayMessage& m) {
-			WPacket w(static_cast<int>(m.content.size()) + 16); w.WriteCmd(CMD_CM_SAY);
-			w.WriteString(m.content); return w;
-		}
-		inline WPacket serialize(const CmSynAttrMessage& m) {
-			WPacket w(static_cast<int>(m.attrs.size()) * 16 + 16); w.WriteCmd(CMD_CM_SYNATTR);
-			w.WriteInt64(static_cast<int64_t>(m.attrs.size()));
-			for (const auto& a : m.attrs) { w.WriteInt64(a.attrId); w.WriteInt64(a.value); }
+			WPacket w(static_cast<int>(m.content.size()) + 16);
+			w.WriteCmd(CMD_CM_SAY);
+			w.WriteString(m.content);
 			return w;
 		}
+
+		inline WPacket serialize(const CmSynAttrMessage& m) {
+			WPacket w(static_cast<int>(m.attrs.size()) * 16 + 16);
+			w.WriteCmd(CMD_CM_SYNATTR);
+			w.WriteInt64(static_cast<int64_t>(m.attrs.size()));
+			for (const auto& a : m.attrs) {
+				w.WriteInt64(a.attrId);
+				w.WriteInt64(a.value);
+			}
+			return w;
+		}
+
 		inline WPacket serialize(const CmItemForgeGroupAskMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_CM_ITEM_FORGE_ASK);
+			WPacket w(256);
+			w.WriteCmd(CMD_CM_ITEM_FORGE_ASK);
 			w.WriteInt64(m.sure);
 			if (m.sure) {
 				w.WriteInt64(m.type);
 				for (int i = 0; i < 6; ++i) {
 					w.WriteInt64(static_cast<int64_t>(m.groups[i].cells.size()));
-					for (const auto& c : m.groups[i].cells) { w.WriteInt64(c.posId); w.WriteInt64(c.num); }
-				}
-			}
-			return w;
-		}
-		inline WPacket serialize(const CmItemForgePosAskMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_CM_ITEM_FORGE_ASK);
-			w.WriteInt64(m.sure);
-			if (m.sure) {
-				w.WriteInt64(m.type);
-				for (int i = 0; i < 6; ++i) {
-					if (i < m.posCount) {
-						w.WriteInt64(1); w.WriteInt64(m.positions[i]); w.WriteInt64(1);
-					} else {
-						w.WriteInt64(0); w.WriteInt64(0); w.WriteInt64(0);
+					for (const auto& c : m.groups[i].cells) {
+						w.WriteInt64(c.posId);
+						w.WriteInt64(c.num);
 					}
 				}
 			}
 			return w;
 		}
-		inline WPacket serialize(const CmItemLotteryGroupAskMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_CM_ITEM_LOTTERY_ASK);
+
+		inline WPacket serialize(const CmItemForgePosAskMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CM_ITEM_FORGE_ASK);
 			w.WriteInt64(m.sure);
 			if (m.sure) {
-				for (int i = 0; i < 3; ++i) {
-					w.WriteInt64(static_cast<int64_t>(m.groups[i].cells.size()));
-					for (const auto& c : m.groups[i].cells) { w.WriteInt64(c.posId); w.WriteInt64(c.num); }
+				w.WriteInt64(m.type);
+				for (int i = 0; i < 6; ++i) {
+					if (i < m.posCount) {
+						w.WriteInt64(1);
+						w.WriteInt64(m.positions[i]);
+						w.WriteInt64(1);
+					}
+					else {
+						w.WriteInt64(0);
+						w.WriteInt64(0);
+						w.WriteInt64(0);
+					}
 				}
 			}
 			return w;
 		}
-		inline WPacket serialize(const CmLifeSkillCraftMessage& m) {
-			WPacket w(static_cast<int>(m.positions.size()) * 8 + 32);
-			w.WriteCmd(m.isAnswer ? CMD_CM_LIFESKILL_ASR : CMD_CM_LIFESKILL_ASK);
-			w.WriteInt64(m.skillType); w.WriteInt64(m.npcId);
-			for (const auto& p : m.positions) { w.WriteInt64(p); }
-			if (m.hasExtra) { w.WriteInt64(m.extraParam); }
+
+		inline WPacket serialize(const CmItemLotteryGroupAskMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_CM_ITEM_LOTTERY_ASK);
+			w.WriteInt64(m.sure);
+			if (m.sure) {
+				for (int i = 0; i < 3; ++i) {
+					w.WriteInt64(static_cast<int64_t>(m.groups[i].cells.size()));
+					for (const auto& c : m.groups[i].cells) {
+						w.WriteInt64(c.posId);
+						w.WriteInt64(c.num);
+					}
+				}
+			}
 			return w;
 		}
 
-		//  Serialize: GameServerGroup ( trailer) 
-
-		inline WPacket serialize(const GmMutePlayerMessage& m) {
-			WPacket w(128); w.WriteCmd(CMD_MP_MUTE_PLAYER);
-			w.WriteString(m.chaName); w.WriteInt64(m.time); return w;
+		inline WPacket serialize(const CmLifeSkillCraftMessage& m) {
+			WPacket w(static_cast<int>(m.positions.size()) * 8 + 32);
+			w.WriteCmd(m.isAnswer ? CMD_CM_LIFESKILL_ASR : CMD_CM_LIFESKILL_ASK);
+			w.WriteInt64(m.skillType);
+			w.WriteInt64(m.npcId);
+			for (const auto& p : m.positions) {
+				w.WriteInt64(p);
+			}
+			if (m.hasExtra) {
+				w.WriteInt64(m.extraParam);
+			}
+			return w;
 		}
 
-		//  Serialize:  cmd-only (GameServer) 
+		//  Serialize: GameServerGroup ( trailer)
+
+		inline WPacket serialize(const GmMutePlayerMessage& m) {
+			WPacket w(128);
+			w.WriteCmd(CMD_MP_MUTE_PLAYER);
+			w.WriteString(m.chaName);
+			w.WriteInt64(m.time);
+			return w;
+		}
+
+		//  Serialize:  cmd-only (GameServer)
 
 		/// CMD_MM_GATE_CONNECT:    GateServer (cmd-only, dummy-  ).
-		inline WPacket serializeGmGateConnectCmd() { WPacket w(16); w.WriteCmd(CMD_MM_GATE_CONNECT); w.WriteInt64(0); return w; }
+		inline WPacket serializeGmGateConnectCmd() {
+			WPacket w(16);
+			w.WriteCmd(CMD_MM_GATE_CONNECT);
+			w.WriteInt64(0);
+			return w;
+		}
+
 		/// CMD_MM_GATE_RELEASE:    GateServer (cmd-only, dummy-  ).
-		inline WPacket serializeGmGateReleaseCmd() { WPacket w(16); w.WriteCmd(CMD_MM_GATE_RELEASE); w.WriteInt64(0); return w; }
+		inline WPacket serializeGmGateReleaseCmd() {
+			WPacket w(16);
+			w.WriteCmd(CMD_MM_GATE_RELEASE);
+			w.WriteInt64(0);
+			return w;
+		}
+
 		/// CMD_MM_GATE_RELEASE:      playerlist.
-		inline WPacket serializeGmGateDisconnect(int64_t playerListAddr) { WPacket w(16); w.WriteCmd(CMD_MM_GATE_RELEASE); w.WriteInt64(playerListAddr); return w; }
+		inline WPacket serializeGmGateDisconnect(int64_t playerListAddr) {
+			WPacket w(16);
+			w.WriteCmd(CMD_MM_GATE_RELEASE);
+			w.WriteInt64(playerListAddr);
+			return w;
+		}
+
 		/// CMD_MP_GARNER2_CGETORDER:   Garner2 (cmd-only, ReflectINFof  trailer).
-		inline WPacket serializeGmGarner2GetOrderCmd() { WPacket w(8); w.WriteCmd(CMD_MP_GARNER2_CGETORDER); return w; }
+		inline WPacket serializeGmGarner2GetOrderCmd() {
+			WPacket w(8);
+			w.WriteCmd(CMD_MP_GARNER2_CGETORDER);
+			return w;
+		}
 
 		/// - (cmd=0xffff,    ).
 		inline WPacket serializeNoisePacket(uint32_t noiseLen) {
@@ -8488,7 +12729,8 @@ namespace net {
 
 		/// CMD_CM_BEGINACTION:    (    ).
 		inline WPacket serializeCmBeginActionHeader(int64_t attachId, int64_t packetId, int64_t actionType) {
-			WPacket w(4096); w.WriteCmd(CMD_CM_BEGINACTION);
+			WPacket w(4096);
+			w.WriteCmd(CMD_CM_BEGINACTION);
 			w.WriteInt64(attachId);
 #ifdef defPROTOCOL_HAVE_PACKETID
 			w.WriteInt64(packetId);
@@ -8499,100 +12741,164 @@ namespace net {
 
 		/// CMD_MC_ENTERMAP:       trailer .
 		inline WPacket serializeMcEnterMapError(int64_t errCode, int64_t dbCharId, int64_t gateAddr) {
-			WPacket w(40); w.WriteCmd(CMD_MC_ENTERMAP);
-			w.WriteInt64(errCode); w.WriteInt64(dbCharId); w.WriteInt64(gateAddr); w.WriteInt64(1);
+			WPacket w(40);
+			w.WriteCmd(CMD_MC_ENTERMAP);
+			w.WriteInt64(errCode);
+			w.WriteInt64(dbCharId);
+			w.WriteInt64(gateAddr);
+			w.WriteInt64(1);
 			return w;
 		}
 
 		/// CMD_MC_TEAM:     (look-  WriteLookData).
-		inline WPacket serializeMcTeamMemberData(int64_t chaId, int64_t hp, int64_t mxhp, int64_t sp, int64_t mxsp, int64_t level) {
-			WPacket w(4096); w.WriteCmd(CMD_MC_TEAM);
-			w.WriteInt64(chaId); w.WriteInt64(hp); w.WriteInt64(mxhp); w.WriteInt64(sp); w.WriteInt64(mxsp);
+		inline WPacket serializeMcTeamMemberData(int64_t chaId, int64_t hp, int64_t mxhp, int64_t sp, int64_t mxsp,
+												 int64_t level) {
+			WPacket w(4096);
+			w.WriteCmd(CMD_MC_TEAM);
+			w.WriteInt64(chaId);
+			w.WriteInt64(hp);
+			w.WriteInt64(mxhp);
+			w.WriteInt64(sp);
+			w.WriteInt64(mxsp);
 			w.WriteInt64(level);
 			return w;
 		}
 
-		//  Serialize: , , ,  
+		//  Serialize: , , ,
 
 		inline WPacket serialize(const McListAuctionMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_LISTAUCTION);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_LISTAUCTION);
 			//      (count-first)
 			w.WriteInt64(static_cast<int64_t>(m.items.size()));
 			for (const auto& e : m.items) {
-				w.WriteInt64(e.itemId); w.WriteString(e.name); w.WriteString(e.curChaName);
-				w.WriteInt64(e.itemCount); w.WriteInt64(e.basePrice); w.WriteInt64(e.minBid); w.WriteInt64(e.curPrice);
+				w.WriteInt64(e.itemId);
+				w.WriteString(e.name);
+				w.WriteString(e.curChaName);
+				w.WriteInt64(e.itemCount);
+				w.WriteInt64(e.basePrice);
+				w.WriteInt64(e.minBid);
+				w.WriteInt64(e.curPrice);
 			}
 			return w;
 		}
 
 		inline WPacket serialize(const GmMapEntryCreateMessage& m) {
-			WPacket w(4096); w.WriteCmd(CMD_MT_MAPENTRY);
-			w.WriteString(m.targetMapName); w.WriteString(m.srcMapName);
+			WPacket w(4096);
+			w.WriteCmd(CMD_MT_MAPENTRY);
+			w.WriteString(m.targetMapName);
+			w.WriteString(m.srcMapName);
 			w.WriteInt64(2 /*enumMAPENTRY_CREATE*/);
-			w.WriteInt64(m.posX); w.WriteInt64(m.posY); w.WriteInt64(m.copyNum); w.WriteInt64(m.copyPlyNum);
+			w.WriteInt64(m.posX);
+			w.WriteInt64(m.posY);
+			w.WriteInt64(m.copyNum);
+			w.WriteInt64(m.copyPlyNum);
 			for (const auto& line : m.scriptLines) w.WriteString(line);
 			w.WriteInt64(static_cast<int64_t>(m.scriptLines.size()));
 			return w;
 		}
 
 		inline WPacket serialize(const GmMapEntryCopyParamMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MT_MAPENTRY);
-			w.WriteString(m.targetMapName); w.WriteString(m.srcMapName);
-			w.WriteInt64(3 /*enumMAPENTRY_COPYPARAM*/); w.WriteInt64(m.copyId);
+			WPacket w(256);
+			w.WriteCmd(CMD_MT_MAPENTRY);
+			w.WriteString(m.targetMapName);
+			w.WriteString(m.srcMapName);
+			w.WriteInt64(3 /*enumMAPENTRY_COPYPARAM*/);
+			w.WriteInt64(m.copyId);
 			for (int i = 0; i < 16; ++i) w.WriteInt64(m.params[i]);
 			return w;
 		}
 
 		inline WPacket serialize(const McListGuildMessage& m) {
-			WPacket w(4096); w.WriteCmd(CMD_MC_LISTGUILD);
+			WPacket w(4096);
+			w.WriteCmd(CMD_MC_LISTGUILD);
 			//      (count-first)
 			w.WriteInt64(static_cast<int64_t>(m.entries.size()));
 			for (const auto& e : m.entries) {
-				w.WriteInt64(e.guildId); w.WriteString(e.guildName); w.WriteString(e.motto);
-				w.WriteString(e.leaderName); w.WriteInt64(e.memberCount); w.WriteInt64(e.exp);
+				w.WriteInt64(e.guildId);
+				w.WriteString(e.guildName);
+				w.WriteString(e.motto);
+				w.WriteString(e.leaderName);
+				w.WriteInt64(e.memberCount);
+				w.WriteInt64(e.exp);
 			}
 			return w;
 		}
 
 		inline WPacket serialize(const McGuildListTryPlayerMessage& m) {
-			WPacket w(4096); w.WriteCmd(CMD_MC_GUILD_LISTTRYPLAYER);
-			w.WriteInt64(m.guildId); w.WriteString(m.guildName); w.WriteString(m.motto);
-			w.WriteString(m.leaderName); w.WriteInt64(m.memberTotal); w.WriteInt64(m.maxMembers);
-			w.WriteInt64(m.exp); w.WriteInt64(m.reserved); w.WriteInt64(m.level);
+			WPacket w(4096);
+			w.WriteCmd(CMD_MC_GUILD_LISTTRYPLAYER);
+			w.WriteInt64(m.guildId);
+			w.WriteString(m.guildName);
+			w.WriteString(m.motto);
+			w.WriteString(m.leaderName);
+			w.WriteInt64(m.memberTotal);
+			w.WriteInt64(m.maxMembers);
+			w.WriteInt64(m.exp);
+			w.WriteInt64(m.reserved);
+			w.WriteInt64(m.level);
 			//       (count-first)
 			w.WriteInt64(static_cast<int64_t>(m.players.size()));
 			for (const auto& p : m.players) {
-				w.WriteInt64(p.chaId); w.WriteString(p.name); w.WriteString(p.job); w.WriteInt64(p.degree);
+				w.WriteInt64(p.chaId);
+				w.WriteString(p.name);
+				w.WriteString(p.job);
+				w.WriteInt64(p.degree);
 			}
 			return w;
 		}
 
 		inline WPacket serialize(const McStallSyncDataMessage& m) {
-			WPacket w(4096); w.WriteCmd(CMD_MC_STALL_ALLDATA);
-			w.WriteInt64(m.stallerId); w.WriteInt64(m.num); w.WriteString(m.name);
+			WPacket w(4096);
+			w.WriteCmd(CMD_MC_STALL_ALLDATA);
+			w.WriteInt64(m.stallerId);
+			w.WriteInt64(m.num);
+			w.WriteString(m.name);
 			for (const auto& g : m.goods) {
-				w.WriteInt64(g.grid); w.WriteInt64(g.itemId); w.WriteInt64(g.count); w.WriteInt64(g.money);
+				w.WriteInt64(g.grid);
+				w.WriteInt64(g.itemId);
+				w.WriteInt64(g.count);
+				w.WriteInt64(g.money);
 				w.WriteInt64(g.itemType);
 				if (g.isBoat) {
 					w.WriteInt64(g.hasBoat ? 1 : 0);
 					if (g.hasBoat) {
 						const auto& b = g.boat;
-						w.WriteString(b.name); w.WriteInt64(b.ship); w.WriteInt64(b.lv); w.WriteInt64(b.cexp);
-						w.WriteInt64(b.hp); w.WriteInt64(b.mxhp); w.WriteInt64(b.sp); w.WriteInt64(b.mxsp);
-						w.WriteInt64(b.mnatk); w.WriteInt64(b.mxatk); w.WriteInt64(b.def);
-						w.WriteInt64(b.mspd); w.WriteInt64(b.aspd);
-						w.WriteInt64(b.useGridNum); w.WriteInt64(b.capacity); w.WriteInt64(b.price);
+						w.WriteString(b.name);
+						w.WriteInt64(b.ship);
+						w.WriteInt64(b.lv);
+						w.WriteInt64(b.cexp);
+						w.WriteInt64(b.hp);
+						w.WriteInt64(b.mxhp);
+						w.WriteInt64(b.sp);
+						w.WriteInt64(b.mxsp);
+						w.WriteInt64(b.mnatk);
+						w.WriteInt64(b.mxatk);
+						w.WriteInt64(b.def);
+						w.WriteInt64(b.mspd);
+						w.WriteInt64(b.aspd);
+						w.WriteInt64(b.useGridNum);
+						w.WriteInt64(b.capacity);
+						w.WriteInt64(b.price);
 					}
-				} else {
+				}
+				else {
 					const auto& it = g.item;
-					w.WriteInt64(it.endure0); w.WriteInt64(it.endure1);
-					w.WriteInt64(it.energy0); w.WriteInt64(it.energy1);
-					w.WriteInt64(it.forgeLv); w.WriteInt64(it.valid); w.WriteInt64(it.tradable); w.WriteInt64(it.expiration);
-					w.WriteInt64(it.forgeParam); w.WriteInt64(it.instId);
+					w.WriteInt64(it.endure0);
+					w.WriteInt64(it.endure1);
+					w.WriteInt64(it.energy0);
+					w.WriteInt64(it.energy1);
+					w.WriteInt64(it.forgeLv);
+					w.WriteInt64(it.valid);
+					w.WriteInt64(it.tradable);
+					w.WriteInt64(it.expiration);
+					w.WriteInt64(it.forgeParam);
+					w.WriteInt64(it.instId);
 					w.WriteInt64(it.hasInstAttr ? 1 : 0);
 					if (it.hasInstAttr) {
 						for (int j = 0; j < ITEM_INSTANCE_ATTR_NUM; ++j) {
-							w.WriteInt64(it.instAttr[j][0]); w.WriteInt64(it.instAttr[j][1]);
+							w.WriteInt64(it.instAttr[j][0]);
+							w.WriteInt64(it.instAttr[j][1]);
 						}
 					}
 				}
@@ -8601,33 +12907,58 @@ namespace net {
 		}
 
 		inline WPacket serialize(const McBoatSyncAttrMessage& m) {
-			WPacket w(4096); w.WriteCmd(static_cast<unsigned short>(m.cmd));
-			w.WriteInt64(m.boatId); w.WriteString(m.boatName); w.WriteString(m.shipName);
-			w.WriteString(m.shipDesc); w.WriteString(m.berthName); w.WriteInt64(m.isUpdate);
-			w.WriteInt64(m.body.partId); w.WriteInt64(m.body.model); w.WriteString(m.body.name);
+			WPacket w(4096);
+			w.WriteCmd(static_cast<unsigned short>(m.cmd));
+			w.WriteInt64(m.boatId);
+			w.WriteString(m.boatName);
+			w.WriteString(m.shipName);
+			w.WriteString(m.shipDesc);
+			w.WriteString(m.berthName);
+			w.WriteInt64(m.isUpdate);
+			w.WriteInt64(m.body.partId);
+			w.WriteInt64(m.body.model);
+			w.WriteString(m.body.name);
 			if (m.hasUpdateParts) {
-				w.WriteInt64(m.header.partId); w.WriteInt64(m.header.model); w.WriteString(m.header.name);
-				w.WriteInt64(m.engine.partId); w.WriteInt64(m.engine.model); w.WriteString(m.engine.name);
+				w.WriteInt64(m.header.partId);
+				w.WriteInt64(m.header.model);
+				w.WriteString(m.header.name);
+				w.WriteInt64(m.engine.partId);
+				w.WriteInt64(m.engine.model);
+				w.WriteString(m.engine.name);
 				for (int i = 0; i < 4; ++i) w.WriteInt64(m.motorModels[i]);
 			}
-			w.WriteInt64(m.cannonId); w.WriteString(m.cannonName);
-			w.WriteInt64(m.equipmentId); w.WriteString(m.equipmentName);
-			w.WriteInt64(m.money); w.WriteInt64(m.minAttack); w.WriteInt64(m.maxAttack);
-			w.WriteInt64(m.curEndure); w.WriteInt64(m.maxEndure);
-			w.WriteInt64(m.speed); w.WriteInt64(m.distance); w.WriteInt64(m.defence);
-			w.WriteInt64(m.curSupply); w.WriteInt64(m.maxSupply);
-			w.WriteInt64(m.consume); w.WriteInt64(m.attackTime); w.WriteInt64(m.boatCapacity);
+			w.WriteInt64(m.cannonId);
+			w.WriteString(m.cannonName);
+			w.WriteInt64(m.equipmentId);
+			w.WriteString(m.equipmentName);
+			w.WriteInt64(m.money);
+			w.WriteInt64(m.minAttack);
+			w.WriteInt64(m.maxAttack);
+			w.WriteInt64(m.curEndure);
+			w.WriteInt64(m.maxEndure);
+			w.WriteInt64(m.speed);
+			w.WriteInt64(m.distance);
+			w.WriteInt64(m.defence);
+			w.WriteInt64(m.curSupply);
+			w.WriteInt64(m.maxSupply);
+			w.WriteInt64(m.consume);
+			w.WriteInt64(m.attackTime);
+			w.WriteInt64(m.boatCapacity);
 			return w;
 		}
+
 		// =================================================================
 		//   6:  47 WriteCmd  serialize()
 		// =================================================================
 
-		//  Struct: CMD_MC_MESSAGE ( worldId + messageId) 
+		//  Struct: CMD_MC_MESSAGE ( worldId + messageId)
 		/// CMD_MC_MESSAGE ( TerminalMessage): [worldId, messageId].
-		struct McTerminalMessage { int64_t worldId = 0; int64_t messageId = 0; };
+		struct McTerminalMessage {
+			int64_t worldId = 0;
+			int64_t messageId = 0;
+		};
 
-		//  Struct: CMD_MC_BERTH_LIST 
+		//  Struct: CMD_MC_BERTH_LIST
 		/// CMD_MC_BERTH_LIST:    .
 		struct McBerthListMessage {
 			int64_t npcId = 0;
@@ -8636,51 +12967,58 @@ namespace net {
 			std::vector<std::string> names;
 		};
 
-		//  Struct: CMD_MC_APPEND_LOOK 
+		//  Struct: CMD_MC_APPEND_LOOK
 		/// CMD_MC_APPEND_LOOK:  .  .
 		struct McAppendLookMessage {
 			int64_t worldId = 0;
 			AppendLookSlot slots[ESPE_KBGRID_NUM];
 		};
 
-		//  Struct: CMD_MC_MAP_MASK 
+		//  Struct: CMD_MC_MAP_MASK
 		/// CMD_MC_MAP_MASK:   (   WriteSequence).
 		struct McMapMaskMessage {
 			int64_t worldId = 0;
 			bool hasData = false;
-			std::vector<char> data; //   
+			std::vector<char> data; //
 		};
 
-		//  Struct: CMD_MC_CHECK_PING 
+		//  Struct: CMD_MC_CHECK_PING
 		/// CMD_MC_CHECK_PING:      .
 		struct McCheckPingMessage {
 			std::vector<int64_t> randomData;
 		};
 
-		//  Struct: CMD_MC_CHEAT_CHECK 
+		//  Struct: CMD_MC_CHEAT_CHECK
 		///    .
-		struct CheatPicture { std::vector<int64_t> bytes; };
+		struct CheatPicture {
+			std::vector<int64_t> bytes;
+		};
+
 		/// CMD_MC_CHEAT_CHECK:    .
 		struct McCheatCheckMessage {
 			int64_t count = 0;
 			std::vector<CheatPicture> pictures;
 		};
 
-		//  Struct: CMD_MC_ITEM_UNLOCK_ASR 
+		//  Struct: CMD_MC_ITEM_UNLOCK_ASR
 		/// CMD_MC_ITEM_UNLOCK_ASR:   .
-		struct McItemUnlockAsrMessage { int64_t result = 0; };
+		struct McItemUnlockAsrMessage {
+			int64_t result = 0;
+		};
 
-		//  Struct: CMD_CM_ITEM_LOCK_ASR 
+		//  Struct: CMD_CM_ITEM_LOCK_ASR
 		/// CMD_CM_ITEM_LOCK_ASR:   .
-		struct McItemLockAsrMessage { int64_t result = 0; };
+		struct McItemLockAsrMessage {
+			int64_t result = 0;
+		};
 
-		//  Struct: CMD_MC_KITBAGTEMP_SYNC 
+		//  Struct: CMD_MC_KITBAGTEMP_SYNC
 		/// CMD_MC_KITBAGTEMP_SYNC:   .
 		struct McKitbagTempSyncMessage {
 			ChaKitbagInfo kitbag;
 		};
 
-		//  Struct: CMD_MC_QUERY_CHAPING ( GameServerGateServerClient) 
+		//  Struct: CMD_MC_QUERY_CHAPING ( GameServerGateServerClient)
 		/// CMD_MC_QUERY_CHAPING:     (  ).
 		struct McQueryChaPingRouteMessage {
 			int64_t srcId = 0;
@@ -8693,7 +13031,7 @@ namespace net {
 			int64_t aimNum = 1;
 		};
 
-		//  Struct: CMD_MC_QUERY_CHA ( kitbag + ) 
+		//  Struct: CMD_MC_QUERY_CHA ( kitbag + )
 		/// CMD_MC_QUERY_CHA:    (-).
 		struct McQueryChaKitbagMessage {
 			int64_t srcId = 0;
@@ -8723,34 +13061,49 @@ namespace net {
 			bool terminated = false; // - 9
 		};
 
-		//  Struct: CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_ITEM 
+		//  Struct: CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_ITEM
 
 		///    .
 		struct TradeBoatData {
 			bool hasBoat = false;
 			std::string name;
-			int64_t ship = 0; int64_t lv = 0; int64_t cexp = 0;
-			int64_t hp = 0; int64_t mxhp = 0; int64_t sp = 0; int64_t mxsp = 0;
-			int64_t mnatk = 0; int64_t mxatk = 0; int64_t def = 0;
-			int64_t mspd = 0; int64_t aspd = 0;
-			int64_t useGridNum = 0; int64_t capacity = 0; int64_t price = 0;
+			int64_t ship = 0;
+			int64_t lv = 0;
+			int64_t cexp = 0;
+			int64_t hp = 0;
+			int64_t mxhp = 0;
+			int64_t sp = 0;
+			int64_t mxsp = 0;
+			int64_t mnatk = 0;
+			int64_t mxatk = 0;
+			int64_t def = 0;
+			int64_t mspd = 0;
+			int64_t aspd = 0;
+			int64_t useGridNum = 0;
+			int64_t capacity = 0;
+			int64_t price = 0;
 		};
 
 		///     .
 		struct TradeItemData {
-			int64_t endure0 = 0; int64_t endure1 = 0;
-			int64_t energy0 = 0; int64_t energy1 = 0;
-			int64_t forgeLv = 0; int64_t valid = 0;
-			int64_t tradable = 0; int64_t expiration = 0;
-			int64_t forgeParam = 0; int64_t instId = 0;
+			int64_t endure0 = 0;
+			int64_t endure1 = 0;
+			int64_t energy0 = 0;
+			int64_t energy1 = 0;
+			int64_t forgeLv = 0;
+			int64_t valid = 0;
+			int64_t tradable = 0;
+			int64_t expiration = 0;
+			int64_t forgeParam = 0;
+			int64_t instId = 0;
 			bool hasInstAttr = false;
 			int64_t instAttr[ITEM_INSTANCE_ATTR_NUM][2] = {};
 		};
 
 		///      (TRADE_DRAGTO_ITEM).
 		struct McCharTradeItemRemoveData {
-			int64_t bagIndex = 0;   //   
-			int64_t tradeIndex = 0; //   
+			int64_t bagIndex = 0; //
+			int64_t tradeIndex = 0; //
 			int64_t count = 0;
 		};
 
@@ -8764,7 +13117,7 @@ namespace net {
 			int64_t tradeIndex = 0;
 			int64_t count = 0;
 			int64_t itemType = 0;
-			TradeEquipData equipData = TradeItemData{}; //   
+			TradeEquipData equipData = TradeItemData{}; //
 		};
 
 		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_ITEM:    .
@@ -8775,23 +13128,29 @@ namespace net {
 			std::variant<McCharTradeItemRemoveData, McCharTradeItemAddData> data;
 		};
 
-		//  Serialize:  6 
+		//  Serialize:  6
 
 		inline WPacket serialize(const McTerminalMessage& m) {
-			WPacket w(24); w.WriteCmd(CMD_MC_MESSAGE);
-			w.WriteInt64(m.worldId); w.WriteInt64(m.messageId);
+			WPacket w(24);
+			w.WriteCmd(CMD_MC_MESSAGE);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.messageId);
 			return w;
 		}
 
 		inline WPacket serialize(const McBerthListMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_BERTH_LIST);
-			w.WriteInt64(m.npcId); w.WriteInt64(m.type); w.WriteInt64(m.count);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_BERTH_LIST);
+			w.WriteInt64(m.npcId);
+			w.WriteInt64(m.type);
+			w.WriteInt64(m.count);
 			for (const auto& n : m.names) w.WriteString(n);
 			return w;
 		}
 
 		inline WPacket serialize(const McAppendLookMessage& m) {
-			WPacket w(64); w.WriteCmd(CMD_MC_APPEND_LOOK);
+			WPacket w(64);
+			w.WriteCmd(CMD_MC_APPEND_LOOK);
 			w.WriteInt64(m.worldId);
 			for (int i = 0; i < ESPE_KBGRID_NUM; ++i) {
 				w.WriteInt64(m.slots[i].lookId);
@@ -8801,9 +13160,12 @@ namespace net {
 		}
 
 		inline WPacket serialize(const McMapMaskMessage& m) {
-			WPacket w(4096); w.WriteCmd(CMD_MC_MAP_MASK);
+			WPacket w(4096);
+			w.WriteCmd(CMD_MC_MAP_MASK);
 			w.WriteInt64(m.worldId);
-			if (!m.hasData) { w.WriteInt64(0); }
+			if (!m.hasData) {
+				w.WriteInt64(0);
+			}
 			else {
 				w.WriteInt64(1);
 				w.WriteSequence(m.data.data(), static_cast<uint16_t>(m.data.size()));
@@ -8819,7 +13181,8 @@ namespace net {
 		}
 
 		inline WPacket serialize(const McCheatCheckMessage& m) {
-			WPacket w(8192); w.WriteCmd(CMD_MC_CHEAT_CHECK);
+			WPacket w(8192);
+			w.WriteCmd(CMD_MC_CHEAT_CHECK);
 			w.WriteInt64(m.count);
 			for (const auto& pic : m.pictures) {
 				w.WriteInt64(static_cast<int64_t>(pic.bytes.size()));
@@ -8829,135 +13192,187 @@ namespace net {
 		}
 
 		inline WPacket serialize(const McItemUnlockAsrMessage& m) {
-			WPacket w(16); w.WriteCmd(CMD_MC_ITEM_UNLOCK_ASR);
+			WPacket w(16);
+			w.WriteCmd(CMD_MC_ITEM_UNLOCK_ASR);
 			w.WriteInt64(m.result);
 			return w;
 		}
 
 		inline WPacket serialize(const McItemLockAsrMessage& m) {
-			WPacket w(16); w.WriteCmd(CMD_CM_ITEM_LOCK_ASR);
+			WPacket w(16);
+			w.WriteCmd(CMD_CM_ITEM_LOCK_ASR);
 			w.WriteInt64(m.result);
 			return w;
 		}
 
 		inline WPacket serialize(const McKitbagTempSyncMessage& m) {
-			WPacket w(4096); w.WriteCmd(CMD_MC_KITBAGTEMP_SYNC);
+			WPacket w(4096);
+			w.WriteCmd(CMD_MC_KITBAGTEMP_SYNC);
 			serializeChaKitbagInfo(w, m.kitbag);
 			return w;
 		}
 
 		inline WPacket serialize(const McQueryChaPingRouteMessage& m) {
-			WPacket w(256); w.WriteCmd(CMD_MC_QUERY_CHAPING);
-			w.WriteInt64(m.srcId); w.WriteString(m.chaName); w.WriteString(m.mapName);
+			WPacket w(256);
+			w.WriteCmd(CMD_MC_QUERY_CHAPING);
+			w.WriteInt64(m.srcId);
+			w.WriteString(m.chaName);
+			w.WriteString(m.mapName);
 			w.WriteInt64(m.ping);
-			w.WriteInt64(m.gatePlayerId); w.WriteInt64(m.gatePlayerAddr); w.WriteInt64(m.aimNum);
+			w.WriteInt64(m.gatePlayerId);
+			w.WriteInt64(m.gatePlayerAddr);
+			w.WriteInt64(m.aimNum);
 			return w;
 		}
 
 		inline WPacket serialize(const McQueryChaKitbagMessage& m) {
-			WPacket w(4096); w.WriteCmd(CMD_MC_QUERY_CHA);
+			WPacket w(4096);
+			w.WriteCmd(CMD_MC_QUERY_CHA);
 			w.WriteInt64(m.srcId);
 			serializeChaKitbagInfo(w, m.kitbag);
-			w.WriteInt64(m.gatePlayerId); w.WriteInt64(m.gatePlayerAddr); w.WriteInt64(m.aimNum);
+			w.WriteInt64(m.gatePlayerId);
+			w.WriteInt64(m.gatePlayerAddr);
+			w.WriteInt64(m.aimNum);
 			return w;
 		}
 
 		inline WPacket serialize(const McUpdateGuildLogsMessage& m) {
-			WPacket w(1024); w.WriteCmd(CMD_MC_NOTIACTION);
-			w.WriteInt64(m.worldId); w.WriteInt64(m.packetId);
+			WPacket w(1024);
+			w.WriteCmd(CMD_MC_NOTIACTION);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.packetId);
 			w.WriteInt64(ActionType::UPDATEGUILDLOGS);
 			w.WriteInt64(m.totalSize);
 			for (const auto& l : m.logs) {
-				w.WriteInt64(l.type); w.WriteInt64(l.time);
-				w.WriteInt64(l.parameter); w.WriteInt64(l.quantity); w.WriteInt64(l.userId);
+				w.WriteInt64(l.type);
+				w.WriteInt64(l.time);
+				w.WriteInt64(l.parameter);
+				w.WriteInt64(l.quantity);
+				w.WriteInt64(l.userId);
 			}
 			if (m.terminated) w.WriteInt64(9);
 			return w;
 		}
 
 		inline WPacket serialize(const McRequestGuildLogsMessage& m) {
-			WPacket w(1024); w.WriteCmd(CMD_MC_NOTIACTION);
-			w.WriteInt64(m.worldId); w.WriteInt64(m.packetId);
+			WPacket w(1024);
+			w.WriteCmd(CMD_MC_NOTIACTION);
+			w.WriteInt64(m.worldId);
+			w.WriteInt64(m.packetId);
 			w.WriteInt64(ActionType::REQUESTGUILDLOGS);
 			for (const auto& l : m.logs) {
-				w.WriteInt64(l.type); w.WriteInt64(l.time);
-				w.WriteInt64(l.parameter); w.WriteInt64(l.quantity); w.WriteInt64(l.userId);
+				w.WriteInt64(l.type);
+				w.WriteInt64(l.time);
+				w.WriteInt64(l.parameter);
+				w.WriteInt64(l.quantity);
+				w.WriteInt64(l.userId);
 			}
 			if (m.terminated) w.WriteInt64(9);
 			return w;
 		}
 
 		inline WPacket serialize(const McCharTradeItemMessage& m) {
-			WPacket w(512); w.WriteCmd(CMD_MC_CHARTRADE);
+			WPacket w(512);
+			w.WriteCmd(CMD_MC_CHARTRADE);
 			w.WriteInt64(CMD_MC_CHARTRADE_ITEM);
-			w.WriteInt64(m.mainChaId); w.WriteInt64(m.opType);
+			w.WriteInt64(m.mainChaId);
+			w.WriteInt64(m.opType);
 			//   : Remove  Add
 			if (auto* rem = std::get_if<McCharTradeItemRemoveData>(&m.data)) {
-				w.WriteInt64(rem->bagIndex); w.WriteInt64(rem->tradeIndex); w.WriteInt64(rem->count);
-			} else if (auto* add = std::get_if<McCharTradeItemAddData>(&m.data)) {
-				w.WriteInt64(add->itemId); w.WriteInt64(add->bagIndex);
-				w.WriteInt64(add->tradeIndex); w.WriteInt64(add->count); w.WriteInt64(add->itemType);
+				w.WriteInt64(rem->bagIndex);
+				w.WriteInt64(rem->tradeIndex);
+				w.WriteInt64(rem->count);
+			}
+			else if (auto* add = std::get_if<McCharTradeItemAddData>(&m.data)) {
+				w.WriteInt64(add->itemId);
+				w.WriteInt64(add->bagIndex);
+				w.WriteInt64(add->tradeIndex);
+				w.WriteInt64(add->count);
+				w.WriteInt64(add->itemType);
 				//    std::visit
 				std::visit([&w](auto&& arg) {
 					using T = std::decay_t<decltype(arg)>;
 					if constexpr (std::is_same_v<T, TradeBoatData>) {
 						if (arg.hasBoat) {
-							w.WriteInt64(1); w.WriteString(arg.name);
-							w.WriteInt64(arg.ship); w.WriteInt64(arg.lv);
-							w.WriteInt64(arg.cexp); w.WriteInt64(arg.hp);
-							w.WriteInt64(arg.mxhp); w.WriteInt64(arg.sp);
-							w.WriteInt64(arg.mxsp); w.WriteInt64(arg.mnatk);
-							w.WriteInt64(arg.mxatk); w.WriteInt64(arg.def);
-							w.WriteInt64(arg.mspd); w.WriteInt64(arg.aspd);
-							w.WriteInt64(arg.useGridNum); w.WriteInt64(arg.capacity);
+							w.WriteInt64(1);
+							w.WriteString(arg.name);
+							w.WriteInt64(arg.ship);
+							w.WriteInt64(arg.lv);
+							w.WriteInt64(arg.cexp);
+							w.WriteInt64(arg.hp);
+							w.WriteInt64(arg.mxhp);
+							w.WriteInt64(arg.sp);
+							w.WriteInt64(arg.mxsp);
+							w.WriteInt64(arg.mnatk);
+							w.WriteInt64(arg.mxatk);
+							w.WriteInt64(arg.def);
+							w.WriteInt64(arg.mspd);
+							w.WriteInt64(arg.aspd);
+							w.WriteInt64(arg.useGridNum);
+							w.WriteInt64(arg.capacity);
 							w.WriteInt64(arg.price);
-						} else { w.WriteInt64(0); }
-					} else if constexpr (std::is_same_v<T, TradeItemData>) {
-						w.WriteInt64(arg.endure0); w.WriteInt64(arg.endure1);
-						w.WriteInt64(arg.energy0); w.WriteInt64(arg.energy1);
-						w.WriteInt64(arg.forgeLv); w.WriteInt64(arg.valid);
-						w.WriteInt64(arg.tradable); w.WriteInt64(arg.expiration);
-						w.WriteInt64(arg.forgeParam); w.WriteInt64(arg.instId);
+						}
+						else {
+							w.WriteInt64(0);
+						}
+					}
+					else if constexpr (std::is_same_v<T, TradeItemData>) {
+						w.WriteInt64(arg.endure0);
+						w.WriteInt64(arg.endure1);
+						w.WriteInt64(arg.energy0);
+						w.WriteInt64(arg.energy1);
+						w.WriteInt64(arg.forgeLv);
+						w.WriteInt64(arg.valid);
+						w.WriteInt64(arg.tradable);
+						w.WriteInt64(arg.expiration);
+						w.WriteInt64(arg.forgeParam);
+						w.WriteInt64(arg.instId);
 						if (arg.hasInstAttr) {
 							w.WriteInt64(1);
 							for (int j = 0; j < ITEM_INSTANCE_ATTR_NUM; ++j) {
-								w.WriteInt64(arg.instAttr[j][0]); w.WriteInt64(arg.instAttr[j][1]);
+								w.WriteInt64(arg.instAttr[j][0]);
+								w.WriteInt64(arg.instAttr[j][1]);
 							}
-						} else { w.WriteInt64(0); }
+						}
+						else {
+							w.WriteInt64(0);
+						}
 					}
 				}, add->equipData);
 			}
 			return w;
 		}
 
-		//  CMD_MC_LIFESKILL_ASK (GameServerClient) 
+		//  CMD_MC_LIFESKILL_ASK (GameServerClient)
 		///  McLifeSkillMessage {type, result, text}  result  money.
 		//  : McLifeSkillMessage { type, result, text }
 
-		//  CMD_MC_LIFESKILL_ASR (GameServerClient) 
+		//  CMD_MC_LIFESKILL_ASR (GameServerClient)
 		//  : McLifeSkillAsrMessage { type, time, text }
 
-		//  CMD_MC_STORE_LIST_ASR 
+		//  CMD_MC_STORE_LIST_ASR
 		//  : McStoreListAnswerMessage { pageTotal, pageCurrent, products }
 
-		//  CMD_MC_STORE_QUERY 
+		//  CMD_MC_STORE_QUERY
 		//  : McStoreHistoryMessage { records }
 
-		//  CMD_MC_STORE_OPEN_ASR 
+		//  CMD_MC_STORE_OPEN_ASR
 		//  : McStoreOpenAnswerMessage { ... }
 
 		// =================================================================
-		//   7:  deserialize +  struct   
+		//   7:  deserialize +  struct
 		// =================================================================
 
-		//  Deserialize: McBerthListMessage 
+		//  Deserialize: McBerthListMessage
 		inline void deserialize(RPacket& pk, McBerthListMessage& m) {
-			m.npcId = pk.ReadInt64(); m.type = pk.ReadInt64(); m.count = pk.ReadInt64();
+			m.npcId = pk.ReadInt64();
+			m.type = pk.ReadInt64();
+			m.count = pk.ReadInt64();
 			m.names.resize(static_cast<size_t>(m.count));
 			for (auto& n : m.names) n = pk.ReadString();
 		}
 
-		//  Deserialize: McAppendLookMessage 
+		//  Deserialize: McAppendLookMessage
 		inline void deserialize(RPacket& pk, McAppendLookMessage& m) {
 			m.worldId = pk.ReadInt64();
 			for (int i = 0; i < ESPE_KBGRID_NUM; ++i) {
@@ -8966,7 +13381,7 @@ namespace net {
 			}
 		}
 
-		//  Deserialize: McMapMaskMessage 
+		//  Deserialize: McMapMaskMessage
 		inline void deserialize(RPacket& pk, McMapMaskMessage& m) {
 			m.worldId = pk.ReadInt64();
 			m.hasData = pk.ReadInt64() != 0;
@@ -8977,7 +13392,7 @@ namespace net {
 			}
 		}
 
-		//  Deserialize: McCheatCheckMessage 
+		//  Deserialize: McCheatCheckMessage
 		inline void deserialize(RPacket& pk, McCheatCheckMessage& m) {
 			m.count = pk.ReadInt64();
 			m.pictures.resize(static_cast<size_t>(m.count));
@@ -8988,105 +13403,168 @@ namespace net {
 			}
 		}
 
-		//  Deserialize: McKitbagTempSyncMessage 
+		//  Deserialize: McKitbagTempSyncMessage
 		inline void deserialize(RPacket& pk, McKitbagTempSyncMessage& m) {
 			deserializeChaKitbagInfo(pk, m.kitbag);
 		}
 
-		//  Deserialize: McStallSyncDataMessage 
+		//  Deserialize: McStallSyncDataMessage
 		inline void deserialize(RPacket& pk, McStallSyncDataMessage& m) {
-			m.stallerId = pk.ReadInt64(); m.num = pk.ReadInt64(); m.name = pk.ReadString();
+			m.stallerId = pk.ReadInt64();
+			m.num = pk.ReadInt64();
+			m.name = pk.ReadString();
 			m.goods.resize(static_cast<size_t>(m.num));
 			for (auto& g : m.goods) {
-				g.grid = pk.ReadInt64(); g.itemId = pk.ReadInt64(); g.count = pk.ReadInt64();
-				g.money = pk.ReadInt64(); g.itemType = pk.ReadInt64();
+				g.grid = pk.ReadInt64();
+				g.itemId = pk.ReadInt64();
+				g.count = pk.ReadInt64();
+				g.money = pk.ReadInt64();
+				g.itemType = pk.ReadInt64();
 				g.isBoat = (g.itemType == 26); // enumItemTypeBoat
 				if (g.isBoat) {
 					g.hasBoat = pk.ReadInt64() != 0;
 					if (g.hasBoat) {
-						g.boat.name = pk.ReadString(); g.boat.ship = pk.ReadInt64();
-						g.boat.lv = pk.ReadInt64(); g.boat.cexp = pk.ReadInt64();
-						g.boat.hp = pk.ReadInt64(); g.boat.mxhp = pk.ReadInt64();
-						g.boat.sp = pk.ReadInt64(); g.boat.mxsp = pk.ReadInt64();
-						g.boat.mnatk = pk.ReadInt64(); g.boat.mxatk = pk.ReadInt64();
-						g.boat.def = pk.ReadInt64(); g.boat.mspd = pk.ReadInt64();
-						g.boat.aspd = pk.ReadInt64(); g.boat.useGridNum = pk.ReadInt64();
-						g.boat.capacity = pk.ReadInt64(); g.boat.price = pk.ReadInt64();
+						g.boat.name = pk.ReadString();
+						g.boat.ship = pk.ReadInt64();
+						g.boat.lv = pk.ReadInt64();
+						g.boat.cexp = pk.ReadInt64();
+						g.boat.hp = pk.ReadInt64();
+						g.boat.mxhp = pk.ReadInt64();
+						g.boat.sp = pk.ReadInt64();
+						g.boat.mxsp = pk.ReadInt64();
+						g.boat.mnatk = pk.ReadInt64();
+						g.boat.mxatk = pk.ReadInt64();
+						g.boat.def = pk.ReadInt64();
+						g.boat.mspd = pk.ReadInt64();
+						g.boat.aspd = pk.ReadInt64();
+						g.boat.useGridNum = pk.ReadInt64();
+						g.boat.capacity = pk.ReadInt64();
+						g.boat.price = pk.ReadInt64();
 					}
-				} else {
-					g.item.endure0 = pk.ReadInt64(); g.item.endure1 = pk.ReadInt64();
-					g.item.energy0 = pk.ReadInt64(); g.item.energy1 = pk.ReadInt64();
-					g.item.forgeLv = pk.ReadInt64(); g.item.valid = pk.ReadInt64();
-					g.item.tradable = pk.ReadInt64(); g.item.expiration = pk.ReadInt64();
-					g.item.forgeParam = pk.ReadInt64(); g.item.instId = pk.ReadInt64();
+				}
+				else {
+					g.item.endure0 = pk.ReadInt64();
+					g.item.endure1 = pk.ReadInt64();
+					g.item.energy0 = pk.ReadInt64();
+					g.item.energy1 = pk.ReadInt64();
+					g.item.forgeLv = pk.ReadInt64();
+					g.item.valid = pk.ReadInt64();
+					g.item.tradable = pk.ReadInt64();
+					g.item.expiration = pk.ReadInt64();
+					g.item.forgeParam = pk.ReadInt64();
+					g.item.instId = pk.ReadInt64();
 					g.item.hasInstAttr = pk.ReadInt64() != 0;
 					if (g.item.hasInstAttr) {
 						for (int j = 0; j < ITEM_INSTANCE_ATTR_NUM; ++j) {
-							g.item.instAttr[j][0] = pk.ReadInt64(); g.item.instAttr[j][1] = pk.ReadInt64();
+							g.item.instAttr[j][0] = pk.ReadInt64();
+							g.item.instAttr[j][1] = pk.ReadInt64();
 						}
 					}
 				}
 			}
 		}
 
-		//  Deserialize: McBoatSyncAttrMessage 
+		//  Deserialize: McBoatSyncAttrMessage
 		inline void deserialize(RPacket& pk, McBoatSyncAttrMessage& m) {
-			m.boatId = pk.ReadInt64(); m.boatName = pk.ReadString(); m.shipName = pk.ReadString();
-			m.shipDesc = pk.ReadString(); m.berthName = pk.ReadString(); m.isUpdate = pk.ReadInt64();
+			m.boatId = pk.ReadInt64();
+			m.boatName = pk.ReadString();
+			m.shipName = pk.ReadString();
+			m.shipDesc = pk.ReadString();
+			m.berthName = pk.ReadString();
+			m.isUpdate = pk.ReadInt64();
 			m.body.partId = pk.ReadInt64(); // sPosID  body  reuse
-			m.body.model = pk.ReadInt64(); m.body.name = pk.ReadString();
+			m.body.model = pk.ReadInt64();
+			m.body.name = pk.ReadString();
 			m.hasUpdateParts = (m.isUpdate != 0);
 			if (m.hasUpdateParts) {
-				m.header.partId = pk.ReadInt64(); m.header.model = pk.ReadInt64(); m.header.name = pk.ReadString();
-				m.engine.partId = pk.ReadInt64(); m.engine.model = pk.ReadInt64(); m.engine.name = pk.ReadString();
+				m.header.partId = pk.ReadInt64();
+				m.header.model = pk.ReadInt64();
+				m.header.name = pk.ReadString();
+				m.engine.partId = pk.ReadInt64();
+				m.engine.model = pk.ReadInt64();
+				m.engine.name = pk.ReadString();
 				for (int i = 0; i < 4; ++i) m.motorModels[i] = pk.ReadInt64();
 			}
-			m.cannonId = pk.ReadInt64(); m.cannonName = pk.ReadString();
-			m.equipmentId = pk.ReadInt64(); m.equipmentName = pk.ReadString();
-			m.money = pk.ReadInt64(); m.minAttack = pk.ReadInt64(); m.maxAttack = pk.ReadInt64();
-			m.curEndure = pk.ReadInt64(); m.maxEndure = pk.ReadInt64();
-			m.speed = pk.ReadInt64(); m.distance = pk.ReadInt64(); m.defence = pk.ReadInt64();
-			m.curSupply = pk.ReadInt64(); m.maxSupply = pk.ReadInt64();
-			m.consume = pk.ReadInt64(); m.attackTime = pk.ReadInt64(); m.boatCapacity = pk.ReadInt64();
+			m.cannonId = pk.ReadInt64();
+			m.cannonName = pk.ReadString();
+			m.equipmentId = pk.ReadInt64();
+			m.equipmentName = pk.ReadString();
+			m.money = pk.ReadInt64();
+			m.minAttack = pk.ReadInt64();
+			m.maxAttack = pk.ReadInt64();
+			m.curEndure = pk.ReadInt64();
+			m.maxEndure = pk.ReadInt64();
+			m.speed = pk.ReadInt64();
+			m.distance = pk.ReadInt64();
+			m.defence = pk.ReadInt64();
+			m.curSupply = pk.ReadInt64();
+			m.maxSupply = pk.ReadInt64();
+			m.consume = pk.ReadInt64();
+			m.attackTime = pk.ReadInt64();
+			m.boatCapacity = pk.ReadInt64();
 		}
 
-		//  Deserialize: McCharTradeItemMessage 
+		//  Deserialize: McCharTradeItemMessage
 		inline void deserialize(RPacket& pk, McCharTradeItemMessage& m) {
-			m.mainChaId = pk.ReadInt64(); m.opType = pk.ReadInt64();
-			if (m.opType == 3) { // TRADE_DRAGTO_ITEM
+			m.mainChaId = pk.ReadInt64();
+			m.opType = pk.ReadInt64();
+			if (m.opType == 3) {
+				// TRADE_DRAGTO_ITEM
 				McCharTradeItemRemoveData d;
-				d.bagIndex = pk.ReadInt64(); d.tradeIndex = pk.ReadInt64(); d.count = pk.ReadInt64();
+				d.bagIndex = pk.ReadInt64();
+				d.tradeIndex = pk.ReadInt64();
+				d.count = pk.ReadInt64();
 				m.data = std::move(d);
-			} else { // TRADE_DRAGTO_TRADE
+			}
+			else {
+				// TRADE_DRAGTO_TRADE
 				McCharTradeItemAddData d;
-				d.itemId = pk.ReadInt64(); d.bagIndex = pk.ReadInt64();
-				d.tradeIndex = pk.ReadInt64(); d.count = pk.ReadInt64(); d.itemType = pk.ReadInt64();
+				d.itemId = pk.ReadInt64();
+				d.bagIndex = pk.ReadInt64();
+				d.tradeIndex = pk.ReadInt64();
+				d.count = pk.ReadInt64();
+				d.itemType = pk.ReadInt64();
 				bool isBoat = (d.itemType == 26); // enumItemTypeBoat
 				if (isBoat) {
 					TradeBoatData bd;
 					bd.hasBoat = pk.ReadInt64() != 0;
 					if (bd.hasBoat) {
-						bd.name = pk.ReadString(); bd.ship = pk.ReadInt64();
-						bd.lv = pk.ReadInt64(); bd.cexp = pk.ReadInt64();
-						bd.hp = pk.ReadInt64(); bd.mxhp = pk.ReadInt64();
-						bd.sp = pk.ReadInt64(); bd.mxsp = pk.ReadInt64();
-						bd.mnatk = pk.ReadInt64(); bd.mxatk = pk.ReadInt64();
-						bd.def = pk.ReadInt64(); bd.mspd = pk.ReadInt64();
-						bd.aspd = pk.ReadInt64(); bd.useGridNum = pk.ReadInt64();
-						bd.capacity = pk.ReadInt64(); bd.price = pk.ReadInt64();
+						bd.name = pk.ReadString();
+						bd.ship = pk.ReadInt64();
+						bd.lv = pk.ReadInt64();
+						bd.cexp = pk.ReadInt64();
+						bd.hp = pk.ReadInt64();
+						bd.mxhp = pk.ReadInt64();
+						bd.sp = pk.ReadInt64();
+						bd.mxsp = pk.ReadInt64();
+						bd.mnatk = pk.ReadInt64();
+						bd.mxatk = pk.ReadInt64();
+						bd.def = pk.ReadInt64();
+						bd.mspd = pk.ReadInt64();
+						bd.aspd = pk.ReadInt64();
+						bd.useGridNum = pk.ReadInt64();
+						bd.capacity = pk.ReadInt64();
+						bd.price = pk.ReadInt64();
 					}
 					d.equipData = std::move(bd);
-				} else {
+				}
+				else {
 					TradeItemData td;
-					td.endure0 = pk.ReadInt64(); td.endure1 = pk.ReadInt64();
-					td.energy0 = pk.ReadInt64(); td.energy1 = pk.ReadInt64();
-					td.forgeLv = pk.ReadInt64(); td.valid = pk.ReadInt64();
-					td.tradable = pk.ReadInt64(); td.expiration = pk.ReadInt64();
-					td.forgeParam = pk.ReadInt64(); td.instId = pk.ReadInt64();
+					td.endure0 = pk.ReadInt64();
+					td.endure1 = pk.ReadInt64();
+					td.energy0 = pk.ReadInt64();
+					td.energy1 = pk.ReadInt64();
+					td.forgeLv = pk.ReadInt64();
+					td.valid = pk.ReadInt64();
+					td.tradable = pk.ReadInt64();
+					td.expiration = pk.ReadInt64();
+					td.forgeParam = pk.ReadInt64();
+					td.instId = pk.ReadInt64();
 					td.hasInstAttr = pk.ReadInt64() != 0;
 					if (td.hasInstAttr) {
 						for (int j = 0; j < ITEM_INSTANCE_ATTR_NUM; ++j) {
-							td.instAttr[j][0] = pk.ReadInt64(); td.instAttr[j][1] = pk.ReadInt64();
+							td.instAttr[j][0] = pk.ReadInt64();
+							td.instAttr[j][1] = pk.ReadInt64();
 						}
 					}
 					d.equipData = std::move(td);
@@ -9095,73 +13573,112 @@ namespace net {
 			}
 		}
 
-		//  Deserialize: McCharTradeRequestMessage 
+		//  Deserialize: McCharTradeRequestMessage
 		inline void deserialize(RPacket& pk, McCharTradeRequestMessage& m) {
-			m.subCmd = CMD_MC_CHARTRADE_REQUEST; m.tradeType = pk.ReadInt64(); m.chaId = pk.ReadInt64();
+			m.subCmd = CMD_MC_CHARTRADE_REQUEST;
+			m.tradeType = pk.ReadInt64();
+			m.chaId = pk.ReadInt64();
 		}
 
-		//  Deserialize: McCharTradeCancelMessage 
+		//  Deserialize: McCharTradeCancelMessage
 		inline void deserialize(RPacket& pk, McCharTradeCancelMessage& m) {
-			m.subCmd = CMD_MC_CHARTRADE_CANCEL; m.chaId = pk.ReadInt64();
+			m.subCmd = CMD_MC_CHARTRADE_CANCEL;
+			m.chaId = pk.ReadInt64();
 		}
 
-		//  Deserialize: McCharTradeMoneyMessage 
+		//  Deserialize: McCharTradeMoneyMessage
 		inline void deserialize(RPacket& pk, McCharTradeMoneyMessage& m) {
-			m.subCmd = CMD_MC_CHARTRADE_MONEY; m.chaId = pk.ReadInt64(); m.money = pk.ReadInt64(); m.isIMP = pk.ReadInt64();
+			m.subCmd = CMD_MC_CHARTRADE_MONEY;
+			m.chaId = pk.ReadInt64();
+			m.money = pk.ReadInt64();
+			m.isIMP = pk.ReadInt64();
 		}
 
-		//  Deserialize: McCharTradePageMessage 
+		//  Deserialize: McCharTradePageMessage
 		inline void deserialize(RPacket& pk, McCharTradePageMessage& m) {
-			m.subCmd = CMD_MC_CHARTRADE_PAGE; m.tradeType = pk.ReadInt64(); m.mainChaId = pk.ReadInt64(); m.otherChaId = pk.ReadInt64();
+			m.subCmd = CMD_MC_CHARTRADE_PAGE;
+			m.tradeType = pk.ReadInt64();
+			m.mainChaId = pk.ReadInt64();
+			m.otherChaId = pk.ReadInt64();
 		}
 
-		//  Deserialize: McCharTradeValidateDataMessage 
+		//  Deserialize: McCharTradeValidateDataMessage
 		inline void deserialize(RPacket& pk, McCharTradeValidateDataMessage& m) {
-			m.subCmd = CMD_MC_CHARTRADE_VALIDATEDATA; m.chaId = pk.ReadInt64();
+			m.subCmd = CMD_MC_CHARTRADE_VALIDATEDATA;
+			m.chaId = pk.ReadInt64();
 		}
 
-		//  Deserialize: McCharTradeResultMessage 
+		//  Deserialize: McCharTradeResultMessage
 		inline void deserialize(RPacket& pk, McCharTradeResultMessage& m) {
-			m.subCmd = CMD_MC_CHARTRADE_RESULT; m.result = pk.ReadInt64();
+			m.subCmd = CMD_MC_CHARTRADE_RESULT;
+			m.result = pk.ReadInt64();
 		}
 
-		//  Struct + Deserialize: McHelpInfoMessage 
+		//  Struct + Deserialize: McHelpInfoMessage
 		/// CMD_MC_HELPINFO:   (NPC ).
-		struct McHelpInfoMessage { int64_t type = 0; std::string desp; int64_t soundId = 0; };
+		struct McHelpInfoMessage {
+			int64_t type = 0;
+			std::string desp;
+			int64_t soundId = 0;
+		};
+
 		inline void deserialize(RPacket& pk, McHelpInfoMessage& m) {
 			m.type = pk.ReadInt64();
-			// MIS_HELP_DESP=0, MIS_HELP_IMAGE=1, MIS_HELP_BICKER=3  ; MIS_HELP_SOUND=2  
-			if (m.type == 0 || m.type == 1 || m.type == 3) { m.desp = pk.ReadString(); }
-			else if (m.type == 2) { m.soundId = pk.ReadInt64(); }
+			// MIS_HELP_DESP=0, MIS_HELP_IMAGE=1, MIS_HELP_BICKER=3  ; MIS_HELP_SOUND=2
+			if (m.type == 0 || m.type == 1 || m.type == 3) {
+				m.desp = pk.ReadString();
+			}
+			else if (m.type == 2) {
+				m.soundId = pk.ReadInt64();
+			}
 		}
 
-		//  Struct + Deserialize: McActInfoMessage 
+		//  Struct + Deserialize: McActInfoMessage
 		/// CMD_MC_ACTINFO:   ().
-		struct McActInfoMessage { int64_t success = 0; int64_t moBean = 0; int64_t replMoney = 0; };
+		struct McActInfoMessage {
+			int64_t success = 0;
+			int64_t moBean = 0;
+			int64_t replMoney = 0;
+		};
+
 		inline void deserialize(RPacket& pk, McActInfoMessage& m) {
 			m.success = pk.ReadInt64();
-			if (m.success) { m.moBean = pk.ReadInt64(); m.replMoney = pk.ReadInt64(); }
+			if (m.success) {
+				m.moBean = pk.ReadInt64();
+				m.replMoney = pk.ReadInt64();
+			}
 		}
 
-		//  Struct + Deserialize: McItemRepairAskMessage 
+		//  Struct + Deserialize: McItemRepairAskMessage
 		/// CMD_MC_ITEM_REPAIR_ASK:     (  McItemRepairAskMcMessage).
 		//  : McItemRepairAskMcMessage { itemName, repairCost }
 
-		//  Struct + Deserialize: McTigerStopMessage 
+		//  Struct + Deserialize: McTigerStopMessage
 		/// CMD_MC_TIGER_STOP:   (  struct).
-		inline void deserialize(RPacket& pk, McTigerStopMessage& m) { m.text = pk.ReadString(); }
+		inline void deserialize(RPacket& pk, McTigerStopMessage& m) {
+			m.text = pk.ReadString();
+		}
 
-		inline void deserialize(RPacket& pk, McUpdateImpMessage& m) { m.imp = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McBoatAddMessage& m) { m.worldId = pk.ReadInt64(); }
-		inline void deserialize(RPacket& pk, McBoatClearMessage& m) { m.worldId = pk.ReadInt64(); }
+		inline void deserialize(RPacket& pk, McUpdateImpMessage& m) {
+			m.imp = pk.ReadInt64();
+		}
 
-		//  Struct + Deserialize: McRefreshSelectScreenMessage 
+		inline void deserialize(RPacket& pk, McBoatAddMessage& m) {
+			m.worldId = pk.ReadInt64();
+		}
+
+		inline void deserialize(RPacket& pk, McBoatClearMessage& m) {
+			m.worldId = pk.ReadInt64();
+		}
+
+		//  Struct + Deserialize: McRefreshSelectScreenMessage
 		/// CMD_MC_REFRESH_SELECT_SCREEN:    .
 		struct McRefreshSelectScreenMessage {
 			int64_t chaDelSlot = -1;
 			int64_t maxChaNum = 0;
 			std::vector<ChaSlotData> characters;
 		};
+
 		inline void deserialize(RPacket& pk, McRefreshSelectScreenMessage& m) {
 			m.chaDelSlot = pk.ReadInt64();
 			auto count = static_cast<size_t>(pk.ReadInt64());
@@ -9169,106 +13686,169 @@ namespace net {
 			for (auto& cha : m.characters) {
 				cha.valid = pk.ReadInt64() != 0;
 				if (cha.valid) {
-					cha.chaName = pk.ReadString(); cha.job = pk.ReadString();
-					cha.degree = pk.ReadInt64(); cha.typeId = pk.ReadInt64();
+					cha.chaName = pk.ReadString();
+					cha.job = pk.ReadString();
+					cha.degree = pk.ReadInt64();
+					cha.typeId = pk.ReadInt64();
 					cha.equipIds.resize(EQUIP_NUM);
 					for (int i = 0; i < EQUIP_NUM; ++i) cha.equipIds[i] = pk.ReadInt64();
 				}
 			}
 		}
 
-		//  Struct + Deserialize: McPkSilverMessage 
+		//  Struct + Deserialize: McPkSilverMessage
 		/// CMD_PC_PKSILVER:   PK-.
 		constexpr int MAX_PKSILVER_PLAYER_MSG = 10; // MAX_PKSILVER_PLAYER
-		struct PkSilverPlayerEntry { std::string name; int64_t level = 0; std::string profession; int64_t pkVal = 0; };
-		struct McPkSilverMessage { PkSilverPlayerEntry players[10]; };
+		struct PkSilverPlayerEntry {
+			std::string name;
+			int64_t level = 0;
+			std::string profession;
+			int64_t pkVal = 0;
+		};
+
+		struct McPkSilverMessage {
+			PkSilverPlayerEntry players[10];
+		};
+
 		inline void deserialize(RPacket& pk, McPkSilverMessage& m) {
 			for (int i = 0; i < 10; ++i) {
-				m.players[i].name = pk.ReadString(); m.players[i].level = pk.ReadInt64();
-				m.players[i].profession = pk.ReadString(); m.players[i].pkVal = pk.ReadInt64();
+				m.players[i].name = pk.ReadString();
+				m.players[i].level = pk.ReadInt64();
+				m.players[i].profession = pk.ReadString();
+				m.players[i].pkVal = pk.ReadInt64();
 			}
 		}
 
-		//  Struct + Deserialize: PcMasterRefreshMessage 
+		//  Struct + Deserialize: PcMasterRefreshMessage
 		///  /   (MSG_*_REFRESH_START).
 		struct MasterPrenticeEntry {
-			std::string group; int64_t chaId = 0; std::string chaName;
-			std::string motto; int64_t icon = 0; int64_t status = 0;
+			std::string group;
+			int64_t chaId = 0;
+			std::string chaName;
+			std::string motto;
+			int64_t icon = 0;
+			int64_t status = 0;
 		};
+
 		///   MSG_*_REFRESH_START.
 		struct MasterStartData {
-			int64_t selfChaId = 0; std::string selfName; std::string selfMotto; int64_t selfIcon = 0;
+			int64_t selfChaId = 0;
+			std::string selfName;
+			std::string selfMotto;
+			int64_t selfIcon = 0;
 			std::vector<MasterPrenticeEntry> entries;
 		};
+
 		/// CMD_PC_MASTER ():  + .
 		struct PcMasterRefreshFullMessage {
 			int64_t type = 0;
 			// MSG_*_REFRESH_ONLINE / OFFLINE / DEL:
 			int64_t chaId = 0;
 			// MSG_*_REFRESH_ADD:
-			std::string group; std::string chaName; std::string motto; int64_t icon = 0;
+			std::string group;
+			std::string chaName;
+			std::string motto;
+			int64_t icon = 0;
 			// MSG_*_REFRESH_START:
 			MasterStartData startData;
 		};
+
 		inline void deserialize(RPacket& pk, PcMasterRefreshFullMessage& m) {
 			m.type = pk.ReadInt64();
 			//  0-4: MASTER; 5-9: PRENTICE (  5)
 			int64_t localType = (m.type >= 5) ? (m.type - 5) : m.type;
-			if (localType == 0 || localType == 1 || localType == 2) { // ONLINE / OFFLINE / DEL
+			if (localType == 0 || localType == 1 || localType == 2) {
+				// ONLINE / OFFLINE / DEL
 				m.chaId = pk.ReadInt64();
-			} else if (localType == 3) { // ADD
-				m.group = pk.ReadString(); m.chaId = pk.ReadInt64();
-				m.chaName = pk.ReadString(); m.motto = pk.ReadString(); m.icon = pk.ReadInt64();
-			} else if (localType == 4) { // START
-				m.startData.selfChaId = pk.ReadInt64(); m.startData.selfName = pk.ReadString();
-				m.startData.selfMotto = pk.ReadString(); m.startData.selfIcon = pk.ReadInt64();
+			}
+			else if (localType == 3) {
+				// ADD
+				m.group = pk.ReadString();
+				m.chaId = pk.ReadInt64();
+				m.chaName = pk.ReadString();
+				m.motto = pk.ReadString();
+				m.icon = pk.ReadInt64();
+			}
+			else if (localType == 4) {
+				// START
+				m.startData.selfChaId = pk.ReadInt64();
+				m.startData.selfName = pk.ReadString();
+				m.startData.selfMotto = pk.ReadString();
+				m.startData.selfIcon = pk.ReadInt64();
 				auto grpCount = static_cast<size_t>(pk.ReadInt64());
 				for (size_t gi = 0; gi < grpCount; ++gi) {
 					auto grpName = pk.ReadString();
 					auto memCount = static_cast<size_t>(pk.ReadInt64());
 					for (size_t mi = 0; mi < memCount; ++mi) {
 						MasterPrenticeEntry e;
-						e.group = grpName; e.chaId = pk.ReadInt64();
-						e.chaName = pk.ReadString(); e.motto = pk.ReadString();
-						e.icon = pk.ReadInt64(); e.status = pk.ReadInt64();
+						e.group = grpName;
+						e.chaId = pk.ReadInt64();
+						e.chaName = pk.ReadString();
+						e.motto = pk.ReadString();
+						e.icon = pk.ReadInt64();
+						e.status = pk.ReadInt64();
 						m.startData.entries.push_back(std::move(e));
 					}
 				}
 			}
 		}
 
-		//  Struct + Deserialize: PcMasterCancelMessage 
+		//  Struct + Deserialize: PcMasterCancelMessage
 		/// CMD_PC_MASTER_CANCEL:  .
-		struct PcMasterCancelMessage { int64_t reason = 0; int64_t chaId = 0; int64_t cancelId = 0; };
+		struct PcMasterCancelMessage {
+			int64_t reason = 0;
+			int64_t chaId = 0;
+			int64_t cancelId = 0;
+		};
+
 		inline void deserialize(RPacket& pk, PcMasterCancelMessage& m) {
-			m.reason = pk.ReadInt64(); m.chaId = pk.ReadInt64(); m.cancelId = pk.ReadInt64();
+			m.reason = pk.ReadInt64();
+			m.chaId = pk.ReadInt64();
+			m.cancelId = pk.ReadInt64();
 		}
 
-		//  Struct + Deserialize: PcMasterRefreshInfoFullMessage 
+		//  Struct + Deserialize: PcMasterRefreshInfoFullMessage
 		/// CMD_PC_MASTER_REFRESHINFO / CMD_PC_PRENTICE_REFRESHINFO:   /.
 		struct PcMasterRefreshInfoFullMessage {
-			int64_t chaId = 0; std::string motto; int64_t icon = 0;
-			int64_t degree = 0; std::string job; std::string guild;
+			int64_t chaId = 0;
+			std::string motto;
+			int64_t icon = 0;
+			int64_t degree = 0;
+			std::string job;
+			std::string guild;
 		};
+
 		inline void deserialize(RPacket& pk, PcMasterRefreshInfoFullMessage& m) {
-			m.chaId = pk.ReadInt64(); m.motto = pk.ReadString(); m.icon = pk.ReadInt64();
-			m.degree = pk.ReadInt64(); m.job = pk.ReadString(); m.guild = pk.ReadString();
+			m.chaId = pk.ReadInt64();
+			m.motto = pk.ReadString();
+			m.icon = pk.ReadInt64();
+			m.degree = pk.ReadInt64();
+			m.job = pk.ReadString();
+			m.guild = pk.ReadString();
 		}
 
-		//  Struct + Deserialize: McRegisterMessage 
+		//  Struct + Deserialize: McRegisterMessage
 		/// CMD_PC_REGISTER (GateServer  Client):  .
-		struct McRegisterResponseMessage { int64_t success = 0; std::string errorMessage; };
+		struct McRegisterResponseMessage {
+			int64_t success = 0;
+			std::string errorMessage;
+		};
+
 		inline void deserialize(RPacket& pk, McRegisterResponseMessage& m) {
 			m.success = pk.ReadInt64();
 			if (!m.success) m.errorMessage = pk.ReadString();
 		}
 
-		//  Deserialize: McCharTradeValidateMessage (CMD_MC_CHARTRADE_VALIDATE) 
+		//  Deserialize: McCharTradeValidateMessage (CMD_MC_CHARTRADE_VALIDATE)
 		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_VALIDATE:  .
-		struct McCharTradeValidateMessage { int64_t subCmd = 0; int64_t chaId = 0; };
-		inline void deserialize(RPacket& pk, McCharTradeValidateMessage& m) {
-			m.subCmd = CMD_MC_CHARTRADE_VALIDATE; m.chaId = pk.ReadInt64();
-		}
+		struct McCharTradeValidateMessage {
+			int64_t subCmd = 0;
+			int64_t chaId = 0;
+		};
 
+		inline void deserialize(RPacket& pk, McCharTradeValidateMessage& m) {
+			m.subCmd = CMD_MC_CHARTRADE_VALIDATE;
+			m.chaId = pk.ReadInt64();
+		}
 	}
-} // namespace net::msg
+} // namespace Corsairs::Net::Msg

@@ -1,0 +1,185 @@
+#pragma once
+
+// GameRecordset<T> — типизированное хранилище игровых записей с загрузкой из SQLite.
+//
+// Использование:
+//   class ItemStore : public GameRecordset<CItemRecord> {
+//       CItemRecord ReadRecord(SqliteStatement& stmt) override { ... }
+//   };
+//
+//   ItemStore store;
+//   store.Load(db, "SELECT * FROM items");
+//   CItemRecord* pItem = store.Get(1001);
+
+#include "Database/SqliteDatabase.h"
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <string_view>
+#include <chrono>
+#include <source_location>
+#include <logutil.h>
+
+
+namespace Corsairs::Common::Database {
+
+template <typename T>
+class GameRecordset {
+public:
+	GameRecordset() = default;
+	virtual ~GameRecordset() = default;
+
+	GameRecordset(const GameRecordset&) = delete;
+	GameRecordset& operator=(const GameRecordset&) = delete;
+
+	// Получить запись по ID. nullptr если не найдена
+	T* Get(int id, const std::source_location& loc = std::source_location::current()) {
+		auto it = _idIndex.find(id);
+		if (it == _idIndex.end()) {
+			ToLogService("store_miss", "GET MISS id={} store={} at {}:{}", id, typeid(T).name(), loc.file_name(), loc.line());
+			return nullptr;
+		}
+		return it->second;
+	}
+
+	const T* Get(int id, const std::source_location& loc = std::source_location::current()) const {
+		auto it = _idIndex.find(id);
+		if (it == _idIndex.end()) {
+			ToLogService("store_miss", "GET MISS id={} store={} at {}:{}", id, typeid(T).name(), loc.file_name(), loc.line());
+			return nullptr;
+		}
+		return it->second;
+	}
+
+	// Получить запись по имени. nullptr если не найдена
+	T* Get(std::string_view name, const std::source_location& loc = std::source_location::current()) {
+		auto it = _nameIndex.find(std::string(name));
+		if (it == _nameIndex.end()) {
+			ToLogService("store_miss", "GET MISS name='{}' store={} at {}:{}", name, typeid(T).name(), loc.file_name(), loc.line());
+			return nullptr;
+		}
+		return it->second;
+	}
+
+	const T* Get(std::string_view name, const std::source_location& loc = std::source_location::current()) const {
+		auto it = _nameIndex.find(std::string(name));
+		if (it == _nameIndex.end()) {
+			ToLogService("store_miss", "GET MISS name='{}' store={} at {}:{}", name, typeid(T).name(), loc.file_name(), loc.line());
+			return nullptr;
+		}
+		return it->second;
+	}
+
+	// Количество загруженных записей
+	int GetCount() const {
+		return static_cast<int>(_records.size());
+	}
+
+	// Максимальный ID среди загруженных записей (аналог CRawDataSet::GetLastID)
+	int GetMaxId() const {
+		return _maxId;
+	}
+
+	// Загрузить записи из SQLite-запроса
+	bool Load(SqliteDatabase& db, std::string_view selectQuery) {
+		try {
+			auto start = std::chrono::high_resolution_clock::now();
+
+			auto stmt = db.Prepare(selectQuery);
+			_records.clear();
+			_idIndex.clear();
+			_nameIndex.clear();
+
+			// Первый проход: читаем все записи в вектор, запоминаем id/name отдельно
+			std::vector<std::pair<int, std::string>> keys;
+			while (stmt.Step()) {
+				auto [id, name, record] = ReadRecord(stmt);
+				_records.push_back(std::move(record));
+				keys.emplace_back(id, std::move(name));
+			}
+
+			// Второй проход: строим индексы (вектор больше не растёт, указатели стабильны)
+			_maxId = 0;
+			for (size_t i = 0; i < _records.size(); i++) {
+				T* ptr = &_records[i];
+				int id = keys[i].first;
+				_idIndex[id] = ptr;
+				if (!keys[i].second.empty()) {
+					_nameIndex[keys[i].second] = ptr;
+				}
+				if (id > _maxId) _maxId = id;
+			}
+
+			auto elapsed = std::chrono::high_resolution_clock::now() - start;
+			auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+
+			int minId = _maxId;
+			for (auto& [k, _] : _idIndex) {
+				if (k < minId) minId = k;
+			}
+			ToLogService("common", "GameRecordset<{}> loaded {} records in {} ms (id range: {}..{})", typeid(T).name(), _records.size(), ms, minId, _maxId);
+			return true;
+		}
+		catch (const SqliteException& e) {
+			ToLogService("errors", LogLevel::Error, "GameRecordset<{}>::Load failed: {}", typeid(T).name(), e.what());
+			return false;
+		}
+	}
+
+	// Обход всех записей
+	template <typename Fn>
+	void ForEach(Fn&& fn) {
+		for (auto& record : _records) {
+			fn(record);
+		}
+	}
+
+	template <typename Fn>
+	void ForEach(Fn&& fn) const {
+		for (const auto& record : _records) {
+			fn(record);
+		}
+	}
+
+protected:
+	// Подкласс реализует: прочитать одну запись из текущей строки SQL-запроса.
+	// Возвращает {id, name, record}.
+	struct RecordEntry {
+		int id;
+		std::string name;
+		T record;
+	};
+
+	virtual RecordEntry ReadRecord(SqliteStatement& stmt) = 0;
+
+	// Проверить, существует ли таблица tableName. Если нет — создать по createSql.
+	static void EnsureCreated(SqliteDatabase& db, std::string_view tableName, std::string_view createSql) {
+		try {
+			auto stmt = db.Prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?");
+			stmt.Bind(1, tableName);
+			if (!stmt.Step()) {
+				db.Execute(createSql);
+				ToLogService("common", "GameRecordset: created table '{}'", tableName);
+			}
+		} catch (const SqliteException& e) {
+			auto msg = std::format("GameRecordset<{}>::EnsureCreated('{}') failed: {}\nSQL: {}",
+				typeid(T).name(), tableName, e.what(), createSql);
+			ToLogService("errors", LogLevel::Error, "{}", msg);
+		}
+	}
+
+private:
+	std::vector<T> _records{};
+	std::unordered_map<int, T*> _idIndex{};
+	std::unordered_map<std::string, T*> _nameIndex{};
+	int _maxId = 0;
+};
+
+} // namespace Corsairs::Common::Database
+
+// Foundational шаблон — пробрасываем в Corsairs::Common, чтобы все sub-namespace'ы
+// (Item/Skill/Character/...) находили его через parent-namespace lookup.
+namespace Corsairs::Common {
+	using Database::GameRecordset;
+}
+

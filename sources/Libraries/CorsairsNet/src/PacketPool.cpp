@@ -3,7 +3,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace net {
+namespace Corsairs::Net {
 
 PacketPool& PacketPool::Shared() {
     static PacketPool instance;
@@ -95,4 +95,4 @@ void PacketPool::PrintStats() const {
     std::cout << std::endl;
 }
 
-} // namespace net
+} // namespace Corsairs::Net

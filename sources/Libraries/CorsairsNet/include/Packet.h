@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace net {
+namespace Corsairs::Net {
 
 // Forward declaration
 class RPacket;
@@ -76,7 +76,7 @@ public:
                   reinterpret_cast<const char*>(_data + 8), pl)
             : "";
         auto cmd = GetCmd();
-        auto name = net::GetCommandName(cmd);
+        auto name = Corsairs::Net::GetCommandName(cmd);
         std::string cmdStr = name
             ? std::string(name) + "(" + std::to_string(cmd) + ")"
             : std::to_string(cmd);
@@ -168,7 +168,7 @@ public:
                   reinterpret_cast<const char*>(_data + 8), pl)
             : "";
         auto cmd = GetCmd();
-        auto name = net::GetCommandName(cmd);
+        auto name = Corsairs::Net::GetCommandName(cmd);
         std::string cmdStr = name
             ? std::string(name) + "(" + std::to_string(cmd) + ")"
             : std::to_string(cmd);
@@ -194,4 +194,4 @@ private:
     int _allParameters;
 };
 
-} // namespace net
+} // namespace Corsairs::Net

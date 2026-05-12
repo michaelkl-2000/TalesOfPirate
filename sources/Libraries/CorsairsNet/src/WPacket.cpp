@@ -1,7 +1,7 @@
 ﻿#include "Packet.h"
 #include <algorithm>
 
-namespace net {
+namespace Corsairs::Net {
 
 // 
 //  WPacket   (msgpack payload)
@@ -208,4 +208,4 @@ void WPacket::Reset() {
     UpdateWriterPosition();
 }
 
-} // namespace net
+} // namespace Corsairs::Net

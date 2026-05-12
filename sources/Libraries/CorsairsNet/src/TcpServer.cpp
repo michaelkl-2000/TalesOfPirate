@@ -15,7 +15,7 @@ static NullStreamS nullStreamS_;
 #define TCP_SLOG nullStreamS_
 #endif
 
-namespace net {
+namespace Corsairs::Net {
 
 	// 
 	//  TcpServer  
@@ -261,4 +261,4 @@ namespace net {
 		TCP_SLOG << "[TcpServer] AcceptThread: " << std::endl;
 	}
 
-} // namespace net
+} // namespace Corsairs::Net

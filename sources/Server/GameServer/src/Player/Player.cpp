@@ -1,0 +1,1381 @@
+﻿//=============================================================================
+// FileName: Player.cpp
+// Creater: ZhangXuedong
+// Date: 2004.10.19
+// Comment: CPlayer class
+//=============================================================================
+#include "Core/stdafx.h"
+#include "Player/Player.h"
+#include "App/GameApp.h"
+#include "Db/GameDB.h"
+#include "Services/Stall/CharStall.h"
+#include "Script/LuaAPI.h"
+
+using namespace std;
+
+_DBC_USING;
+
+CPlayer::CPlayer():
+m_sGarnerWiner(0)
+{
+    Init(NULL, 0);
+	m_chGMLev = 0;
+	m_dwValidFlag = PLAYER_INVALID_FLAG;
+
+	m_CMapMask.AddMap("garner", defMAP_GARNER_WIDTH, defMAP_GARNER_HEIGHT);
+	m_CMapMask.AddMap("magicsea", defMAP_MAGICSEA_WIDTH, defMAP_MAGICSEA_HEIGHT);
+	m_CMapMask.AddMap("darkblue", defMAP_DARKBLUE_WIDTH, defMAP_DARKBLUE_HEIGHT);
+
+	// Add by lark.li 20080812 begin
+	m_CMapMask.AddMap("winterland", defMAP_DARKBLUE_WIDTH, defMAP_DARKBLUE_HEIGHT);
+	// End
+
+	//m_CMapMask.AddMap("eastgoaf", defMAP_EASTGOAF_WIDTH, defMAP_EASTGOAF_HEIGHT);
+	//m_CMapMask.AddMap("lonetower", defMAP_LONETOWER_WIDTH, defMAP_LONETOWER_HEIGHT);
+	m_lLightSize = g_lDeftMMaskLight;
+
+	//
+	m_lMoBean = 0;
+	m_lRplMoney = 0;
+	m_lVipID = 0;
+	m_strLifeSkillinfo = "";
+	// Modify by lark.li 20080317
+	memset(this->m_szPassword, 0 , sizeof(this->m_szPassword));
+	//End
+}
+
+void CPlayer::Initially()
+{
+	bIsValid = true;
+    Init(NULL, 0);
+    _nTeamMemberCnt = 0;
+	m_chGMLev = 0;	
+	_dwTeamLeaderID = 0;
+
+	m_szPassword[0] = 0;
+	m_dwDBActId = 0;
+	m_pCtrlCha = 0;
+	m_pMainCha = NULL;
+	m_dwLaunchID = -1;
+	m_sBerthID = -1;
+	m_sxPos = 0;
+	m_syPos = 0;
+	m_sDir = 0;	
+	m_byNumBoat = 0;
+	memset( m_Boat, 0, sizeof(CCharacter*)*MAX_CHAR_BOAT );
+
+	m_ulLoginCha[0] = enumLOGIN_CHA_MAIN;
+	SetMapMaskDBID(0);
+	ResetMapMaskChange();
+	m_chBankNum = 0;
+	m_pCBankNpc = 0;
+	for (char i = 0; i < MAX_BANK_NUM; i++)
+	{
+		m_lBankDBID[i] = 0;
+		m_CBank[i].Init();
+	}
+	m_szMaskMapName[0] = '\0';
+
+	m_GuildState	 = emGuildInitVal;
+	m_bIsGuildLeader = false;
+	memset( m_szGuildName, 0, defGUILD_NAME_LEN );
+	memset( m_szGuildMotto, 0, defGUILD_MOTTO_LEN );
+
+	CCharMission::Initially();
+
+	m_pMakingBoat = NULL;
+	m_pStallData = NULL;
+
+	SetChallengeType(enumFIGHT_NONE);
+	SetInRepair(false);
+	SetInForge(false);
+	m_pCRepairman = NULL;
+	m_pCForgeman = NULL;
+
+	bReceiveRequests = true;
+}
+
+void CPlayer::Finally()
+{
+	m_pMainCha->TradeClear( *this );
+	m_pMainCha->Free();
+	CCharMission::Finally();
+
+	for( int i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i] )
+		{
+			if (m_Boat[i]->GetShip())
+				g_pGameApp->m_CabinPool.Release(m_Boat[i]->GetShip());
+			m_Boat[i]->SetShip(0);
+			m_Boat[i]->Free();
+			m_Boat[i] = 0;
+		}
+	}
+
+	m_pCtrlCha = 0;
+	m_pMainCha = NULL;
+
+	// 
+	if( m_pMakingBoat )
+	{
+		m_pMakingBoat->Free();
+		m_pMakingBoat = NULL;
+	}
+
+	if( m_pStallData )
+	{
+		g_pGameApp->m_StallDataPool.Release(m_pStallData);
+		m_pStallData = NULL;
+	}
+
+	bIsValid = false;
+}
+
+void CPlayer::Free(std::source_location loc)
+{
+#if defined(_DEBUG)
+	// См. Entity::Free — трассируем call-site для ловли висячих указателей
+	// в Mission/Team/eyeshot-связях, где CPlayer* мог быть кэширован.
+	const char* act = GetActName();
+	ToLogService("common", LogLevel::Debug,
+		"CPlayer::Free ptr={} act='{}' id={:#x} handle={:#x} from {}:{} ({})",
+		static_cast<const void*>(this), act ? act : "",
+		static_cast<unsigned long>(GetID()), static_cast<unsigned long>(GetHandle()),
+		loc.file_name(), loc.line(), loc.function_name());
+#else
+	(void)loc;
+#endif
+	Finally();
+	GamePool::Instance().ReleasePlayer(this);
+}
+
+void CPlayer::SetIMP(long imp,bool sync) {
+	m_lIMP = imp<2000000000 ? imp : 2000000000; 
+	if (sync){
+		char cmd[64];
+		{
+			auto _s = std::format("SetIMPAcc('{}',{})", GetActName(), GetIMP());
+			std::strncpy(cmd, _s.c_str(), sizeof(cmd) - 1);
+			cmd[sizeof(cmd) - 1] = 0;
+		}
+		//  :  IMP  Lua
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmDoStringMessage{(int64_t)GetID(), cmd});
+		GetMainCha()->ReflectINFof(GetMainCha(), WtPk);
+	}
+}
+
+BOOL CPlayer::HasAllBoatInBerth( USHORT sBerthID )
+{
+	for( int i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i]->getAttr( ATTR_BOAT_BERTH ) == sBerthID )
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+BOOL CPlayer::HasBoatInBerth( USHORT sBerthID )
+{
+	for( int i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i]->getAttr( ATTR_BOAT_BERTH ) == sBerthID && m_Boat[i]->getAttr( ATTR_BOAT_ISDEAD ) == 0 )
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+BOOL CPlayer::HasDeadBoatInBerth( USHORT sBerthID )
+{
+	for( int i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i]->getAttr( ATTR_BOAT_BERTH ) == sBerthID && m_Boat[i]->getAttr( ATTR_BOAT_ISDEAD ) != 0 )
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+void CPlayer::GetAllBerthBoat( USHORT sBerthID, BYTE& byNumBoat, BOAT_BERTH_DATA& Data )
+{
+	BYTE byIndex = 0;
+	for( BYTE i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i]->getAttr( ATTR_BOAT_BERTH ) == sBerthID )
+		{
+			Data.byID[byIndex] = i;
+			Data.byState[byIndex] = (BYTE)m_Boat[i]->getAttr( ATTR_BOAT_ISDEAD );
+			strncpy( Data.szName[byIndex], m_Boat[i]->GetName(), BOAT_MAXSIZE_BOATNAME - 1 );
+			if( Data.byState[byIndex] != 0 )
+			{
+				//strcat( Data.szName[byIndex], "  []" );
+				strcat( Data.szName[byIndex], RES_STRING(GM_PLAYER_CPP_00001) );
+				Data.byState[byIndex] = BS_DEAD;
+			}
+			else
+			{
+				if( m_Boat[i]->getAttr( ATTR_HP ) < (m_Boat[i]->getAttr( ATTR_MXHP )/2) )
+				{
+					//strcat( Data.szName[byIndex], "  []" );
+					strcat( Data.szName[byIndex], RES_STRING(GM_PLAYER_CPP_00002) );
+					Data.byState[byIndex] = BS_NOHP;
+				}
+				else if( m_Boat[i]->getAttr( ATTR_SP ) < (m_Boat[i]->getAttr( ATTR_MXSP )/2) )
+				{
+					//strcat( Data.szName[byIndex], "  []" );	
+					strcat( Data.szName[byIndex], RES_STRING(GM_PLAYER_CPP_00003) );	
+					Data.byState[byIndex] = BS_NOSP;
+				}
+				else
+				{					
+					//strcat( Data.szName[byIndex], "  []" );
+					strcat( Data.szName[byIndex], RES_STRING(GM_PLAYER_CPP_00004) );
+					Data.byState[byIndex] = BS_GOOD;
+				}
+			}
+
+			byIndex++;
+		}
+	}
+	byNumBoat = byIndex;
+}
+
+void CPlayer::GetBerthBoat( USHORT sBerthID, BYTE& byNumBoat, BOAT_BERTH_DATA& Data )
+{
+	BYTE byIndex = 0;
+	for( BYTE i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i]->getAttr( ATTR_BOAT_BERTH ) == sBerthID && m_Boat[i]->getAttr( ATTR_BOAT_ISDEAD ) == 0 )
+		{
+			Data.byID[byIndex] = i;
+			Data.byState[byIndex] = 0;
+			strncpy( Data.szName[byIndex], m_Boat[i]->GetName(), BOAT_MAXSIZE_BOATNAME - 1 );
+			byIndex++;
+		}
+	}
+	byNumBoat = byIndex;
+}
+
+void CPlayer::GetDeadBerthBoat( USHORT sBerthID, BYTE& byNumBoat, BOAT_BERTH_DATA& Data )
+{
+	BYTE byIndex = 0;
+	for( BYTE i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i]->getAttr( ATTR_BOAT_BERTH ) == sBerthID && m_Boat[i]->getAttr( ATTR_BOAT_ISDEAD ) != 0 )
+		{			
+			Data.byID[byIndex] = i;
+			Data.byState[byIndex] = 0;
+			strncpy( Data.szName[byIndex], m_Boat[i]->GetName(), BOAT_MAXSIZE_BOATNAME - 1 );
+			byIndex++;
+		}
+	}
+	byNumBoat = byIndex;
+}
+
+BOOL CPlayer::AddBoat( CCharacter& Boat )
+{
+	if( IsBoatFull() ) return FALSE;
+	
+	Boat.SetPlayer( this );
+	m_Boat[m_byNumBoat] = &Boat;
+	m_byNumBoat++;
+
+	if( m_pMainCha )
+	{
+		Boat.SetPlayer( this );
+		Boat.m_CChaAttr.SetChangeFlag();		
+		m_pMainCha->SynAddItemCha( &Boat );
+		// m_pMainCha->BoatAdd( Boat );
+	}
+	return TRUE;
+}
+
+BOOL CPlayer::ClearBoat( DWORD dwBoatDBID )
+{
+	for( BYTE i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i] && m_Boat[i]->getAttr( ATTR_BOAT_DBID ) == dwBoatDBID )
+		{
+			if( m_pMainCha )
+			{
+				m_pMainCha->SynDelItemCha( m_Boat[i] );
+				//m_pMainCha->BoatClear( *m_Boat[i] );
+			}
+			m_Boat[i]->Free();
+
+			CCharacter* Boat[MAX_CHAR_BOAT];
+			memcpy( Boat, m_Boat, sizeof(CCharacter*)*MAX_CHAR_BOAT );
+			memset( m_Boat + i, 0, sizeof(CCharacter*)*(m_byNumBoat - i ) );
+			memcpy( m_Boat + i, Boat + i + 1, sizeof(CCharacter*)*(m_byNumBoat - i - 1) );
+			m_byNumBoat--;
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+void CPlayer::RefreshBoatAttr(void)
+{
+	for (BYTE i = 0; i < m_byNumBoat; i++)
+	{
+		if (m_Boat[i])
+			g_luaAPI.Call("Ship_ExAttrCheck", GetMainCha(), m_Boat[i]);
+	}
+}
+
+CCharacter* CPlayer::GetBoat( DWORD dwBoatDBID )
+{
+	for( BYTE i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i] && m_Boat[i]->getAttr( ATTR_BOAT_DBID ) == dwBoatDBID )
+		{
+			return m_Boat[i];
+		}
+	}
+	return NULL;
+}
+
+BYTE CPlayer::GetBoatIndexByDBID(DWORD dwBoatDBID)
+{
+	for( BYTE i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i] && m_Boat[i]->getAttr( ATTR_BOAT_DBID ) == dwBoatDBID )
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+CCharacter* CPlayer::GetLuanchOut()
+{
+	if( m_dwLaunchID == -1 ) {
+		return NULL;
+	}
+
+	for( int i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i]->getAttr( ATTR_BOAT_DBID ) == m_dwLaunchID )
+		{
+			return m_Boat[i];
+		}
+	}
+	return NULL;
+}
+
+void CPlayer::SetBerth( USHORT sBerthID, USHORT sxPos, USHORT syPos, USHORT sDir )
+{
+	m_sBerthID = sBerthID;
+	m_sxPos = sxPos;
+	m_syPos = syPos;
+	m_sDir = sDir;
+}
+
+void CPlayer::GetBerth( USHORT& sBerthID, USHORT& sxPos, USHORT& syPos, USHORT& sDir )
+{
+	sBerthID = m_sBerthID;
+	sxPos = m_sxPos;
+	syPos = m_syPos;
+	sDir = m_sDir;
+}
+
+// 
+// 
+void CPlayer::AddTeamMember(uplayer *pUPlayer)
+{
+	//LG("team", "[%s]: [dbid = %d] [gate_addr=%d]\n", GetCtrlCha()->GetLogName(), pUPlayer->m_dwDBChaId, pUPlayer->m_ulGateAddr);
+	if(_nTeamMemberCnt>=MAX_TEAM_MEMBER)
+	{
+		//LG("team", "Team[%d], \n", MAX_TEAM_MEMBER);
+		return;
+	}
+	_Team[_nTeamMemberCnt] = *pUPlayer;
+	_nTeamMemberCnt++;
+	//LG("team", "  %d\n", _nTeamMemberCnt);
+}
+
+// 
+void CPlayer::ClearTeamMember()
+{
+    _dwTeamLeaderID = 0;
+	NoticeTeamLeaderID();
+
+	_nTeamMemberCnt = 0;
+}
+
+void CPlayer::LeaveTeam()
+{
+	ClearTeamMember();
+}
+
+void CPlayer::UpdateTeam()
+{
+}
+
+//  : Player
+void CPlayer::NoticeTeamMemberData()
+{
+	int	nTMemberCnt = GetTeamMemberCnt();
+	if(nTMemberCnt==0) return;
+
+	CCharacter *pCha = GetCtrlCha();
+	CCharacter *pMainCha = pCha->GetPlayer()->GetMainCha();
+	
+	
+	//LG("team", "[%s][%d]\n", pCha->GetName(), nTMemberCnt);
+
+	//  :      
+	auto wpk = Corsairs::Net::Msg::serializeMcTeamMemberData(
+		pMainCha->GetID(),
+		static_cast<int64_t>((long)pCha->getAttr(ATTR_HP)),
+		static_cast<int64_t>((long)pCha->getAttr(ATTR_MXHP)),
+		static_cast<int64_t>((long)pCha->getAttr(ATTR_SP)),
+		static_cast<int64_t>((long)pCha->getAttr(ATTR_MXSP)),
+		static_cast<int64_t>(pMainCha->getAttr(ATTR_LV))
+	);
+	pMainCha->WriteLookData(wpk, LOOK_TEAM);
+
+	SENDTOCLIENT2(wpk, nTMemberCnt, _Team);
+}
+
+void CPlayer::NoticeTeamLeaderID(void)
+{
+	int	nTMemberCnt = GetTeamMemberCnt();
+	if(nTMemberCnt==0) return;
+
+	CCharacter *pCha = GetCtrlCha();
+
+	//  :  ID  
+	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McSynTLeaderIdMessage{pCha->GetID(), getTeamLeaderID()});
+
+	SENDTOCLIENT2(pk, nTMemberCnt, _Team);
+	pCha->NotiChgToEyeshot(pk);
+	//pCha->ReflectINFof(pCha, pk);
+
+}
+
+// 
+CCharacter* CPlayer::GetTeamMemberCha(int nNo)
+{
+	CPlayer *pOther = g_pGameApp->GetPlayerByDBID(_Team[nNo].m_dwDBChaId);
+	if (!pOther)
+		return 0;
+	return pOther->GetCtrlCha();
+}
+
+CPlayer* CPlayer::GetNextTeamPly(void)
+{
+	Short	sMemCnt = (Short)GetTeamMemberCnt();
+	CPlayer	*pCPly;
+	while (m_sGetTeamPlyCount < sMemCnt)
+	{
+		pCPly = g_pGameApp->GetPlayerByDBID(_Team[m_sGetTeamPlyCount++].m_dwDBChaId);
+		if (pCPly)
+			return pCPly;
+	}
+	return 0;
+}
+
+bool CPlayer::SetChallengeParam(dbc::Char chParamID, dbc::Long lParamVal)
+{
+	m_lChallengeParam[chParamID] = lParamVal;
+
+	return true;
+}
+
+Long CPlayer::GetChallengeParam(dbc::Char chParamID)
+{
+	return m_lChallengeParam[chParamID];
+}
+
+bool CPlayer::HasChallengeObj(void)
+{
+	return GetChallengeType() != enumFIGHT_NONE ? true : false;
+}
+
+void CPlayer::ClearChallengeObj(bool bAll)
+{
+	if (!HasChallengeObj())
+		return;
+
+	if (bAll)
+	{
+		Char	chLoop = (Char)GetChallengeParam(0);
+		if (chLoop > MAX_TEAM_MEMBER * 2)
+			chLoop = MAX_TEAM_MEMBER * 2;
+		CPlayer	*pCPly;
+		for (Char i = 0; i < chLoop; i++)
+		{
+			pCPly = g_pGameApp->IsValidPlayer(GetChallengeParam(i * 2 + 2), GetChallengeParam(i * 2 + 2 + 1));
+			if (!pCPly)
+				continue;
+			pCPly->SetChallengeType(enumFIGHT_NONE);
+		}
+	}
+
+	SetChallengeType(enumFIGHT_NONE);
+}
+
+// chPosType 1.2
+bool CPlayer::SetRepairPosInfo(dbc::Char chPosType, dbc::Char chPosID)
+{
+	m_chRepairPosType = chPosType;
+	m_chRepairPosID = chPosID;
+
+	CCharacter	*pCCha = GetCtrlCha();
+	if (chPosType == 1)
+	{
+		if (chPosID < enumEQUIP_HEAD || chPosID >= enumEQUIP_NUM)
+			return false;
+		if (!g_IsRealItemID(pCCha->m_SChaPart.SLink[chPosID].sID))
+			return false;
+		m_SRepairItem = pCCha->m_SChaPart.SLink[chPosID];
+		m_pSRepairItem = &pCCha->m_SChaPart.SLink[chPosID];
+	}
+	else if (chPosType == 2)
+	{
+		SItemGrid	*pSItemCont = pCCha->m_CKitbag.GetGridContByID(chPosID);
+		if (!pSItemCont)
+			return false;
+		m_SRepairItem = *pSItemCont;
+		m_pSRepairItem = pSItemCont;
+	}
+
+	return true;
+}
+
+bool CPlayer::OpenRepair(CCharacter *pCNpc)
+{
+	m_pCRepairman = pCNpc;
+	GetCtrlCha()->SynBeginItemRepair();
+	return true;
+}
+
+bool CPlayer::OpenForge(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemForge();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+// Add by lark.li 20080514 begin
+bool CPlayer::OpenLottery(CCharacter *pCNpc)
+{
+	//SystemNotice("");
+
+	m_pCLotteryman = pCNpc;
+	GetCtrlCha()->SynBeginItemLottery();
+	return true;
+}
+// End
+
+bool CPlayer::OpenUnite(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemUnite();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenMilling(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemMilling();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenFusion(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemFusion();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenUpgrade(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemUpgrade();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenEidolonMetempsychosis(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemEidolonMetempsychosis();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenEidolonFusion(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemEidolonFusion();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenPurify(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemPurify();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenFix(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemFix();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenEnergy(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginItemEnergy();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenGetStone(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginGetStone();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+bool CPlayer::OpenTiger(CCharacter *pCNpc)
+{
+	if (IsInForge())
+	{
+		//SystemNotice("!");
+		SystemNotice(RES_STRING(GM_PLAYER_CPP_00005));
+		return false;
+	}
+	m_pCForgeman = pCNpc;
+	GetCtrlCha()->SynBeginTiger();
+	GetCtrlCha()->ForgeAction();
+	return true;
+}
+
+void CPlayer::SystemNotice( const char szData[], ... )
+{
+	// Modify by lark.li 20080801 begin
+	char szTemp[250];
+	memset(szTemp, 0, sizeof(szTemp));
+	va_list list;
+	va_start( list, szData );
+	std::vsnprintf(szTemp, sizeof(szTemp) - 1, szData, list );
+	// End
+	va_end( list );
+
+	//  :   +  trailer  
+	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McSysInfoMessage{szTemp});
+	packet.WriteInt64(GetDBChaId());
+	packet.WriteInt64(GetGateAddr());
+	packet.WriteInt64(1);
+
+	GetGate()->SendData(packet);
+}
+
+bool CPlayer::RefreshMapMask(const char *szMapName, long lPosX, long lPosY)
+{
+	if (!strcmp(szMapName, m_szMaskMapName))
+	{
+		if (m_CMapMask.UpdateMapMask((char *)szMapName, lPosX, lPosY, m_lLightSize))
+			SetMapMaskChange();
+		return true;
+	}
+
+	return false;
+}
+
+bool CPlayer::AddBank(void)
+{
+	return game_db.CreatePlyBank(*this);
+}
+
+bool CPlayer::SaveBank(char chBankNO)
+{
+	return game_db.SavePlyBank(*this, chBankNO);
+}
+
+bool CPlayer::SetBankChangeFlag(char chBankNO, bool bChange)
+{
+	if (GetCurBankNum() == 0)
+		return true;
+
+	char	chStart, chEnd;
+	if (chBankNO < 0)
+	{
+		chStart = 0;
+		chEnd = GetCurBankNum() - 1;
+	}
+	else
+	{
+		if (chBankNO >= GetCurBankNum())
+			return false;
+		chStart = chEnd = chBankNO;
+	}
+
+	CKitbag	*pCBank;
+	for (char i = chStart; i <= chEnd; i++)
+	{
+		pCBank = GetBank(i);
+		if (!pCBank)
+			continue;
+		pCBank->SetChangeFlag(bChange);
+	}
+
+	return true;
+}
+
+
+bool CPlayer::SynGuildBank(CKitbag * bag, char chType){
+	int canSeeBank = (m_pMainCha->guildPermission & emGldPermViewBank);
+	
+	//  :     std::variant
+	Corsairs::Net::Msg::McCharacterActionMessage msg{};
+	msg.worldId = m_pMainCha->GetID();
+	msg.packetId = m_pMainCha->m_ulPacketID;
+	msg.actionType = Corsairs::Net::Msg::ActionType::GUILDBANK;
+	if (canSeeBank != emGldPermViewBank) {
+		CKitbag emptyBag{};
+		emptyBag.SetCapacity(0);
+		msg.data = m_pMainCha->BuildKitbagInfo(emptyBag, chType);
+	} else {
+		msg.data = m_pMainCha->BuildKitbagInfo(*bag, chType);
+	}
+	auto WtPk = Corsairs::Net::Msg::serialize(msg);
+	m_pMainCha->ReflectINFof(m_pMainCha, WtPk);
+	return true;
+}
+
+bool CPlayer::SynBank(char chBankNO, char chType)
+{
+	if (GetCurBankNum() == 0)
+		return true;
+
+	char chStart, chEnd;
+	if (chBankNO < 0)
+	{
+		chStart = 0;
+		chEnd = GetCurBankNum() - 1;
+	}
+	else
+	{
+		if (chBankNO >= GetCurBankNum())
+			return false;
+		chStart = chEnd = chBankNO;
+	}
+
+	//  :    std::variant
+	Corsairs::Net::Msg::McCharacterActionMessage msg{};
+	msg.worldId = m_pCtrlCha->GetID();
+	msg.packetId = m_pCtrlCha->m_ulPacketID;
+	msg.actionType = Corsairs::Net::Msg::ActionType::BANK;
+	msg.data = Corsairs::Net::Msg::ChaKitbagInfo{};
+	//    :     ,
+	//      kitbag
+	bool firstBank = true;
+	for (char i = chStart; i <= chEnd; i++)
+	{
+		CKitbag* pCBank = GetBank(i);
+		if (!pCBank)
+			continue;
+		if (firstBank) {
+			msg.data = m_pCtrlCha->BuildKitbagInfo(*pCBank, chType);
+			firstBank = false;
+		} else {
+			auto extra = m_pCtrlCha->BuildKitbagInfo(*pCBank, chType);
+			auto& kitbag = std::get<Corsairs::Net::Msg::ChaKitbagInfo>(msg.data);
+			kitbag.items.insert(kitbag.items.end(), extra.items.begin(), extra.items.end());
+		}
+	}
+	auto WtPk = Corsairs::Net::Msg::serialize(msg);
+	m_pCtrlCha->ReflectINFof(m_pCtrlCha, WtPk);
+
+	return true;
+}
+
+bool CPlayer::BankCanOpen(CCharacter *pCNpc)
+{
+	CCharacter	*pCCtrlCha = GetCtrlCha();
+	if (pCCtrlCha != GetMainCha())
+	{
+		//pCCtrlCha->SystemNotice("");
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00006));
+		return false;
+	}
+	if (m_pCBankNpc)
+	{
+		//pCCtrlCha->SystemNotice("");
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00007));
+		return false;
+	}
+	if (!pCNpc)
+	{
+		//pCCtrlCha->SystemNotice("NPC");
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00008));
+		return false;
+	}
+	if (pCCtrlCha->HasTradeAction())
+	{
+		//pCCtrlCha->SystemNotice("");
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00009));
+		return false;
+	}
+	// Npc
+	if (!pCCtrlCha->IsRangePoint(pCNpc->GetPos(), defBANK_DISTANCE))
+	{
+		//pCCtrlCha->SystemNotice("");
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00010));
+		return false;
+	}
+	if (!pCCtrlCha->TradeAction(true))
+	{
+		//pCCtrlCha->SystemNotice("");
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00011));
+		return false;
+	}
+
+	return true;
+}
+
+bool CPlayer::OpenBank(CCharacter *pCNpc)
+{
+	CCharacter	*pCCtrlCha = GetCtrlCha();
+
+	if (!SetBankChangeFlag(0))
+	{
+		pCCtrlCha->TradeAction(false);
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00012));
+		return false;
+	}
+	if (!SynBank(0))
+	{
+		pCCtrlCha->TradeAction(false);
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00012));
+		return false;
+	}
+	m_pCBankNpc = pCNpc;
+	return true;
+}
+
+bool CPlayer::GetGuildGold(){
+	CCharacter	*pCCtrlCha = GetCtrlCha();
+	int guildID = pCCtrlCha->GetGuildID();
+	if (guildID == 0 ){
+		return false;
+	}
+	int canSeeBank = (pCCtrlCha->guildPermission & emGldPermViewBank);
+	if (canSeeBank == emGldPermViewBank){
+		unsigned long long gold = game_db.GetGuildBankGold(guildID);
+		//  :    
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McUpdateGuildGoldMessage{to_string(gold).c_str()});
+		pCCtrlCha->ReflectINFof(pCCtrlCha, WtPk);
+		return true;
+	}
+	return false;
+}
+
+bool CPlayer::OpenGuildBank()
+{
+	CCharacter	*pCCtrlCha = GetCtrlCha();
+
+	if (!SetBankChangeFlag(0))
+	{
+		pCCtrlCha->TradeAction(false);
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00012));
+		return false;
+	}
+
+	if (this->m_lGuildID == 0){
+		pCCtrlCha->TradeAction(false);
+		pCCtrlCha->SystemNotice("You are not in a guild.");
+		return false;
+	}
+	
+	int canOpen = (this->GetMainCha()->guildPermission&emGldPermViewBank);
+	if (canOpen != emGldPermViewBank){
+		pCCtrlCha->TradeAction(false);
+		pCCtrlCha->SystemNotice("You do not have permission to view the guild bank.");
+		return false;
+	}
+	CKitbag bag;
+	if (!game_db.GetGuildBank(this->m_lGuildID, &bag)){
+		pCCtrlCha->TradeAction(false);
+		pCCtrlCha->SystemNotice("Unknown Error");
+		return false;
+	}
+	if (!SynGuildBank(&bag,0))
+	{
+		pCCtrlCha->TradeAction(false);
+		pCCtrlCha->SystemNotice(RES_STRING(GM_PLAYER_CPP_00012));
+		return false;
+	}
+	return true;
+}
+
+void CPlayer::CloseBank(void)
+{
+	m_pCBankNpc = 0;
+	GetMainCha()->TradeAction(false);
+}
+
+bool CPlayer::SetBankSaveFlag(char chBankNO, bool bChange)
+{
+	if (GetCurBankNum() == 0)
+		return false;
+
+	char	chStart, chEnd;
+	if (chBankNO < 0)
+	{
+		chStart = 0;
+		chEnd = GetCurBankNum() - 1;
+	}
+	else
+	{
+		if (chBankNO >= GetCurBankNum())
+			return false;
+		chStart = chEnd = chBankNO;
+	}
+
+	for (char i = chStart; i <= chEnd; i++)
+		m_bBankChange[i] = bChange;
+
+	return true;
+}
+
+bool CPlayer::BankWillSave(char chBankNO)
+{
+	if (GetCurBankNum() == 0 || chBankNO >= GetCurBankNum())
+		return false;
+
+	return m_bBankChange[chBankNO];
+}
+
+bool CPlayer::BankHasItem(USHORT sItemID, USHORT& sCount)
+{
+	int nCount = 0;
+	CItemRecord* pItem = GetItemRecordInfo( sItemID );
+	if( pItem == NULL )
+	{
+		//SystemNotice( "BankHasItem:!ID = %d", sItemID );
+		SystemNotice( RES_STRING(GM_PLAYER_CPP_00013), sItemID );
+		return FALSE;
+	}
+
+	USHORT sNum = m_CBank[0].GetUseGridNum();
+	SItemGrid *pGridCont;
+	if( !pItem->GetIsPile() )
+	{
+		for( int i = 0; i < sNum; i++ )
+		{
+			pGridCont = m_CBank[0].GetGridContByNum( i );
+			if( pGridCont )
+			{
+				if( sItemID == pGridCont->sID )
+				{
+					nCount++;
+					if( nCount >= sCount )
+						break;
+				}
+			}
+		}
+	}
+	else
+	{
+		for( int i = 0; i < sNum; i++ )
+		{
+			pGridCont = m_CBank[0].GetGridContByNum( i );
+			if( pGridCont )
+			{
+				if( sItemID == pGridCont->sID )
+				{
+					nCount += (USHORT)pGridCont->sNum;;
+					if( nCount >= sCount )
+						break;
+				}
+			}
+		}
+	}
+
+	return nCount >= sCount;
+}
+
+char* CPlayer::BankDBIDData2String(char *szSStateBuf, int nLen)
+{
+	if (!szSStateBuf) return NULL;
+
+	char	szData[512];
+	int		nBufLen = 0, nDataLen;
+	szSStateBuf[0] = '\0';
+
+	for (char i = 0; i < m_chBankNum; i++)
+	{
+		{
+			auto _s = std::format("{}", m_lBankDBID[i]);
+			std::strncpy(szData, _s.c_str(), sizeof(szData) - 1);
+			szData[sizeof(szData) - 1] = 0;
+		}
+		nDataLen = (int)strlen(szData);
+		if (nBufLen + nDataLen >= nLen) return NULL;
+		strcat(szSStateBuf, szData);
+		nBufLen += nDataLen;
+
+		if (i < m_chBankNum - 1)
+		{
+			std::strncpy(szData, ",", sizeof(szData) - 1);
+			szData[sizeof(szData) - 1] = 0;
+			nDataLen = (int)strlen(szData);
+			if (nBufLen + nDataLen >= nLen) return NULL;
+			strcat(szSStateBuf, szData);
+			nBufLen += nDataLen;
+		}
+	}
+
+	return szSStateBuf;
+}
+
+bool CPlayer::Strin2BankDBIDData(std::string &strData)
+{
+	if (!strcmp(strData.c_str(), ""))
+		return true;
+
+	std::string strList[MAX_BANK_NUM];
+	int nSegNum = Util_ResolveTextLine(strData.c_str(), strList, MAX_BANK_NUM, ',');
+	if (nSegNum > MAX_BANK_NUM)
+		return false;
+
+	short	sTCount = 0;
+	for (int i = 0; i < nSegNum; i++)
+	{
+		AddBankDBID(Str2Int(strList[i]));
+	}
+
+	return true;
+}
+
+void CPlayer::CheckChaItemFinalData()
+{
+	// 
+	cChar	*szScript = "check_item_final_data";
+	CCharacter	*pCMainCha = GetMainCha();
+	for (int i = 0; i < enumEQUIP_NUM; i++)
+	{
+		if (g_IsRealItemID(pCMainCha->m_SChaPart.SLink[i].sID))
+		{
+			pCMainCha->m_SChaPart.SLink[i].InitAttr();
+			g_luaAPI.Call(szScript, &pCMainCha->m_SChaPart.SLink[i]);
+		}
+	}
+
+	//
+	SItemGrid	*pGridCont;
+	Short	sUseNum = pCMainCha->m_CKitbag.GetUseGridNum();
+	for (int i = 0; i < sUseNum; i++)
+	{
+		pGridCont = pCMainCha->m_CKitbag.GetGridContByNum(i);
+		if (!pGridCont)
+			continue;
+		pGridCont->InitAttr();
+		g_luaAPI.Call(szScript, pGridCont);
+	}
+
+	//
+	for (int j = 0; j < MAX_BANK_NUM; j++)
+	{
+		sUseNum = m_CBank[j].GetUseGridNum();
+		for (int i = 0; i < sUseNum; i++)
+		{
+			pGridCont = m_CBank[j].GetGridContByNum(i);
+			if (!pGridCont)
+				continue;
+			pGridCont->InitAttr();
+			g_luaAPI.Call(szScript, pGridCont);
+		}
+	}
+
+	// 
+	//for (int i = 0; i < m_byNumBoat; i++)
+	//{
+	//	if (m_Boat[i])
+	//	{
+	//		pGridCont = m_Boat[i]->m_CKitbag.GetGridContByNum(i);
+	//		if (!pGridCont)
+	//			continue;
+	//		pGridCont->InitAttr();
+	//		g_CParser.DoString(szScript, enumSCRIPT_RETURN_NONE, 0, enumSCRIPT_PARAM_LIGHTUSERDATA, 1, pGridCont, DOSTRING_PARAM_END);
+	//	}
+	//}
+}
+
+bool CPlayer::String2BankData(char chBankNO, std::string &strData)
+{
+	if (::String2KitbagData(GetBank(chBankNO), strData))
+	{
+		if (m_pMainCha)
+			m_pMainCha->CheckBagItemValid(GetBank(chBankNO));
+		return true;
+	}
+
+	return false;
+}
+
+void CPlayer::Run(DWORD dwCurTime)
+{
+	if (HasChallengeObj())
+		if (m_timerChallenge.IsOK(dwCurTime))
+		{
+			//SystemNotice("!");
+			SystemNotice(RES_STRING(GM_PLAYER_CPP_00014));
+			ClearChallengeObj(false);
+		}
+}
+
+// ============================================================================
+// Ранее inline-методы из Player.h, вынесены в .cpp 2026-04-22.
+// ============================================================================
+
+void CPlayer::Init(GateServer* pGate, dbc::uLong ulGtAddr) {
+	SetGate(pGate);
+	SetGateAddr(ulGtAddr);
+	SetDBChaId(0);
+}
+
+bool        CPlayer::IsValidFlag()          { return m_dwValidFlag == PLAYER_INVALID_FLAG; }
+
+void CPlayer::SetPassword(const char szPassword[]) {
+	strncpy(m_szPassword, szPassword, ROLE_MAXSIZE_PASSWORD2);
+}
+const char* CPlayer::GetPassword()          { return m_szPassword; }
+
+void        CPlayer::SetID(dbc::Long lID)   { m_lID = lID; }
+dbc::Long   CPlayer::GetID(void)            { return m_lID; }
+
+void        CPlayer::SetHandle(dbc::Long lHandle) { m_lHandle = lHandle; }
+dbc::Long   CPlayer::GetHandle(void)              { return m_lHandle; }
+
+bool        CPlayer::IsPlayer(void)         { return bIsValid && (GetGate() != nullptr); }
+
+void        CPlayer::OnLogoff()             { /* player hook */ }
+
+bool        CPlayer::IsValid(void)          { return bIsValid; }
+
+void        CPlayer::SetActLoginID(DWORD id){ m_dwLoginID = id; }
+DWORD       CPlayer::GetActLoginID()        { return m_dwLoginID; }
+
+void        CPlayer::SetDBActId(DWORD v)    { m_dwDBActId = v; }
+DWORD       CPlayer::GetDBActId(void)       { return m_dwDBActId; }
+
+void CPlayer::SetActName(dbc::cChar* szActName) {
+	strncpy(m_chActName, szActName, ACT_NAME_LEN - 1);
+	m_chActName[ACT_NAME_LEN - 1] = 0;
+}
+dbc::cChar* CPlayer::GetActName(void)       { return m_chActName; }
+
+void        CPlayer::SetGMLev(dbc::Char v)  { m_chGMLev = v; }
+dbc::uChar  CPlayer::GetGMLev(void)         { return static_cast<dbc::uChar>(m_chGMLev); }
+
+void        CPlayer::SetMapMaskDBID(long v) { m_lMapMaskDBID = v; }
+long        CPlayer::GetMapMaskDBID(void)   { return m_lMapMaskDBID; }
+
+void        CPlayer::SetBankDBID(long lID, char chBankNO) { m_lBankDBID[chBankNO] = lID; }
+long        CPlayer::GetBankDBID(char chBankNO)           { return m_lBankDBID[chBankNO]; }
+
+long        CPlayer::GetIMP()               { return m_lIMP; }
+
+void CPlayer::SetLoginCha(dbc::uLong ulType, dbc::uLong ulID) {
+	m_ulLoginCha[0] = ulType;
+	m_ulLoginCha[1] = ulID;
+}
+dbc::uLong  CPlayer::GetLoginChaType(void)  { return m_ulLoginCha[0]; }
+dbc::uLong  CPlayer::GetLoginChaID(void)    { return m_ulLoginCha[1]; }
+
+bool        CPlayer::CanReceiveRequests()          { return bReceiveRequests; }
+void        CPlayer::SetCanReceiveRequests(bool x) { bReceiveRequests = x; }
+int         CPlayer::GetTeamMemberCnt()            { return _nTeamMemberCnt; }
+
+DWORD       CPlayer::GetTeamMemberDBID(int nNo)    { return _Team[nNo].m_dwDBChaId; }
+DWORD       CPlayer::getTeamLeaderID()             { return _dwTeamLeaderID; }
+void        CPlayer::setTeamLeaderID(DWORD dwID)   { _dwTeamLeaderID = dwID; }
+
+bool        CPlayer::IsTeamLeader(void)     { return getTeamLeaderID() == GetID(); }
+bool        CPlayer::HasTeam(void)          { return getTeamLeaderID() != 0; }
+void        CPlayer::BeginGetTeamPly(void)  { m_sGetTeamPlyCount = 0; }
+
+void        CPlayer::SetChallengeType(dbc::Char chType) { m_chChallengeType = chType; }
+dbc::Char   CPlayer::GetChallengeType(void)             { return m_chChallengeType; }
+
+void        CPlayer::StartChallengeTimer(void) { m_timerChallenge.Begin(30 * 1000); }
+
+CCharacter* CPlayer::GetRepairman(void)     { return m_pCRepairman; }
+SItemGrid*  CPlayer::GetRepairItem(void)    { return m_pSRepairItem; }
+bool        CPlayer::CheckRepairItem(void)  { return m_SRepairItem == *m_pSRepairItem; }
+bool        CPlayer::IsRepairEquipPos(void) { return m_chRepairPosType == 1; }
+dbc::Char   CPlayer::GetRepairPosID(void)   { return m_chRepairPosID; }
+bool        CPlayer::IsInRepair(void)       { return m_bInRepair; }
+void        CPlayer::SetInRepair(bool bInR) { m_bInRepair = bInR; }
+
+CCharacter* CPlayer::GetForgeman(void)      { return m_pCForgeman; }
+bool        CPlayer::IsInForge(void)        { return m_bInForge; }
+bool        CPlayer::IsInLifeSkill(void)    { return m_bInLiftSkill; }
+void        CPlayer::SetInForge(bool v)     { m_bInForge = v; }
+void        CPlayer::SetInLifeSkill(bool v) { m_bInLiftSkill = v; }
+
+void CPlayer::SetForgeInfo(dbc::Char chType, SForgeItem* pSItem) {
+	m_chForgeType = chType;
+	m_SForgeItem  = *pSItem;
+}
+void CPlayer::SetLifeSkillInfo(long lType, SLifeSkillItem* pLifeSkill) {
+	m_lLifeSkillType  = lType;
+	m_pSLifeSkillItem = *pLifeSkill;
+}
+dbc::Char       CPlayer::GetForgeType(void)    { return m_chForgeType; }
+SForgeItem*     CPlayer::GetForgeItem(void)    { return &m_SForgeItem; }
+SLifeSkillItem* CPlayer::GetLifeSkillItem()    { return &m_pSLifeSkillItem; }
+
+void        CPlayer::SetMainCha(CCharacter* v) { m_pMainCha = v; }
+void        CPlayer::SetCtrlCha(CCharacter* v) { m_pCtrlCha = v; }
+CCharacter* CPlayer::GetMainCha(void)          { return m_pMainCha; }
+CCharacter* CPlayer::GetCtrlCha(void)          { return m_pCtrlCha; }
+
+CCharacter* CPlayer::GetMakingBoat()                   { return m_pMakingBoat; }
+void        CPlayer::SetMakingBoat(CCharacter* pBoat)  { m_pMakingBoat = pBoat; }
+
+BYTE        CPlayer::GetNumBoat()              { return m_byNumBoat; }
+
+BOOL        CPlayer::IsBoatFull()              { return m_byNumBoat >= MAX_CHAR_BOAT; }
+BOOL        CPlayer::IsLuanchOut()             { return m_dwLaunchID != static_cast<DWORD>(-1); }
+void        CPlayer::SetLuanchOut(DWORD dwID)  { m_dwLaunchID = dwID; }
+DWORD       CPlayer::GetLuanchID()             { return m_dwLaunchID; }
+
+CCharacter* CPlayer::GetBoat(BYTE byIndex) {
+	return (byIndex >= MAX_CHAR_BOAT) ? nullptr : m_Boat[byIndex];
+}
+
+mission::CStallData* CPlayer::GetStallData()                           { return m_pStallData; }
+void                 CPlayer::SetStallData(mission::CStallData* pData) { m_pStallData = pData; }
+
+void        CPlayer::SetMMaskLightSize(long lSize) { m_lLightSize = lSize; }
+long        CPlayer::GetMMaskLightSize(void)       { return m_lLightSize; }
+
+bool        CPlayer::SetMapMaskBase64(const char* pMask) { return m_CMapMask.InitMaskData(m_szMaskMapName, pMask); }
+const char* CPlayer::GetMapMaskBase64()                  { return m_CMapMask.GetResultOneMask(m_szMaskMapName); }
+BYTE*       CPlayer::GetMapMask(long& lLen)              { return m_CMapMask.GetMapMask(m_szMaskMapName, lLen); }
+
+void CPlayer::SetMaskMapName(const char* szMapName) {
+	strncpy(m_szMaskMapName, szMapName, MAX_MAPNAME_LENGTH - 1);
+	m_szMaskMapName[MAX_MAPNAME_LENGTH - 1] = '\0';
+}
+const char* CPlayer::GetMaskMapName(void)      { return m_szMaskMapName; }
+
+bool        CPlayer::IsMapMaskChange(void)     { return m_chMapMaskChange >= 3; }
+void        CPlayer::SetMapMaskChange(void)    { m_chMapMaskChange++; }
+void        CPlayer::ResetMapMaskChange(void)  { m_chMapMaskChange = 0; }
+float       CPlayer::GetMapMaskOpenScale(const char* szMapName) {
+	return m_CMapMask.GetMapMaskOpenScale(szMapName);
+}
+
+char        CPlayer::GetCurBankNum(void)       { return m_chBankNum; }
+bool        CPlayer::AddBankDBID(long lDBID) {
+	if (m_chBankNum >= MAX_BANK_NUM) return false;
+	m_lBankDBID[m_chBankNum] = lDBID;
+	m_chBankNum++;
+	return true;
+}
+CKitbag*    CPlayer::GetBank(char chBankNO) {
+	if (chBankNO < 0 || chBankNO >= m_chBankNum) return nullptr;
+	return m_CBank + chBankNO;
+}
+
+CCharacter* CPlayer::GetBankNpc(void)          { return m_pCBankNpc; }
+
+long        CPlayer::GetMoBean()               { return m_lMoBean; }
+void        CPlayer::SetMoBean(long v)         { m_lMoBean = v; }
+long        CPlayer::GetRplMoney()             { return m_lRplMoney; }
+void        CPlayer::SetRplMoney(long v)       { m_lRplMoney = v; }
+long        CPlayer::GetVipType()              { return m_lVipID; }
+void        CPlayer::SetVipType(long v)        { m_lVipID = v; }
+short       CPlayer::IsGarnerWiner()           { return m_sGarnerWiner; }
+void        CPlayer::SetGarnerWiner(short v)   { m_sGarnerWiner = v; }
+
+std::string& CPlayer::GetLifeSkillinfo()       { return m_strLifeSkillinfo; }

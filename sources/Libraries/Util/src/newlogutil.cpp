@@ -253,6 +253,13 @@ namespace TalesOfPirate::Utils::Logs {
 	}
 
 	LogManager::LogManager() {
+		// Принуждаем инициализацию ConsoleColor singleton'ов ДО завершения
+		// конструктора LogManager — это переносит их в destruction-list
+		// раньше LogManager. При shutdown сначала разрушится LogManager
+		// (joinит thread), затем уже Codes/Names. Без этого финальный
+		// DrainQueue в logger thread'е падал на CODES.find() после
+		// деструкции namespace-scope CODES (см. ConsoleColor.cpp).
+		TalesOfPirate::Utils::Console::ForceInit();
 	}
 
 	LogManager::~LogManager() {

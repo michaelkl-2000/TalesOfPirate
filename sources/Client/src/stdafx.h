@@ -51,7 +51,7 @@ using namespace GUI;
 #include "GlobalInc.h"
 #include "MindPower.h"
 
-#include "LanguageRecordStore.h"
+#include "Localization/LanguageRecordStore.h"
 
 inline VOID D3DUtil_InitMaterialI(D3DMATERIALX& mtrl, FLOAT r, FLOAT g, FLOAT b,
 								  FLOAT a) {
@@ -107,3 +107,13 @@ inline VOID D3DUtil_InitMaterialI(D3DMATERIALX& mtrl, FLOAT r, FLOAT g, FLOAT b,
 
 // GameApp (123 include    )
 #include "GameApp.h"
+
+// Bring Corsairs::Common::Localization (GetLanguageString, RES_STRING, etc.) into global scope
+using namespace Corsairs::Common::Localization;
+using namespace Corsairs::Common::Skill;
+using namespace Corsairs::Common::Network;
+using namespace Corsairs::Common::Inventory;
+using namespace Corsairs::Common::World;
+using namespace Corsairs::Common::Character;
+using namespace Corsairs::Common::Item;
+using namespace Corsairs::Common::Database;

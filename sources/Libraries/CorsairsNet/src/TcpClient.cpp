@@ -19,7 +19,7 @@ static NullStream nullStream_;
 #define TCP_LOG nullStream_
 #endif
 
-namespace net {
+namespace Corsairs::Net {
 	// 
 	//  WsaErrorStr    WSA-
 	// 
@@ -561,4 +561,4 @@ namespace net {
 		}
 		return true;
 	}
-} // namespace net
+} // namespace Corsairs::Net

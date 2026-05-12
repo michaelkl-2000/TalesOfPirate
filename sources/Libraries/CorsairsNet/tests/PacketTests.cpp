@@ -12,7 +12,7 @@
 #include <string>
 #include <iostream>
 
-using namespace net;
+using namespace Corsairs::Net;
 
 // 
 //   :   

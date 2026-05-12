@@ -250,6 +250,10 @@ public:
 	float _fdistshow;
 
 	D3DXVECTOR2 _vLastPos;
+
+	//  Предыдущий `dwTailTime`, пришедший в `FrameMove`. 0 — «ещё не было кадра»
+	//  (используется как стартовый sentinel, чтобы первая дельта была 0).
+	DWORD _lastFrameTime{0};
 };
 
 //#endif

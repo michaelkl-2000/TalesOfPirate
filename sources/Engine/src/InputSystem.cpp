@@ -99,6 +99,20 @@ namespace Corsairs::Engine::Input {
 	void InputSystem::Update() {
 		Impl& s = *_impl;
 
+		//  Sync mouse buttons с реальным состоянием системы. WM_*BUTTONUP может
+		//  быть потерян, если окно теряет фокус или сцена пересоздаётся между
+		//  WM_*BUTTONDOWN и WM_*BUTTONUP — без этой синхронизации mouseDown
+		//  «прилипает» к true. Проявлялось так: игрок кликает «Войти в игру» в
+		//  SelectChaScene, отпускает кнопку во время загрузки → в WorldScene
+		//  персонаж auto-follow'ит за курсором, пока пользователь не кликнет ещё
+		//  раз (что и шлёт honest UP).
+		const bool sysL = (::GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+		const bool sysR = (::GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
+		const bool sysM = (::GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0;
+		if (!sysL) s.mouseDown[0] = false;
+		if (!sysR) s.mouseDown[1] = false;
+		if (!sysM) s.mouseDown[2] = false;
+
 		//  Обновляем phase для клавиш на основе (previous, current).
 		for (std::size_t i = 0; i < kKeyCount; ++i) {
 			const bool prev = s.previous[i];
@@ -199,8 +213,13 @@ namespace Corsairs::Engine::Input {
 		case WM_MBUTTONUP: s.mouseDown[2] = false;
 			return false;
 		case WM_KILLFOCUS: {
-			//  При потере фокуса — сбросить все клавиши в FREE (иначе подвиснут).
+			//  При потере фокуса — сбросить все клавиши и кнопки мыши в FREE
+			//  (иначе подвиснут — синхронизация в Update() через GetAsyncKeyState
+			//  поднимает их обратно только если пользователь до сих пор держит).
 			s.current.fill(false);
+			s.mouseDown[0] = false;
+			s.mouseDown[1] = false;
+			s.mouseDown[2] = false;
 			return false;
 		}
 		default:

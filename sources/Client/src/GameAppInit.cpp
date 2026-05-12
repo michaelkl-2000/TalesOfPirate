@@ -1,5 +1,6 @@
 ﻿#include "Stdafx.h"
 
+#include "InputSystem.h"
 #include "SteadyFrameSync.h"
 #include "DebugStateSystem.h"
 #include "UIText.h"
@@ -45,6 +46,12 @@ extern CGameMovie g_GameMovie;
 
 
 std::chrono::steady_clock::time_point CGameApp::_mouseDownStart[2] = {};
+
+void CGameApp::ResetInputForSceneChange() {
+	_mouseDownStart[0] = {};
+	_mouseDownStart[1] = {};
+	Corsairs::Engine::Input::InputSystem::Instance().Reset();
+}
 int CGameApp::_nMusicSize = 64;
 char CGameApp::_szOutBuf[256] = {0};
 bool CGameApp::_IsMusicSystemValid = false;

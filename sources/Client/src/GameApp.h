@@ -174,6 +174,13 @@ public:
 		return (std::chrono::steady_clock::now() - start) > kMouseLongPressDuration;
 	}
 
+	//  Сбросить состояние ввода (long-press таймеры мыши + InputSystem мыши/клавиш).
+	//  Вызывается из CGameScene::_Init при смене сцены: иначе LMB, нажатая
+	//  в предыдущей сцене (типичный случай — двойной клик «Войти» в
+	//  SelectChaScene), на момент входа в WorldScene уже считается long-press'ом,
+	//  и игра тут же запускает auto-follow к курсору до отпускания кнопки.
+	static void ResetInputForSceneChange();
+
 	void AddTipText(std::string_view text);
 	void SysInfo(std::string_view info);
 	void ShowNotify(const char* szStr, DWORD dwColor);

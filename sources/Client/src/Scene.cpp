@@ -1782,6 +1782,13 @@ void CGameScene::SetMainCha(int nChaID) {
 }
 
 bool CGameScene::_Init() {
+	//  Сброс input-state: long-press таймеры и удержание кнопок мыши «из
+	//  предыдущей сцены» (типичный случай — пользователь делает двойной клик
+	//  на персонажа в SelectChaScene, и второй клик ещё удерживается в момент
+	//  перехода в WorldScene; без сброса IsMouseContinue(0) сразу даёт true и
+	//  запускает auto-follow к курсору до отпускания кнопки).
+	CGameApp::ResetInputForSceneChange();
+
 	g_pGameApp->GetCursor()->SceneInit(this);
 	ToLogService("common", "3d cursor init");
 

@@ -72,6 +72,7 @@ CCameraCtrl::CCameraCtrl(void) {
 
 	m_listHei = 0;
 	m_fHeiVel = 0;
+	m_fLastHei = 0;
 
 	m_bEnableRota = false;
 	m_bEnableUpdown = true;
@@ -88,7 +89,20 @@ CCameraCtrl::CCameraCtrl(void) {
 
 	m_pModel = NULL;
 
+	//  Forward-back impulse (`MoveForwardBack` устанавливает m_fvel/m_fasscs/m_bFB).
+	//  Без явного нуля m_bFB ловит garbage (наблюдалось 205) и `if (m_bFB)` в
+	//  FrameMove выполняется на первом же кадре, дёргая ScroolFB на uninit
+	//  m_fvel * m_fasscs.
+	m_bFB = false;
+	m_fvel = 0.0f;
+	m_fasscs = 0.0f;
+
 	m_bRota = FALSE;
+	m_fRotaVel = 0.0f;
+	m_fRotaAss = 0.0f;
+
+	m_fSubVel = 0.0f;
+	m_fLastAngle = 0.0f;
 
 	m_fScale = 1.0;
 
@@ -353,7 +367,33 @@ void CCameraCtrl::Scale(float fDist) {
 }
 
 void CCameraCtrl::FrameMove(DWORD dwTailTime) {
-	static DWORD dwTime = dwTailTime;
+	//  Считаем кадровую дельту времени относительно предыдущего вызова. Два
+	//  ловушки, которые мы тут обходим:
+	//    1) `pCam->FrameMove(0)` вызывается в нескольких местах (Scene.cpp,
+	//       WorldScene.cpp, GameAppInterface.cpp) для «просто пересчитать
+	//       матрицы». При dwTailTime == 0 dwTailTime - _lastFrameTime даёт
+	//       underflow DWORD → ~3 миллиарда мс, и в декей-логике ниже
+	//       m_fasscs/m_fRotaAss получают огромный отрицательный сдвиг.
+	//    2) Длинная пауза (загрузка сцены) — реальная delta может быть >100мс,
+	//       чего достаточно, чтобы скакнуть на десятки шагов demping'а
+	//       за один кадр. Клампим до 100мс — это потолок «адекватного» кадра
+	//       (10 FPS); ниже идут только реальные one-off артефакты.
+	DWORD dwTime;
+	if (dwTailTime == 0 || _lastFrameTime == 0) {
+		dwTime = 0;
+	}
+	else if (dwTailTime < _lastFrameTime) {
+		//  Сбой синхронизации (другой call-сайт уже сдвинул prev) — пропускаем
+		//  декей в этом кадре.
+		dwTime = 0;
+	}
+	else {
+		dwTime = dwTailTime - _lastFrameTime;
+		if (dwTime > 100) {
+			dwTime = 100;
+		}
+	}
+	_lastFrameTime = dwTailTime;
 
 	if (g_stUISystem.m_sysProp.m_videoProp.bResolution > 0) {
 		MAX_SCALE = 1.0f + m_fstep1 * 0.3f;
@@ -362,7 +402,6 @@ void CCameraCtrl::FrameMove(DWORD dwTailTime) {
 		MAX_SCALE = 0.8f + m_fstep1 * 0.2f;
 	}
 
-	dwTime = dwTailTime - dwTime;
 	if (m_CamDither.GetState()) {
 		m_CamDither.FrameMove();
 		return;

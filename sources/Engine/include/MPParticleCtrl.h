@@ -173,8 +173,6 @@ public:
 		PlayPose(_iCurPose, _iPlayType);
 	}
 
-	// Save/Load перенесены в PartCtrlLoader.
-
 	void Begin();
 	void End();
 
@@ -382,9 +380,6 @@ public:
 	void GetRes(CMPResManger* pResMagr, std::vector<INT>& vecTex, std::vector<INT>& vecModel,
 				std::vector<INT>& vecEff);
 	void GetHitRes(CMPResManger* pResMagr, std::vector<s_string>& vecPar);
-
-	// Сериализация перенесена в Corsairs::Engine::Render::PartCtrlLoader::
-	// {Load,Save} — data-классы не должны содержать I/O.
 
 public:
 	s_string m_strName;

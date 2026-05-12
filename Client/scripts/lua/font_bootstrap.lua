@@ -51,4 +51,3 @@ UI_SetFontShadowEnabled(1)
 -- Диагностика (по необходимости раскомментировать):
 -- UI_DumpFonts("./font/debug")             -- превью всех шрифтов в BMP
 -- UI_DumpFontAtlases("./font/debug")       -- текущее содержимое D3D-атласов
--- UI_SetFontDumpEnabled(1)                 -- дамп каждого уникального рендеренного текста

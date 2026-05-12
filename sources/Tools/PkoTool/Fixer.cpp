@@ -2,9 +2,10 @@
 
 #include "AssetLoaders.h"
 #include "SceneFileLoaders.h"
+#include "lwEfxTrack.h"      // EfxTrackLoader::Load/Save — для .let
 #include "lwExpObj.h"
 #include "lwDDSFile.h"       // ResaveDds — нужен полный тип для NULLREF-pipeline
-#include "MPModelEff.h"      // EffectFileInfo
+#include "MPModelEff.h"      // EffectFileInfo, CEffPath
 #include "MPParticleCtrl.h"  // CMPPartCtrl
 #include "logutil.h"
 
@@ -306,6 +307,32 @@ ResaveResult ResavePar(const fs::path& path) {
     return ResaveViaBak(path, load, save);
 }
 
+ResaveResult ResaveCsf(const fs::path& path) {
+    using EffPathLoader = Corsairs::Engine::Render::EffPathLoader;
+    CEffPath effPath;
+
+    auto load = [&](const std::string& f) {
+        return !LW_FAILED(EffPathLoader::Load(effPath, f));
+    };
+    auto save = [&](const std::string& f) {
+        return !LW_FAILED(EffPathLoader::Save(effPath, f));
+    };
+    return ResaveViaBak(path, load, save);
+}
+
+ResaveResult ResaveLet(const fs::path& path) {
+    using EfxTrackLoader = Corsairs::Engine::Render::EfxTrackLoader;
+    MindPower::lwEfxTrack track;
+
+    auto load = [&](const std::string& f) {
+        return !LW_FAILED(EfxTrackLoader::Load(track, f));
+    };
+    auto save = [&](const std::string& f) {
+        return !LW_FAILED(EfxTrackLoader::Save(track, f));
+    };
+    return ResaveViaBak(path, load, save);
+}
+
 [[nodiscard]] bool DeleteFile(const fs::path& path) {
     std::error_code ec;
     fs::remove(path, ec);
@@ -341,6 +368,7 @@ FixSummary ApplyFix(const std::vector<ValidationRecord>& records) {
             const bool supported = (r.extension == "lgo" || r.extension == "lmo"
                                     || r.extension == "lxo" || r.extension == "lab"
                                     || r.extension == "eff" || r.extension == "par"
+                                    || r.extension == "csf" || r.extension == "let"
                                     || r.extension == "map" || r.extension == "rbo"
                                     || r.extension == "obj" || r.extension == "dds");
             if (!supported) {
@@ -358,6 +386,8 @@ FixSummary ApplyFix(const std::vector<ValidationRecord>& records) {
             else if (r.extension == "lab") res = ResaveLab(r.file);
             else if (r.extension == "eff") res = ResaveEff(r.file);
             else if (r.extension == "par") res = ResavePar(r.file);
+            else if (r.extension == "csf") res = ResaveCsf(r.file);
+            else if (r.extension == "let") res = ResaveLet(r.file);
             else if (r.extension == "map") res = ResaveMap(r.file);
             else if (r.extension == "rbo") res = ResaveRbo(r.file);
             else if (r.extension == "obj") res = ResaveObj(r.file);

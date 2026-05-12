@@ -1,16 +1,16 @@
-﻿#ifndef _ZRBLOCK_H_
-#define _ZRBLOCK_H_
+#pragma once
 
-#include "MPMap.h"
 #include "assert.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include "MPMapDef.h"
+#include <cstdint>
 #include <memory>
 #include <vector>
 
 #define MAX_BLOCK_SECTION 512
 #define MAX_BLOCK_RANGE 1024
+
+namespace Corsairs::Engine::Render {
+class MapStream;
+} // namespace Corsairs::Engine::Render
 
 //add by jze 2008.7.16
 class ZRBlockData {
@@ -61,14 +61,16 @@ public:
 	~ZRBlockSection() = default;
 };
 
-// <iosfwd> даёт forward-декларацию std::fstream без тяжёлого <fstream>
-#include <iosfwd>
-
 class ZRBlock {
 public:
 	ZRBlock();
 	~ZRBlock();
-	BOOL Load(const char* pszMapName, BOOL bEdit);
+
+	// Подключиться к уже открытому MPMap'ом MapStream'у. Кеширует геометрию
+	// (sectionWidth/Height/cntX/cntY) и сбрасывает массив активных секций.
+	// Указатель stream хранится без владения — MPMap живёт дольше ZRBlock'а.
+	void Attach(Corsairs::Engine::Render::MapStream& stream);
+
 	void GetBlockByRange(int CenterX, int CenterY, int range); //Block
 	ZRBlockData* GetBlock(int nX, int nY); //Block
 	BYTE IsGridBlock(int x, int y) const; // x,y
@@ -81,7 +83,6 @@ private:
 	void ClearSectionArray();
 
 	void _LoadBlockData(ZRBlockSection& pSection); //block
-	DWORD _ReadSectionDataOffset(int nSectionX, int nSectionY); //
 
 public:
 	BYTE m_btBlockBuffer[MAX_BLOCK_RANGE][MAX_BLOCK_RANGE] = {};
@@ -92,26 +93,23 @@ private:
 	std::vector<std::unique_ptr<ZRBlockSection>> m_BlockSectionArray;
 
 	std::unique_ptr<ZRBlockData> m_pDefaultBlock; //block
-	std::unique_ptr<std::fstream> m_fs; // definition in .cpp (uses <fstream>)
+
+	// Поток .map-файла принадлежит MPMap'у (`_stream`), а ZRBlock читает блочные
+	// данные через MapLoader. Сырого fstream'а здесь больше нет — раньше ZRBlock
+	// открывал тот же файл повторно, дублируя offset-таблицу/bulk-кеш и создавая
+	// двойной r+b-handle в edit-режиме.
+	Corsairs::Engine::Render::MapStream* _stream{nullptr};
 
 	int m_fShowCenterX{}; //
 	int m_fShowCenterY{};
-	int m_nSectionWidth{}; // Section
-	int m_nSectionHeight{};
-	int m_nSectionCntX{}; // Section
-	int m_nSectionCntY{};
-	int m_nSectionCnt{};
+	std::int32_t _sectionWidth{};  // Section
+	std::int32_t _sectionHeight{};
+	std::int32_t _sectionCntX{};  // Section
+	std::int32_t _sectionCntY{};
 	int m_nLastGridStartX{};
 	int m_nLastGridStartY{};
 	int m_nGridShowWidth{};
 	int m_nGridShowHeight{};
-	BOOL m_bEdit{true};
-	DWORD m_dwMapPos{};
-	DWORD m_dwMapDataSize{};
-	std::unique_ptr<BYTE[]> m_pMapData{};
-	int m_nWidth{};
-	int m_nHeight{};
-	std::unique_ptr<DWORD[]> m_pOffsetIdx{};
 };
 
 inline BYTE ZRBlock::IsGridBlock(int x, int y) const //
@@ -135,4 +133,3 @@ inline short ZRBlock::GetTileRegionAttr(int x, int y) const //
 
 	return m_sTileRegionAttr[offy][offx];
 }
-#endif

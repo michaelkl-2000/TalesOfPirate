@@ -539,8 +539,6 @@ public:
 
 	void SetLoop(bool bLoop);
 
-	void LoadPathFile(char* pszfile);
-	void LoadPathFileLet(char* pszfile);
 	void SetPathVel(float fvel);
 	void DeletePath();
 	float GetPathVel();
@@ -604,8 +602,6 @@ public:
 	}
 
 public:
-	// Save/Load перенесены в PartCtrlLoader.
-
 	bool IsPartArray();
 
 	void GetRes(int& idtex, int& idmodel, int& ideff);

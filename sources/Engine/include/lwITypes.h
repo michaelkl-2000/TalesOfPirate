@@ -766,37 +766,4 @@ LW_BEGIN
 	typedef BOOL (*lwHeapCompProc)(const void*& i, const void*& j);
 	typedef void (*lwHeapFilterProc)(const void*& i, DWORD j);
 
-	enum lwFileStreamOpenInfoType {
-		// adapter flag
-		FS_ADAPTER_FILE = 0x0001,
-		FS_ADAPTER_PACKET = 0x0002, // now invalid
-
-		// access flag
-		FS_ACCESS_READ = ACCESS_READ,
-		FS_ACCESS_WRITE = ACCESS_WRITE,
-
-		// create flag
-		FS_CREATE_NEW = CREATE_NEW,
-		FS_CREATE_ALWAYS = CREATE_ALWAYS,
-		FS_OPEN_EXISTING = OPEN_EXISTING,
-		FS_OPEN_ALWAYS = OPEN_ALWAYS,
-		FS_TRUNCATE_EXISTING = TRUNCATE_EXISTING,
-
-		// attributes flag
-		FS_SEQUENTIAL_SCAN = FILE_FLAG_SEQUENTIAL_SCAN,
-
-		// seek
-		FS_FILE_BEGIN = FILE_BEGIN,
-		FS_FILE_CURRENT = FILE_CURRENT,
-		FS_FILE_END = FILE_END,
-	};
-
-	struct lwFileStreamOpenInfo {
-		DWORD adapter_type;
-		DWORD access_flag;
-		DWORD create_flag;
-		DWORD attributes_flag;
-	};
-
-
 LW_END

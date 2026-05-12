@@ -495,7 +495,14 @@ void CGameApp::CreateCharImg() {
 	}
 }
 
-////////////////////////
+/**
+ * Creates a small map representation for the specified terrain object.
+ * This method handles updates to terrain details, character positions,
+ * camera adjustments, and rendering of a minimap.
+ *
+ * @param pTerr Pointer to the MPTerrain object to be used for generating the small map.
+ * @return TRUE if the small map is successfully created and updated, FALSE otherwise.
+ */
 BOOL CGameApp::_CreateSmMap(MPTerrain* pTerr) {
 	static bool isnext = true;
 

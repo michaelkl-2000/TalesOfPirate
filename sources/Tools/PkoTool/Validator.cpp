@@ -2,8 +2,10 @@
 
 #include "AssetLoaders.h"
 #include "SceneFileLoaders.h"
+#include "lwEfxTrack.h"      // EfxTrackLoader::Load — для .let
 #include "lwExpObj.h"
-#include "MPModelEff.h"      // EffectFileInfo
+#include "MPModelEff.h"      // EffectFileInfo, CEffPath
+
 #include "MPParticleCtrl.h"  // CMPPartCtrl
 
 #include "stb_image.h"
@@ -380,6 +382,74 @@ ValidationRecord ValidateRbo(const fs::path& file) {
     return rec;
 }
 
+[[nodiscard]] std::pair<ValidationStatus, std::string>
+ClassifyEffPathStatus(Corsairs::Engine::Render::EffPathLoadStatus s) {
+    using S = Corsairs::Engine::Render::EffPathLoadStatus;
+    switch (s) {
+    case S::Ok:
+        return {ValidationStatus::Ok, ""};
+    case S::FileOpenFailed:
+        return {ValidationStatus::Error,
+                "Failed to open file (missing file or permissions)."};
+    case S::HeaderTruncated:
+        return {ValidationStatus::Error,
+                "Header truncated (need 4-byte magic + DWORD version + DWORD num). Re-export."};
+    case S::BadMagic:
+        return {ValidationStatus::Error,
+                "Bad magic (expected 'csf'). Foreign or corrupt file."};
+    case S::FrameCountOutOfRange:
+        return {ValidationStatus::Error,
+                "Frame count is zero or exceeds CEffPath limit (200). Re-export."};
+    case S::BodyTruncated:
+        return {ValidationStatus::Error,
+                "Path body truncated (frames cut off). Re-export."};
+    }
+    return {ValidationStatus::Error, "Unknown EffPathLoader status."};
+}
+
+ValidationRecord ValidateCsf(const fs::path& file) {
+    ValidationRecord rec;
+    rec.file = file;
+    rec.extension = "csf";
+
+    CEffPath path;
+    Corsairs::Engine::Render::EffPathLoadDiagnostics diag;
+    Corsairs::Engine::Render::EffPathLoader::LoadEx(path, file.string(), diag);
+    rec.version = diag.version;
+
+    auto [status, recommendation] = ClassifyEffPathStatus(diag.status);
+    rec.status = status;
+    rec.problem = (status == ValidationStatus::Ok)
+        ? std::string{}
+        : std::format("{}: {}",
+                      Corsairs::Engine::Render::ToString(diag.status), diag.detail);
+    rec.recommendation = std::move(recommendation);
+    return rec;
+}
+
+// .let — matrix-track анимации, тонкая обёртка над LgoLoader::LoadAnimDataMatrix.
+// EfxTrackLoader не имеет diag-варианта, поэтому ограничиваемся return-кодом:
+// успех/неуспех. Деталь — в логах самого Loader (errors-канал) при провале.
+ValidationRecord ValidateLet(const fs::path& file) {
+    ValidationRecord rec;
+    rec.file = file;
+    rec.extension = "let";
+
+    MindPower::lwEfxTrack track;
+    const LW_RESULT r = Corsairs::Engine::Render::EfxTrackLoader::Load(
+        track, file.string());
+    if (LW_FAILED(r)) {
+        rec.status = ValidationStatus::Error;
+        rec.problem = std::format("EfxTrackLoader::Load failed (ret={})",
+                                   static_cast<long long>(r));
+        rec.recommendation =
+            "Re-export from animation source. See errors.log for details.";
+        return rec;
+    }
+    rec.status = ValidationStatus::Ok;
+    return rec;
+}
+
 ValidationRecord ValidatePar(const fs::path& file) {
     ValidationRecord rec;
     rec.file = file;
@@ -597,6 +667,8 @@ ValidationRecord ValidateFile(const fs::path& file) {
         if (ext == "lab") return ValidateLab(file);
         if (ext == "eff") return ValidateEff(file);
         if (ext == "par") return ValidatePar(file);
+        if (ext == "csf") return ValidateCsf(file);
+        if (ext == "let") return ValidateLet(file);
         if (ext == "map") return ValidateMap(file);
         if (ext == "obj") return ValidateObj(file);
         if (ext == "rbo") return ValidateRbo(file);

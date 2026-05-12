@@ -68,11 +68,6 @@ LW_BEGIN
 		lwMatrix44* mat_run;
 		DWORD parent_id;
 
-#if(defined __DUMP_BRTBM_DATA)
-		FILE* fp = fopen("xxx.txt", "wt");
-		fprintf(fp, "%d\n", (int)frame);
-#endif
-
 		for (i = 0; i < _data._bone_num; i++) {
 			mat_run = &out_buf[i];
 
@@ -86,17 +81,6 @@ LW_BEGIN
 				goto __ret;
 			}
 
-			lwMatrix44* m = mat_run;
-
-#if(defined __DUMP_BRTBM_DATA)
-			fprintf(
-				fp, "%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
-				m->_11, m->_12, m->_13, m->_14,
-				m->_21, m->_22, m->_23, m->_24,
-				m->_31, m->_32, m->_33, m->_34,
-				m->_41, m->_42, m->_43, m->_44);
-#endif
-
 			parent_id = _data._base_seq[i].parent_id;
 
 			if (parent_id == LW_INVALID_INDEX) {
@@ -105,10 +89,6 @@ LW_BEGIN
 				lwMatrix44Multiply(mat_run, mat_run, &out_buf[parent_id]);
 			}
 		}
-
-#if(defined __DUMP_BRTBM_DATA)
-		fclose(fp);
-#endif
 
 		for (i = 0; i < _data._bone_num; i++) {
 			lwMatrix44Multiply(&out_buf[i], &_data._invmat_seq[i], &out_buf[i]);
@@ -474,84 +454,6 @@ LW_BEGIN
 		lwAnimDataBone* a = (lwAnimDataBone*)out_data;
 		return a->Copy(&_data);
 	}
-
-	LW_RESULT lwAnimCtrlBone::DumpRunTimeBoneData(std::string_view file) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		if (_rtbuf_seq == 0)
-			goto __ret;
-
-		{
-			FILE* fp = fopen(std::string{file}.c_str(), "wt");
-			if (fp == NULL)
-				goto __ret;
-			{
-				lwMatrix44* m;
-
-				for (DWORD i = 0; i < _data._frame_num; i++) {
-					if (_rtbuf_seq[i].data) {
-						fprintf(fp, "\n\n%d\n", i);
-
-						for (DWORD j = 0; j < _data._bone_num; j++) {
-							m = &_rtbuf_seq[i].data[j];
-
-							fprintf(
-								fp,
-								"%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f\n",
-								m->_11, m->_12, m->_13, m->_14,
-								m->_21, m->_22, m->_23, m->_24,
-								m->_31, m->_32, m->_33, m->_34,
-								m->_41, m->_42, m->_43, m->_44);
-						}
-					}
-				}
-
-				fclose(fp);
-
-				ret = LW_RET_OK;
-			}
-		}
-	__ret:
-		return ret;
-	}
-
-	LW_RESULT lwAnimCtrlBone::DumpInitInvMat(std::string_view file) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		if (_rtbuf_seq == 0)
-			goto __ret;
-
-		{
-			FILE* fp = fopen(std::string{file}.c_str(), "wt");
-			if (fp == NULL)
-				goto __ret;
-
-			{
-				lwMatrix44* m;
-
-				for (DWORD i = 0; i < _data._bone_num; i++) {
-					fprintf(fp, "\n\n%d\n", i);
-
-					m = &_data._invmat_seq[i];
-
-					fprintf(
-						fp,
-						"%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f\n",
-						m->_11, m->_12, m->_13, m->_14,
-						m->_21, m->_22, m->_23, m->_24,
-						m->_31, m->_32, m->_33, m->_34,
-						m->_41, m->_42, m->_43, m->_44);
-				}
-
-				fclose(fp);
-
-				ret = LW_RET_OK;
-			}
-		}
-	__ret:
-		return ret;
-	}
-
 
 	LW_RESULT lwAnimCtrlBone::Destroy() {
 		LW_RESULT ret = LW_RET_FAILED;

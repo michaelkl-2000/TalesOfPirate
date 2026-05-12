@@ -141,8 +141,6 @@ LW_BEGIN
 		LW_RESULT EnableRunTimeFrameBuffer(DWORD frame, DWORD flag);
 
 		LW_RESULT ExtractAnimData(lwIAnimDataBone* out_data);
-		LW_RESULT DumpRunTimeBoneData(std::string_view file);
-		LW_RESULT DumpInitInvMat(std::string_view file);
 	};
 
 	class lwAnimCtrlMatrix : public lwIAnimCtrlMatrix, public lwAnimDataMatrix, public lwAnimCtrl {

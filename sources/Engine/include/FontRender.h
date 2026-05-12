@@ -12,7 +12,6 @@
 #include <d3d9.h>
 #include <d3dx9math.h>
 #include <string>
-#include <unordered_set>
 
 #include "lwHeader.h"
 
@@ -100,15 +99,6 @@ public:
 	bool DumpGlyphPreview(const std::string& path);
 	bool DumpAtlas(const std::string& path);
 
-	// Toggle'ы, управляющие Lua-скриптами через UIScript биндинги.
-	static void SetTextDumpEnabled(bool enabled) {
-		s_textDumpEnabled = enabled;
-	}
-
-	static bool IsTextDumpEnabled() {
-		return s_textDumpEnabled;
-	}
-
 	// DrawTextShadow по умолчанию рендерит текст дважды (shadow+main). При
 	// false — только main. Используется для диагностики "жирности" текста.
 	static void SetShadowEnabled(bool enabled) {
@@ -147,9 +137,5 @@ private:
 	std::string _fontName;
 	UINT _codepage{CP_UTF8};
 
-	// Дедуп для debug-дампа (оставлен как no-op в будущих режимах).
-	std::unordered_set<std::wstring> _dumpedTexts;
-
-	static bool s_textDumpEnabled;
 	static bool s_shadowEnabled;
 };

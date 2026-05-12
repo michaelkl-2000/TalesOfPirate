@@ -306,7 +306,6 @@ public:
     // (`SaveToFile`/`LoadFromFile`); по правилу проекта I/O в data-классах
     // запрещён, поэтому перенесены сюда и вызываются из:
     //  • EffectLoader::Save/LoadEx (целый .eff = header + N элементов);
-    //  • CMPModelEff::SaveToFile (тот же формат с собственными полями);
     //  • CMPResManger::LoadEffectFromFile (legacy-loader, постепенно
     //    мигрируется на EffectLoader::Load).
     [[nodiscard]] static bool LoadElement(::I_Effect& effect, std::FILE* fp, DWORD version);
@@ -335,6 +334,7 @@ class CMPPartCtrl;
 class CMPPartSys;
 class CMPStrip;
 class CChaModel;
+class CEffPath;
 
 namespace Corsairs::Engine::Render {
 
@@ -398,6 +398,76 @@ private:
 }
 
 // =============================================================================
+// Анимационные траектории для CEffPath — два соседних формата:
+//   • .csf — собственный бинарь движка: header "csf\0", DWORD version,
+//     DWORD num, далее num × D3DXVECTOR3 (right-handed, при чтении Y/Z
+//     меняем местами с инверсией Z). Продакшн-формат, читается из
+//     model/effect/*.csf при старте через CMPResManger::LoadTotalPath().
+//   • .let — поверх анимационного matrix-track (EfxTrackLoader → lwEfxTrack).
+//     Редакторский путь импорта пути из 3D-сцены; runtime его не зовёт.
+// CEffPath — это keyframed translation для эффекта (до 200 точек): задаёт
+// траекторию движения визуального эффекта/частиц во времени (например,
+// летящий снаряд с кривой траекторией, орбитальные партиклы, шлейфы).
+// =============================================================================
+
+enum class EffPathLoadStatus : std::uint32_t {
+    Ok = 0,
+    FileOpenFailed,        // fopen(file) не удался
+    HeaderTruncated,       // < 4 байт magic, либо < 8 байт version+num
+    BadMagic,              // первые 3 байта ≠ "csf"
+    FrameCountOutOfRange,  // num == 0 или num > 200 (m_vecPath limit)
+    BodyTruncated          // size файла < 4+8+num*12 — кадры не дочитываются
+};
+
+struct EffPathLoadDiagnostics {
+    EffPathLoadStatus status{EffPathLoadStatus::Ok};
+    std::string detail;
+    std::uint32_t version{0};
+    std::uint32_t frameCount{0};
+};
+
+class EffPathLoader {
+public:
+    static constexpr std::uint32_t kMaxFrames = 200;       // CEffPath::m_vecPath[200]
+    static constexpr std::uint32_t kCurrentVersion = 1;    // version, которую пишет Save
+
+    // Прочитать .csf в готовый CEffPath. Поля m_vecPath/m_vecDir/m_vecDist/
+    // m_iFrameCount наполняются как раньше делал CEffPath::LoadPathFromFile.
+    [[nodiscard]] static LW_RESULT Load(::CEffPath& path, std::string_view file);
+    [[nodiscard]] static LW_RESULT LoadEx(::CEffPath& path, std::string_view file,
+                                          EffPathLoadDiagnostics& diag);
+
+    // Прочитать .let-формат через EfxTrackLoader::Load и спроецировать
+    // matrix-кадры в CEffPath::m_vecPath.
+    [[nodiscard]] static LW_RESULT LoadLet(::CEffPath& path, std::string_view file);
+
+    // Записать CEffPath в .csf (header "csf\0" + version=1 + num + кадры с
+    // обратной инверсией Y/Z для round-trip с Load). Симметрия с Load на
+    // случай редакторских инструментов (PkoTool и т.п.) — runtime-клиент
+    // .csf не пишет.
+    [[nodiscard]] static LW_RESULT Save(const ::CEffPath& path, std::string_view file);
+
+    // Поточные методы для in-place embedding CEffPath в .par (внутри
+    // PartCtrlLoader::{Save,Load}PartSys, под флагом busepsth). Раньше
+    // жили как CEffPath::SavePath/LoadPath, перенесены сюда по правилу
+    // «I/O в data-классах запрещён».
+    static void WritePath(const ::CEffPath& path, std::FILE* fp);
+    static void ReadPath(::CEffPath& path, std::FILE* fp);
+};
+
+[[nodiscard]] constexpr std::string_view ToString(EffPathLoadStatus s) noexcept {
+    switch (s) {
+        case EffPathLoadStatus::Ok:                   return "Ok";
+        case EffPathLoadStatus::FileOpenFailed:       return "FileOpenFailed";
+        case EffPathLoadStatus::HeaderTruncated:      return "HeaderTruncated";
+        case EffPathLoadStatus::BadMagic:             return "BadMagic";
+        case EffPathLoadStatus::FrameCountOutOfRange: return "FrameCountOutOfRange";
+        case EffPathLoadStatus::BodyTruncated:        return "BodyTruncated";
+    }
+    return "?";
+}
+
+// =============================================================================
 // .map — MindPower3D terrain map (header + per-section offset table + tile data)
 // =============================================================================
 
@@ -415,6 +485,12 @@ private:
 // AssetLoaderTests/PkoTool, поэтому здесь — только forward-decl: в API
 // MapLoader/MapStream MPTile фигурирует только через указатели.
 struct MPTile;
+
+// ZRBlockData (Engine/include/ZRBlock.h) — `short sRegion + BYTE btBlock[4]`,
+// тот «лёгкий» срез тайла, который нужен ZRBlock для коллизий/региональных
+// атрибутов. Forward-decl, чтобы MapLoader::ReadSectionBlockData принимал
+// его без втягивания ZRBlock.h в публичный заголовок.
+class ZRBlockData;
 
 namespace Corsairs::Engine::Render {
 
@@ -546,6 +622,15 @@ public:
     [[nodiscard]] static LW_RESULT ReadSection(const MapStream& stream,
                                                 int sectionX, int sectionY,
                                                 ::MPTile* outTiles);
+
+    // ReadSectionBlockData — облегчённый вариант ReadSection для ZRBlock'а.
+    // Из каждого SNewFileTile берёт только `sRegion + btBlock[4]` (6 из 15
+    // байт), не выполняя LW_RGB565TODWORD/TileInfo_5To8 — block/region-часть
+    // от них не зависит, и тянуть MPTile/lwgraphicsutil ради 6 байт на тайл
+    // незачем. Размер outBlocks — header.nSectionWidth*nSectionHeight.
+    [[nodiscard]] static LW_RESULT ReadSectionBlockData(
+        const MapStream& stream, int sectionX, int sectionY,
+        ::ZRBlockData* outBlocks);
 
     // WriteSection пишет тайлы в stream (только edit=true). Если offset для
     // данной (sx,sy) == 0, секция дописывается в конец файла, иначе пишется

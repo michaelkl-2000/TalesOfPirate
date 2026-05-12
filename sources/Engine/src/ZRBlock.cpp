@@ -1,101 +1,29 @@
 #include "stdafx.h"
 #include "ZRBlock.h"
-#include <filesystem>
-#include <fstream>
+
+#include "AssetLoaders.h"  // Corsairs::Engine::Render::{MapStream, MapLoader}
 
 ZRBlock::ZRBlock()
 	: m_BlockSectionArray(MAX_BLOCK_SECTION * MAX_BLOCK_SECTION)
-	  , m_pDefaultBlock(std::make_unique<ZRBlockData>())
-	  , m_fs(std::make_unique<std::fstream>()) {
+	  , m_pDefaultBlock(std::make_unique<ZRBlockData>()) {
 }
 
 ZRBlock::~ZRBlock() = default;
 
-BOOL ZRBlock::Load(const char* pszMapName, BOOL bEdit) {
-	if (m_fs->is_open()) {
-		m_fs->close();
-	}
-
-	if (bEdit) {
-		namespace fs = std::filesystem;
-		fs::permissions(pszMapName,
-						fs::perms::owner_write,
-						fs::perm_options::add);
-	}
-
-	m_fs->open(pszMapName, [&] {
-		auto flags = std::ios_base::binary | std::ios_base::in;
-		if (bEdit) {
-			flags |= std::ios_base::out;
-		}
-		return flags;
-	}());
-
-	if (!m_fs->is_open()) {
-		ToLogService("map", LogLevel::Error, "Load Map [{}] Error!", pszMapName);
-		return false;
-	}
-
-	MPMapFileHeader header;
-	m_fs->read(reinterpret_cast<char*>(&header), sizeof(MPMapFileHeader));
-
-	if (header.nMapFlag == MP_MAP_FLAG + 1) {
-		m_fs->close();
-		ToLogService("map", LogLevel::Error, "[{}], MapTool!", pszMapName);
-		return FALSE;
-	}
-
-#ifdef NEW_VERSION
-	if (header.nMapFlag != MP_MAP_FLAG + 3)
-#else
-	if (header.nMapFlag != MP_MAP_FLAG + 2)
-#endif
-	{
-		m_fs->close();
-		ToLogService("map", LogLevel::Error, "[{}] MindPower Map File!", pszMapName);
-		return FALSE;
-	}
-
-	m_nWidth = header.nWidth;
-	m_nHeight = header.nHeight;
-	m_nSectionWidth = header.nSectionWidth;
-	m_nSectionHeight = header.nSectionHeight;
-
-	m_nSectionCntX = m_nWidth / m_nSectionWidth;
-	m_nSectionCntY = m_nHeight / m_nSectionHeight;
-	m_nSectionCnt = m_nSectionCntX * m_nSectionCntY;
-
-	m_bEdit = bEdit;
-
-	m_pOffsetIdx = std::make_unique<DWORD[]>(m_nSectionCnt);
-	m_fs->read(reinterpret_cast<char*>(m_pOffsetIdx.get()), sizeof(DWORD) * m_nSectionCnt);
-
-	/*NOTE:
-	If file is opened without writing permission, read all data to memory?
-	Otherwise we will read data as it is needed?
-	*/
-	if (!m_bEdit) {
-		m_dwMapPos = m_fs->tellg();
-
-		m_fs->seekg(0, std::ios_base::end);
-		const DWORD dwPos = m_fs->tellg();
-		const DWORD dwMapDataSize = dwPos - m_dwMapPos;
-		if (dwMapDataSize > m_dwMapDataSize) {
-			m_pMapData = std::make_unique<BYTE[]>(dwMapDataSize);
-			m_dwMapDataSize = dwMapDataSize;
-		}
-		m_fs->seekg(m_dwMapPos);
-		m_fs->read(reinterpret_cast<char*>(m_pMapData.get()), dwMapDataSize);
-	}
-
+void ZRBlock::Attach(Corsairs::Engine::Render::MapStream& stream) {
+	_stream = &stream;
+	const auto& header = stream.Header();
+	_sectionWidth = header.nSectionWidth;
+	_sectionHeight = header.nSectionHeight;
+	_sectionCntX = stream.SectionCountX();
+	_sectionCntY = stream.SectionCountY();
 	ClearSectionArray();
-
-	return TRUE;
 }
 
 void ZRBlock::GetBlockByRange(int CenterX, int CenterY, int range) {
-	if (!m_fs->is_open())
+	if (_stream == nullptr || !_stream->IsOpen()) {
 		return;
+	}
 
 	m_nGridShowWidth = range * 2;
 	m_nGridShowHeight = range * 2;
@@ -105,26 +33,26 @@ void ZRBlock::GetBlockByRange(int CenterX, int CenterY, int range) {
 
 	MPTimer t;
 	t.Begin();
-	int nCurSectionX = (int)(m_fShowCenterX - (float)range / 2.0f) / m_nSectionWidth;
-	int nCurSectionY = (int)(m_fShowCenterY - (float)range / 2.0f) / m_nSectionHeight;
+	int nCurSectionX = (int)(m_fShowCenterX - (float)range / 2.0f) / _sectionWidth;
+	int nCurSectionY = (int)(m_fShowCenterY - (float)range / 2.0f) / _sectionHeight;
 
-	int nEndSectionX = (int)(m_fShowCenterX + (float)range / 2.0f) / m_nSectionWidth;
-	int nEndSectionY = (int)(m_fShowCenterY + (float)range / 2.0f) / m_nSectionHeight;
+	int nEndSectionX = (int)(m_fShowCenterX + (float)range / 2.0f) / _sectionWidth;
+	int nEndSectionY = (int)(m_fShowCenterY + (float)range / 2.0f) / _sectionHeight;
 
 	int nShowSectionCntX = nEndSectionX - nCurSectionX;
 	int nShowSectionCntY = nEndSectionY - nCurSectionY;
 
-	if (range % m_nSectionWidth != 0) nShowSectionCntX++;
-	if (range % m_nSectionHeight != 0) nShowSectionCntY++;
+	if (range % _sectionWidth != 0) nShowSectionCntX++;
+	if (range % _sectionHeight != 0) nShowSectionCntY++;
 
 	for (int y = 0; y < nShowSectionCntY; y++) {
 		int nSectionY = nCurSectionY + y;
 
-		if (nSectionY < 0 || nSectionY >= m_nSectionCntY) continue;
+		if (nSectionY < 0 || nSectionY >= _sectionCntY) continue;
 		for (int x = 0; x < nShowSectionCntX; x++) {
 			int nSectionX = nCurSectionX + x;
 
-			if (nSectionX < 0 || nSectionX >= m_nSectionCntX) continue;
+			if (nSectionX < 0 || nSectionX >= _sectionCntX) continue;
 
 			if (!GetBlockSection(nSectionX, nSectionY)) {
 				LoadBlockData(nSectionX, nSectionY);
@@ -151,74 +79,49 @@ std::unique_ptr<ZRBlockSection>& ZRBlock::LoadBlockData(int nSectionX, int nSect
 
 
 void ZRBlock::_LoadBlockData(ZRBlockSection& block) {
-	int nSectionX = block.nX;
-	int nSectionY = block.nY;
-
-	block.dwDataOffset = _ReadSectionDataOffset(nSectionX, nSectionY);
-
-	if (block.dwDataOffset == 0) return;
-
-	DWORD dwPos = 0;
-	if (m_bEdit) {
-		m_fs->seekg(block.dwDataOffset, std::ios_base::beg);
-	}
-	else {
-		dwPos = block.dwDataOffset - m_dwMapPos;
+	if (_stream == nullptr) {
+		return;
 	}
 
-	block.blockData = std::make_unique<ZRBlockData[]>(m_nSectionWidth * m_nSectionHeight);
+	const std::uint32_t off = _stream->SectionOffset(block.nX, block.nY);
+	block.dwDataOffset = off;
+	if (off == 0) {
+		return;
+	}
 
-#ifdef NEW_VERSION
-	SNewFileTile tile;
-#else
-	SFileTile tile;
-#endif
+	block.blockData = std::make_unique<ZRBlockData[]>(_sectionWidth * _sectionHeight);
 
-	for (int y = 0; y < m_nSectionHeight; y++) {
-		for (int x = 0; x < m_nSectionWidth; x++) {
-			ZRBlockData* pB = block.blockData.get() + m_nSectionWidth * y + x;
-			if (m_bEdit) {
-				m_fs->read(reinterpret_cast<char*>(&tile), sizeof(tile));
-			}
-			else {
-				memcpy(&tile, m_pMapData.get() + dwPos, sizeof(tile));
-				dwPos += sizeof(tile);
-			}
-			pB->sRegion = tile.sRegion;
-			memcpy(&pB->btBlock[0], &tile.btBlock[0], 4);
-		}
+	if (LW_FAILED(Corsairs::Engine::Render::MapLoader::ReadSectionBlockData(
+			*_stream, block.nX, block.nY, block.blockData.get()))) {
+		ToLogService("errors", LogLevel::Error,
+					 "[ZRBlock::_LoadBlockData] ReadSectionBlockData failed for section [{},{}]",
+					 block.nX, block.nY);
 	}
 }
 
 
 ZRBlockData* ZRBlock::GetBlock(int nX, int nY) {
-	if (nX >= m_nWidth || nY >= m_nHeight || nX < 0 || nY < 0) {
+	if (_sectionWidth == 0 || _sectionHeight == 0) {
+		return m_pDefaultBlock.get();
+	}
+	const int width = _sectionCntX * _sectionWidth;
+	const int height = _sectionCntY * _sectionHeight;
+	if (nX >= width || nY >= height || nX < 0 || nY < 0) {
 		return m_pDefaultBlock.get();
 	}
 
-	int nSectionX = nX / m_nSectionWidth;
-	int nSectionY = nY / m_nSectionHeight;
+	int nSectionX = nX / _sectionWidth;
+	int nSectionY = nY / _sectionHeight;
 
 	auto& pBlock = GetBlockSection(nSectionX, nSectionY);
 
 	if (pBlock && pBlock->blockData) {
-		int nOffX = nX % m_nSectionWidth;
-		int nOffY = nY % m_nSectionHeight;
-		return pBlock->blockData.get() + nOffY * m_nSectionWidth + nOffX;
+		int nOffX = nX % _sectionWidth;
+		int nOffY = nY % _sectionHeight;
+		return pBlock->blockData.get() + nOffY * _sectionWidth + nOffX;
 	}
 
 	return m_pDefaultBlock.get();
-}
-
-DWORD ZRBlock::_ReadSectionDataOffset(int nSectionX, int nSectionY) {
-	DWORD dwLoc = (nSectionY * m_nSectionCntX + nSectionX);
-	return m_pOffsetIdx[dwLoc];
-
-	m_fs->seekg(sizeof(MPMapFileHeader) + 4 * dwLoc, std::ios_base::beg);
-
-	DWORD dwDataOffset;
-	m_fs->read(reinterpret_cast<char*>(&dwDataOffset), sizeof(dwDataOffset));
-	return dwDataOffset;
 }
 
 void ZRBlock::SetGrid(int GridX, int GridY) {

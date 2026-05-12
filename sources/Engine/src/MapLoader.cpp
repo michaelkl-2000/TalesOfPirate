@@ -19,6 +19,7 @@
 #include "logutil.h"
 #include "lwgraphicsutil.h"  // LW_RGB565TODWORD / LW_RGBDWORDTO565
 #include "MPTile.h"
+#include "ZRBlock.h"         // ::ZRBlockData — для ReadSectionBlockData
 
 #include <algorithm>
 #include <cstdio>
@@ -590,6 +591,73 @@ LW_RESULT MapLoader::WriteSection(MapStream& stream,
     }
     if (std::fwrite(&off, sizeof(off), 1, stream._fp) != 1) {
         return LW_RET_FAILED;
+    }
+    return LW_RET_OK;
+}
+
+LW_RESULT MapLoader::ReadSectionBlockData(const MapStream& stream,
+                                           int sectionX, int sectionY,
+                                           ::ZRBlockData* outBlocks) {
+    if (outBlocks == nullptr) {
+        return LW_RET_FAILED;
+    }
+    const std::uint32_t off = stream.SectionOffset(sectionX, sectionY);
+    if (off == 0) {
+        return LW_RET_FAILED;
+    }
+
+    const std::size_t tileSize = TileSizeOnDisk();
+    const std::int32_t sw = stream.Header().nSectionWidth;
+    const std::int32_t sh = stream.Header().nSectionHeight;
+
+    SNewFileTile fileTile{};
+
+    auto Apply = [&](::ZRBlockData* dst, const SNewFileTile& src) {
+        dst->sRegion = src.sRegion;
+        std::memcpy(&dst->btBlock[0], &src.btBlock[0], 4);
+    };
+
+    if (stream._edit) {
+        if (stream._fp == nullptr) {
+            return LW_RET_FAILED;
+        }
+        if (std::fseek(stream._fp, static_cast<long>(off), SEEK_SET) != 0) {
+            ToLogService("errors", LogLevel::Error,
+                         "[MapLoader::ReadSectionBlockData] fseek to offset {} failed", off);
+            return LW_RET_FAILED;
+        }
+        for (std::int32_t y = 0; y < sh; ++y) {
+            for (std::int32_t x = 0; x < sw; ++x) {
+                if (std::fread(&fileTile, tileSize, 1, stream._fp) != 1) {
+                    ToLogService("errors", LogLevel::Error,
+                                 "[MapLoader::ReadSectionBlockData] short fread tile [{},{}] in section [{},{}]",
+                                 x, y, sectionX, sectionY);
+                    return LW_RET_FAILED;
+                }
+                Apply(&outBlocks[y * sw + x], fileTile);
+            }
+        }
+        return LW_RET_OK;
+    }
+
+    if (off < stream._bulkBaseOffset) {
+        return LW_RET_FAILED;
+    }
+    std::size_t pos = off - stream._bulkBaseOffset;
+    const std::size_t needed = static_cast<std::size_t>(sw) * sh * tileSize;
+    if (pos + needed > stream._bulkData.size()) {
+        ToLogService("errors", LogLevel::Error,
+                     "[MapLoader::ReadSectionBlockData] bulk overflow at section [{},{}]: "
+                     "need {} from offset {}, have {}",
+                     sectionX, sectionY, needed, pos, stream._bulkData.size());
+        return LW_RET_FAILED;
+    }
+    for (std::int32_t y = 0; y < sh; ++y) {
+        for (std::int32_t x = 0; x < sw; ++x) {
+            std::memcpy(&fileTile, stream._bulkData.data() + pos, tileSize);
+            pos += tileSize;
+            Apply(&outBlocks[y * sw + x], fileTile);
+        }
     }
     return LW_RET_OK;
 }

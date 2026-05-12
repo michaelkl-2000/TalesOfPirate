@@ -185,8 +185,7 @@
         <ClInclude Include="src\lwDirectoryBrowser.h"/>
         <ClInclude Include="src\lwEfxTrack.h"/>
         <ClInclude Include="src\lwExpObj.h"/>
-        <ClInclude Include="src\lwFile.h"/>
-        <ClInclude Include="src\lwFileStream.h"/>
+        <ClInclude Include="src\lwFileEncode.h"/>
         <ClInclude Include="src\lwFileutil.h"/>
         <ClInclude Include="src\lwgraphics.h"/>
         <ClInclude Include="src\lwgraphicsutil.h"/>
@@ -253,8 +252,7 @@
         <ClCompile Include="src\lwDirectoryBrowser.cpp"/>
         <ClCompile Include="src\lwEfxTrack.cpp"/>
         <ClCompile Include="src\lwExpObj.cpp"/>
-        <ClCompile Include="src\lwFile.cpp"/>
-        <ClCompile Include="src\lwFileStream.cpp"/>
+        <ClCompile Include="src\lwFileEncode.cpp"/>
         <ClCompile Include="src\lwFileutil.cpp"/>
         <ClCompile Include="src\lwgraphicsutil.cpp"/>
         <ClCompile Include="src\lwHeap.cpp"/>

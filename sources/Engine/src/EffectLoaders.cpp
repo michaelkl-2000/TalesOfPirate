@@ -7,8 +7,9 @@
 
 #include "AssetLoaders.h"
 
-#include "MPModelEff.h"      // EffectFileInfo, EffParameter, I_Effect
+#include "MPModelEff.h"      // EffectFileInfo, EffParameter, I_Effect, CEffPath
 #include "MPParticleCtrl.h"  // CMPPartCtrl
+#include "lwEfxTrack.h"      // EffPathLoader::LoadLet — matrix-track формат
 
 #include <algorithm>
 #include <cctype>
@@ -499,7 +500,7 @@ bool PartCtrlLoader::SavePartSys(::CMPPartSys& ps, std::FILE* fp) {
     bool busepsth = ps._pcPath ? true : false;
     std::fwrite(&busepsth, sizeof(bool), 1, fp);
     if (busepsth) {
-        ps._pcPath->SavePath(fp);
+        EffPathLoader::WritePath(*ps._pcPath, fp);
     }
 
     std::fwrite(&ps.m_bShade, sizeof(bool), 1, fp);
@@ -605,7 +606,7 @@ bool PartCtrlLoader::LoadPartSys(::CMPPartSys& ps, std::FILE* fp, DWORD dwVersio
         std::fread(&busepsth, sizeof(bool), 1, fp);
         if (busepsth) {
             ps._pcPath = new CEffPath;
-            ps._pcPath->LoadPath(fp);
+            EffPathLoader::ReadPath(*ps._pcPath, fp);
             ps._pcPath->Reset();
         }
     }
@@ -894,6 +895,180 @@ LW_RESULT PartCtrlLoader::LoadEx(::CMPPartCtrl& ctrl, std::string_view file,
 
 LW_RESULT PartCtrlLoader::Save(::CMPPartCtrl& ctrl, std::string_view file) {
     return SaveCtrl(ctrl, file) ? LW_RET_OK : LW_RET_FAILED;
+}
+
+// =============================================================================
+// EffPathLoader — два соседних формата path-кадров для CEffPath:
+//   • .csf — продакшн-формат (model/effect/*.csf), Load/Save;
+//   • .let — редакторский формат поверх matrix-track, LoadLet.
+// Плюс поточные WritePath/ReadPath для эмбединга CEffPath в .par.
+// =============================================================================
+
+LW_RESULT EffPathLoader::Load(::CEffPath& path, std::string_view file) {
+    EffPathLoadDiagnostics diag;
+    return LoadEx(path, file, diag);
+}
+
+LW_RESULT EffPathLoader::LoadEx(::CEffPath& path, std::string_view file,
+                                EffPathLoadDiagnostics& diag) {
+    diag = {};
+
+    UniqueFile fp{std::fopen(std::string{file}.c_str(), "rb")};
+    if (!fp) {
+        diag.status = EffPathLoadStatus::FileOpenFailed;
+        diag.detail = "fopen failed";
+        return LW_RET_FAILED;
+    }
+
+    // Заголовок — три ASCII-байта "csf" + 1 нулевой; формат правят редакторы,
+    // поэтому проверяем чётко 3 первых символа.
+    char header[4]{};
+    if (std::fread(header, sizeof(char), 4, fp.get()) != 4) {
+        diag.status = EffPathLoadStatus::HeaderTruncated;
+        diag.detail = "short read of 4-byte magic";
+        return LW_RET_FAILED;
+    }
+    if (std::string_view{header, 3} != "csf") {
+        diag.status = EffPathLoadStatus::BadMagic;
+        diag.detail = std::format("magic='{}{}{}' (expected 'csf')",
+                                  header[0], header[1], header[2]);
+        return LW_RET_FAILED;
+    }
+
+    DWORD version = 0;
+    DWORD num = 0;
+    if (std::fread(&version, sizeof(DWORD), 1, fp.get()) != 1 ||
+        std::fread(&num, sizeof(DWORD), 1, fp.get()) != 1) {
+        diag.status = EffPathLoadStatus::HeaderTruncated;
+        diag.detail = "short read of version/num";
+        return LW_RET_FAILED;
+    }
+    diag.version = version;
+    diag.frameCount = num;
+
+    if (num == 0 || num > kMaxFrames) {
+        diag.status = EffPathLoadStatus::FrameCountOutOfRange;
+        diag.detail = std::format("num={} (expected 1..{})", num, kMaxFrames);
+        return LW_RET_FAILED;
+    }
+
+    path.m_iFrameCount = static_cast<int>(num);
+
+    // Файл хранит right-handed координаты: на лету меняем Y/Z.
+    for (DWORD n = 0; n < num; ++n) {
+        D3DXVECTOR3 tvec{};
+        if (std::fread(&tvec, sizeof(D3DXVECTOR3), 1, fp.get()) != 1) {
+            diag.status = EffPathLoadStatus::BodyTruncated;
+            diag.detail = std::format("short read of frame[{}] of {}", n, num);
+            return LW_RET_FAILED;
+        }
+        const float ftemp = tvec.y;
+        tvec.y = -tvec.z;
+        tvec.z = ftemp;
+        path.m_vecPath[n] = tvec;
+    }
+
+    for (DWORD n = 0; n + 1 < num; ++n) {
+        path.m_vecDir[n] = path.m_vecPath[n + 1] - path.m_vecPath[n];
+        path.m_vecDist[n] = D3DXVec3Length(&path.m_vecDir[n]);
+        D3DXVec3Normalize(&path.m_vecDir[n], &path.m_vecDir[n]);
+    }
+
+    diag.status = EffPathLoadStatus::Ok;
+    return LW_RET_OK;
+}
+
+LW_RESULT EffPathLoader::LoadLet(::CEffPath& path, std::string_view file) {
+    LW_NAMESPACE::lwEfxTrack et;
+    const std::string fileStr{file};
+    if (LW_RESULT r = EfxTrackLoader::Load(et, fileStr); LW_FAILED(r)) {
+        return r;
+    }
+
+    LW_NAMESPACE::lwIAnimDataMatrix* data = et.GetData();
+    const int j = data->GetFrameNum();
+    for (int i = 0; i < j; ++i) {
+        ::lwMatrix44 mat;
+        data->GetValue(&mat, static_cast<float>(i));
+        path.m_vecPath[i].x = mat._41;
+        path.m_vecPath[i].y = mat._42;
+        path.m_vecPath[i].z = mat._43;
+    }
+    for (int i = 0; i + 1 < j; ++i) {
+        path.m_vecDir[i] = path.m_vecPath[i + 1] - path.m_vecPath[i];
+        path.m_vecDist[i] = D3DXVec3Length(&path.m_vecDir[i]);
+        D3DXVec3Normalize(&path.m_vecDir[i], &path.m_vecDir[i]);
+    }
+
+    path.m_iFrameCount = j;
+    return LW_RET_OK;
+}
+
+LW_RESULT EffPathLoader::Save(const ::CEffPath& path, std::string_view file) {
+    if (path.m_iFrameCount <= 0
+        || static_cast<std::uint32_t>(path.m_iFrameCount) > kMaxFrames) {
+        return LW_RET_FAILED;
+    }
+
+    UniqueFile fp{std::fopen(std::string{file}.c_str(), "wb")};
+    if (!fp) {
+        return LW_RET_FAILED;
+    }
+
+    constexpr char header[4]{'c', 's', 'f', '\0'};
+    if (std::fwrite(header, sizeof(char), 4, fp.get()) != 4) {
+        return LW_RET_FAILED;
+    }
+
+    constexpr DWORD kVersion = kCurrentVersion;
+    const DWORD num = static_cast<DWORD>(path.m_iFrameCount);
+    if (std::fwrite(&kVersion, sizeof(DWORD), 1, fp.get()) != 1 ||
+        std::fwrite(&num, sizeof(DWORD), 1, fp.get()) != 1) {
+        return LW_RET_FAILED;
+    }
+
+    // Обратная инверсия Y/Z из left-hand runtime → right-hand на диске.
+    // Симметрично Load: runtime{x,y,z} ↔ disk{x, z, -y}.
+    for (DWORD n = 0; n < num; ++n) {
+        D3DXVECTOR3 tvec;
+        tvec.x = path.m_vecPath[n].x;
+        tvec.y = path.m_vecPath[n].z;
+        tvec.z = -path.m_vecPath[n].y;
+        if (std::fwrite(&tvec, sizeof(D3DXVECTOR3), 1, fp.get()) != 1) {
+            return LW_RET_FAILED;
+        }
+    }
+
+    return LW_RET_OK;
+}
+
+void EffPathLoader::WritePath(const ::CEffPath& path, std::FILE* fp) {
+    std::fwrite(&path.m_iFrameCount, sizeof(int), 1, fp);
+    std::fwrite(&path.m_fVel, sizeof(float), 1, fp);
+
+    for (int n = 0; n < path.m_iFrameCount; ++n) {
+        std::fwrite(&path.m_vecPath[n], sizeof(D3DXVECTOR3), 1, fp);
+    }
+    // Историческая особенность: m_vecDist — float[200], но размер записи
+    // указан sizeof(D3DXVECTOR3) (12 байт). Сохраняем legacy-layout, чтобы
+    // существующие .par-файлы оставались совместимы.
+    for (int n = 0; n + 1 < path.m_iFrameCount; ++n) {
+        std::fwrite(&path.m_vecDir[n], sizeof(D3DXVECTOR3), 1, fp);
+        std::fwrite(&path.m_vecDist[n], sizeof(D3DXVECTOR3), 1, fp);
+    }
+}
+
+void EffPathLoader::ReadPath(::CEffPath& path, std::FILE* fp) {
+    std::fread(&path.m_iFrameCount, sizeof(int), 1, fp);
+    std::fread(&path.m_fVel, sizeof(float), 1, fp);
+
+    for (int n = 0; n < path.m_iFrameCount; ++n) {
+        std::fread(&path.m_vecPath[n], sizeof(D3DXVECTOR3), 1, fp);
+    }
+    for (int n = 0; n + 1 < path.m_iFrameCount; ++n) {
+        std::fread(&path.m_vecDir[n], sizeof(D3DXVECTOR3), 1, fp);
+        std::fread(&path.m_vecDist[n], sizeof(D3DXVECTOR3), 1, fp);
+    }
 }
 
 } // namespace Corsairs::Engine::Render

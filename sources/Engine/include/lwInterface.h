@@ -48,7 +48,6 @@ LW_BEGIN
 	class lwITex;
 	class lwIAnimKeySetFloat;
 	class lwICoordinateSys;
-	class lwIFileStream;
 
 	// ============= begin base interface method =============
 	class lwInterface {
@@ -167,8 +166,6 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT CreateRunTimeDataBuffer() PURE_METHOD;
 		virtual LW_RESULT EnableRunTimeFrameBuffer(DWORD frame, DWORD flag) PURE_METHOD;
 		virtual LW_RESULT ExtractAnimData(lwIAnimDataBone* out_data) PURE_METHOD;
-		virtual LW_RESULT DumpRunTimeBoneData(std::string_view file) PURE_METHOD;
-		virtual LW_RESULT DumpInitInvMat(std::string_view file) PURE_METHOD;
 	};
 
 	class LW_DECLSPEC_NOVTABLE lwIAnimCtrlMatrix : public lwIAnimCtrl {
@@ -1489,48 +1486,6 @@ LW_STD_GETINTERFACE( cls )
 		virtual UINT GetTimerID() PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIFile : public lwInterface {
-	public:
-		virtual LW_RESULT CreateFile(std::string_view file, DWORD access_flag, DWORD share_mode,
-									 LPSECURITY_ATTRIBUTES secu_attr, DWORD creation_flag,
-									 DWORD attributes_flag = FILE_FLAG_SEQUENTIAL_SCAN) PURE_METHOD;
-		virtual LW_RESULT CreateDirectory(std::string_view path, LPSECURITY_ATTRIBUTES attr) PURE_METHOD;
-		virtual LW_RESULT LoadFileBuffer(std::string_view file, lwIBuffer* buf) PURE_METHOD;
-		virtual LW_RESULT SaveFileBuffer(std::string_view file, lwIBuffer* buf) PURE_METHOD;
-		virtual LW_RESULT Close() PURE_METHOD;
-		virtual LW_RESULT Read(void* buf, DWORD in_size, DWORD* out_size) PURE_METHOD;
-		virtual LW_RESULT Write(const void* buf, DWORD in_size, DWORD* out_size) PURE_METHOD;
-
-		virtual HANDLE GetHandle() const PURE_METHOD;
-		virtual const std::string& GetFileName() PURE_METHOD;
-		virtual LW_RESULT GetCreationTime(SYSTEMTIME* st) PURE_METHOD;
-		virtual LW_RESULT CheckExisting(std::string_view path, DWORD check_directory) PURE_METHOD;
-
-		// Seek Description
-		// flag[in]: FILE_BEGIN / FILE_CURRENT / FILE_END
-		virtual LW_RESULT Seek(long offset, DWORD flag) PURE_METHOD;
-		virtual DWORD GetSize() PURE_METHOD;
-		virtual LW_RESULT Flush() PURE_METHOD;
-		virtual LW_RESULT SetEnd() PURE_METHOD;
-
-		virtual LW_RESULT MoveData(DWORD src_pos, DWORD dst_pos, DWORD size) PURE_METHOD;
-		virtual LW_RESULT ReplaceData(DWORD pos, const void* buf, DWORD size) PURE_METHOD;
-		virtual LW_RESULT InsertData(DWORD pos, const void* buf, DWORD size) PURE_METHOD;
-		virtual LW_RESULT RemoveData(DWORD pos, DWORD size) PURE_METHOD;
-	};
-
-	class LW_DECLSPEC_NOVTABLE lwIFileDialog : public lwInterface {
-	public:
-		// int flag = OFN_PATHMUSTEXIST | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY
-		virtual LW_RESULT GetOpenFileName(HWND hwnd, char* buf, int num, const char* dir, const char* title = 0,
-										  const char* filter = "all files(*.*)\0*.*\0\0",
-										  int flag = OFN_PATHMUSTEXIST | OFN_EXPLORER) PURE_METHOD;
-
-		virtual LW_RESULT GetSaveFileName(HWND hwnd, char* buf, int num, const char* dir, const char* title = 0,
-										  const char* filter = "all files(*.*)\0*.*\0\0", const char* ext = 0,
-										  int flag = OFN_PATHMUSTEXIST | OFN_EXPLORER) PURE_METHOD;
-	};
-
 	class LW_DECLSPEC_NOVTABLE lwIDDSFile : public lwInterface {
 	public:
 		virtual void SetDevice(IDirect3DDeviceX* dev) PURE_METHOD;
@@ -1653,8 +1608,6 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT GetSubsetSequence(lwSubsetInfo** data_seq, DWORD* data_num, DWORD stream_id) PURE_METHOD;
 		virtual LW_RESULT GetVertexBlendSequence(lwBlendInfo** data_seq, DWORD* data_num) PURE_METHOD;
 		virtual LW_RESULT GetBoneIndexSequence(DWORD** data_seq, DWORD* data_num) PURE_METHOD;
-		virtual LW_RESULT LoadFile(lwIFileStream* fs) PURE_METHOD;
-		virtual LW_RESULT SaveFile(lwIFileStream* fs) PURE_METHOD;
 		virtual LW_RESULT DumpData(std::string_view file) PURE_METHOD;
 	};
 
@@ -1686,18 +1639,6 @@ LW_STD_GETINTERFACE( cls )
 		virtual DWORD GetHeapCapacity() PURE_METHOD;
 		virtual void* GetBuffer() PURE_METHOD;
 		virtual LW_RESULT Clone(lwIHeap** out_heap) PURE_METHOD;
-	};
-
-	class LW_DECLSPEC_NOVTABLE lwIFileStream : public lwInterface {
-	public:
-		virtual LW_RESULT Open(std::string_view file, const lwFileStreamOpenInfo* info) PURE_METHOD;
-		virtual LW_RESULT Close() PURE_METHOD;
-		virtual LW_RESULT Read(void* buf, DWORD in_size, DWORD* out_size) PURE_METHOD;
-		virtual LW_RESULT Write(const void* buf, DWORD in_size, DWORD* out_size) PURE_METHOD;
-		virtual LW_RESULT Seek(DWORD* pos, long offset, DWORD flag) PURE_METHOD;
-		virtual LW_RESULT GetSize(DWORD* size) PURE_METHOD;
-		virtual LW_RESULT Flush() PURE_METHOD;
-		virtual LW_RESULT SetEnd() PURE_METHOD;
 	};
 
 LW_END

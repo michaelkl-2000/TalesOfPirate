@@ -87,11 +87,8 @@ public:
 		return m_fVel;
 	}
 
-	bool LoadPathFromFile(std::string_view pszName);
-	bool LoadPathFromFileLet(std::string_view file);
-	void SavePath(FILE* pf);
-	void LoadPath(FILE* pf);
-
+	// I/O (файловое .csf/.let и in-place embedding в .par) —
+	// в Corsairs::Engine::Render::EffPathLoader (см. AssetLoaders.h).
 	void FrameMove(float fDailTime);
 
 	D3DXVECTOR3* GetCurPos() {
@@ -227,11 +224,6 @@ public:
 	void ShowTempFrame(int iCurSubEff,
 					   D3DXVECTOR3& pScale, D3DXVECTOR3& pRotating, D3DXVECTOR3& pTranslate,
 					   D3DXCOLOR& pColor, TEXCOORD& vecCoord, IDirect3DTextureX* lpTex);
-
-	//!
-	bool SaveToFile(std::string_view pszFileName);
-	//!
-	bool LoadFromFile(std::string_view pszFileName);
 
 	bool IsLoop() {
 		return m_bLoop;
@@ -687,8 +679,6 @@ public:
 		_eDestBlend = destblend;
 	}
 
-	// Save/Load перенесены в PartCtrlLoader.
-
 	void CopyStrip(CMPStrip* pstrip);
 
 	void SetLoop(bool bloop) {
@@ -738,7 +728,7 @@ protected:
 //   [bool        m_bRotating]
 //   [D3DXVECTOR3 m_SVerRota][float      m_fRotaVel]
 //   [int         count]
-//   [count × I_Effect::Save/LoadFromFile сериализация]
+//   [count × EffectLoader::SaveElement/LoadElement сериализация]
 struct EffectFileInfo {
 	std::uint32_t          version{0};
 	EffParameter           param{};

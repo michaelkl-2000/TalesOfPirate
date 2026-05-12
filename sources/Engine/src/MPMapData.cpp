@@ -44,7 +44,10 @@ BOOL MPMap::Load(const char* pszMapName, BOOL bEdit) {
 
 	ClearSectionArray();
 
-	m_pBlock->Load(pszMapName, bEdit);
+	// ZRBlock не открывает .map повторно — он работает поверх уже открытого
+	// MPMap'ом MapStream'а (header/offsets/bulk-кеш). Attach сбрасывает
+	// массив активных секций и кеширует геометрию.
+	m_pBlock->Attach(_stream);
 
 	return TRUE;
 }

@@ -967,7 +967,8 @@ bool CMPResManger::LoadTotalPath() {
 
 				_iPathNum++;
 				_vecPath.resize(_iPathNum);
-				_vecPath[_iPathNum - 1].LoadPathFromFile(t_pszFile);
+				Corsairs::Engine::Render::EffPathLoader::Load(
+					_vecPath[_iPathNum - 1], t_pszFile);
 			}
 		}
 		while (FindNextFile(t_hFind, &t_sfd));

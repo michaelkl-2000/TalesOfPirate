@@ -8,9 +8,9 @@
 
 #include <algorithm>
 #include <cctype>
-#include <cstdio>
 #include <cstring>
 #include <format>
+#include <fstream>
 #include <stdexcept>
 #include <vector>
 
@@ -30,7 +30,6 @@ namespace {
 	}
 } // namespace
 
-bool FontRender::s_textDumpEnabled = false;
 bool FontRender::s_shadowEnabled = true;
 
 FontRender::FontRender() = default;
@@ -135,7 +134,6 @@ void FontRender::ReleaseFont() {
 	_baseline = 0;
 	_avgCharW = 0;
 	_spaceAdvance = 0;
-	_dumpedTexts.clear();
 }
 
 std::wstring FontRender::_ToWide(std::string_view mbstr) const {
@@ -339,30 +337,30 @@ bool FontRender::DumpAtlas(const std::string& path) {
 		}
 	}
 
-	bool ok = false;
-	FILE* f = nullptr;
-	if (fopen_s(&f, path.c_str(), "wb") == 0 && f) {
-		BITMAPFILEHEADER fh{};
-		BITMAPINFOHEADER ih{};
-		fh.bfType = 0x4D42;
-		fh.bfOffBits = sizeof(fh) + sizeof(ih);
-		fh.bfSize = fh.bfOffBits + rowBytes * h;
-
-		ih.biSize = sizeof(ih);
-		ih.biWidth = w;
-		ih.biHeight = -h; // top-down
-		ih.biPlanes = 1;
-		ih.biBitCount = 32;
-		ih.biCompression = BI_RGB;
-		ih.biSizeImage = rowBytes * h;
-
-		std::fwrite(&fh, sizeof(fh), 1, f);
-		std::fwrite(&ih, sizeof(ih), 1, f);
-		std::fwrite(pixels.data(), 1, pixels.size(), f);
-		std::fclose(f);
-		ok = true;
+	std::ofstream out(path, std::ios::binary | std::ios::trunc);
+	if (!out) {
+		return false;
 	}
-	return ok;
+
+	BITMAPFILEHEADER fh{};
+	BITMAPINFOHEADER ih{};
+	fh.bfType = 0x4D42;
+	fh.bfOffBits = sizeof(fh) + sizeof(ih);
+	fh.bfSize = fh.bfOffBits + rowBytes * h;
+
+	ih.biSize = sizeof(ih);
+	ih.biWidth = w;
+	ih.biHeight = -h; // top-down
+	ih.biPlanes = 1;
+	ih.biBitCount = 32;
+	ih.biCompression = BI_RGB;
+	ih.biSizeImage = rowBytes * h;
+
+	out.write(reinterpret_cast<const char*>(&fh), sizeof(fh));
+	out.write(reinterpret_cast<const char*>(&ih), sizeof(ih));
+	out.write(reinterpret_cast<const char*>(pixels.data()),
+			  static_cast<std::streamsize>(pixels.size()));
+	return out.good();
 }
 
 bool FontRender::DumpGlyphPreview(const std::string& path) {

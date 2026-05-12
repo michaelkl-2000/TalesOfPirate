@@ -59,8 +59,9 @@
 // Полные определения для EffectLoader (EffectFileInfo) и PartCtrlLoader
 // (CMPPartCtrl). AssetLoaders.h работает по forward-decl, чтобы тулзы, которым
 // эти лоадеры не нужны, не пуллили цепочку MPModelEff/MPParticleCtrl/I_Effect.
-#include "MPModelEff.h"
+#include "MPModelEff.h"      // CEffPath — для EffPathLoader-тестов
 #include "MPParticleCtrl.h"
+#include "lwEfxTrack.h"      // MindPower::lwEfxTrack — для .let round-trip
 
 #include "Blake2s.h"
 
@@ -588,6 +589,118 @@ struct Blake2sTestVector {
     return allOk;
 }
 
+// =============================================================================
+// Self-test .csf round-trip — проверяет EffPathLoader::Save/Load на синтетике,
+// поскольку реальных .csf-файлов в датасете нет (формат «спящий», создаётся
+// внешними редакторами эффектов). Работает в `runs/selftest/`.
+//
+// Покрывает:
+//   1. Save → Load восстанавливает m_iFrameCount и m_vecPath побайтно
+//      (с обратной инверсией Y/Z, заданной в формате).
+//   2. Save детерминирован: SaveA → Load → SaveB даёт A == B побайтно.
+//   3. EffPathLoader::LoadEx корректно ловит повреждённый magic.
+// =============================================================================
+
+[[nodiscard]] bool RunCsfRoundTripSelfTest(const fs::path& runsDir) {
+    using EffPathLoader = Corsairs::Engine::Render::EffPathLoader;
+    using EffPathLoadStatus = Corsairs::Engine::Render::EffPathLoadStatus;
+
+    std::error_code ec;
+    const fs::path dir = runsDir / "selftest";
+    fs::create_directories(dir, ec);
+
+    // 1. Тестовый CEffPath с 5 фреймами, ненулевыми X/Y/Z (для проверки
+    // round-trip обратной инверсии Y/Z).
+    CEffPath src{};
+    src.m_iFrameCount = 5;
+    const std::array<D3DXVECTOR3, 5> kPoints = {{
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 2.0f, 3.0f},
+        {-4.0f, 5.5f, -6.25f},
+        {100.0f, -100.0f, 0.0f},
+        {7.875f, 8.125f, -9.5f},
+    }};
+    for (std::size_t i = 0; i < kPoints.size(); ++i) {
+        src.m_vecPath[i] = kPoints[i];
+    }
+
+    // Save → Load (диск) и сверка позиций.
+    const fs::path binA = dir / "selftest.csf";
+    if (LW_FAILED(EffPathLoader::Save(src, binA.string()))) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     ".csf self-test: Save(A) failed");
+        return false;
+    }
+
+    CEffPath loaded{};
+    Corsairs::Engine::Render::EffPathLoadDiagnostics diag;
+    if (LW_FAILED(EffPathLoader::LoadEx(loaded, binA.string(), diag))) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     ".csf self-test: LoadEx(A) failed: {}", diag.detail);
+        return false;
+    }
+    if (loaded.m_iFrameCount != src.m_iFrameCount) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     ".csf self-test: frame count mismatch: src={}, loaded={}",
+                     src.m_iFrameCount, loaded.m_iFrameCount);
+        return false;
+    }
+    for (int i = 0; i < src.m_iFrameCount; ++i) {
+        const auto& a = src.m_vecPath[i];
+        const auto& b = loaded.m_vecPath[i];
+        if (a.x != b.x || a.y != b.y || a.z != b.z) {
+            ToLogService(kLogChannel, LogLevel::Error,
+                         ".csf self-test: vecPath[{}] mismatch: src=({},{},{}) loaded=({},{},{})",
+                         i, a.x, a.y, a.z, b.x, b.y, b.z);
+            return false;
+        }
+    }
+    if (diag.version != EffPathLoader::kCurrentVersion
+        || diag.frameCount != static_cast<std::uint32_t>(src.m_iFrameCount)) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     ".csf self-test: diag mismatch: version={}, frameCount={}",
+                     diag.version, diag.frameCount);
+        return false;
+    }
+
+    // 2. Save детерминирован: SaveA → Load → SaveB → A == B побайтно.
+    const fs::path binB = dir / "selftest.b.csf";
+    if (LW_FAILED(EffPathLoader::Save(loaded, binB.string()))) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     ".csf self-test: Save(B) failed");
+        return false;
+    }
+    std::uint64_t off = 0;
+    std::uintmax_t aSize = 0, bSize = 0;
+    if (!BinariesEqual(binA, binB, off, aSize, bSize)) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     ".csf self-test: SaveA != SaveB (a={} b={} firstDiffOff={})",
+                     aSize, bSize, off);
+        return false;
+    }
+
+    // 3. Повреждённый magic — LoadEx обязан вернуть BadMagic.
+    const fs::path corrupt = dir / "selftest.bad.csf";
+    {
+        std::ofstream out{corrupt, std::ios::binary};
+        const char bad[] = {'X', 'X', 'X', 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        out.write(bad, sizeof(bad));
+    }
+    CEffPath dummy{};
+    Corsairs::Engine::Render::EffPathLoadDiagnostics badDiag;
+    const auto badRet = EffPathLoader::LoadEx(dummy, corrupt.string(), badDiag);
+    if (!LW_FAILED(badRet) || badDiag.status != EffPathLoadStatus::BadMagic) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     ".csf self-test: corrupt magic was accepted (status={})",
+                     Corsairs::Engine::Render::ToString(badDiag.status));
+        return false;
+    }
+
+    ToLogService(kLogChannel, LogLevel::Info,
+                 ".csf self-test: Save/Load round-trip OK, deterministic OK, BadMagic OK");
+    return true;
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -652,6 +765,11 @@ int main(int argc, char** argv) {
         g_logManager.Shutdown();
         return 2;
     }
+
+    // .csf round-trip self-test — синтетический, не зависит от наличия
+    // реальных ассетов. .csf-файлов в датасете сейчас нет, но Save/Load
+    // должны быть консистентны для редакторских инструментов.
+    bool csfSelfTestOk = false;
 
     const fs::path repoRoot = repoRootArg.empty() ? FindRepoRoot() : repoRootArg;
     if (repoRoot.empty()) {
@@ -905,15 +1023,78 @@ int main(int argc, char** argv) {
     RunRoundTripPipeline(parKind, repoRoot, sourceRoot, savedRoot,
                          limit, noCopy, removeOk, parStats);
 
+    // .csf: CEffPath через EffPathLoader. Файлы лежат в Client/effect/, рядом
+    // с .par/.eff. Save детерминирован, формат byte-stable. Если .csf нет —
+    // pipeline просто проходит вхолостую (EnumerateAssets вернёт пусто).
+    const AssetKind csfKind{
+        .label = "csf",
+        .extensions = {".csf", ".CSF"},
+        .subRoot = "Client",
+        .categories = {"effect"},
+        .currentVersion = Corsairs::Engine::Render::EffPathLoader::kCurrentVersion,
+        .processOne = [](const std::string& srcPath,
+                          const std::string& savePath,
+                          Corsairs::Engine::Render::LgoLoadDiagnostics& /*diag*/)
+                          -> std::optional<LW_RESULT> {
+            CEffPath path;
+            Corsairs::Engine::Render::EffPathLoadDiagnostics csfDiag;
+            const LW_RESULT loadRet = Corsairs::Engine::Render::EffPathLoader::LoadEx(
+                path, srcPath, csfDiag);
+            if (LW_FAILED(loadRet)) {
+                return std::nullopt;
+            }
+            return Corsairs::Engine::Render::EffPathLoader::Save(path, savePath);
+        }};
+
+    // .let: matrix-track анимации через EfxTrackLoader (LgoLoader::
+    // {Load,Save}AnimDataMatrix внутри). Версии нет — заголовка тоже,
+    // payload пишется напрямую. byte-deterministic: SaveAnimDataMatrix
+    // пишет только то, что есть в lwAnimDataMatrix.
+    const AssetKind letKind{
+        .label = "let",
+        .extensions = {".let", ".LET"},
+        .subRoot = "Client",
+        .categories = {"effect"},
+        .currentVersion = 0,  // версии нет: SaveAnimDataMatrix не пишет header.
+        .processOne = [](const std::string& srcPath,
+                          const std::string& savePath,
+                          Corsairs::Engine::Render::LgoLoadDiagnostics& /*diag*/)
+                          -> std::optional<LW_RESULT> {
+            MindPower::lwEfxTrack track;
+            const LW_RESULT loadRet =
+                Corsairs::Engine::Render::EfxTrackLoader::Load(track, srcPath);
+            if (LW_FAILED(loadRet)) {
+                return std::nullopt;
+            }
+            return Corsairs::Engine::Render::EfxTrackLoader::Save(track, savePath);
+        }};
+
+    AssetKindStats csfStats;
+    RunRoundTripPipeline(csfKind, repoRoot, sourceRoot, savedRoot,
+                         limit, noCopy, removeOk, csfStats);
+
+    AssetKindStats letStats;
+    RunRoundTripPipeline(letKind, repoRoot, sourceRoot, savedRoot,
+                         limit, noCopy, removeOk, letStats);
+
     AssetKindStats mapStats;
     RunRoundTripPipeline(mapKind, repoRoot, sourceRoot, savedRoot,
                          limit, noCopy, removeOk, mapStats);
+
+    // Синтетический self-test для .csf (реальные файлы не нужны).
+    csfSelfTestOk = RunCsfRoundTripSelfTest(runsDir);
+    if (!csfSelfTestOk) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     ".csf round-trip self-test провален");
+    }
 
     PrintSummary("lmo", lmoStats);
     PrintSummary("lxo", lxoStats);
     PrintSummary("lab", labStats);
     PrintSummary("eff", effStats);
     PrintSummary("par", parStats);
+    PrintSummary("csf", csfStats);
+    PrintSummary("let", letStats);
     PrintSummary("map", mapStats);
 
     const bool allOk = lmoStats.loadFailures.empty()
@@ -928,8 +1109,13 @@ int main(int argc, char** argv) {
                        && parStats.loadFailures.empty()
                        && parStats.compareFailures.empty()
                        && parStats.yamlFailures.empty()
+                       && csfStats.loadFailures.empty()
+                       && csfStats.compareFailures.empty()
+                       && letStats.loadFailures.empty()
+                       && letStats.compareFailures.empty()
                        && mapStats.loadFailures.empty()
                        && mapStats.compareFailures.empty()
+                       && csfSelfTestOk
                        && (lmoStats.copied + lxoStats.copied + labStats.copied
                            + effStats.copied + parStats.copied + mapStats.copied) > 0;
 

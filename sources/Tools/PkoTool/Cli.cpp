@@ -94,7 +94,7 @@ void PrintUsage() {
         "  --mode=<mode>      validate | fix | export-yml | export-glb | pack-yml | pack-glb\n"
         "                       (export-* and pack-* are not implemented yet)\n"
         "  --scope=<scope>    comma-separated extension list\n"
-        "                       (lgo,lmo,lxo,lab,eff,par,map,obj,rbo,bmp,png,jpg,jpeg,tga,dds),\n"
+        "                       (lgo,lmo,lxo,lab,eff,par,csf,let,map,obj,rbo,bmp,png,jpg,jpeg,tga,dds),\n"
         "                       or one/several paths separated by ';' (D:/a.lgo;D:/b.lmo).\n"
         "  --root=<dir>       root for recursive scan (default: cwd).\n"
         "  --report=<file>    markdown report path (default: cwd/pkotool-report.md).\n"

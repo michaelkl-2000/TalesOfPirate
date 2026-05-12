@@ -1342,11 +1342,6 @@ int UI_DumpFontAtlases(const std::string& dir) {
 	return R_OK;
 }
 
-int UI_SetFontDumpEnabled(int enabled) {
-	FontRender::SetTextDumpEnabled(enabled != 0);
-	return R_OK;
-}
-
 int UI_SetFontShadowEnabled(int enabled) {
 	FontRender::SetShadowEnabled(enabled != 0);
 	return R_OK;
@@ -1787,7 +1782,6 @@ void MPInitLua_Gui(lua_State* L) {
 		LUABRIDGE_REGISTER_FUNC(UI_InstallFontDir)
 		LUABRIDGE_REGISTER_FUNC(UI_DumpFonts)
 		LUABRIDGE_REGISTER_FUNC(UI_DumpFontAtlases)
-		LUABRIDGE_REGISTER_FUNC(UI_SetFontDumpEnabled)
 		LUABRIDGE_REGISTER_FUNC(UI_SetFontShadowEnabled)
 		// text parse
 		LUABRIDGE_REGISTER_FUNC(UI_SetTextParse)

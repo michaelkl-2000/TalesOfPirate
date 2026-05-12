@@ -393,7 +393,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, net::RPacket& pk) {
 		int targetID = static_cast<int>(msg.id);
 		unsigned long permission = static_cast<unsigned long>(msg.perms);
 		int guild_id = GetPlyMainCha()->GetGuildID();
-		if (guild_id == 0 || !emGldPermMgr & GetPlyMainCha()->guildPermission || game_db.GetGuildLeaderID(guild_id) ==
+		if (guild_id == 0 || !(emGldPermMgr & GetPlyMainCha()->guildPermission) || game_db.GetGuildLeaderID(guild_id) ==
 			targetID) {
 			GetPlyMainCha()->SystemNotice("You do not have permission to do this.");
 			return;
@@ -416,6 +416,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, net::RPacket& pk) {
 			static_cast<int64_t>(targetID), static_cast<int64_t>(permission)
 		});
 		ReflectINFof(this, wpk);
+		break;
 	}
 	case CMD_CM_GUILD_PUTNAME: {
 		net::msg::CmGuildPutNameMessage msg;

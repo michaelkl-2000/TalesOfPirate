@@ -4,6 +4,7 @@
 
 
 #include "GlobalVar.h"
+#include "CryptoUtils.h"
 
 
 #include "GameApp.h"
@@ -345,7 +346,16 @@ void CLoginScene::ShowLoginForm() {
 
 	chkID->SetIsChecked(m_bSaveAccount);
 	edtID->SetCaption(m_sSaveAccount.c_str());
-	edtPassword->SetCaption("");
+
+	// Восстановить сохранённый пароль из system.ini[Login], как и в _InitUI.
+	// Эта функция зовётся при возврате из SelectChaScene / при пересоздании формы —
+	// без этого блока поле затиралось бы и пользователь вводил пароль заново.
+	const std::string encrypted = g_SystemIni["Login"].GetString("Password", "");
+	const std::string savedPass = UnprotectStringDpapi(encrypted);
+	if (m_bSaveAccount && !savedPass.empty())
+		edtPassword->SetCaption(savedPass.c_str());
+	else
+		edtPassword->SetCaption("");
 	frmAccount->Show();
 
 	// add by Philip.Wu  2006-07-03  Show logo when login form is displayed
@@ -724,6 +734,16 @@ BOOL CLoginScene::_InitUI() {
 		edtPassword->SetIsPassWord(true);
 		edtPassword->SetIsWrap(true);
 		edtPassword->evtEnter = _evtEnter;
+
+		// Восстановить сохранённый пароль из system.ini[Login], если "Remember login" включено.
+		// Пароль кладёт сюда SaveCredentials() при успешном логине, шифрованным DPAPI
+		// (per-user, per-machine). Если у другого Windows-юзера → пустая строка после
+		// расшифровки, и поле останется пустым — это ожидаемое поведение.
+		if (m_bSaveAccount) {
+			const std::string savedPass = UnprotectStringDpapi(g_SystemIni["Login"].GetString("Password", ""));
+			if (!savedPass.empty())
+				edtPassword->SetCaption(savedPass.c_str());
+		}
 	}
 
 	frmKeyboard = CFormMgr::s_Mgr.Find("frmKeyboard");
@@ -863,6 +883,24 @@ void CLoginScene::_Login() {
 		CS_Login(m_sUsername.c_str(), m_sPassword.c_str(), m_sPassport.c_str());
 		//CGameApp::Waiting();
 	}
+}
+
+void CLoginScene::SaveCredentials() {
+	// Зовётся из NetLoginSuccess. Пишет только если "Remember login" включено;
+	// иначе чистит запись (важно: при снятии галки пароль не должен остаться).
+	// Пароль шифруется DPAPI (per-user, per-machine) → hex-blob в ini.
+	auto& sec = g_SystemIni["Login"];
+	if (m_bSaveAccount) {
+		sec.SetString("Username", m_sUsername);
+		sec.SetString("Password", ProtectStringDpapi(m_sPassword));
+		sec.SetInt64("Remember", 1);
+	}
+	else {
+		sec.SetString("Username", "");
+		sec.SetString("Password", "");
+		sec.SetInt64("Remember", 0);
+	}
+	g_SystemIni.Save();
 }
 
 void CLoginScene::SaveUserName(CCheckBox& chkID, CEdit& edtID) {

@@ -43,7 +43,7 @@ Tales of Pirate — MMORPG with two codebases:
 - **Никаких `using namespace ...` в глобальной области** `.h`-файлов. В `.cpp` — допустимо, но лучше квалификация по месту или локальный `using` внутри функции.
 
 Исключения (не оборачивать):
-- Сторонние библиотеки (`LuaJIT`, `LuaBridge`, `SDL3`, `SDL3_mixer`, `FreeType`, `Crypto++`, `fontstash`, `discord-rpc`, `stb_image`, `sqlite3`) — их заголовки и реализации остаются как есть, namespace не навязываем.
+- Сторонние библиотеки (`LuaJIT`, `LuaBridge`, `SDL3`, `SDL3_mixer`, `FreeType`, `fontstash`, `discord-rpc`, `stb_image`, `sqlite3`) — их заголовки и реализации остаются как есть, namespace не навязываем.
 - Чистые C API (WinAPI, DirectX, ODBC, OpenSSL) — без обёртки.
 - Legacy-код, не затронутый текущим рефакторингом, — не переносить массово в namespace; только при касании соседнего кода, согласованно с правилом про поля `_` и фиксированные типы.
 
@@ -230,7 +230,6 @@ Client: NetActorSkillRep → state->ServerEnd(sState) / NetFailedAction → Fail
 - `CorsairsNet` — сетевой транспорт клиента и GameServer (заменил legacy `InfoNet`)
 - `LuaJIT` (`lua51.lib`) — Lua 5.1 JIT, клиент + GameServer
 - `LuaBridge` (header-only) — C++ Lua binding, auto-marshaling
-- `Cryptopp` — Crypto++ (AES-GCM для UI-текстур, BLAKE2s для хешей паролей)
 - `AudioSDL` — аудио-обёртка клиента поверх **SDL3 3.4.4 + SDL3_mixer 3.2.0** (миграция 2026-04-23, track-модель API). OGG Vorbis — через встроенный stb_vorbis, `libogg` не нужен.
 - `SDL3` — заголовки/импортные либы SDL3
 - `FreeType` + `fontstash` — multi-page glyph-атлас для UI-шрифтов (DX9-backend; план в `memory/font-render-freetype-plan.md`)

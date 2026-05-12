@@ -84,6 +84,13 @@ public:
 	}
 
 	void ShowLoginForm();
+
+	// Сохранить логин/пароль в system.ini[Login] при успешном логине, если
+	// чекбокс "Remember login" включён. Пароль хранится в открытом виде —
+	// удобство выше безопасности на dev-окружении; для prod нужно завести
+	// DPAPI/AES-обёртку.
+	void SaveCredentials();
+
 	bool IsPasswordError() {
 		return m_bPasswordError;
 	}

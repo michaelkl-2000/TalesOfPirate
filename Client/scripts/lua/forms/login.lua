@@ -210,10 +210,17 @@ UI_LoadImage( imgID, "texture/ui/PublicC.tga", NORMAL, 87, 18, 99, 235 )
 imgPass = UI_CreateCompent( frmAccount, IMAGE_TYPE, "imgPass", 87, 18, 70, 50 )
 UI_LoadImage( imgPass, "texture/ui/PublicC.tga", NORMAL, 87, 18, 99, 235 )
 
-chkID = UI_CreateCompent( frmAccount, CHECK_TYPE, "chkID", 10, 10, 161, 32 )
-UI_LoadImage( chkID, "texture/ui/QQ2.tga", UNCHECKED, 10, 10, 40, 231 )
-UI_LoadImage( chkID, "texture/ui/QQ2.tga", CHECKED, 10, 10, 52, 231 )
-UI_SetHint( chkID, "Remember ID" )
+-- Чекбокс "запомнить логин+пароль". Координаты выбраны так, чтобы лежал между
+-- полем Password (заканчивается y=68) и кнопками Login/Exit (стартуют x=84, y=78).
+chkID = UI_CreateCompent( frmAccount, CHECK_TYPE, "chkID", 12, 12, 22, 70 )
+UI_LoadImage( chkID, "texture/ui/QQ2.tga", UNCHECKED, 12, 12, 40, 231 )
+UI_LoadImage( chkID, "texture/ui/QQ2.tga", CHECKED, 12, 12, 52, 231 )
+UI_SetHint( chkID, "Remember login" )
+
+labRemember = UI_CreateCompent( frmAccount, LABELEX_TYPE, "labRemember", 44, 12, 38, 71 )
+UI_SetCaption( labRemember, "Save login" )
+UI_SetTextColor( labRemember, COLOR_BLACK )
+UI_SetLabelExFont( labRemember, DEFAULT_FONT, TRUE, COLOR_WHITE )
 
 -- Login Button
 btnYes = UI_CreateCompent( frmAccount, BUTTON_TYPE, "btnYes", 41, 19, 84, 78 )

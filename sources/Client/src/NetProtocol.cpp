@@ -131,6 +131,7 @@ void NetLoginSuccess(char byPassword, uint8_t maxCharacters, std::span<const Net
 		return;
 	}
 	pScene->SetPasswordError(false);
+	pScene->SaveCredentials();
 
 	g_pGameApp->LoadScriptScene(enumSelectChaScene);
 	CSelectChaScene::GetCurrScene().m_MaxCharacters = maxCharacters;

@@ -2313,11 +2313,43 @@ namespace Corsairs::Engine::Render {
 		memset(o, 0, sizeof(lwSysMemTexInfo));
 
 		o->buf = LW_NEW(lwBuffer);
-		if (LW_RESULT r = LoadFileInMemory(o->buf, info->file_name, "rb"); LW_FAILED(r)) {
-			ToLogService("errors", LogLevel::Error,
-						 "[{}] LoadFileInMemory failed: file={}, ret={}",
-						 __FUNCTION__, info->file_name, static_cast<long long>(r));
-			goto __ret;
+		{
+			LW_RESULT r = LoadFileInMemory(o->buf, info->file_name, "rb");
+			if (LW_FAILED(r)) {
+				// PNG-fallback после миграции BMP/TGA→PNG (2026-05-13): часть
+				// бинарных ассетов (.map террейна, .eff UI) хранит старые .bmp/.tga
+				// внутри. Имя в o->file_name оставляем исходным — QuerySysMemTex
+				// кеширует по нему, и повторные запросы попадут в кеш. Реальный
+				// формат дальше по цепочке определяется по магическим байтам.
+				std::string_view name = info->file_name;
+				auto dot = name.find_last_of('.');
+				if (dot != std::string_view::npos) {
+					std::string_view ext = name.substr(dot + 1);
+					auto eq_ci = [](std::string_view a, std::string_view b) {
+						if (a.size() != b.size()) {
+							return false;
+						}
+						for (std::size_t i = 0; i < a.size(); ++i) {
+							if (std::tolower(static_cast<unsigned char>(a[i])) !=
+								std::tolower(static_cast<unsigned char>(b[i]))) {
+								return false;
+							}
+						}
+						return true;
+					};
+					if (eq_ci(ext, "bmp") || eq_ci(ext, "tga")) {
+						std::string png_path{name.substr(0, dot + 1)};
+						png_path += "png";
+						r = LoadFileInMemory(o->buf, png_path, "rb");
+					}
+				}
+			}
+			if (LW_FAILED(r)) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] LoadFileInMemory failed: file={}, ret={}",
+							 __FUNCTION__, info->file_name, static_cast<long long>(r));
+				goto __ret;
+			}
 		}
 
 		o->colorkey = info->colorkey;

@@ -495,7 +495,14 @@ int GetItemAttr_raw(lua_State* pLS) {
 	auto pSItemResult = luabridge::Stack<SItemGrid*>::get(pLS, 1);
 	if (!pSItemResult) { PARAM_ERROR return 0; }
 	SItemGrid* pSItem = *pSItemResult;
-	if (!pSItem) return luaL_error(pLS, "GetItemAttr: null SItemGrid*");
+	// Legacy-поведение: для null-item возвращаем 0, не бросаем luaL_error.
+	// Lua-скрипты (например, ExpSystem с проверкой Null Experience Stone)
+	// зовут GetItemAttr на результат GetChaItem2, который у большинства
+	// игроков возвращает nullptr — это нормальный кейс, не ошибка.
+	if (!pSItem) {
+		lua_pushnumber(pLS, 0);
+		return 1;
+	}
 
 	long lAttrID = (int)lua_tonumber(pLS, 2);
 	if (lAttrID == ITEMATTR_VAL_PARAM1)
@@ -536,7 +543,11 @@ int SetItemAttr_raw(lua_State* pLS) {
 	auto pSItemResult = luabridge::Stack<SItemGrid*>::get(pLS, 1);
 	if (!pSItemResult) { PARAM_ERROR lua_pushnumber(pLS, 0); return 1; }
 	SItemGrid* pSItem = *pSItemResult;
-	if (!pSItem) return luaL_error(pLS, "SetItemAttr: null SItemGrid*");
+	// Legacy-поведение: на null-item возвращаем 0 (failure), не бросаем error.
+	if (!pSItem) {
+		lua_pushnumber(pLS, 0);
+		return 1;
+	}
 
 	long lAttrID = (int)lua_tonumber(pLS, 2);
 	short sAttr = (short)lua_tonumber(pLS, 3);
@@ -570,7 +581,11 @@ int AddItemAttr_raw(lua_State* pLS) {
 	auto pSItemResult = luabridge::Stack<SItemGrid*>::get(pLS, 1);
 	if (!pSItemResult) { PARAM_ERROR lua_pushnumber(pLS, 0); return 1; }
 	SItemGrid* pSItem = *pSItemResult;
-	if (!pSItem) return luaL_error(pLS, "AddItemAttr: null SItemGrid*");
+	// Legacy-поведение: на null-item возвращаем 0 (failure), не бросаем error.
+	if (!pSItem) {
+		lua_pushnumber(pLS, 0);
+		return 1;
+	}
 
 	long lAttrID = (int)lua_tonumber(pLS, 2);
 	short sAttr = (short)lua_tonumber(pLS, 3);
@@ -641,7 +656,11 @@ int SetItemForgeParam_raw(lua_State* pLS) {
 	auto pSItemResult = luabridge::Stack<SItemGrid*>::get(pLS, 1);
 	if (!pSItemResult) { PARAM_ERROR lua_pushnumber(pLS, 1); return 1; }
 	SItemGrid* pSItem = *pSItemResult;
-	if (!pSItem) return luaL_error(pLS, "SetItemForgeParam: null SItemGrid*");
+	// Legacy-поведение: на null-item возвращаем 1 (no-op success, как в legacy ветке "nParaNum != 3"), не бросаем error.
+	if (!pSItem) {
+		lua_pushnumber(pLS, 1);
+		return 1;
+	}
 
 	long lType = (int)lua_tonumber(pLS, 2);
 	if (lType == 0)
@@ -1672,7 +1691,11 @@ int SetExpiration_raw(lua_State* L) {
 	auto pSItemResult = luabridge::Stack<SItemGrid*>::get(L, 1);
 	if (!pSItemResult) { PARAM_ERROR lua_pushnumber(L, 0); return 1; }
 	SItemGrid* pSItem = *pSItemResult;
-	if (!pSItem) return luaL_error(L, "SetExpiration: null SItemGrid*");
+	// Legacy-поведение: на null-item возвращаем 0 (failure), не бросаем error.
+	if (!pSItem) {
+		lua_pushnumber(L, 0);
+		return 1;
+	}
 	long expiration = *static_cast<long*>(lua_touserdata(L, 2));
 	if (expiration == -1 || expiration == 0)
 		pSItem->expiration = 0;

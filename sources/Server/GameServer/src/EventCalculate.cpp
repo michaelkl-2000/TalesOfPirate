@@ -14,18 +14,18 @@
 void CEventHandler::Event_ChaDie(CCharacter *pDead, CCharacter *pAtk)
 {
 	BOOL bTeam  = FALSE;
-	
-	// , 
+
+	// ,
 	CCharacter *pValidCha[25] = { NULL,NULL,NULL,NULL,NULL,
 								  NULL,NULL,NULL,NULL,NULL,
 								  NULL,NULL,NULL,NULL,NULL,
 								  NULL,NULL,NULL,NULL,NULL,
 								  NULL,NULL,NULL,NULL,NULL};
-	
+
 	int nValidCha = 0;
-	
+
 	CPlayer *pPlayer = pAtk->GetPlayer();
-	if(pPlayer==NULL) // 
+	if(pPlayer==NULL) //
 	{
 		MPTimer t;
 		t.Begin();
@@ -122,8 +122,8 @@ void CEventHandler::Event_ChaDie(CCharacter *pDead, CCharacter *pAtk)
 	
 	MPTimer t;
 	t.Begin();
-	
-	// 
+
+	//
 	extern lua_State *g_pLuaState;
 	lua_getglobal(g_pLuaState, "GetExp_New");
 	if( !lua_isfunction( g_pLuaState, -1 ) )
@@ -145,8 +145,8 @@ void CEventHandler::Event_ChaDie(CCharacter *pDead, CCharacter *pAtk)
 	}
 	lua_settop(g_pLuaState, 0);
 	tLua.End();
-	
-	// 
+
+	//
 	for(int i =0; i < nValidCha; i++)
 	{
 		CCharacter *pCur = pValidCha[i];

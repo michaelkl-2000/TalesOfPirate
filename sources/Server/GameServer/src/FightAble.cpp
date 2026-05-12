@@ -367,10 +367,10 @@ void CFightAble::SkillTarEffect(SFireUnit *pSFireSrc)
 	}
 	else
 	{
-		// 
+		//
 		if(lNowHP <= 0)
 		{
-			// 
+			//
 			SetExistState(enumEXISTS_WITHERING);
 			m_SFightInit.chTarType = 0;
 			m_SFightProc.sState = enumFSTATE_DIE;

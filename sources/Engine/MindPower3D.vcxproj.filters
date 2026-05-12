@@ -271,10 +271,34 @@
     <ClInclude Include="include\EffPathStore.h">
       <Filter>Source Files\Mesh\include</Filter>
     </ClInclude>
+    <ClInclude Include="include\EffectDeviceCallbacks.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EffectFxRenderer.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EffectMeshStore.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EffectRenderContext.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
     <ClInclude Include="include\EffectShaderStore.h">
       <Filter>Source Files\Mesh\include</Filter>
     </ClInclude>
+    <ClInclude Include="include\GeomObjCache.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
     <ClInclude Include="include\EffectStore.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParticleCtrlStore.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParticleInstancePool.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TobMeshStore.h">
       <Filter>Source Files\Mesh\include</Filter>
     </ClInclude>
     <ClInclude Include="include\MPInterface.h">
@@ -572,10 +596,34 @@
     <ClCompile Include="src\EffPathStore.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="src\EffectDeviceCallbacks.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EffectFxRenderer.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EffectMeshStore.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EffectRenderContext.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
     <ClCompile Include="src\EffectShaderStore.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="src\EffectStore.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GeomObjCache.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleCtrlStore.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleInstancePool.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TobMeshStore.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="src\MPCharacter.cpp">

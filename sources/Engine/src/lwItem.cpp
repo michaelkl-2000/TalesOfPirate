@@ -13,6 +13,7 @@
 #include "lwShaderMgr.h"
 #include "lwExpObj.h"
 #include "AssetLoaders.h"
+#include "GeomObjCache.h"
 
 LW_BEGIN
 	//lwItem
@@ -104,15 +105,14 @@ LW_BEGIN
 			lwPrimitive* imp = LW_NEW(lwPrimitive( _res_mgr ));
 
 
-			// begin load mesh
-			lwGeomObjInfo* info = Corsairs::Engine::Render::LgoLoader::Load(path);
-			if (info == nullptr) {
+			// begin load mesh — info живёт в общем GeomObjCache,
+			// shared_ptr держит запись на время вызова Load.
+			auto info = Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(path);
+			if (!info) {
 				return LW_RET_FAILED;
 			}
-			Corsairs::Engine::Render::LgoLoader::ApplyRuntimeDefaults(info);
 
-			LW_RESULT primLoadRet = imp->Load(info, path_info->GetPath(PATH_TYPE_TEXTURE_ITEM).c_str(), &res);
-			delete info;
+			LW_RESULT primLoadRet = imp->Load(info.get(), path_info->GetPath(PATH_TYPE_TEXTURE_ITEM).c_str(), &res);
 
 			if (LW_FAILED(primLoadRet)) {
 				ToLogService("errors", LogLevel::Error,

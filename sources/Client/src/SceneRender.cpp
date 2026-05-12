@@ -743,7 +743,7 @@ void CGameScene::_Render() {
 		if (_pcPugMgr)
 			_pcPugMgr->Render();
 
-		ResMgr.RestoreEffect();
+		CMPResManger::Instance().RestoreEffect();
 
 		g_pGameApp->m_dwRenderEffectTime = mpt.End();
 	}
@@ -772,7 +772,7 @@ void CGameScene::_Render() {
 	{
 		mpt.Begin();
 
-		ResMgr.Render();
+		CMPResManger::Instance().Render();
 
 		//try
 		{
@@ -783,7 +783,7 @@ void CGameScene::_Render() {
 			//LG("error", "RenderEffect\n");
 		}
 
-		ResMgr.RestoreEffect();
+		CMPResManger::Instance().RestoreEffect();
 
 		g_pGameApp->m_dwRenderEffectTime += mpt.End();
 	}
@@ -811,9 +811,9 @@ void CGameScene::_Render() {
 }
 
 void CGameScene::RenderEffect() {
-	//if(ResMgr.GetCanFrame() != 1)
+	//if(CMPResManger::Instance().GetCanFrame() != 1)
 	//{
-	//	//float *ft = ResMgr.GetDailTime();
+	//	//float *ft = CMPResManger::Instance().GetDailTime();
 	//	//*ft = 0;
 	//	return;
 	//}

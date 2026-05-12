@@ -50,7 +50,7 @@ void MPRender::End() {
 	SAFE_RELEASE(_p2DSprite);
 
 	// _pFont убран: шрифт не хранится в MPRender (см. FontManager в клиенте).
-	ResMgr.ReleaseTotalRes();
+	CMPResManger::Instance().ReleaseTotalRes();
 
 
 	ToLogService("common", "begin release mesh lib");
@@ -176,9 +176,9 @@ BOOL MPRender::Init(HWND hWnd, int nScrWidth, int nScrHeight, int nColorBit, BOO
 
 	ToggleFullScreen();
 
-	ResMgr.m_pSys = sys;
-	ResMgr.m_pSysGraphics = sys_graphics;
-	ResMgr.LoadTotalVShader(sys_graphics);
+	CMPResManger::Instance().m_pSys = sys;
+	CMPResManger::Instance().m_pSysGraphics = sys_graphics;
+	CMPResManger::Instance().LoadTotalVShader(sys_graphics);
 
 	D3DXCreateSprite(_pD3DDevice, &_p2DSprite);
 	D3DUtil_InitLight(_Light, D3DLIGHT_DIRECTIONAL, -1.0f, -1.0f, -1.0f);
@@ -210,7 +210,7 @@ BOOL MPRender::Init(HWND hWnd, int nScrWidth, int nScrHeight, int nColorBit, BOO
 
 //-----------------------------------------------------------------------------
 BOOL MPRender::InitResource() {
-	if (!ResMgr.InitRes(this, (D3DXMATRIX*)_IMgr.dev_obj->GetMatView(), (D3DXMATRIX*)_IMgr.dev_obj->GetMatViewProj())) {
+	if (!CMPResManger::Instance().InitRes(this, (D3DXMATRIX*)_IMgr.dev_obj->GetMatView(), (D3DXMATRIX*)_IMgr.dev_obj->GetMatViewProj())) {
 		ToLogService("errors", LogLevel::Error, "ResMgr,!");
 		return FALSE;
 	}
@@ -218,7 +218,7 @@ BOOL MPRender::InitResource() {
 }
 
 BOOL MPRender::InitRes2() {
-	if (!ResMgr.InitRes2()) {
+	if (!CMPResManger::Instance().InitRes2()) {
 		ToLogService("errors", LogLevel::Error, "ResMgr 2,!");
 		return FALSE;
 	}
@@ -226,7 +226,7 @@ BOOL MPRender::InitRes2() {
 }
 
 BOOL MPRender::InitRes3() {
-	if (!ResMgr.InitRes3()) {
+	if (!CMPResManger::Instance().InitRes3()) {
 		ToLogService("errors", LogLevel::Error, "ResMgr 3,!");
 		return FALSE;
 	}

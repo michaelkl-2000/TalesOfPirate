@@ -522,7 +522,7 @@ void CSMallMap2D::RenderScene() {
 	m_pDev->SetStreamSource(0, _pVB, sizeof(M2D_VER));
 #endif
 
-	if (ResMgr.m_bUseSoft) {
+	if (CMPResManger::Instance().m_bUseSoft) {
 		g_Render.SetVertexShader(NULL);
 		g_Render.SetFVF(D3DFVF_M2D);
 		g_Render.SetTransformWorld(&matIdentity);
@@ -532,8 +532,8 @@ void CSMallMap2D::RenderScene() {
 	else {
 		D3DXMATRIX vpPose;
 		const auto matrix = _matView * _matProj;
-		g_Render.SetVertexShader(ResMgr.GetMinimapVS());
-		g_Render.SetVertexDeclaration(ResMgr.GetMinimapVDecl());
+		g_Render.SetVertexShader(CMPResManger::Instance().GetMinimapVS());
+		g_Render.SetVertexDeclaration(CMPResManger::Instance().GetMinimapVDecl());
 		g_Render.SetVertexShaderConstantF(0, matIdentity, 4);
 		g_Render.SetVertexShaderConstantF(4, vpPose, 4);
 		g_Render.SetVertexShaderConstantF(8, _dwColor, 1);
@@ -609,7 +609,7 @@ void CSMallMap2D::RenderScene() {
 				g_Render.SetTexture(0, _pTex[n][m].pTex);
 #endif
 			}
-			if (ResMgr.m_bUseSoft) {
+			if (CMPResManger::Instance().m_bUseSoft) {
 				M2D_VER* pVertices;
 #ifdef MGR
 				lwILockableStreamVB* _lpSVB = _pVB->GetLockableStreamVB();
@@ -656,9 +656,9 @@ void CSMallMap2D::RenderScene() {
 
 	_Cha._vecNpc.clear();
 
-	if (!ResMgr.m_bUseSoft) {
-		_Cha.Begin(ResMgr.GetMinimapVS());
-		g_Render.SetVertexDeclaration(ResMgr.GetMinimapVDecl());
+	if (!CMPResManger::Instance().m_bUseSoft) {
+		_Cha.Begin(CMPResManger::Instance().GetMinimapVS());
+		g_Render.SetVertexDeclaration(CMPResManger::Instance().GetMinimapVDecl());
 		CCharacter* pCha = NULL;
 		int nMainTeadID = m_pScene->GetMainCha()->GetTeamLeaderID();
 		for (m = 0; m < m_pScene->GetChaCnt(); m++) {
@@ -981,7 +981,7 @@ void CAniWnd::ResetTime(DWORD dwTime) {
 void CAniWnd::FrameMove(DWORD dwDailTime) {
 	if (!_bUpdate)
 		return;
-	_fCurTime += *ResMgr.GetDailTime();
+	_fCurTime += *CMPResManger::Instance().GetDailTime();
 	_fCurAngle = (_fCurTime / _fPlayTime) * 6.283185f;
 	//_fCurAngle = 0.12f;
 

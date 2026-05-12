@@ -26,7 +26,6 @@ extern "C" {
 #include "lua.h"
 }
 
-extern CMPResManger ResMgr;
 
 namespace {
 	// IniKey → GDI family name. Если значение SystemFont в ini не
@@ -335,7 +334,7 @@ int FontManager::CreateFont(std::string name, const std::string& family,
 					 name, family, size, FormatRegisteredFamilies());
 		return -1;
 	}
-	font->BindingRes(&ResMgr);
+	font->BindingRes(&CMPResManger::Instance());
 
 	const auto it = _byName.find(name);
 	if (it != _byName.end()) {

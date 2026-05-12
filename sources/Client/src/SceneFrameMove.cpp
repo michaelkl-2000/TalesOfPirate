@@ -105,7 +105,7 @@ void CGameScene::_FrameMove(DWORD dwTimeParam) {
 	}
 
 
-	//if(ResMgr.GetCanFrame() == 1)
+	//if(CMPResManger::Instance().GetCanFrame() == 1)
 	{
 		if (_nEffCnt > 0) {
 			int nValidCnt = 0;

@@ -2,9 +2,18 @@
 #include "GlobalInc.h"
 #include "MPModelEff.h"
 #include "AssetLoaders.h"
+#include "GeomObjCache.h"
 #include "EffPathStore.h"
+#include "EffectDeviceCallbacks.h"
+#include "EffectFxRenderer.h"
+#include "EffectMeshStore.h"
+#include "EffectRenderContext.h"
 #include "EffectShaderStore.h"
 #include "EffectStore.h"
+#include "ParticleCtrlStore.h"
+#include "ParticleInstancePool.h"
+#include "TextureManager.h"
+#include "TobMeshStore.h"
 
 #include "mpresmanger.h"
 #include "lwSysGraphics.h"
@@ -18,10 +27,15 @@
 
 using namespace std;
 using Corsairs::Engine::Render::EffPathStore;
+using Corsairs::Engine::Render::EffectDeviceCallbacks;
+using Corsairs::Engine::Render::EffectFxRenderer;
+using Corsairs::Engine::Render::EffectMeshStore;
+using Corsairs::Engine::Render::EffectRenderContext;
 using Corsairs::Engine::Render::EffectShaderStore;
 using Corsairs::Engine::Render::EffectStore;
-
-CMPResManger ResMgr;
+using Corsairs::Engine::Render::ParticleCtrlStore;
+using Corsairs::Engine::Render::ParticleInstancePool;
+using Corsairs::Engine::Render::TobMeshStore;
 
 //  Default — true: при старте прогреваем bone-кэш (animation/*.lab) и
 //  geom-кэш для character meshes (model/character/*.lgo). Клиент читает
@@ -29,57 +43,34 @@ CMPResManger ResMgr;
 //  ДО InitRes/InitRes3.
 bool CMPResManger::s_resourcePreload = true;
 
-CMPResManger::CMPResManger(void) {
+CMPResManger& CMPResManger::Instance() {
+	static CMPResManger instance;
+	return instance;
+}
+
+CMPResManger::CMPResManger() {
 	m_pDev = NULL;
 
 	_iTexNum = 0;
-	_iMeshNum = 0;
 
 	_vecTexName.clear();
-	_vecMeshName.clear();
-	_mapMesh.clear();
 
-	_vecTexList.clear();
-	_vecMeshList.clear();
+	_vecTexGlobalId.clear();
 	_mapTexture.clear();
 
 	EffectStore::Instance().Clear();
 	EffectShaderStore::Instance().Clear();
+	EffectMeshStore::Instance().Clear();
+	ParticleCtrlStore::Instance().Clear();
+	TobMeshStore::Instance().Clear();
+	ParticleInstancePool::Instance().Clear();
 
 	_fSaveTime = 0;
 	_fDailTime = 0;
 	_fCurTime = 0;
-	_pMatView = NULL;
-	_pMatViewProj = NULL;
 
 
 	EffPathStore::Instance().Clear();
-
-
-	_iTobMeshNum = 0;
-	_lstTobMeshs.clear();
-
-
-	WORD iw;
-	_vecMeshList.resize(MAXMESH_COUNT);
-	_vecPartCtrl.resize(MAXPART_COUNT);
-	_vecPartCtrl.setsize(MAXPART_COUNT);
-
-	for (iw = 0; iw < MAXPART_COUNT; iw++) {
-		(*_vecPartCtrl[iw]) = NULL;
-	}
-
-
-	_iPartCtrlNum = 0;
-
-	_vecPartArray.clear();
-	_vecPartArray.resize(MAXMSG_COUNT);
-	_vecValidID.resize(MAXMSG_COUNT);
-	_vecValidID.setsize(MAXMSG_COUNT);
-	for (iw = 0; iw < MAXMSG_COUNT; iw++) {
-		_vecPartArray[iw] = NULL;
-		*_vecValidID[iw] = iw;
-	}
 
 
 	m_bUseSoft = FALSE;
@@ -91,65 +82,39 @@ CMPResManger::CMPResManger(void) {
 	m_iCurFrame = 0;
 }
 
-CMPResManger::~CMPResManger(void) {
-	for (size_t i(0); i < _vecMeshList.size(); i++) {
-		SAFE_DELETE(_vecMeshList[i]);
-	}
+CMPResManger::~CMPResManger() {
+	EffectMeshStore::Instance().Clear();
+	TobMeshStore::Instance().Clear();
+	ParticleInstancePool::Instance().Clear();
 }
 
 void CMPResManger::ReleaseTotalRes() {
-	int iw;
+	ParticleCtrlStore::Instance().Clear();
+	ParticleInstancePool::Instance().Clear();
 
-	for (iw = 0; iw < _iPartCtrlNum; iw++) {
-		CMPPartCtrl** C = _vecPartCtrl[iw];
-		SAFE_DELETE(*C);
-	}
-	_vecPartCtrl.resize(0);
-	_iPartCtrlNum = 0;
-
-	if (_vecPartArray.size() > 0) {
-		for (iw = 0; iw < MAXMSG_COUNT; iw++) {
-			SAFE_DELETE(_vecPartArray[iw]);
-		}
-		_vecValidID.resize(0);
-		_vecPartArray.clear();
-	}
 	EffectStore::Instance().Clear();
 
-	_CEffectFile.free();
+	EffectFxRenderer::Instance().Free();
 
 	EffectShaderStore::Instance().Clear();
 
 	EffPathStore::Instance().Clear();
 
 
-	for (iw = 0; iw < _iTexNum; iw++) {
-		SAFE_RELEASE(_vecTexList[iw]);
-	}
+	// Effect-текстуры теперь во владении TextureManager (Phase 2). Глобальный
+	// DynamicRelease(bClearAll=true) делается из ~TextureManager; здесь просто
+	// сбрасываем local-ID-маппинг.
 
-	for (iw = 0; iw < _iMeshNum; iw++) {
-		SAFE_DELETE(_vecMeshList[iw]);
-	}
-	std::list<CEffectModel*>::iterator iter = _lstTobMeshs.begin();
-	std::list<CEffectModel*>::iterator end = _lstTobMeshs.end();
-	for (; iter != end; ++iter) {
-		SAFE_DELETE(*iter);
-	}
-	SAFE_DELETE(_CShadeModel);
+	EffectMeshStore::Instance().Clear();
+	TobMeshStore::Instance().Clear();
 
 	_iTexNum = 0;
-	_iMeshNum = 0;
-	_iTobMeshNum = 0;
 
 	_vecTexName.clear();
-	_vecMeshName.clear();
 
-	_mapMesh.clear();
 	_mapTexture.clear();
 
-	_vecTexList.clear();
-	_vecMeshList.clear();
-	_lstTobMeshs.clear();
+	_vecTexGlobalId.clear();
 }
 
 bool CMPResManger::InitRes2() {
@@ -172,18 +137,13 @@ bool CMPResManger::InitRes3() {
 bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatviewproj) {
 	m_pDev = pDev;
 
-	IDirect3DSurfaceX* pBackBuffer;
-	m_pDev->GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
-	pBackBuffer->GetDesc(&m_d3dBackBuffer);
-	pBackBuffer->Release();
+	auto& renderCtx = EffectRenderContext::Instance();
+	renderCtx.UpdateBackBuffer(pDev);
 
 	RECT rc_client;
 	m_pDev->GetInterfaceMgr()->dev_obj->GetWindowRect(NULL, &rc_client);
-	_iFontBkWidth = (rc_client.right - rc_client.left) / 2;
-	_iFontBkHeight = (rc_client.bottom - rc_client.top) / 2;
-
-
-	D3DXMatrixOrthoLH(&_Mat2dViewProj, float(m_d3dBackBuffer.Width), float(m_d3dBackBuffer.Height), 0.0f, 1.0f);
+	renderCtx.GetFontBkWidth()  = (rc_client.right - rc_client.left) / 2;
+	renderCtx.GetFontBkHeight() = (rc_client.bottom - rc_client.top) / 2;
 
 	m_caps = m_pDev->GetOrgCap();
 	if (m_caps.VertexShaderVersion < D3DVS_VERSION(1, 1) || m_caps.PixelShaderVersion < D3DPS_VERSION(1, 4))
@@ -202,8 +162,7 @@ bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatvie
 
 	EffectShaderStore::Instance().SetSoftFallback(m_bUseSoft);
 
-	_CEffectFile.InitDev(pDev);
-	if (!_CEffectFile.LoadEffectFromFile("shader\\dx9\\eff.fx")) {
+	if (!EffectFxRenderer::Instance().Init(pDev, "shader\\dx9\\eff.fx")) {
 		MessageBox(NULL, "shader\\eff.fx", "ERROR", 0);
 		return false;
 	}
@@ -216,13 +175,7 @@ bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatvie
 
 	LoadTotalData();
 
-	_pMatView = pmat;
-	D3DXMatrixInverse(&_MatBBoard, NULL, _pMatView);
-	_MatBBoard._41 = 0.0f;
-	_MatBBoard._42 = 0.0f;
-	_MatBBoard._43 = 0.0f;
-
-	_pMatViewProj = pMatviewproj;
+	renderCtx.Init(pDev, pmat, pMatviewproj);
 
 	// Контекст для EffectStore: dev + this (для BoundingRes) + billboard-mat
 	// (применяется автоматически при LoadInto/AddUnited — в legacy InitRes здесь
@@ -231,10 +184,19 @@ bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatvie
 	auto& effectStore = EffectStore::Instance();
 	effectStore.SetDevice(pDev);
 	effectStore.SetResMgr(this);
-	effectStore.SetBillboardMatrix(&_MatBBoard);
+	effectStore.SetBillboardMatrix(renderCtx.GetBBoardMat());
 
-	lwRegisterOutputLoseDeviceProc(g_OnLostDevice);
-	lwRegisterOutputResetDeviceProc(g_OnResetDevice);
+	auto& meshStore = EffectMeshStore::Instance();
+	meshStore.SetDevice(pDev);
+	meshStore.SetSystem(m_pSys, m_pSysGraphics);
+
+	auto& tobStore = TobMeshStore::Instance();
+	tobStore.SetDevice(pDev);
+	tobStore.SetSysGraphics(m_pSysGraphics);
+
+	ParticleInstancePool::Instance().SetResMgr(this);
+
+	EffectDeviceCallbacks::Instance().Install(pDev, m_pSysGraphics);
 
 	return true;
 }
@@ -251,36 +213,18 @@ int CMPResManger::GetTextureID(const s_string& sName) {
 
 //-----------------------------------------------------------------------------
 IDirect3DTextureX* CMPResManger::GetTextureByID(int iID) {
-	if (_vecTexList[iID])
-		return _vecTexList[iID]->GetTex();
-	else {
+	if (iID < 0 || iID >= static_cast<int>(_vecTexGlobalId.size())) {
 		return NULL;
 	}
+	return TextureManager::I()->GetD3DTexture(_vecTexGlobalId[iID]);
 }
 
 //-----------------------------------------------------------------------------
 lwITex* CMPResManger::GetTextureByIDlw(int iID) {
-	if (_vecTexList[iID])
-		return _vecTexList[iID];
-	else {
-#ifdef USE_DDS_FILE_EFFECT
-		const std::string t_pszFile = std::format("{}\\{}.dds", _pszTexPath, _vecTexName[iID]);
-#else
-		const std::string t_pszFile = std::format("{}\\{}.tga", _pszTexPath, _vecTexName[iID]);
-#endif
-		lwITex* tex;
-
-		if (LW_RESULT r = lwLoadTex(&tex, m_pSysGraphics->GetResourceMgr(), t_pszFile, std::string_view{}, D3DFMT_A8R8G8B8);
-			LW_FAILED(r)) {
-			ToLogService("errors", LogLevel::Error,
-						 "[{}] lwLoadTex failed: id={}, file={}, ret={}",
-						 __FUNCTION__, iID, t_pszFile, static_cast<long long>(r));
-			return 0;
-		}
-		_vecTexList[iID] = tex;
-
-		return _vecTexList[iID];
+	if (iID < 0 || iID >= static_cast<int>(_vecTexGlobalId.size())) {
+		return nullptr;
 	}
+	return TextureManager::I()->GetTexture(_vecTexGlobalId[iID]);
 }
 
 //-----------------------------------------------------------------------------
@@ -295,96 +239,30 @@ lwITex* CMPResManger::GetTextureByNamelw(const s_string& sName) {
 
 //-----------------------------------------------------------------------------
 int CMPResManger::GetMeshID(const s_string& sName) {
-	MESH_MAP::iterator pos = _mapMesh.find(sName);
-	if (pos != _mapMesh.end()) {
-		return (*pos).second;
-	}
-	return -1;
+	return EffectMeshStore::Instance().GetID(sName);
 }
 
 //-----------------------------------------------------------------------------
 CEffectModel* CMPResManger::GetMeshByID(int iID) {
-	CEffectModel* pRetMesh(0);
-
-	if (iID >= 7) {
-		if (!_vecMeshList[iID]) {
-			_vecMeshList[iID] = new CEffectModel;
-
-			_vecMeshList[iID]->InitDevice(m_pDev);
-			lwIPathInfo* path_info;
-			m_pSys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO);
-			const std::string szOldPath = path_info->GetPath(PATH_TYPE_MODEL_ITEM);
-			path_info->SetPath(PATH_TYPE_MODEL_ITEM, "model\\effect\\");
-			if (!_vecMeshList[iID]->LoadModel((TCHAR*)_vecMeshName[iID].c_str())) {
-				SAFE_DELETE(_vecMeshList[iID]);
-				path_info->SetPath(PATH_TYPE_MODEL_ITEM, szOldPath.c_str());
-
-				ToLogService("errors", LogLevel::Error, "[id={}]", iID);
-				return 0;
-			}
-			if (!_vecMeshList[iID]->GetObject() || !_vecMeshList[iID]->GetObject()->GetPrimitive()) {
-				ToLogService("errors", LogLevel::Error, ": effectmesh->GetObject(),effectmesh->GetPrimitive()__ID={}",
-							 iID);
-			}
-			else
-				_vecMeshList[iID]->GetObject()->GetPrimitive()->SetState(STATE_TRANSPARENT, 0);
-			path_info->SetPath(PATH_TYPE_MODEL_ITEM, szOldPath.c_str());
-			pRetMesh = _vecMeshList[iID];
-		}
-		else {
-			if (_vecMeshList[iID]->IsUsing()) {
-				int n = _iMeshNum;
-				for (; n < MAXMESH_COUNT; ++n) {
-					if (_vecMeshList[n] && _vecMeshList[n]->IsUsing()) {
-						continue;
-					}
-					if (!_vecMeshList[n]) {
-						_vecMeshList[n] = new CEffectModel;
-					}
-
-					if (_vecMeshList[n]->m_iID != iID) {
-						if (!_vecMeshList[n]->Copy(*_vecMeshList[iID])) {
-							SAFE_DELETE(_vecMeshList[n]);
-							ToLogService("errors", LogLevel::Error, "[id={}]", iID);
-							return 0;
-						}
-					}
-
-					break;
-				}
-				if (n >= MAXMESH_COUNT) {
-					ToLogService("errors", LogLevel::Error, "");
-					return 0;
-				}
-				pRetMesh = _vecMeshList[n];
-			}
-			else {
-				pRetMesh = _vecMeshList[iID];
-			}
-		}
-	}
-	else {
-		pRetMesh = _vecMeshList[iID];
-	}
-	pRetMesh->m_iID = iID;
-	pRetMesh->SetUsing(true);
-	return pRetMesh;
+	return EffectMeshStore::Instance().GetByID(iID);
 }
 
 //-----------------------------------------------------------------------------
 CEffectModel* CMPResManger::GetMeshByName(const s_string& sName) {
-	int iMeshID = GetMeshID(sName);
-	if (iMeshID == -1) {
-		return 0;
-	}
-	return GetMeshByID(iMeshID);
+	return EffectMeshStore::Instance().GetByName(sName);
 }
 
 //-----------------------------------------------------------------------------
 void CMPResManger::DeleteMesh(CEffectModel& rEffectModel) {
-	if (rEffectModel.m_iID >= 7) {
-		rEffectModel.SetUsing(false);
-	}
+	EffectMeshStore::Instance().DeleteMesh(rEffectModel);
+}
+
+int CMPResManger::GetMeshNum() {
+	return EffectMeshStore::Instance().Count();
+}
+
+VEC_string& CMPResManger::GetTotalMeshName() {
+	return EffectMeshStore::Instance().GetAllNames();
 }
 
 int CMPResManger::GetEffectID(const s_string& pszName) {
@@ -432,7 +310,7 @@ IDirect3DVertexShaderX* CMPResManger::GetMinimapVS() {
 }
 
 CEffectModel* CMPResManger::GetShadeMesh() {
-	return _CShadeModel;
+	return EffectMeshStore::Instance().GetShadeMesh();
 }
 
 EffParameter* CMPResManger::GetEffectParamByID(int iID) {
@@ -444,40 +322,44 @@ IDirect3DVertexDeclarationX* CMPResManger::GetMinimapVDecl() {
 }
 
 bool CMPResManger::LoadTotalTexture() {
-	{
-		WIN32_FIND_DATA t_sfd;
-		HANDLE t_hFind = NULL;
+	WIN32_FIND_DATA t_sfd{};
+	HANDLE t_hFind = NULL;
 
-		const std::string t_Path = _pszTexPath + "\\*.tga";
+	const std::string pattern = _pszTexPath + "\\*.tga";
 
-		if ((t_hFind = FindFirstFile(t_Path.c_str(), &t_sfd)) == INVALID_HANDLE_VALUE)
-			return false;
-		string sFileName;
-		do {
-			if (!(t_sfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-				sFileName = t_sfd.cFileName;
-				transform(sFileName.begin(), sFileName.end(),
-						  sFileName.begin(),
-						  [](unsigned char c) {
-							  return std::tolower(c);
-						  });
-				sFileName = sFileName.substr(0, sFileName.rfind('.'));
+	if ((t_hFind = FindFirstFile(pattern.c_str(), &t_sfd)) == INVALID_HANDLE_VALUE)
+		return false;
 
-				{
-					_mapTexture[sFileName] = (int)_vecTexName.size();
-					_vecTexName.push_back(sFileName.c_str());
-				}
-			}
+	std::string sFileName;
+	do {
+		if (t_sfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+			continue;
 		}
-		while (FindNextFile(t_hFind, &t_sfd));
-		FindClose(t_hFind);
-	}
+		sFileName = t_sfd.cFileName;
+		std::transform(sFileName.begin(), sFileName.end(), sFileName.begin(),
+		               [](unsigned char c) {
+			               return static_cast<char>(std::tolower(c));
+		               });
 
-	_iTexNum = (int)_vecTexName.size();
-	_vecTexList.resize(_iTexNum);
-	for (int iw = 0; iw < _iTexNum; iw++) {
-		_vecTexList[iw] = NULL;
+		// _vecTexName/_mapTexture хранят имя без расширения — local-effect-ID
+		// маппинг используется .par/.eff/UI-кодом через GetTextureID.
+		const std::string nameNoExt = sFileName.substr(0, sFileName.rfind('.'));
+		_mapTexture[nameNoExt] = static_cast<int>(_vecTexName.size());
+		_vecTexName.push_back(nameNoExt.c_str());
+
+		// Эффект-текстуры регистрируются в общем TextureManager с двумя
+		// policy-полями (Phase 2 migration):
+		//   forceFormat=A8R8G8B8 — повторяет legacy `lwLoadTex(..., A8R8G8B8)`.
+		//   pinned=true — исключает из LRU-DynamicRelease (паузы > 8s — норма).
+		const std::string fullPath = std::format("{}\\{}", _pszTexPath, sFileName);
+		const int globalId = TextureManager::I()->GetOrCreateID(
+			fullPath, D3DFMT_A8R8G8B8, /*pinned=*/true);
+		_vecTexGlobalId.push_back(globalId);
 	}
+	while (FindNextFile(t_hFind, &t_sfd));
+	FindClose(t_hFind);
+
+	_iTexNum = static_cast<int>(_vecTexName.size());
 	return true;
 }
 
@@ -521,11 +403,12 @@ void CMPResManger::LoadTotalRes() {
 	WIN32_FIND_DATA t_sfd;
 	HANDLE t_hFind = NULL;
 
-	// Pre-warm geom-кэша для character meshes (`model\character\*.lgo`).
-	// LoadGeomobj хардкодит этот путь, и здесь итерация совпадает —
-	// заполняем m_GeomobjMap, чтобы первое обращение из lwPhysique::LoadPrimitive
-	// не ходило на диск.
+	// Pre-warm GeomObjCache для character meshes (`model\character\*.lgo`).
+	// Старый лимит 900 (фактически 450 из-за двойного ++) сохранён, чтобы
+	// не менять поведение старта; полный прогрев — отдельным шагом.
 	constexpr std::string_view t_Path = "model\\character\\*.lgo";
+	const std::string_view chaPrefix =
+		Corsairs::Engine::Render::GeomObjCache::CategoryPrefix(Corsairs::Engine::Render::GeomCategory::Character);
 
 	static int nNum = 0;
 	if ((t_hFind = FindFirstFile(t_Path.data(), &t_sfd)) == INVALID_HANDLE_VALUE)
@@ -541,7 +424,8 @@ void CMPResManger::LoadTotalRes() {
 			if (nNum++ >= 900)
 				break;
 
-			g_GeomManager.LoadGeomobj(t_sfd.cFileName);
+			const std::string fullPath = std::format("{}{}", chaPrefix, fileName);
+			Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(fullPath);
 		}
 	}
 	while (FindNextFile(t_hFind, &t_sfd));
@@ -549,110 +433,7 @@ void CMPResManger::LoadTotalRes() {
 }
 
 bool CMPResManger::LoadTotalMesh() {
-	_iMeshNum = 7;
-
-	_mapMesh[MESH_TRI] = (int)_vecMeshName.size();
-	_vecMeshName.push_back(MESH_TRI);
-
-	_mapMesh[MESH_RECT] = (int)_vecMeshName.size();
-	_vecMeshName.push_back(MESH_RECT);
-
-	_mapMesh[MESH_PLANERECT] = (int)_vecMeshName.size();
-	_vecMeshName.push_back(MESH_PLANERECT);
-
-	_mapMesh[MESH_PLANETRI] = (int)_vecMeshName.size();
-	_vecMeshName.push_back(MESH_PLANETRI);
-
-	_mapMesh[MESH_RECTZ] = (int)_vecMeshName.size();
-	_vecMeshName.push_back(MESH_RECTZ);
-
-	_mapMesh[MESH_CONE] = (int)_vecMeshName.size();
-	_vecMeshName.push_back(MESH_CONE);
-
-	_mapMesh[MESH_CYLINDER] = (int)_vecMeshName.size();
-	_vecMeshName.push_back(MESH_CYLINDER);
-
-	_vecMeshList.resize(MAXMESH_COUNT);
-	for (int n = 0; n < MAXMESH_COUNT; n++) {
-		_vecMeshList[n] = NULL;
-	}
-	_vecMeshList[0] = new CEffectModel;
-	_vecMeshList[0]->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_vecMeshList[0]->CreateTriangle();
-
-	_vecMeshList[1] = new CEffectModel;
-	_vecMeshList[1]->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_vecMeshList[1]->CreateRect();
-
-	_vecMeshList[2] = new CEffectModel;
-	_vecMeshList[2]->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_vecMeshList[2]->CreatePlaneRect();
-
-	_vecMeshList[3] = new CEffectModel;
-	_vecMeshList[3]->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_vecMeshList[3]->CreatePlaneTriangle();
-
-	_vecMeshList[4] = new CEffectModel;
-	_vecMeshList[4]->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_vecMeshList[4]->CreateRectZ();
-
-	_vecMeshList[5] = new CEffectModel;
-	_vecMeshList[5]->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_vecMeshList[5]->CreateCone(8, 3, 2);
-
-	_vecMeshList[6] = new CEffectModel;
-	_vecMeshList[6]->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_vecMeshList[6]->CreateCylinder(8, 3, 1, 3);
-
-	_CShadeModel = NULL;
-	_CShadeModel = new CEffectModel;
-	_CShadeModel->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_CShadeModel->CreateShadeModel();
-
-
-	{
-		WIN32_FIND_DATA t_sfd;
-		HANDLE t_hFind = NULL;
-
-		constexpr std::string_view t_Path = "model\\effect\\*.lgo";
-
-		if ((t_hFind = FindFirstFile(t_Path.data(), &t_sfd)) == INVALID_HANDLE_VALUE)
-			return true;
-		string sFileName;
-
-		lwIPathInfo* path_info;
-		m_pSys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO);
-		const std::string szOldPath = path_info->GetPath(PATH_TYPE_MODEL_ITEM);
-		path_info->SetPath(PATH_TYPE_MODEL_ITEM, "model\\effect\\");
-
-		do {
-			if (!(t_sfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-				const std::string_view fileName{t_sfd.cFileName};
-				if (!fileName.ends_with(".lgo")) {
-					continue;
-				}
-				sFileName = t_sfd.cFileName;
-				transform(sFileName.begin(), sFileName.end(),
-						  sFileName.begin(),
-						  [](unsigned char c) {
-							  return std::tolower(c);
-						  });
-
-				_vecMeshList[_iMeshNum] = new CEffectModel;
-				_vecMeshList[_iMeshNum]->InitDevice(m_pDev);
-				_vecMeshList[_iMeshNum]->LoadModel(sFileName.c_str());
-
-				_mapMesh[sFileName] = (int)_vecMeshName.size();
-				_vecMeshName.push_back(sFileName.c_str());
-				_iMeshNum++;
-			}
-		}
-		while (FindNextFile(t_hFind, &t_sfd));
-		FindClose(t_hFind);
-		path_info->SetPath(PATH_TYPE_MODEL_ITEM, szOldPath.c_str());
-	}
-
-	return true;
+	return EffectMeshStore::Instance().LoadAllFrom(_pszMeshPath);
 }
 
 I_Effect* CMPResManger::AddEffectToMgr(const s_string& strName) {
@@ -684,192 +465,38 @@ bool CMPResManger::LoadTotalPath() {
 }
 
 int CMPResManger::GetPartCtrlID(const s_string& pszName) {
-	for (size_t n(0); n < _vecPartName.size(); n++) {
-		if (_stricmp(_vecPartName[n].c_str(), pszName.c_str()) == 0) {
-			return (int)n;
-		}
-	}
-	return -1;
+	return ParticleCtrlStore::Instance().GetID(pszName);
 }
 
 CMPPartCtrl* CMPResManger::GetPartCtrlByID(int iID) {
-	if (iID > MAXPART_COUNT) {
-		ToLogService("errors", LogLevel::Error, "lemon");
-		return NULL;
-	}
-	if (iID < 0) {
-		ToLogService("errors", LogLevel::Error, "ID[{}]", iID);
-		return NULL;
-	}
-	if ((*_vecPartCtrl[iID]) == NULL) {
-		const std::string t_Path = std::format("{}\\{}", _pszEFFectPath, _vecPartName[iID]);
+	return ParticleCtrlStore::Instance().GetByID(iID);
+}
 
-		(*_vecPartCtrl[iID]) = new CMPPartCtrl;
-		if (LW_FAILED(Corsairs::Engine::Render::PartCtrlLoader::Load(
-				**_vecPartCtrl[iID], t_Path))) {
-			ToLogService("errors", LogLevel::Error, "Load {} error", _vecPartName[iID]);
-			return NULL;
-		}
-		else {
-			const auto v = D3DXVECTOR3(0, 0, 0);
-			(*_vecPartCtrl[iID])->MoveTo(&v);
-		}
-	}
-	return (*_vecPartCtrl[iID]);
+int CMPResManger::GetPartCtrlNum() {
+	return ParticleCtrlStore::Instance().Count();
 }
 
 void CMPResManger::LoadTotalPartCtrl() {
-	{
-		WIN32_FIND_DATA t_sfd;
-		HANDLE t_hFind = NULL;
-
-		const std::string t_Path = _pszEFFectPath + "\\*.par";
-
-		_vecPartCtrl.resize(MAXPART_COUNT);
-
-		if ((t_hFind = FindFirstFile(t_Path.c_str(), &t_sfd)) == INVALID_HANDLE_VALUE)
-			return;
-		string sFileName;
-		do {
-			if (!(t_sfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-				_iPartCtrlNum++;
-
-				sFileName = t_sfd.cFileName;
-				transform(sFileName.begin(), sFileName.end(),
-						  sFileName.begin(),
-						  [](unsigned char c) {
-							  return std::tolower(c);
-						  });
-				_vecPartName.push_back(sFileName.c_str());
-
-				_vecPartCtrl.setsize(_iPartCtrlNum);
-				const std::string t_FilePath = std::format("{}\\{}", _pszEFFectPath, _vecPartName[_iPartCtrlNum - 1]);
-
-				(*_vecPartCtrl[_iPartCtrlNum - 1]) = new CMPPartCtrl;
-				if (LW_FAILED(Corsairs::Engine::Render::PartCtrlLoader::Load(
-						**_vecPartCtrl[_iPartCtrlNum - 1], t_FilePath))) {
-					SAFE_DELETE((*_vecPartCtrl[_iPartCtrlNum - 1]));
-					ToLogService("errors", LogLevel::Error, "Load {} error", sFileName);
-				}
-			}
-		}
-		while (FindNextFile(t_hFind, &t_sfd));
-		FindClose(t_hFind);
-	}
+	ParticleCtrlStore::Instance().LoadAllFrom(_pszEFFectPath);
 }
 
 CMPPartCtrl* CMPResManger::NewPartCtrl(const s_string& strName) {
-	_iPartCtrlNum++;
-	if (_iPartCtrlNum >= MAXPART_COUNT) {
-		_iPartCtrlNum--;
-		return NULL;
-	}
-	_vecPartCtrl.setsize(_iPartCtrlNum);
-	_vecPartName.push_back(strName);
-
-	(*_vecPartCtrl[_iPartCtrlNum - 1]) = new CMPPartCtrl;
-
-	return (*_vecPartCtrl[_iPartCtrlNum - 1]);
+	return ParticleCtrlStore::Instance().NewNamed(strName);
 }
 
 void CMPResManger::DeletePartCtrl(int iID) {
 }
 
 CEffectModel* CMPResManger::NewTobMesh() {
-	CEffectModel* pModel = new CEffectModel;
-	pModel->InitDevice(m_pDev, m_pSysGraphics->GetResourceMgr());
-	_lstTobMeshs.push_back(pModel);
-	_iTobMeshNum++;
-	return pModel;
+	return TobMeshStore::Instance().NewTobMesh();
 }
 
 bool CMPResManger::DeleteTobMesh(CEffectModel& rEffectModel) {
-	std::list<CEffectModel*>::iterator iter = find(_lstTobMeshs.begin(), _lstTobMeshs.end(), &rEffectModel);
-	if (iter != _lstTobMeshs.end()) {
-		delete &rEffectModel;
-		_lstTobMeshs.erase(iter);
-		return true;
-	}
-	return false;
+	return TobMeshStore::Instance().DeleteTobMesh(rEffectModel);
 }
 
-BOOL CMPResManger::OnResetDevice() {
-	if (!_CEffectFile.OnResetDevice())
-		return FALSE;
-
-	EffectShaderStore::Instance().Restore(m_pSysGraphics);
-
-	IDirect3DSurfaceX* pBackBuffer;
-	m_pDev->GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
-	pBackBuffer->GetDesc(&m_d3dBackBuffer);
-	pBackBuffer->Release();
-
-	D3DXMatrixOrthoLH(&_Mat2dViewProj, float(m_d3dBackBuffer.Width), float(m_d3dBackBuffer.Height), 0.0f, 1.0f);
-
-	_iFontBkWidth = m_d3dBackBuffer.Width / 2;
-	_iFontBkHeight = m_d3dBackBuffer.Height / 2;
-
-
-	_vecMeshList[0]->CreateTriangle();
-	_vecMeshList[1]->CreateRect();
-	_vecMeshList[2]->CreatePlaneRect();
-	_vecMeshList[3]->CreatePlaneTriangle();
-	_vecMeshList[4]->CreateRectZ();
-	_vecMeshList[5]->CreateCone(8, 3, 2);
-	_vecMeshList[6]->CreateCylinder(8, 3, 1, 3);
-
-
-	return TRUE;
-}
-
-BOOL CMPResManger::OnLostDevice() {
-	if (!_CEffectFile.OnLostDevice())
-		return FALSE;
-
-	return TRUE;
-}
-
-LW_RESULT g_OnLostDevice() {
-	return ResMgr.OnLostDevice();
-}
-
-LW_RESULT g_OnResetDevice() {
-	return ResMgr.OnResetDevice();
-}
-
-
-void CMPResManger::RestoreEffect() {
-	m_pDev->SetRenderStateForced(D3DRS_ZENABLE, TRUE);
-	m_pDev->SetRenderStateForced(D3DRS_ZWRITEENABLE, TRUE);
-	m_pDev->SetRenderStateForced(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-	m_pDev->SetRenderStateForced(D3DRS_ALPHABLENDENABLE, FALSE);
-	m_pDev->SetRenderStateForced(D3DRS_ALPHATESTENABLE, FALSE);
-	m_pDev->SetRenderStateForced(D3DRS_DITHERENABLE,FALSE);
-	m_pDev->SetRenderStateForced(D3DRS_CULLMODE, D3DCULL_CCW); // ???????
-	m_pDev->SetRenderStateForced(D3DRS_SRCBLEND, D3DBLEND_ONE);
-	m_pDev->SetRenderStateForced(D3DRS_DESTBLEND, D3DBLEND_ZERO);
-	m_pDev->SetRenderStateForced(D3DRS_LIGHTING, TRUE);
-	m_pDev->SetRenderStateForced(D3DRS_CLIPPING, TRUE);
-
-
-	m_pDev->GetInterfaceMgr()->dev_obj->SetTextureForced(0, 0);
-	m_pDev->GetInterfaceMgr()->dev_obj->SetTextureForced(1, 0);
-	m_pDev->SetTextureStageStateForced(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	m_pDev->SetTextureStageStateForced(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-	m_pDev->SetTextureStageStateForced(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-	m_pDev->SetTextureStageStateForced(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	m_pDev->SetTextureStageStateForced(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	m_pDev->SetTextureStageStateForced(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-	m_pDev->SetSamplerStateForced(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
-	m_pDev->SetSamplerStateForced(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
-	m_pDev->SetSamplerStateForced(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	m_pDev->SetSamplerStateForced(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	m_pDev->SetTextureStageStateForced(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-	m_pDev->SetTextureStageStateForced(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	m_pDev->SetTextureStageStateForced(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
-	m_pDev->SetTextureStageStateForced(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	m_pDev->SetTextureStageStateForced(1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	m_pDev->SetTextureStageStateForced(1, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
+int CMPResManger::GetTobMeshNum() {
+	return TobMeshStore::Instance().Count();
 }
 
 //-----------------------------------------------------------------------------
@@ -887,20 +514,8 @@ void CMPResManger::FrameMove(DWORD dwTime) {
 	_fDailTime = _fCurTime - _fSaveTime;
 	_fSaveTime = _fCurTime;
 
-	D3DXMatrixInverse(&_MatBBoard, NULL, _pMatView);
-	_MatBBoard._41 = 0.0f;
-	_MatBBoard._42 = 0.0f;
-	_MatBBoard._43 = 0.0f;
-
-	D3DXMatrixTranspose(&_MatViewProjPose, _pMatViewProj);
-	if (_vecValidID.size() >= MAXMSG_COUNT)
-		return;
-
-	for (WORD iw = 0; iw < MAXMSG_COUNT; ++iw) {
-		if (_vecPartArray[iw]) {
-			_vecPartArray[iw]->FrameMove(dwTime);
-		}
-	}
+	EffectRenderContext::Instance().UpdateMatrices();
+	ParticleInstancePool::Instance().FrameMove(dwTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -908,71 +523,69 @@ void CMPResManger::Render() {
 	if (m_iCurFrame < 1)
 		return;
 	m_iCurFrame = 0;
-	if (_vecValidID.size() >= MAXMSG_COUNT)
-		return;
-
-	for (WORD iw = 0; iw < MAXMSG_COUNT; ++iw) {
-		if (_vecPartArray[iw]) {
-			if (!_vecPartArray[iw]->IsPlaying()) {
-				SAFE_DELETE(_vecPartArray[iw]);
-				_vecValidID.push_front(iw);
-				continue;
-			}
-			_vecPartArray[iw]->Render();
-		}
-	}
+	ParticleInstancePool::Instance().Render();
 }
 
 void CMPResManger::Clear() {
-	for (int i = 0; i < (int)_vecPartArray.size(); ++i) {
-		CMPPartCtrl* part = _vecPartArray[i];
-		if (part) {
-			part->Reset();
-		}
-	}
+	ParticleInstancePool::Instance().Reset();
 }
 
 void CMPResManger::UpdateMatrix() {
-	D3DXMatrixInverse(&_MatBBoard, NULL, _pMatView);
-	_MatBBoard._41 = 0.0f;
-	_MatBBoard._42 = 0.0f;
-	_MatBBoard._43 = 0.0f;
-
-	D3DXMatrixTranspose(&_MatViewProjPose, _pMatViewProj);
+	EffectRenderContext::Instance().UpdateMatrices();
 }
 
 void CMPResManger::BeginEffect(int iIdx) {
-	_CEffectFile.SetTechnique(iIdx);
-	_CEffectFile.Begin(D3DXFX_DONOTSAVESTATE);
-	_CEffectFile.Pass(0);
+	EffectFxRenderer::Instance().BeginEffect(iIdx);
 }
 
 void CMPResManger::EndEffect() {
-	_CEffectFile.End();
+	EffectFxRenderer::Instance().EndEffect();
+}
+
+void CMPResManger::RestoreEffect() {
+	EffectFxRenderer::Instance().RestoreEffect();
+}
+
+CMPEffectFile* CMPResManger::GetEffectFile() {
+	return EffectFxRenderer::Instance().GetEffectFile();
+}
+
+D3DXMATRIX* CMPResManger::GetBBoardMat() {
+	return EffectRenderContext::Instance().GetBBoardMat();
+}
+
+D3DXMATRIX* CMPResManger::GetViewProjMat() {
+	return EffectRenderContext::Instance().GetViewProjMat();
+}
+
+D3DXMATRIX* CMPResManger::Get2DViewProjMat() {
+	return EffectRenderContext::Instance().Get2DViewProjMat();
+}
+
+int CMPResManger::GetBackBufferWidth() {
+	return EffectRenderContext::Instance().GetBackBufferWidth();
+}
+
+int CMPResManger::GetBackBufferHeight() {
+	return EffectRenderContext::Instance().GetBackBufferHeight();
+}
+
+int& CMPResManger::GetFontBkWidth() {
+	return EffectRenderContext::Instance().GetFontBkWidth();
+}
+
+int& CMPResManger::GetFontBkHeight() {
+	return EffectRenderContext::Instance().GetFontBkHeight();
 }
 
 void CMPResManger::SendResMessage(const s_string& strPartName, D3DXVECTOR3 vPos, MPMap* pMap) {
-	int id = GetPartCtrlID(strPartName);
+	const int id = GetPartCtrlID(strPartName);
 	if (id < 0) {
 		return;
 	}
-	if (_vecValidID.empty()) {
-		return;
-	}
-
 	CMPPartCtrl* tctrl = GetPartCtrlByID(id);
 	if (!tctrl) {
 		return;
 	}
-	WORD idx = *_vecValidID.front();
-
-	_vecPartArray[idx] = new CMPPartCtrl;
-	_vecPartArray[idx]->CopyPartCtrl(tctrl);
-	_vecPartArray[idx]->BindingRes(this);
-
-	_vecPartArray[idx]->Reset();
-	_vecPartArray[idx]->MoveTo(&vPos, pMap);
-	_vecPartArray[idx]->Play(1);
-
-	_vecValidID.pop_front();
+	ParticleInstancePool::Instance().Spawn(tctrl, vPos, pMap);
 }

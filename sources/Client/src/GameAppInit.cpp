@@ -558,7 +558,7 @@ void CAniClock::ResetTime(DWORD dwTime) {
 }
 
 void CAniClock::FrameMove(DWORD dwDailTime) {
-	_fCurTime += *ResMgr.GetDailTime();
+	_fCurTime += *CMPResManger::Instance().GetDailTime();
 	_fCurAngle = (_fCurTime / _fPlayTime) * 6.283185f;
 
 	//_fCurAngle = 0.02f;

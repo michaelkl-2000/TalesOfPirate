@@ -22,9 +22,6 @@ LW_BEGIN
 		bool LoadBoneData(std::string_view file);
 
 	private:
-		typedef std::map<std::string, lwGeomObjInfo*> GEOMOBJ_MAP;
-		GEOMOBJ_MAP m_GeomobjMap;
-
 		typedef std::map<std::string, lwIAnimDataBone*> ANIMDATA_MAP;
 		ANIMDATA_MAP m_AnimDataMap;
 	};

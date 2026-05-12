@@ -71,7 +71,7 @@ BOOL RenderHintFrame(const RECT* rc, DWORD color) {
 //CMinimap* minimap = NULL;
 // Game SDK , 
 void CGameApp::_Render() {
-	ResMgr.RestoreEffect();
+	CMPResManger::Instance().RestoreEffect();
 
 	if (IsEnableSpSmMap()) {
 		_CreateSmMap(_pCurScene->GetTerrain());
@@ -131,7 +131,7 @@ void CGameApp::_Render() {
 	}
 	m_dwRenderUITime = tUI.End();
 
-	ResMgr.RestoreEffect();
+	CMPResManger::Instance().RestoreEffect();
 	//app->core->run_callbacks(app->core);
 
 	MPTimer mt;

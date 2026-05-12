@@ -24,7 +24,9 @@ TextureManager::~TextureManager() {
 // GetOrCreateID — аналог CRawDataSet::GetRawDataID
 // ============================================================================
 
-int TextureManager::GetOrCreateID(std::string_view path) {
+int TextureManager::GetOrCreateID(std::string_view path,
+                                   D3DFORMAT forceFormat,
+                                   bool pinned) {
 	if (path.empty()) return 0;
 
 	// Нормализация: lowercase
@@ -37,7 +39,9 @@ int TextureManager::GetOrCreateID(std::string_view path) {
 
 	int id = static_cast<int>(_entries.size());
 	_entries.push_back({});
-	_entries.back().path = key;
+	_entries.back().path        = key;
+	_entries.back().forceFormat = forceFormat;
+	_entries.back().pinned      = pinned;
 	_nameIndex[key] = id;
 	return id;
 }
@@ -113,6 +117,7 @@ void TextureManager::DynamicRelease(bool bClearAll) {
 
 	for (auto& entry : _entries) {
 		if (!entry.pTex) continue;
+		if (entry.pinned && !bClearAll) continue;
 
 		if (bClearAll || (IsMemoryFull() && (dwCurTick - entry.dwLastUseTick) > _dwReleaseInterval)) {
 			ReleaseTexture(entry);
@@ -239,6 +244,13 @@ lwITex* TextureManager::LoadTexture(Entry& entry) {
 			tex_info.colorkey.color = 0xffff00ff;
 			tex_info.format = tex_fmt[1];
 		}
+	}
+
+	// Policy override: эффект-текстуры регистрируются с forceFormat=A8R8G8B8
+	// (см. CMPResManger::LoadTotalTexture после миграции Phase 2). Применяем
+	// после всех эвристик — выигрывает у "ui"-bmp logic и tex_fmt-defaults.
+	if (entry.forceFormat != D3DFMT_UNKNOWN) {
+		tex_info.format = entry.forceFormat;
 	}
 
 	if (LW_RESULT r = tex->LoadTexInfo(&tex_info, std::string_view{}); LW_FAILED(r)) {

@@ -9,7 +9,6 @@
 #include "MPRender.h"
 #include "CharacterActionStore.h"
 
-extern CMPResManger ResMgr;
 
 
 I_Effect::I_Effect(void) {
@@ -492,8 +491,8 @@ void I_Effect::SetTexture() {
 }
 
 void I_Effect::SetVertexShader() {
-	m_pDev->SetVertexShader(ResMgr.GetVShaderByID(_iVSIndex));
-	m_pDev->SetVertexDeclaration(ResMgr.GetVDeclByID(_iVSIndex));
+	m_pDev->SetVertexShader(CMPResManger::Instance().GetVShaderByID(_iVSIndex));
+	m_pDev->SetVertexDeclaration(CMPResManger::Instance().GetVDeclByID(_iVSIndex));
 }
 
 void I_Effect::Render() {

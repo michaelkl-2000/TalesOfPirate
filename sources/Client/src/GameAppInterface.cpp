@@ -419,11 +419,11 @@ void CGameApp::ResetCamera() {
 
 void CGameApp::CreateCharImg() {
 	static int id = 1;
-	static float fTime = *ResMgr.GetDailTime();
+	static float fTime = *CMPResManger::Instance().GetDailTime();
 
 	CCharacter* pMainCha = _pCurScene->GetMainCha();
 
-	fTime += *ResMgr.GetDailTime();
+	fTime += *CMPResManger::Instance().GetDailTime();
 	bool be = false;
 	CCharacter* pCha = NULL;
 	CChaRecord* pInfo = GetChaRecordInfo(id);
@@ -506,11 +506,11 @@ void CGameApp::CreateCharImg() {
 BOOL CGameApp::_CreateSmMap(MPTerrain* pTerr) {
 	static bool isnext = true;
 
-	static float fTime = *ResMgr.GetDailTime();
+	static float fTime = *CMPResManger::Instance().GetDailTime();
 
 	if (!_pCurScene->GetMainCha()) return FALSE;
 
-	fTime += *ResMgr.GetDailTime();
+	fTime += *CMPResManger::Instance().GetDailTime();
 	if (fTime > 0.5f) {
 		if (isnext) {
 			pTerr->SetShowSize(SHOWRSIZE + 5,SHOWRSIZE + 5);

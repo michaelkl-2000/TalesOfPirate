@@ -213,10 +213,10 @@ void CGameScene::OnResetDevice() {
 	//float lerpy =  float(24) / float(768);
 
 	//RECT rc;
-	//rc.left = (LONG)(ResMgr.GetBackBufferWidth() * lerpx);
-	//rc.top  = (LONG)(ResMgr.GetBackBufferHeight() * lerpy);
-	//rc.right= (LONG)(rc.left + 160 * (ResMgr.GetBackBufferWidth() == 1024 ? 1 : lerpx));
-	//rc.bottom = (LONG)(rc.top + 160* (ResMgr.GetBackBufferHeight() == 768 ? 1 : lerpx));
+	//rc.left = (LONG)(CMPResManger::Instance().GetBackBufferWidth() * lerpx);
+	//rc.top  = (LONG)(CMPResManger::Instance().GetBackBufferHeight() * lerpy);
+	//rc.right= (LONG)(rc.left + 160 * (CMPResManger::Instance().GetBackBufferWidth() == 1024 ? 1 : lerpx));
+	//rc.bottom = (LONG)(rc.top + 160* (CMPResManger::Instance().GetBackBufferHeight() == 768 ? 1 : lerpx));
 	//static int n = 0;
 
 
@@ -226,7 +226,7 @@ void CGameScene::OnResetDevice() {
 	g_CEffBox.ShowLine(TRUE);
 
 	//RECT rc;
-	//rc.left = (LONG)(ResMgr.GetBackBufferWidth() - (128 +6));
+	//rc.left = (LONG)(CMPResManger::Instance().GetBackBufferWidth() - (128 +6));
 	//rc.top  = 8;
 	//rc.right= (LONG)(rc.left + 128);
 	//rc.bottom = (LONG)(rc.top + 128);
@@ -234,14 +234,14 @@ void CGameScene::OnResetDevice() {
 	RECT rc;
 	CCompent* pRect = g_stUIMap.GetMinimapRect();
 
-	//rc.left = pRect->GetX();// ResMgr.GetBackBufferWidth() - (128 + pRect->GetLeft());
+	//rc.left = pRect->GetX();// CMPResManger::Instance().GetBackBufferWidth() - (128 + pRect->GetLeft());
 	//rc.top  = pRect->GetY();//pRect->GetTop();
 	//rc.right= pRect->GetX2();//rc.left + pRect->GetRight();
 	//rc.bottom = pRect->GetY2();//pRect->GetBottom();
 
 	int lenx = pRect->GetRight() - pRect->GetLeft();
 
-	rc.left = ResMgr.GetBackBufferWidth() - (lenx + pRect->GetLeft());
+	rc.left = CMPResManger::Instance().GetBackBufferWidth() - (lenx + pRect->GetLeft());
 	rc.top = pRect->GetTop();
 	rc.right = rc.left + lenx;
 	rc.bottom = rc.top + lenx;
@@ -2051,7 +2051,7 @@ void CGameScene::LoadingCall() {
 	int lenx = pRect->GetRight() - pRect->GetLeft();
 
 
-	rc.left = ResMgr.GetBackBufferWidth() - (lenx + pRect->GetLeft());
+	rc.left = CMPResManger::Instance().GetBackBufferWidth() - (lenx + pRect->GetLeft());
 	rc.top = pRect->GetTop();
 	rc.right = rc.left + lenx;
 	rc.bottom = rc.top + lenx;

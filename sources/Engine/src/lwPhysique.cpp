@@ -15,6 +15,7 @@
 #include "lwExpObj.h"
 
 #include "AssetLoaders.h"
+#include "GeomObjCache.h"
 
 #include <format>
 
@@ -23,17 +24,10 @@ LW_BEGIN
 	lwGeomManager g_GeomManager;
 
 	lwGeomManager::lwGeomManager() {
-		m_GeomobjMap.clear();
 		m_AnimDataMap.clear();
 	}
 
 	lwGeomManager::~lwGeomManager() {
-		GEOMOBJ_MAP::iterator pos1 = m_GeomobjMap.begin();
-		for (; pos1 != m_GeomobjMap.end(); pos1++) {
-			delete (*pos1).second;
-		}
-		m_GeomobjMap.clear();
-
 		ANIMDATA_MAP::iterator pos2 = m_AnimDataMap.begin();
 		for (; pos2 != m_AnimDataMap.end(); pos2++) {
 			(*pos2).second->Release();
@@ -41,23 +35,21 @@ LW_BEGIN
 		m_AnimDataMap.clear();
 	}
 
+	// Геом-данные .lgo для characters теперь живут в Corsairs::Engine::Render::GeomObjCache.
+	// lwGeomManager сохраняет тонкий фасад для сохранения сигнатур legacy-колсайтов.
 	lwGeomObjInfo* lwGeomManager::GetGeomObjInfo(std::string_view file) {
-		GEOMOBJ_MAP::iterator pos = m_GeomobjMap.find(std::string{file});
-		if (pos != m_GeomobjMap.end()) {
-			return (*pos).second;
-		}
-		return NULL;
+		const std::string path = std::format("{}{}",
+			Corsairs::Engine::Render::GeomObjCache::CategoryPrefix(Corsairs::Engine::Render::GeomCategory::Character),
+			file);
+		auto entry = Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(path);
+		return entry.get();
 	}
 
 	bool lwGeomManager::LoadGeomobj(std::string_view file) {
-		const std::string path = std::format("model\\character\\{}", file);
-		lwGeomObjInfo* pInfo = Corsairs::Engine::Render::LgoLoader::Load(path);
-		if (pInfo == nullptr) {
-			return false;
-		}
-		Corsairs::Engine::Render::LgoLoader::ApplyRuntimeDefaults(pInfo);
-		m_GeomobjMap[std::string{file}] = pInfo;
-		return true;
+		const std::string path = std::format("{}{}",
+			Corsairs::Engine::Render::GeomObjCache::CategoryPrefix(Corsairs::Engine::Render::GeomCategory::Character),
+			file);
+		return Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(path) != nullptr;
 	}
 
 	lwIAnimDataBone* lwGeomManager::GetBoneData(std::string_view file) {

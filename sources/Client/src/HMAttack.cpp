@@ -255,7 +255,7 @@ void CAttackEffect::CreateEffect(int eType, const char* str, D3DXVECTOR3& start,
 	if (strs.begin()->size() > 15) {
 		strs.begin()->resize(15);
 	}
-	pEffect->SetFontEffectCom(strs, 1, &ResMgr, &dir, eType, 0xffffffff, false, isMain);
+	pEffect->SetFontEffectCom(strs, 1, &CMPResManger::Instance(), &dir, eType, 0xffffffff, false, isMain);
 	pEffect->Emission(-1, &start, &target);
 	pEffect->SetDailTime(dwDelay);
 	pEffect->SetValid(TRUE);

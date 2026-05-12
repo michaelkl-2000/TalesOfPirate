@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 class MPRender;
 
 #include "i_effect.h"
@@ -10,9 +10,6 @@ class MPRender;
 #include "mpparticlectrl.h"
 
 #include "MPResourceSet.h"
-#if RESOURCE_SCRIPT == 1
-#include <set>
-#endif
 
 
 template <class _Ty>
@@ -90,21 +87,21 @@ inline bool fEquat(float f1, float f2) {
 	return fabs(f1 - f2) < 0.000001f;
 }
 
-#define  MAXPART_COUNT		1500
-
-#define  MAXMSG_COUNT		150
-
-#define  MAXMESH_COUNT		800
-
-
+// Точка входа в подсистему эффектов — façade поверх специализированных сторов
+// из Corsairs::Engine::Render (EffPathStore / EffectStore / EffectMeshStore /
+// EffectShaderStore / ParticleCtrlStore / ParticleInstancePool / TobMeshStore /
+// EffectFxRenderer / EffectRenderContext / EffectDeviceCallbacks). Сама не
+// владеет mesh/effect/particle-данными — только координирует InitRes-конвейер
+// и проксирует legacy callsite.
 class CMPResManger {
 public:
-	CMPResManger(void);
-	~CMPResManger(void);
+	static CMPResManger& Instance();
+
+	CMPResManger(const CMPResManger&)            = delete;
+	CMPResManger& operator=(const CMPResManger&) = delete;
 
 	void Clear();
 
-public:
 	//  Управление прогревом массовых ресурсов при старте.
 	//  m_GeomobjMap (character meshes) и m_AnimDataMap (bones), чтобы
 	//  первые операции с персонажами не делали file IO.
@@ -130,17 +127,11 @@ public:
 
 	void ReleaseTotalRes();
 
-	BOOL OnResetDevice();
-	BOOL OnLostDevice();
-
-
 	int GetTexNum() {
 		return _iTexNum;
 	}
 
-	int GetMeshNum() {
-		return _iMeshNum;
-	}
+	int GetMeshNum();
 
 	int GetEffectNum();
 	int GetSubEffectNum(int idx);
@@ -181,9 +172,7 @@ public:
 	int GetEffPathID(const s_string& pszName);
 	CEffPath* GetEffPath(int iID);
 
-	CMPEffectFile* GetEffectFile() {
-		return &_CEffectFile;
-	}
+	CMPEffectFile* GetEffectFile();
 
 	void FrameMove(DWORD dwTime);
 	void Render();
@@ -193,33 +182,15 @@ public:
 		return &_fDailTime;
 	}
 
-	D3DXMATRIX* GetBBoardMat() {
-		return &_MatBBoard;
-	}
+	D3DXMATRIX* GetBBoardMat();
+	D3DXMATRIX* GetViewProjMat();
+	D3DXMATRIX* Get2DViewProjMat();
 
-	D3DXMATRIX* GetViewProjMat() {
-		return &_MatViewProjPose;
-	}
+	int GetBackBufferWidth();
+	int GetBackBufferHeight();
 
-	D3DXMATRIX* Get2DViewProjMat() {
-		return &_Mat2dViewProj;
-	}
-
-	int GetBackBufferWidth() {
-		return m_d3dBackBuffer.Width;
-	}
-
-	int GetBackBufferHeight() {
-		return m_d3dBackBuffer.Height;
-	}
-
-	int& GetFontBkWidth() {
-		return _iFontBkWidth;
-	}
-
-	int& GetFontBkHeight() {
-		return _iFontBkHeight;
-	}
+	int& GetFontBkWidth();
+	int& GetFontBkHeight();
 
 	D3DCAPSX* GetDevCap() {
 		return &m_caps;
@@ -235,9 +206,7 @@ public:
 		return _vecTexName;
 	}
 
-	VEC_string& GetTotalMeshName() {
-		return _vecMeshName;
-	}
+	VEC_string& GetTotalMeshName();
 
 	VEC_string& GetTotalEffectName();
 
@@ -254,16 +223,12 @@ public:
 	int GetPartCtrlID(const s_string& pszName);
 	CMPPartCtrl* GetPartCtrlByID(int iID);
 
-	int GetPartCtrlNum() {
-		return _iPartCtrlNum;
-	}
+	int GetPartCtrlNum();
 
 	CEffectModel* NewTobMesh();
 	bool DeleteTobMesh(CEffectModel& rEffectModel);
 
-	int GetTobMeshNum() {
-		return _iTobMeshNum;
-	}
+	int GetTobMeshNum();
 
 	CMPPartCtrl* NewPartCtrl(const s_string& strName);
 	void DeletePartCtrl(int iID);
@@ -276,7 +241,6 @@ public:
 	MPRender* m_pDev;
 
 	D3DCAPSX m_caps;
-	D3DSURFACE_DESC m_d3dBackBuffer;
 
 	bool m_bUseSoft;
 	bool m_bUseSoftOrg;
@@ -289,6 +253,9 @@ public:
 	lwISysGraphics* m_pSysGraphics;
 
 protected:
+	CMPResManger();
+	~CMPResManger();
+
 	void LoadTotalRes();
 	void LoadTotalData();
 	bool LoadTotalTexture();
@@ -306,60 +273,19 @@ protected:
 	std::string _pszEFFectPath;
 
 	int _iTexNum;
-	int _iMeshNum;
 
 	VEC_string _vecTexName;
-	VEC_string _vecMeshName;
-
-	typedef std::map<std::string, int> MESH_MAP;
-	MESH_MAP _mapMesh;
 
 	typedef std::map<std::string, int> TEXTURE_MAP;
 	TEXTURE_MAP _mapTexture;
 
-	std::vector<lwITex*> _vecTexList;
-	std::vector<CEffectModel*> _vecMeshList;
-	CEffectModel* _CShadeModel;
-
-	CMPEffectFile _CEffectFile;
+	// Local effect-ID → global TextureManager-ID. Сами lwITex*-объекты
+	// владеет TextureManager (Phase 2 migration); CMPResManger хранит только
+	// маппинг для совместимости с .par/.eff (которые ссылаются на local-ID).
+	std::vector<int> _vecTexGlobalId;
 
 	float _fSaveTime;
 	float _fCurTime;
 	float _fDailTime;
 	bool _bInitTime;
-
-	D3DXMATRIX* _pMatView;
-	D3DXMATRIX _MatBBoard;
-	D3DXMATRIX* _pMatViewProj;
-	D3DXMATRIX _MatViewProjPose;
-	D3DXMATRIX _Mat2dViewProj;
-
-	int _iFontBkWidth;
-	int _iFontBkHeight;
-
-
-	int _iPartCtrlNum;
-	VEC_string _vecPartName;
-	S_BVECTOR<CMPPartCtrl*> _vecPartCtrl;
-
-
-	int _iTobMeshNum;
-	std::list<CEffectModel*> _lstTobMeshs;
-
-	std::vector<CMPPartCtrl*> _vecPartArray;
-	S_FVector<WORD> _vecValidID;
-
-#if RESOURCE_SCRIPT == 1
-	typedef std::set<string> StringMap;
-	typedef std::set<string>::iterator StrMapIter;
-	StringMap _mapParticle;
-	StringMap _mapPath;
-	StringMap _mapEffect;
-	StringMap _mapMesh;
-	StringMap _mapTexture;
-#endif
 };
-
-extern CMPResManger ResMgr;
-extern LW_RESULT g_OnLostDevice();
-extern LW_RESULT g_OnResetDevice();

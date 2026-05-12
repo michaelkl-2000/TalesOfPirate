@@ -12,7 +12,6 @@
 
 #define CLAMP(A, MIN, MAX)		( (A) > (MAX) ) ? (MAX) :  ( ( (A) < (MIN) ) ? (MIN) : (A) )
 
-extern CMPResManger ResMgr;
 
 CMPShadeMap::CMPShadeMap(void) {
 	m_iType = SHADE_SINGLE;
@@ -254,8 +253,8 @@ void CMPShadeMap::RenderVS() {
 	_pModel->m_pDev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 	_pModel->m_pDev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 
-	_pModel->m_pDev->SetVertexShader(ResMgr.GetShadeVS());
-	_pModel->m_pDev->SetVertexDeclaration(ResMgr.GetShadeVDecl());
+	_pModel->m_pDev->SetVertexShader(CMPResManger::Instance().GetShadeVS());
+	_pModel->m_pDev->SetVertexDeclaration(CMPResManger::Instance().GetShadeVDecl());
 
 	_pModel->m_pDev->SetVertexShaderConstantF(0, t_mat, 4);
 	_pModel->m_pDev->SetVertexShaderConstantF(4, *_pMatViewProj, 4);

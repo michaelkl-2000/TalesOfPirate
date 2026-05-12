@@ -650,7 +650,7 @@ void CCameraCtrl::AddPoint(float fX, float fY, float fZ) {
 	static float ftime = 0;
 	static float ftime2 = 0;
 
-	ftime += *ResMgr.GetDailTime();
+	ftime += *CMPResManger::Instance().GetDailTime();
 	if (ftime > 1.5f) {
 		float d = fZ - m_fmaxDown;
 
@@ -726,7 +726,7 @@ void CCameraCtrl::Update() {
 	//D3DXVECTOR2 vpos, vnext;
 	//if(m_listDir.size() > 0)
 	//{
-	//	m_fCurDist += m_fStackVel * *ResMgr.GetDailTime();
+	//	m_fCurDist += m_fStackVel * *CMPResManger::Instance().GetDailTime();
 
 	//	vpos = m_listPos.front();
 

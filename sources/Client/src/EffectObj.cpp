@@ -347,7 +347,7 @@ inline void Part_trace(CMagicCtrl* pEffCtrl, void* pParam) {
 		pEffCtrl->Stop();
 		return;
 	}
-	float fDist = pEffCtrl->_fVel * *ResMgr.GetDailTime();
+	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
 	if (fDist * fDist > pEffCtrl->_fDist) {
 		pEffCtrl->_vPos = pEffCtrl->_vOldTarget;
 		pEffCtrl->Stop();
@@ -410,7 +410,7 @@ inline void Part_drop(CMagicCtrl* pEffCtrl, void* pParam) {
 	CMagicEff* pEff = (CMagicEff*)pParam;
 	CGameScene* pScene = pEff->GetScene();
 	pEffCtrl->Render();
-	float fDist = pEffCtrl->_fVel * *ResMgr.GetDailTime();
+	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
 
 	pEffCtrl->_fCurDist += fDist;
 	if (pEffCtrl->_fCurDist > pEffCtrl->_fStartDist) {
@@ -430,7 +430,7 @@ inline void Part_fly(CMagicCtrl* pEffCtrl, void* pParam) {
 	CMagicEff* pEff = (CMagicEff*)pParam;
 	CGameScene* pScene = pEff->GetScene();
 	pEffCtrl->Render();
-	float fDist = pEffCtrl->_fVel * *ResMgr.GetDailTime();
+	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
 
 	pEffCtrl->_fCurDist += fDist;
 	if (pEffCtrl->_fCurDist > pEffCtrl->_fStartDist) {
@@ -452,7 +452,7 @@ inline void Part_fshade(CMagicCtrl* pEffCtrl, void* pParam) {
 		return;
 	}
 
-	pEffCtrl->_vPos += pEffCtrl->_vDir * (pEffCtrl->_fVel * *ResMgr.GetDailTime());
+	pEffCtrl->_vPos += pEffCtrl->_vDir * (pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime());
 	if (pEff->HitTestMap(&pEffCtrl->_vPos)) {
 		pEffCtrl->_vPos = pEffCtrl->_vOldTarget;
 		pEffCtrl->Stop();
@@ -475,7 +475,7 @@ inline void Part_fshade(CMagicCtrl* pEffCtrl, void* pParam) {
 	pEffCtrl->GetModelEff(0)->Scaling(3, 3, 3);
 	pEffCtrl->GetModelEff(0)->SetAlpha(1);
 
-	pEffCtrl->_fCurTime += *ResMgr.GetDailTime();
+	pEffCtrl->_fCurTime += *CMPResManger::Instance().GetDailTime();
 	if (pEffCtrl->_fCurTime > 0.6f) {
 		pEffCtrl->_fCurTime = 0.0f;
 		pEffCtrl->_iCurSNum++;
@@ -491,7 +491,7 @@ inline void Part_arc(CMagicCtrl* pEffCtrl, void* pParam) {
 	}
 
 	pEffCtrl->Render();
-	pEffCtrl->_fCurArc += (pEffCtrl->_fVel * *ResMgr.GetDailTime());
+	pEffCtrl->_fCurArc += (pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime());
 	D3DXVECTOR3 vp = pEffCtrl->_vOldPos + pEffCtrl->_vDir * pEffCtrl->_fCurArc;
 	D3DXVECTOR3 vd = vp - pEffCtrl->_vArcOrg;
 	D3DXVec3Normalize(&vd, &vd);
@@ -531,7 +531,7 @@ inline void Part_dist(CMagicCtrl* pEffCtrl, void* pParam) {
 
 	pEffCtrl->Render();
 
-	float fDist = pEffCtrl->_fVel * *ResMgr.GetDailTime();
+	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
 	pEffCtrl->_fCurDist += fDist;
 	pEffCtrl->_vPos += pEffCtrl->_vDir * fDist;
 
@@ -546,7 +546,7 @@ inline void Part_dist2(CMagicCtrl* pEffCtrl, void* pParam) {
 
 	pEffCtrl->Render();
 
-	float fDist = pEffCtrl->_fVel * *ResMgr.GetDailTime();
+	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
 	pEffCtrl->_fCurDist += fDist;
 	pEffCtrl->_vPos += pEffCtrl->_vDir * fDist;
 
@@ -741,7 +741,7 @@ BOOL CMagicEff::Create(int iIdxID) {
 		_fsCurTime = 0;
 		_fsDailTime = 0;
 		_isID = -1;
-		_pDailTime = ResMgr.GetDailTime();
+		_pDailTime = CMPResManger::Instance().GetDailTime();
 
 		_pObj = NULL;
 
@@ -857,7 +857,7 @@ BOOL CMagicEff::Create(int iIdxID) {
 	}
 
 	Property.m_strName = pInfo->DataName.c_str();
-	if (!Create(&Property, &ResMgr)) {
+	if (!Create(&Property, &CMPResManger::Instance())) {
 		Clear();
 		return FALSE;
 	}
@@ -936,7 +936,7 @@ BOOL CMagicEff::CreateMagic(int iIdxID) {
 	Clear();
 	_pMagicCtrl.resize(1);
 	_pMagicCtrl[0] = new CMagicCtrl;
-	if (!_pMagicCtrl[0]->Create(iIdxID - 1000, &ResMgr)) {
+	if (!_pMagicCtrl[0]->Create(iIdxID - 1000, &CMPResManger::Instance())) {
 		return FALSE;
 	}
 	setTypeID(4);
@@ -977,7 +977,7 @@ BOOL CMagicEff::CreateGroupMagic(int iIdxID) {
 	for (n = 0; n < psGroupParam->nTypeNum; ++n) {
 		for (m = 0; m < psGroupParam->nNum[n]; ++m) {
 			_pMagicCtrl[idx] = new CMagicCtrl;
-			if (!_pMagicCtrl[idx]->Create(psGroupParam->nTypeID[n], &ResMgr))
+			if (!_pMagicCtrl[idx]->Create(psGroupParam->nTypeID[n], &CMPResManger::Instance()))
 				return FALSE;
 			id = _pMagicCtrl[idx]->GetRenderIdx();
 			_pMagicCtrl[idx]->MagicUpdate = MagicList[id];
@@ -1080,7 +1080,7 @@ void CMagicEff::SetEffectMatrix(MPMatrix44* pmat) {
 
 void CMagicEff::FrameMove(DWORD dwDailTime) {
 	if (_bDail) {
-		_fsCurTime += *ResMgr.GetDailTime();
+		_fsCurTime += *CMPResManger::Instance().GetDailTime();
 		if (_fsCurTime >= _fsDailTime) {
 			_bDail = false;
 			Emission(_isID, _vsBegin.x < 0 ? NULL : &_vsBegin, _vsEnd.x < 0 ? NULL : &_vsEnd);
@@ -1420,7 +1420,7 @@ bool CShadeEff::Create(CShadeInfo* pInfo) {
 	if (pInfo->fsize > 9)
 		pInfo->fsize = 9;
 	std::string str = pInfo->DataName.c_str();
-	if (!CMPShadeCtrl::Create(str, &ResMgr, pInfo->fsize,
+	if (!CMPShadeCtrl::Create(str, &CMPResManger::Instance(), pInfo->fsize,
 							  pInfo->nAni != 0, pInfo->nRow, pInfo->nCol))
 		return false;
 	if (pInfo->nUseAlphaTest) {
@@ -1450,7 +1450,7 @@ bool CShadeEff::Create(s_string strTexName, float fSize,
 	_bUpSea = false;
 	SetHide(FALSE);
 
-	return CMPShadeCtrl::Create(strTexName, &ResMgr, fSize, bAni, iRow, iColnum);
+	return CMPShadeCtrl::Create(strTexName, &CMPResManger::Instance(), fSize, bAni, iRow, iColnum);
 }
 
 bool CShadeEff::CreateAttachLight(int iIdxID, float fRange, D3DXCOLOR dwcolor) {
@@ -1460,7 +1460,7 @@ bool CShadeEff::CreateAttachLight(int iIdxID, float fRange, D3DXCOLOR dwcolor) {
 	if (!pInfo)
 		return false;
 	std::string str = pInfo->DataName.c_str();
-	if (!CMPShadeCtrl::Create(str, &ResMgr, fRange,
+	if (!CMPShadeCtrl::Create(str, &CMPResManger::Instance(), fRange,
 							  pInfo->nAni != 0, pInfo->nRow, pInfo->nCol))
 		return false;
 	if (pInfo->nUseAlphaTest) {
@@ -1563,7 +1563,7 @@ CPug::~CPug() {
 
 bool CPug::Create(D3DXVECTOR3* pvPos, float fangle, MPMap* pMap) {
 	std::string str = "pug.tga";
-	if (!_cShadeEff.Create(str, &ResMgr))
+	if (!_cShadeEff.Create(str, &CMPResManger::Instance()))
 		return false;
 
 	_fAngle = fangle;
@@ -1583,7 +1583,7 @@ void CPug::MoveTo(MPMap* pMap) {
 }
 
 void CPug::FrameMove(DWORD dwTime) {
-	_fCurTime += *ResMgr.GetDailTime();
+	_fCurTime += *CMPResManger::Instance().GetDailTime();
 	if (_fCurTime > 6)
 		_bValid = false;
 	else {
@@ -1746,7 +1746,7 @@ void CNavigationBar::Render() {
 	if (!_pShadeEff) {
 		_pShadeEff = new CMPShadeCtrl;
 		std::string str = "inarraw.tga";
-		if (!_pShadeEff->Create(str, &ResMgr)) {
+		if (!_pShadeEff->Create(str, &CMPResManger::Instance())) {
 			SAFE_DELETE(_pShadeEff);
 			return;
 		}

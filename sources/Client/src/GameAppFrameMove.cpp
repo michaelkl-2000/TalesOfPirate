@@ -147,7 +147,7 @@ void CGameApp::_FrameMove(DWORD dwTimeParam, bool camMove) //Vim
 	// Added by CLP
 
 
-	ResMgr.FrameMove(dwTimeParam);
+	CMPResManger::Instance().FrameMove(dwTimeParam);
 
 	//  1s 
 	static DWORD tick = 0;

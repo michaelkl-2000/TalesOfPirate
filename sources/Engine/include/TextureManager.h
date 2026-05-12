@@ -22,6 +22,19 @@ public:
 		lwITex* pTex{nullptr};
 		DWORD dwLastUseTick{0};
 		DWORD dwLoadCnt{0};
+
+		// Поведенческие политики (Phase 2 effect-textures migration).
+		//
+		// forceFormat: жёсткий override D3DFORMAT после всех эвристик
+		//   в LoadTexture (раньше effect-текстуры лились через
+		//   `lwLoadTex(..., D3DFMT_A8R8G8B8)` напрямую из CMPResManger).
+		//   Sentinel D3DFMT_UNKNOWN = без override.
+		// pinned: исключить из DynamicRelease(bClearAll=false). Effect-
+		//   текстуры обращаются спорадически (паузы > 8s — норма), поэтому
+		//   попадали под LRU и реgrузка лагала. pinned=true гарантирует
+		//   что они отпускаются только при полном Clear.
+		D3DFORMAT forceFormat{D3DFMT_UNKNOWN};
+		bool      pinned{false};
 	};
 
 	TextureManager();
@@ -32,7 +45,12 @@ public:
 	}
 
 	// Получить ID по имени файла. Создаёт запись если нет.
-	int GetOrCreateID(std::string_view path);
+	// forceFormat / pinned применяются ТОЛЬКО при первом GetOrCreateID;
+	// при повторном вызове с тем же path политики игнорируются (запись
+	// уже зарегистрирована).
+	int GetOrCreateID(std::string_view path,
+	                  D3DFORMAT forceFormat = D3DFMT_UNKNOWN,
+	                  bool pinned = false);
 
 	// Lazy load — загружает текстуру при первом обращении.
 	lwITex* GetTexture(int id, bool bRequest = false);

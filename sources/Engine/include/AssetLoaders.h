@@ -302,12 +302,11 @@ public:
     [[nodiscard]] static LW_RESULT ImportFromYaml(::EffectFileInfo& info,
                                                   std::string_view file);
 
+private:
     // Сериализация одного элемента .eff. Раньше жили как методы I_Effect
     // (`SaveToFile`/`LoadFromFile`); по правилу проекта I/O в data-классах
-    // запрещён, поэтому перенесены сюда и вызываются из:
-    //  • EffectLoader::Save/LoadEx (целый .eff = header + N элементов);
-    //  • CMPResManger::LoadEffectFromFile (legacy-loader, постепенно
-    //    мигрируется на EffectLoader::Load).
+    // запрещён, поэтому перенесены сюда. Вызываются только из
+    // EffectLoader::Save/LoadEx (целый .eff = header + N элементов).
     [[nodiscard]] static bool LoadElement(::I_Effect& effect, std::FILE* fp, DWORD version);
     static bool SaveElement(::I_Effect& effect, std::FILE* fp);
 };

@@ -705,42 +705,19 @@ void CMPResManger::AddUniteEffectToMgr(std::vector<I_Effect>& vecEffArray) {
 
 
 bool CMPResManger::LoadEffectFromFile(int idx, std::string_view pszFileName) {
-	FILE* t_pFile;
-	t_pFile = fopen(std::string{pszFileName}.c_str(), "rb");
-	if (!t_pFile)
+	EffectFileInfo info;
+	if (LW_FAILED(Corsairs::Engine::Render::EffectLoader::Load(info, pszFileName))) {
 		return false;
-	DWORD t_dwVersion;
-	int t_temp;
-	fread(&t_dwVersion, sizeof(t_dwVersion), 1, t_pFile);
-
-	fread(&t_temp, sizeof(int), 1, t_pFile);
-	_vecEffectParam[idx].m_iIdxTech = t_temp;
-	char t_pszName[32];
-
-	fread(&_vecEffectParam[idx].m_bUsePath, sizeof(bool), 1, t_pFile);
-	fread(t_pszName, sizeof(char), 32, t_pFile);
-	_vecEffectParam[idx].m_szPathName = t_pszName;
-
-	fread(&_vecEffectParam[idx].m_bUseSound, sizeof(bool), 1, t_pFile);
-	fread(t_pszName, sizeof(char), 32, t_pFile);
-	_vecEffectParam[idx].m_szSoundName = t_pszName;
-
-	fread(&_vecEffectParam[idx].m_bRotating, sizeof(bool), 1, t_pFile);
-	fread(&_vecEffectParam[idx].m_SVerRota, sizeof(D3DXVECTOR3), 1, t_pFile);
-	fread(&_vecEffectParam[idx].m_fRotaVel, sizeof(float), 1, t_pFile);
-
-	fread(&t_temp, sizeof(int), 1, t_pFile);
-
-	_vecEffectList[idx].resize(t_temp);
-
-	for (int n = 0; n < t_temp; n++) {
-		Corsairs::Engine::Render::EffectLoader::LoadElement(
-			_vecEffectList[idx][n], t_pFile, t_dwVersion);
-		_vecEffectList[idx][n].Reset();
-		_vecEffectList[idx][n].m_pDev = m_pDev;
 	}
 
-	fclose(t_pFile);
+	_vecEffectParam[idx] = std::move(info.param);
+	_vecEffectList[idx]  = std::move(info.effects);
+
+	for (auto& effect : _vecEffectList[idx]) {
+		effect.Reset();
+		effect.m_pDev = m_pDev;
+	}
+
 	return true;
 }
 

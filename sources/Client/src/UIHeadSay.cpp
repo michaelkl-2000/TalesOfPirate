@@ -80,9 +80,9 @@ char CHeadSay::s_szConsortiaName[256] = {0};
 // Member Methods---------------------------------------------------------
 
 bool CHeadSay::Init() {
-	_pImgTeamLeaderFlag->LoadImage("texture/ui/flag.tga", 12, 12, 0, 0, 0, 1.0, 1.0);
-	_pImgGuildLeaderFlag->LoadImage("texture/ui/guildflag.tga", 16, 16, 0, 0, 0, 0.8, 0.8);
-	_pImgShopHidden->LoadImage("texture/ui/hidestall.tga", 25, 32, 0, 0, 0, 1.0, 1.0);
+	_pImgTeamLeaderFlag->LoadImage("texture/ui/flag.png", 12, 12, 0, 0, 0, 1.0, 1.0);
+	_pImgGuildLeaderFlag->LoadImage("texture/ui/guildflag.png", 16, 16, 0, 0, 0, 0.8, 0.8);
+	_pImgShopHidden->LoadImage("texture/ui/hidestall.png", 25, 32, 0, 0, 0, 1.0, 1.0);
 
 	_nShopFrameWidth = _ImgShop[0].GetWidth() - 1;
 	_nShopFontYOff = (_ImgShop[0].GetHeight() - ui::GetHeight(GetLanguageString(489).c_str())) / 2;

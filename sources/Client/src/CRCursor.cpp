@@ -14,7 +14,7 @@ CRCursor::~CRCursor() {
 void CRCursor::Init(CGameScene* p) {
 	_pCursorEff = new CShadeEff;
 	_pCursorEff->SetScene(p);
-	_pCursorEff->Create("sel1.tga", 1.0f,true, 4, 1);
+	_pCursorEff->Create("sel1.png", 1.0f,true, 4, 1);
 	_pCursorEff->SetValid(TRUE);
 	_pCursorEff->SetAlphaType(D3DBLEND_SRCALPHA, D3DBLEND_INVSRCCOLOR);
 	_pCursorEff->setColor(0xff0000ff);

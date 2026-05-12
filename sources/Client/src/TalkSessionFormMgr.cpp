@@ -1342,7 +1342,7 @@ CTalkSessionFormMgr::CreateSessionForm(DWORD sessionID, stNetSessCreate* pArrMem
 		CGuiPic* pPic = pItem->GetImage();
 		string strPath = "texture/ui/HEAD/";
 		pPic->LoadImage((strPath + pIconInfo->szSmall).c_str(), 16, 16, 0, pIconInfo->nSmallX, pIconInfo->nSmallY);
-		pPic->LoadImage("texture/ui/system/slide.tga", 16, 16, 1, pIconInfo->nSmallX, pIconInfo->nSmallY);
+		pPic->LoadImage("texture/ui/system/slide.png", 16, 16, 1, pIconInfo->nSmallX, pIconInfo->nSmallY);
 		pPic->SetFrame(0);
 	}
 	g_stUIChat.GetTeamView()->Refresh();

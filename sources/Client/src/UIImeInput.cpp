@@ -199,7 +199,7 @@ void CImeInput::SetScreen(bool isFull, int w, int h) {
 
 		if (!_pImage) {
 			_pImage = new CGuiPic(NULL);
-			_pImage->LoadImage("texture/ui/ime/background.tga", 122, 172);
+			_pImage->LoadImage("texture/ui/ime/background.png", 122, 172);
 		}
 	}
 	else {

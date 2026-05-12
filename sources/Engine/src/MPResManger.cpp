@@ -326,7 +326,7 @@ bool CMPResManger::LoadTotalTexture() {
 	WIN32_FIND_DATA t_sfd{};
 	HANDLE t_hFind = NULL;
 
-	const std::string pattern = _pszTexPath + "\\*.tga";
+	const std::string pattern = _pszTexPath + "\\*.png";
 
 	if ((t_hFind = FindFirstFile(pattern.c_str(), &t_sfd)) == INVALID_HANDLE_VALUE)
 		return false;

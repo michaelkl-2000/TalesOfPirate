@@ -1562,7 +1562,7 @@ CPug::~CPug() {
 }
 
 bool CPug::Create(D3DXVECTOR3* pvPos, float fangle, MPMap* pMap) {
-	std::string str = "pug.tga";
+	std::string str = "pug.png";
 	if (!_cShadeEff.Create(str, &CMPResManger::Instance()))
 		return false;
 
@@ -1745,7 +1745,7 @@ void CNavigationBar::Render() {
 
 	if (!_pShadeEff) {
 		_pShadeEff = new CMPShadeCtrl;
-		std::string str = "inarraw.tga";
+		std::string str = "inarraw.png";
 		if (!_pShadeEff->Create(str, &CMPResManger::Instance())) {
 			SAFE_DELETE(_pShadeEff);
 			return;

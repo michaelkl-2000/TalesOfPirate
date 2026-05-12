@@ -312,8 +312,8 @@ CTreeGridNode::CTreeGridNode(CTreeView* own, CItemObj* item)
 	_nFocusRow = 0;
 	_IsShowFocus = false;
 
-	GetUpImage()->LoadImage("texture/editor/frame01.tga", 32, 32, 0, 0, 0);
-	GetDownImage()->LoadImage("texture/editor/frame02.tga", 32, 32, 0, 0, 0);
+	GetUpImage()->LoadImage("texture/editor/frame01.png", 32, 32, 0, 0, 0);
+	GetDownImage()->LoadImage("texture/editor/frame02.png", 32, 32, 0, 0, 0);
 }
 
 void CTreeGridNode::SetUnitSize(int w, int h) {
@@ -518,8 +518,8 @@ CTreeView::CTreeView(CForm& frmOwn)
 
 	_pRoot = new CTreeNodeRoot(this);
 
-	GetAddImage()->LoadImage("texture/ui/tree/prefix.tga", 16, 16, 0, 0, 0);
-	GetSubImage()->LoadImage("texture/ui/tree/prefix.tga", 16, 16, 0, 16, 0);
+	GetAddImage()->LoadImage("texture/ui/tree/prefix.png", 16, 16, 0, 0, 0);
+	GetSubImage()->LoadImage("texture/ui/tree/prefix.png", 16, 16, 0, 16, 0);
 }
 
 CTreeView::CTreeView(const CTreeView& rhs)

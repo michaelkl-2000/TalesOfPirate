@@ -637,7 +637,7 @@ void MPRender::EndRender(const bool present) // vim
 		{
 			static int g_nAviCnt = 0;
 			Util_MakeDir("screenshot/");
-			const std::string szFileName = std::format("avi{:06}.bmp", g_nAviCnt);
+			const std::string szFileName = std::format("avi{:06}.png", g_nAviCnt);
 			CaptureScreen(szFileName.c_str());
 			g_nAviCnt++;
 		}

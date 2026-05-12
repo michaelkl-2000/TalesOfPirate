@@ -245,8 +245,8 @@ void CStartMgr::UpdateBackDrop() {
 	world->SetOldMainChaInArea(nArea);
 
 	const std::string buf = nArea
-		? std::format("texture/ui/corsairs/npcBackdrop/{}.tga", nArea)
-		: std::string("texture/ui/corsairs/npcBackdrop/sea.tga");
+		? std::format("texture/ui/corsairs/npcBackdrop/{}.png", nArea)
+		: std::string("texture/ui/corsairs/npcBackdrop/sea.png");
 
 	CCompent* imgBackDropPlayer = dynamic_cast<CCompent*>(g_stUIStart.frmDetail->Find("imgBackDropPlayer"));
 	CCompent* imgBackDropTarget = dynamic_cast<CCompent*>(g_stUIStart.frmTargetInfo->Find("imgBackDropTarget"));
@@ -270,10 +270,10 @@ void CStartMgr::UpdateBackDrop() {
 	}
 
 	if (GetFileAttributes(buf.c_str()) == INVALID_FILE_ATTRIBUTES) {
-		imgBackDropPlayer->GetImage()->LoadImage("texture/ui/corsairs/npcBackdrop/0.tga", 55, 44, 0, 0, 0);
-		imgBackDropTarget->GetImage()->LoadImage("texture/ui/corsairs/npcBackdrop/0.tga", 55, 44, 0, 0, 0);
+		imgBackDropPlayer->GetImage()->LoadImage("texture/ui/corsairs/npcBackdrop/0.png", 55, 44, 0, 0, 0);
+		imgBackDropTarget->GetImage()->LoadImage("texture/ui/corsairs/npcBackdrop/0.png", 55, 44, 0, 0, 0);
 		for (int i = 0; i < 4; i++) {
-			teamBackDrops[i]->GetImage()->LoadImage("texture/ui/corsairs/npcBackdrop/0.tga", 55, 44, 0, 0, 0);
+			teamBackDrops[i]->GetImage()->LoadImage("texture/ui/corsairs/npcBackdrop/0.png", 55, 44, 0, 0, 0);
 		}
 	}
 	else {
@@ -490,7 +490,7 @@ bool CStartMgr::Init() {
 
 		// QQ
 		/*FORM_CONTROL_LOADING_CHECK(btnQQ,frmMainFun,CTextButton,"msgui.clu","btnQQ");
-		btnQQ->GetImage()->LoadImage("texture/ui/main800.tga",32,32,4,136,201);*/
+		btnQQ->GetImage()->LoadImage("texture/ui/main800.png",32,32,4,136,201);*/
 
 		// 
 		btnLevelUpHelp = dynamic_cast<CTextButton*>(frmMainFun->Find("btnLevelUpHelp"));

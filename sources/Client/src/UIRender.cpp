@@ -425,8 +425,8 @@ bool UIRender::Init() {
 	//_p2DSprite->
 	D3DXCreateSprite(g_Render.GetDevice(), &_p2DSprite);
 
-	_nTex = GetTextureID("texture/ui/frame.tga");
-	_nOutLine = GetTextureID("texture/ui/outline.tga");
+	_nTex = GetTextureID("texture/ui/frame.png");
+	_nOutLine = GetTextureID("texture/ui/outline.png");
 
 	return true;
 }
@@ -1103,13 +1103,13 @@ void CProgressBar::Render() {
 // class CGrid
 //---------------------------------------------------------------------------
 void CGrid::Init() {
-	_pNextPage->LoadImage("texture/ui/grid/button.tga", 16, 16, 0, 16);
+	_pNextPage->LoadImage("texture/ui/grid/button.png", 16, 16, 0, 16);
 	_pNextPage->SetSize(16, 16);
 
-	_pPriorPage->LoadImage("texture/ui/grid/button.tga", 16, 16, 0, 0);
+	_pPriorPage->LoadImage("texture/ui/grid/button.png", 16, 16, 0, 0);
 	_pPriorPage->SetSize(16, 16);
 
-	_pSizeImg->GetImage()->LoadImage("texture/ui/grid/size.tga", 12, 12);
+	_pSizeImg->GetImage()->LoadImage("texture/ui/grid/size.png", 12, 12);
 	_pSizeImg->SetSize(12, 12);
 
 	_pSelectImage->SetSize(_nUnitWidth, _nUnitHeight);
@@ -1196,7 +1196,7 @@ void CTreeGridNode::ShowFocus() {
 //---------------------------------------------------------------------------
 bool CFormMgr::Init(HWND hWnd) {
 	if (!_bInit) {
-		CEdit::InitCursor("texture/ui/editcursor.tga");
+		CEdit::InitCursor("texture/ui/editcursor.png");
 
 		FontManager::Instance().PushToLua(g_LuaState);
 		LoadLuaScript(g_LuaState, "scripts/lua/font_bootstrap.lua");

@@ -246,22 +246,22 @@ public:
 
 		const char* pszName[] =
 		{
-			"texture\\minimap\\0.tga",
-			"texture\\minimap\\1.tga",
-			"texture\\minimap\\2.tga",
-			"texture\\minimap\\3.tga",
-			"texture\\minimap\\4.tga",
-			"texture\\minimap\\5.tga",
-			"texture\\minimap\\6.tga",
-			"texture\\minimap\\7.tga",
-			"texture\\minimap\\8.tga",
-			"texture\\minimap\\9.tga",
-			"texture\\minimap\\10.tga",
-			"texture\\minimap\\11.tga",
-			"texture\\minimap\\12.tga",
-			"texture\\minimap\\13.tga",
-			"texture\\minimap\\arraw.tga",
-			"texture\\minimap\\shop.tga"
+			"texture\\minimap\\0.png",
+			"texture\\minimap\\1.png",
+			"texture\\minimap\\2.png",
+			"texture\\minimap\\3.png",
+			"texture\\minimap\\4.png",
+			"texture\\minimap\\5.png",
+			"texture\\minimap\\6.png",
+			"texture\\minimap\\7.png",
+			"texture\\minimap\\8.png",
+			"texture\\minimap\\9.png",
+			"texture\\minimap\\10.png",
+			"texture\\minimap\\11.png",
+			"texture\\minimap\\12.png",
+			"texture\\minimap\\13.png",
+			"texture\\minimap\\arraw.png",
+			"texture\\minimap\\shop.png"
 		};
 		//MPIResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
 		for (int n = 0; n < TEXNUM; n++) {
@@ -286,7 +286,7 @@ public:
 										NULL, //
 										&_pTex[n]); //
 			if (!_pTex[n]) {
-				ToLogService("errors", LogLevel::Error, "msgCSMCha::no found file :texture\\minimap\\arraw.tga");
+				ToLogService("errors", LogLevel::Error, "msgCSMCha::no found file :texture\\minimap\\arraw.png");
 				return FALSE;
 			}
 #endif
@@ -720,24 +720,24 @@ public:
 	BOOL Init() {
 		const char* pszName[] =
 		{
-			"texture\\ui\\minimap\\0.tga",
-			"texture\\ui\\minimap\\1.tga",
-			"texture\\ui\\minimap\\2.tga",
-			"texture\\ui\\minimap\\3.tga",
-			"texture\\ui\\minimap\\4.tga",
-			"texture\\ui\\minimap\\5.tga",
-			"texture\\ui\\minimap\\6.tga",
-			"texture\\ui\\minimap\\7.tga",
-			"texture\\ui\\minimap\\8.tga",
-			"texture\\ui\\minimap\\9.tga",
-			"texture\\ui\\minimap\\10.tga",
-			"texture\\ui\\minimap\\11.tga",
-			"texture\\ui\\minimap\\12.tga",
-			"texture\\ui\\minimap\\13.tga",
-			"texture\\ui\\minimap\\14.tga",
-			"texture\\ui\\minimap\\15.tga",
-			"texture\\ui\\minimap\\arraw.tga",
-			"texture\\ui\\minimap\\shop.tga"
+			"texture\\ui\\minimap\\0.png",
+			"texture\\ui\\minimap\\1.png",
+			"texture\\ui\\minimap\\2.png",
+			"texture\\ui\\minimap\\3.png",
+			"texture\\ui\\minimap\\4.png",
+			"texture\\ui\\minimap\\5.png",
+			"texture\\ui\\minimap\\6.png",
+			"texture\\ui\\minimap\\7.png",
+			"texture\\ui\\minimap\\8.png",
+			"texture\\ui\\minimap\\9.png",
+			"texture\\ui\\minimap\\10.png",
+			"texture\\ui\\minimap\\11.png",
+			"texture\\ui\\minimap\\12.png",
+			"texture\\ui\\minimap\\13.png",
+			"texture\\ui\\minimap\\14.png",
+			"texture\\ui\\minimap\\15.png",
+			"texture\\ui\\minimap\\arraw.png",
+			"texture\\ui\\minimap\\shop.png"
 		};
 		MPIResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
 		for (int n = 0; n < TEXNUM; n++) {

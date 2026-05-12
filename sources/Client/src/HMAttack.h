@@ -5,14 +5,14 @@
 
 enum eAttackEffectType // 
 {
-	enumAddLife = 0, // ".tga";
-	enumSubLife, // ".tga";
-	enumAddSp, // "sp.tga";
-	enumSubSp, // "sp.tga";
-	enumAddLifeMonster, // ".tga";
-	enumSubLifeMonster, // ".tga";
-	enumDoubleAttack, // ".tga";
-	enumMiss, // "Miss.tga";
+	enumAddLife = 0, // ".png";
+	enumSubLife, // ".png";
+	enumAddSp, // "sp.png";
+	enumSubSp, // "sp.png";
+	enumAddLifeMonster, // ".png";
+	enumSubLifeMonster, // ".png";
+	enumDoubleAttack, // ".png";
+	enumMiss, // "Miss.png";
 };
 
 struct stEffect;

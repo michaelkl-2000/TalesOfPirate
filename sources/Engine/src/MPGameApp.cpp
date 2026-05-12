@@ -102,7 +102,7 @@ BOOL MPGameApp::Init(HINSTANCE hInst, const char* pszClassName, int nScrWidth, i
 
 	new TextureManager();
 
-	_nLogoTexID = GetTextureID("texture/logo.BMP");
+	_nLogoTexID = GetTextureID("texture/logo.png");
 
 	_InitInput();
 

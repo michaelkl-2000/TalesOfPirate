@@ -429,15 +429,15 @@ void CSMallMap2D::InitScene() {
 
 #ifdef MGR
 	//MPIResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
-	if (FAILED(lwLoadTex(&_pTexMask,res_mgr, "texture\\minimap\\mapmask.bmp", std::string_view{}, D3DFMT_A8R8G8B8))) {
-		ToLogService("errors", LogLevel::Error, "msgmapmask.bmp");
+	if (FAILED(lwLoadTex(&_pTexMask,res_mgr, "texture\\minimap\\mapmask.png", std::string_view{}, D3DFMT_A8R8G8B8))) {
+		ToLogService("errors", LogLevel::Error, "msgmapmask.png");
 	}
-	if (FAILED(lwLoadTex(&_pTexDefault,res_mgr, "texture\\minimap\\mapsea.bmp", std::string_view{}, D3DFMT_A8R8G8B8))) {
-		ToLogService("errors", LogLevel::Error, "msgmapsea.bmp");
+	if (FAILED(lwLoadTex(&_pTexDefault,res_mgr, "texture\\minimap\\mapsea.png", std::string_view{}, D3DFMT_A8R8G8B8))) {
+		ToLogService("errors", LogLevel::Error, "msgmapsea.png");
 	}
 #else
 	if (FAILED(D3DXCreateTextureFromFileEx(m_pDev,
-		"texture\\minimap\\mapmask.bmp", //
+		"texture\\minimap\\mapmask.png", //
 		0,
 		0,
 		1, //mipmap1
@@ -451,11 +451,11 @@ void CSMallMap2D::InitScene() {
 		NULL, //
 		&_pTexMask))) //
 	{
-		ToLogService("errors", LogLevel::Error, "msgtexture\\minimap\\mapmask.bmp");
+		ToLogService("errors", LogLevel::Error, "msgtexture\\minimap\\mapmask.png");
 	}
 
 	if (FAILED(D3DXCreateTextureFromFileEx(m_pDev,
-		"texture\\minimap\\mapsea.bmp", //
+		"texture\\minimap\\mapsea.png", //
 		0,
 		0,
 		1, //mipmap1
@@ -469,7 +469,7 @@ void CSMallMap2D::InitScene() {
 		NULL, //
 		&_pTexDefault))) //
 	{
-		ToLogService("errors", LogLevel::Error, "msgtexture\\minimap\\mapsea.bmp");
+		ToLogService("errors", LogLevel::Error, "msgtexture\\minimap\\mapsea.png");
 	}
 #endif
 }
@@ -562,7 +562,7 @@ void CSMallMap2D::RenderScene() {
 	int temp = sx;
 	for (m = 0; m < 3; m++) {
 		for (int n = 0; n < 3; n++) {
-			const std::string filename = std::format("texture\\minimap\\{}\\sm{}{}.bmp",
+			const std::string filename = std::format("texture\\minimap\\{}\\sm{}{}.png",
 					m_pScene->GetTerrainName(), _sx + n, _sy + m);
 
 			if (_access(filename.c_str(), 0) == -1) {
@@ -1622,7 +1622,7 @@ void CBigMap::Create() {
 
 	for (int m = 0; m < 3; ++m) {
 		for (int n = 0; n < 4; ++n) {
-			const std::string filename = std::format("texture\\bigmap\\{}{}.bmp", m, n + 1);
+			const std::string filename = std::format("texture\\bigmap\\{}{}.png", m, n + 1);
 			lwLoadTex(&_pTex[m * 4 + n], g_Render.GetInterfaceMgr()->res_mgr,
 					  filename.c_str(), std::string_view{}, D3DFMT_A8R8G8B8);
 		}
@@ -1728,7 +1728,7 @@ void Ctemp::Render() {
 		//_pTex = ui::GetFont(0)->GetTexture(); //FontManager::Instance().Get(FontSlot::TipText)->GetTexture();
 
 		lwLoadTex(&_pTex, g_Render.GetInterfaceMgr()->res_mgr,
-				  "texture\\ui\\minimap\\mapmask.bmp", std::string_view{}, D3DFMT_A8R8G8B8);
+				  "texture\\ui\\minimap\\mapmask.png", std::string_view{}, D3DFMT_A8R8G8B8);
 	}
 
 
@@ -1769,12 +1769,12 @@ void Ctemp::Render() {
 void CMinimap::InitScene() {
 	MPIResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
 
-	//if(FAILED(lwLoadTex(&_pTexMask,res_mgr, "texture\\minimap\\mapmask.bmp", std::string_view{}, D3DFMT_A8R8G8B8)))
+	//if(FAILED(lwLoadTex(&_pTexMask,res_mgr, "texture\\minimap\\mapmask.png", std::string_view{}, D3DFMT_A8R8G8B8)))
 	//{
-	//	LG("ERROR","msgmapmask.bmp");
+	//	LG("ERROR","msgmapmask.png");
 	//}
-	if (FAILED(lwLoadTex(&_pTexDefault,res_mgr, "texture\\ui\\minimap\\mapsea.bmp", std::string_view{}, D3DFMT_A8R8G8B8))) {
-		ToLogService("errors", LogLevel::Error, "msgmapsea.bmp");
+	if (FAILED(lwLoadTex(&_pTexDefault,res_mgr, "texture\\ui\\minimap\\mapsea.png", std::string_view{}, D3DFMT_A8R8G8B8))) {
+		ToLogService("errors", LogLevel::Error, "msgmapsea.png");
 	}
 
 	RECT rc;
@@ -2014,7 +2014,7 @@ void CMinimap::RenderScene() {
 			}
 			else {
 				if (!_pMiniPack) {
-					const std::string filename = std::format("texture\\minimap\\{}\\sm_{}_{}.bmp",
+					const std::string filename = std::format("texture\\minimap\\{}\\sm_{}_{}.png",
 							m_pScene->GetTerrainName(), _sx + n, _sy + m);
 
 					if (_access(filename.c_str(), 0) == -1) {
@@ -2254,12 +2254,12 @@ void CMinimap::RenderMask() {
 void CLargerMap::InitScene() {
 	MPIResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
 
-	if (FAILED(lwLoadTex(&_pTexDefault,res_mgr, "texture\\ui\\minimap\\mapsea.bmp", std::string_view{}, D3DFMT_A8R8G8B8))) {
-		ToLogService("errors", LogLevel::Error, "msgmapsea.bmp");
+	if (FAILED(lwLoadTex(&_pTexDefault,res_mgr, "texture\\ui\\minimap\\mapsea.png", std::string_view{}, D3DFMT_A8R8G8B8))) {
+		ToLogService("errors", LogLevel::Error, "msgmapsea.png");
 	}
-	//if(FAILED(lwLoadTex(&_pTexMask,res_mgr, "texture\\ui\\minimap\\mask.tga", std::string_view{}, D3DFMT_A8R8G8B8)))
+	//if(FAILED(lwLoadTex(&_pTexMask,res_mgr, "texture\\ui\\minimap\\mask.png", std::string_view{}, D3DFMT_A8R8G8B8)))
 	//{
-	//	LG("ERROR","msgmask.tga");
+	//	LG("ERROR","msgmask.png");
 	//}
 	RECT rc;
 	rc.left = _rcWnd.left;
@@ -2493,7 +2493,7 @@ void CLargerMap::Update(int x, int y) {
 				}
 
 				if (!_pMiniPack) {
-					const std::string filename = std::format("texture\\minimap\\{}\\sm_{}_{}.bmp",
+					const std::string filename = std::format("texture\\minimap\\{}\\sm_{}_{}.png",
 							m_pScene->GetTerrainName(), _sx + n, _sy + m);
 
 					// If this texture not in video memory, load it.

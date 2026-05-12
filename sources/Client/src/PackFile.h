@@ -27,7 +27,7 @@ public:
 		std::vector<FileData> vecFile; // FileData()vecFile
 	};
 
-	bool SaveToPack(const char* pszDirName, const char* pszOutFile, const char* pszFilter = "*.bmp"); // 
+	bool SaveToPack(const char* pszDirName, const char* pszOutFile, const char* pszFilter = "*.png"); //
 
 	bool LoadPackFile(const char* pszFile); //
 

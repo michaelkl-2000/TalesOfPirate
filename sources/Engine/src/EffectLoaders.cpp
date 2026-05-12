@@ -341,7 +341,7 @@ bool EffectLoader::LoadElement(::I_Effect& e, std::FILE* fp, DWORD dwVersion) {
                    [](unsigned char c) { return std::tolower(c); });
 
     std::string_view lowerView{lowerName};
-    if (lowerView.ends_with(".dds") || lowerView.ends_with(".tga")) {
+    if (lowerView.ends_with(".dds") || lowerView.ends_with(".tga") || lowerView.ends_with(".png")) {
         e.m_CTextruelist.m_vecTexName.assign(lowerView.substr(0, lowerView.size() - 4));
     }
     else {
@@ -536,7 +536,8 @@ bool PartCtrlLoader::LoadPartSys(::CMPPartSys& ps, std::FILE* fp, DWORD dwVersio
                    [](unsigned char c) { return std::tolower(c); });
 
     if (sFileName.rfind(".dds") == std::string::npos
-        && sFileName.rfind(".tga") == std::string::npos) {
+        && sFileName.rfind(".tga") == std::string::npos
+        && sFileName.rfind(".png") == std::string::npos) {
         ps._strTexName = sFileName;
     }
     else {
@@ -679,7 +680,7 @@ bool PartCtrlLoader::LoadStrip(::CMPStrip& s, std::FILE* fp, DWORD /*dwVersion*/
     std::fread(buf, sizeof(char), 32, fp);
 
     std::string_view nameView{buf};
-    if (nameView.ends_with(".dds") || nameView.ends_with(".tga")) {
+    if (nameView.ends_with(".dds") || nameView.ends_with(".tga") || nameView.ends_with(".png")) {
         s._strTexName.assign(nameView.substr(0, nameView.size() - 4));
     }
     else {

@@ -587,9 +587,9 @@ void CMemoEx::Init() {
 		SAFE_DELETE(m_pPrizeSelPic);
 
 		m_pPrizePic = new CGuiPic;
-		m_pPrizePic->LoadImage("./texture/ui/QQ2.tga", 156, 38, 0, 81, 0);
+		m_pPrizePic->LoadImage("./texture/ui/QQ2.png", 156, 38, 0, 81, 0);
 		m_pPrizeSelPic = new CGuiPic;
-		m_pPrizeSelPic->LoadImage("./texture/ui/QQ2.tga", 156, 38, 0, 81, 39);
+		m_pPrizeSelPic->LoadImage("./texture/ui/QQ2.png", 156, 38, 0, 81, 39);
 	}
 
 	// 
@@ -991,7 +991,7 @@ void CMemoEx::ParseMisPage() {
 		sCom = 1;
 		std::string szItem;
 		for (int n = 0; n < m_PageInfo.byPrizeNum; n++) {
-			szItem = "./texture/ui/system/error.tga";
+			szItem = "./texture/ui/system/error.png";
 			if (m_PageInfo.MisPrize[n].byType == mission::MIS_PRIZE_ITEM) {
 				m_sNumInfo++;
 				m_MemoInfo[m_sNumInfo].sxPos = sCom;
@@ -1645,7 +1645,7 @@ CGraph* CRichMemo::GetImage(const char szImage[]) {
 	static CGraph* g_pErrorImage = NULL;
 	if (!g_pErrorImage) {
 		g_pErrorImage = new CGraph();
-		g_pErrorImage->GetImage()->LoadImage("./texture/ui/system/error.tga");
+		g_pErrorImage->GetImage()->LoadImage("./texture/ui/system/error.png");
 	}
 	return g_pErrorImage;
 }

@@ -35,7 +35,7 @@ CSkillCommand::CSkillCommand(CSkillRecord* pSkill)
 
 	string file = "texture/icon/";
 	file += pSkill->szICON;
-	//file += ".tga";
+	//file += ".png";
 	_pImage->LoadImage(file.c_str(), 32, 32, 0);
 
 	// Loads saved skill clock if player used it.

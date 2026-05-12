@@ -423,7 +423,7 @@ void FontManager::DumpAllSlots(const std::filesystem::path& dir) {
 							 ? c
 							 : '_';
 		}
-		const fs::path path = dir / std::format("font_dump_{}.bmp", sanitized);
+		const fs::path path = dir / std::format("font_dump_{}.png", sanitized);
 		if (!_fonts[i]->DumpGlyphPreview(path.string())) {
 			ToLogService("errors", LogLevel::Warning,
 						 "FontManager::DumpAllSlots: dump '{}' failed",
@@ -448,7 +448,7 @@ void FontManager::DumpAllAtlases(const std::filesystem::path& dir) {
 							 ? c
 							 : '_';
 		}
-		const fs::path path = dir / std::format("atlas_{}.bmp", sanitized);
+		const fs::path path = dir / std::format("atlas_{}.png", sanitized);
 		if (!_fonts[i]->DumpAtlas(path.string())) {
 			ToLogService("errors", LogLevel::Warning,
 						 "FontManager::DumpAllAtlases: dump '{}' failed",

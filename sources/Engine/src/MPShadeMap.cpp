@@ -41,7 +41,9 @@ CMPShadeMap::~CMPShadeMap(void) {
 }
 
 void CMPShadeMap::setTextureName(s_string& strName) {
-	if ((strstr(strName.c_str(), ".dds") == NULL) && strstr(strName.c_str(), ".tga") == NULL) {
+	if ((strstr(strName.c_str(), ".dds") == NULL)
+		&& strstr(strName.c_str(), ".tga") == NULL
+		&& strstr(strName.c_str(), ".png") == NULL) {
 		_strTexName = strName;
 	}
 	else {

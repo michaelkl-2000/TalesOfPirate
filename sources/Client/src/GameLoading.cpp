@@ -61,7 +61,7 @@ LRESULT CALLBACK LoadingProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 		extern long g_nCurrentLogNo;
 		srand((unsigned)time(0) * (g_nCurrentLogNo + 1));
 
-		const std::string buff = std::format("texture\\ui\\loading_{}.bmp", rand() % 9 + 1);
+		const std::string buff = std::format("texture\\ui\\loading_{}.png", rand() % 9 + 1);
 
 		DrawBMPFile(rc, buff.c_str(), hdc);
 

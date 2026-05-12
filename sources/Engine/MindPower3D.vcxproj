@@ -114,6 +114,9 @@
         <ClInclude Include="include\lwIFunc.h"/>
         <ClInclude Include="include\lwInterface.h"/>
         <ClInclude Include="include\AssetLoaders.h"/>
+        <ClInclude Include="include\EffPathStore.h"/>
+        <ClInclude Include="include\EffectShaderStore.h"/>
+        <ClInclude Include="include\EffectStore.h"/>
         <ClInclude Include="include\SceneFileLoaders.h"/>
         <ClInclude Include="include\lwITypes.h"/>
         <ClInclude Include="include\lwITypes2.h"/>
@@ -185,7 +188,6 @@
         <ClInclude Include="src\lwDirectoryBrowser.h"/>
         <ClInclude Include="src\lwEfxTrack.h"/>
         <ClInclude Include="src\lwExpObj.h"/>
-        <ClInclude Include="src\lwFileEncode.h"/>
         <ClInclude Include="src\lwFileutil.h"/>
         <ClInclude Include="src\lwgraphics.h"/>
         <ClInclude Include="src\lwgraphicsutil.h"/>
@@ -241,6 +243,9 @@
         <ClCompile Include="src\lwCoordinateSys.cpp"/>
         <ClCompile Include="src\AssetLoaders.cpp"/>
         <ClCompile Include="src\EffectLoaders.cpp"/>
+        <ClCompile Include="src\EffPathStore.cpp"/>
+        <ClCompile Include="src\EffectShaderStore.cpp"/>
+        <ClCompile Include="src\EffectStore.cpp"/>
         <ClCompile Include="src\MapLoader.cpp"/>
         <ClCompile Include="src\SceneFileLoaders.cpp"/>
         <ClCompile Include="src\ImageLoaders.cpp"/>
@@ -252,7 +257,6 @@
         <ClCompile Include="src\lwDirectoryBrowser.cpp"/>
         <ClCompile Include="src\lwEfxTrack.cpp"/>
         <ClCompile Include="src\lwExpObj.cpp"/>
-        <ClCompile Include="src\lwFileEncode.cpp"/>
         <ClCompile Include="src\lwFileutil.cpp"/>
         <ClCompile Include="src\lwgraphicsutil.cpp"/>
         <ClCompile Include="src\lwHeap.cpp"/>

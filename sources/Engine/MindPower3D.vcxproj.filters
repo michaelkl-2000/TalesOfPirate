@@ -112,9 +112,6 @@
     <ClInclude Include="src\lwExpObj.h">
       <Filter>Source Files\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\lwFileEncode.h">
-      <Filter>Source Files\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="src\lwFileutil.h">
       <Filter>Source Files\Mesh</Filter>
     </ClInclude>
@@ -269,6 +266,15 @@
       <Filter>Source Files\Mesh\include</Filter>
     </ClInclude>
     <ClInclude Include="include\AssetLoaders.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EffPathStore.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EffectShaderStore.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EffectStore.h">
       <Filter>Source Files\Mesh\include</Filter>
     </ClInclude>
     <ClInclude Include="include\MPInterface.h">
@@ -455,9 +461,6 @@
     <ClCompile Include="src\lwExpObj.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\lwFileEncode.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="src\lwFileutil.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
@@ -564,6 +567,15 @@
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="src\AssetLoaders.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EffPathStore.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EffectShaderStore.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EffectStore.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="src\MPCharacter.cpp">

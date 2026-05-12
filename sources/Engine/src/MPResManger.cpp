@@ -2,6 +2,9 @@
 #include "GlobalInc.h"
 #include "MPModelEff.h"
 #include "AssetLoaders.h"
+#include "EffPathStore.h"
+#include "EffectShaderStore.h"
+#include "EffectStore.h"
 
 #include "mpresmanger.h"
 #include "lwSysGraphics.h"
@@ -14,6 +17,9 @@
 #include "lwPhysique.h"
 
 using namespace std;
+using Corsairs::Engine::Render::EffPathStore;
+using Corsairs::Engine::Render::EffectShaderStore;
+using Corsairs::Engine::Render::EffectStore;
 
 CMPResManger ResMgr;
 
@@ -28,8 +34,6 @@ CMPResManger::CMPResManger(void) {
 
 	_iTexNum = 0;
 	_iMeshNum = 0;
-	_iEffectNum = 0;
-	_iVShaderNum = 0;
 
 	_vecTexName.clear();
 	_vecMeshName.clear();
@@ -39,13 +43,8 @@ CMPResManger::CMPResManger(void) {
 	_vecMeshList.clear();
 	_mapTexture.clear();
 
-	_vecEffectList.clear();
-
-	_vecVShader.clear();
-	_dwShadeMapVS = 0L;
-	_dwMinimapVS = 0L;
-
-	_vecEffectParam.clear();
+	EffectStore::Instance().Clear();
+	EffectShaderStore::Instance().Clear();
 
 	_fSaveTime = 0;
 	_fDailTime = 0;
@@ -54,9 +53,7 @@ CMPResManger::CMPResManger(void) {
 	_pMatViewProj = NULL;
 
 
-	_iPathNum = 0;
-	_vecPathName.clear();
-	_vecPath.clear();
+	EffPathStore::Instance().Clear();
 
 
 	_iTobMeshNum = 0;
@@ -117,19 +114,13 @@ void CMPResManger::ReleaseTotalRes() {
 		_vecValidID.resize(0);
 		_vecPartArray.clear();
 	}
-	_vecEffectList.clear();
+	EffectStore::Instance().Clear();
 
 	_CEffectFile.free();
 
-	_dwShadeMapVS = 0L;
-	_dwMinimapVS = 0L;
+	EffectShaderStore::Instance().Clear();
 
-	_vecVShader.clear();
-	_iVShaderNum = 0;
-
-	_iPathNum = 0;
-	_vecPathName.clear();
-	_vecPath.clear();
+	EffPathStore::Instance().Clear();
 
 
 	for (iw = 0; iw < _iTexNum; iw++) {
@@ -148,22 +139,17 @@ void CMPResManger::ReleaseTotalRes() {
 
 	_iTexNum = 0;
 	_iMeshNum = 0;
-	_iEffectNum = 0;
 	_iTobMeshNum = 0;
 
 	_vecTexName.clear();
 	_vecMeshName.clear();
-	_vecEffectName.clear();
 
 	_mapMesh.clear();
-	_mapEffect.clear();
 	_mapTexture.clear();
 
 	_vecTexList.clear();
 	_vecMeshList.clear();
 	_lstTobMeshs.clear();
-
-	_vecEffectParam.clear();
 }
 
 bool CMPResManger::InitRes2() {
@@ -214,6 +200,7 @@ bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatvie
 		m_bUseSoft = false;
 	}
 
+	EffectShaderStore::Instance().SetSoftFallback(m_bUseSoft);
 
 	_CEffectFile.InitDev(pDev);
 	if (!_CEffectFile.LoadEffectFromFile("shader\\dx9\\eff.fx")) {
@@ -237,13 +224,14 @@ bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatvie
 
 	_pMatViewProj = pMatviewproj;
 
-	for (int n = 0; n < _iEffectNum; n++) {
-		for (int m = 0; m < (int)_vecEffectList[n].size(); m++) {
-			if (_vecEffectList[n][m].IsBillBoard()) {
-				_vecEffectList[n][m].setBillBoardMatrix(&_MatBBoard);
-			}
-		}
-	}
+	// Контекст для EffectStore: dev + this (для BoundingRes) + billboard-mat
+	// (применяется автоматически при LoadInto/AddUnited — в legacy InitRes здесь
+	// шёл ручной цикл по уже загруженным эффектам, но эффекты грузятся ПОЗЖЕ
+	// в InitRes2, поэтому цикл фактически работал по пустому списку).
+	auto& effectStore = EffectStore::Instance();
+	effectStore.SetDevice(pDev);
+	effectStore.SetResMgr(this);
+	effectStore.SetBillboardMatrix(&_MatBBoard);
 
 	lwRegisterOutputLoseDeviceProc(g_OnLostDevice);
 	lwRegisterOutputResetDeviceProc(g_OnResetDevice);
@@ -400,51 +388,47 @@ void CMPResManger::DeleteMesh(CEffectModel& rEffectModel) {
 }
 
 int CMPResManger::GetEffectID(const s_string& pszName) {
-	EFFECT_MAP::iterator pos = _mapEffect.find(pszName);
-	if (pos != _mapEffect.end()) {
-		return (*pos).second;
-	}
-	return -1;
+	return EffectStore::Instance().GetID(pszName);
 }
 
 std::vector<I_Effect>& CMPResManger::GetEffectByID(int iID) {
-	I_Effect* pEffect = &(_vecEffectList[iID][0]);
-
-	int n = (int)_vecEffectList[iID].size();
-	if (n <= 0) {
-		const std::string t_pszFile = std::format("{}\\{}", _pszEFFectPath, _vecEffectName[iID]);
-
-		if (!LoadEffectFromFile(iID, t_pszFile))
-			return _vecEffectList[iID];
-		_vecEffectList[iID][0].setEffectName(_vecEffectName[iID]);
-	}
-	return _vecEffectList[iID];
+	return EffectStore::Instance().GetByID(iID);
 }
 
 I_Effect* CMPResManger::GetSubEffectByID(int iID, int iSubIdx) {
-	return &_vecEffectList[iID][iSubIdx];
+	return EffectStore::Instance().GetSubByID(iID, iSubIdx);
+}
+
+int CMPResManger::GetEffectNum() {
+	return EffectStore::Instance().Count();
+}
+
+int CMPResManger::GetSubEffectNum(int idx) {
+	return EffectStore::Instance().GetSubCount(idx);
+}
+
+VEC_string& CMPResManger::GetTotalEffectName() {
+	return EffectStore::Instance().GetAllNames();
 }
 
 IDirect3DVertexShaderX* CMPResManger::GetVShaderByID(int iID) {
-	if (!m_bUseSoft)
-		return _vecVShader[iID];
-	else
-		return _vecVShader[0];
+	return EffectShaderStore::Instance().GetVShaderByID(iID);
 }
 
 IDirect3DVertexDeclarationX* CMPResManger::GetVDeclByID(int iID) {
-	if (!m_bUseSoft)
-		return _vecVDecl[iID];
-	else
-		return _vecVDecl[0];
+	return EffectShaderStore::Instance().GetVDeclByID(iID);
 }
 
 IDirect3DVertexShaderX* CMPResManger::GetShadeVS() {
-	return _dwShadeMapVS;
+	return EffectShaderStore::Instance().GetShadeVS();
 }
 
 IDirect3DVertexDeclarationX* CMPResManger::GetShadeVDecl() {
-	return _vecVDecl[4];
+	return EffectShaderStore::Instance().GetShadeVDecl();
+}
+
+IDirect3DVertexShaderX* CMPResManger::GetMinimapVS() {
+	return EffectShaderStore::Instance().GetMinimapVS();
 }
 
 CEffectModel* CMPResManger::GetShadeMesh() {
@@ -452,11 +436,11 @@ CEffectModel* CMPResManger::GetShadeMesh() {
 }
 
 EffParameter* CMPResManger::GetEffectParamByID(int iID) {
-	return &_vecEffectParam[iID];
+	return EffectStore::Instance().GetParamByID(iID);
 }
 
 IDirect3DVertexDeclarationX* CMPResManger::GetMinimapVDecl() {
-	return _vecVDecl[5];
+	return EffectShaderStore::Instance().GetMinimapVDecl();
 }
 
 bool CMPResManger::LoadTotalTexture() {
@@ -672,287 +656,31 @@ bool CMPResManger::LoadTotalMesh() {
 }
 
 I_Effect* CMPResManger::AddEffectToMgr(const s_string& strName) {
-	_iEffectNum++;
-
-	_vecEffectList.resize(_iEffectNum);
-
-	_vecEffectName.resize(_iEffectNum);
-
-	_vecEffectParam.resize(_iEffectNum);
-
-	_mapEffect[strName] = _iEffectNum - 1;
-	_vecEffectName[_iEffectNum - 1] = strName;
-
-	_vecEffectList[_iEffectNum - 1].resize(1);
-
-	I_Effect* pEffect = &(_vecEffectList[_iEffectNum - 1][0]);
-	_vecEffectList[_iEffectNum - 1][0].ReleaseAll();
-
-	return &_vecEffectList[_iEffectNum - 1][0];
+	return EffectStore::Instance().AddNamed(strName);
 }
 
 void CMPResManger::AddUniteEffectToMgr(std::vector<I_Effect>& vecEffArray) {
-	_iEffectNum++;
-	_vecEffectList.resize(_iEffectNum);
-	_vecEffectName.resize(_iEffectNum);
-	_mapEffect[vecEffArray[0].getEffectName()] = _iEffectNum - 1;
-	_vecEffectName[_iEffectNum - 1] = vecEffArray[0].getEffectName();
-	_vecEffectList[_iEffectNum - 1] = vecEffArray;
-	for (INT n = 0; n < (INT)vecEffArray.size(); n++) {
-		_vecEffectList[_iEffectNum - 1][n].BoundingRes(this);
-	}
-}
-
-
-bool CMPResManger::LoadEffectFromFile(int idx, std::string_view pszFileName) {
-	EffectFileInfo info;
-	if (LW_FAILED(Corsairs::Engine::Render::EffectLoader::Load(info, pszFileName))) {
-		return false;
-	}
-
-	_vecEffectParam[idx] = std::move(info.param);
-	_vecEffectList[idx]  = std::move(info.effects);
-
-	for (auto& effect : _vecEffectList[idx]) {
-		effect.Reset();
-		effect.m_pDev = m_pDev;
-	}
-
-	return true;
+	EffectStore::Instance().AddUnited(vecEffArray);
 }
 
 bool CMPResManger::LoadTotalEffect() {
-	{
-		WIN32_FIND_DATA t_sfd;
-		HANDLE t_hFind = NULL;
-
-		const std::string t_Path = _pszEFFectPath + "\\*.eff";
-
-		if ((t_hFind = FindFirstFile(t_Path.c_str(), &t_sfd)) == INVALID_HANDLE_VALUE)
-			return false;
-		do {
-			if (!(t_sfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-				std::string_view fileNameView{t_sfd.cFileName};
-				// Регистронезависимая проверка расширения ".eff" / ".EFF" / etc.
-				if (fileNameView.size() < 4) {
-					continue;
-				}
-				const std::string_view ext = fileNameView.substr(fileNameView.size() - 4);
-				if (_stricmp(std::string{ext}.c_str(), ".eff") != 0) {
-					continue;
-				}
-				std::string sFileName{t_sfd.cFileName};
-				transform(sFileName.begin(), sFileName.end(),
-						  sFileName.begin(),
-						  [](unsigned char c) {
-							  return std::tolower(c);
-						  });
-
-				const std::string t_pszFile = std::format("{}\\{}", _pszEFFectPath, t_sfd.cFileName);
-				_vecEffectList.resize(_iEffectNum + 1);
-				_vecEffectList[_iEffectNum].clear();
-				_vecEffectParam.resize(_iEffectNum + 1);
-
-				if (!LoadEffectFromFile(_iEffectNum, t_pszFile)) {
-					const std::string szData = std::format("({})", t_pszFile);
-					MessageBox(NULL, szData.c_str(), "Error", MB_OK);
-				}
-
-				_vecEffectName.resize(_iEffectNum + 1);
-
-				_mapEffect[t_sfd.cFileName] = _iEffectNum;
-
-				_vecEffectName[_iEffectNum] = t_sfd.cFileName;
-
-				_vecEffectList[_iEffectNum][0].setEffectName(_vecEffectName[_iEffectNum]);
-
-				_iEffectNum++;
-			}
-		}
-		while (FindNextFile(t_hFind, &t_sfd));
-		FindClose(t_hFind);
-	}
-
-	return true;
+	return EffectStore::Instance().LoadAllFrom(_pszEFFectPath);
 }
 
 bool CMPResManger::LoadTotalVShader(lwISysGraphics* sys_graphics) {
-	lwISystem* sys = sys_graphics->GetSystem();
-
-	lwIPathInfo* path_info = 0;
-	sys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO);
-
-	lwIResourceMgr* res_mgr;
-	lwIShaderMgr* shader_mgr;
-
-	sys_graphics->GetInterface((LW_VOID**)&res_mgr, LW_GUID_RESOURCEMGR);
-	shader_mgr = res_mgr->GetShaderMgr();
-
-
-	DWORD shader_type[] =
-	{
-		VSTU_EFFECT_E1,
-		VSTU_EFFECT_E2,
-		VSTU_EFFECT_E3,
-		VSTU_EFFECT_E4,
-		VSTU_SHADE_E6,
-		VSTU_MINIMAP_E6,
-	};
-
-
-	// decl
-	D3DVERTEXELEMENT9 ve_dec_effect1[] =
-	{
-		{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-		{0, 12, D3DDECLTYPE_FLOAT1, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BLENDINDICES, 0},
-		{0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0}, // Include this line
-		{0, 20, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
-		{0xFF, 0, D3DDECLTYPE_UNUSED, 0, 0, 0},
-	};
-
-	D3DVERTEXELEMENT9 ve_dec_effect2[] =
-	{
-		{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-		{0, 12, D3DDECLTYPE_FLOAT1, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BLENDINDICES, 0},
-		{0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
-		{0, 20, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
-		{0xFF, 0, D3DDECLTYPE_UNUSED, 0, 0, 0},
-	};
-
-	D3DVERTEXELEMENT9 ve_dec_shade[] =
-	{
-		{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-		{0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
-		{0, 16, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
-		{0, 24, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},
-		{0xFF, 0, D3DDECLTYPE_UNUSED, 0, 0, 0},
-	};
-
-	D3DVERTEXELEMENT9 ve_dec_map[] =
-	{
-		{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-		{0, 12, D3DDECLTYPE_FLOAT1, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BLENDWEIGHT, 0},
-		{0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
-		{0, 20, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
-		{0xFF, 0, D3DDECLTYPE_UNUSED, 0, 0, 0},
-	};
-
-
-	const char* shader_file[] =
-	{
-		"eff1.hlsl",
-		"eff2.hlsl",
-		"eff3.hlsl",
-		"eff4.hlsl",
-		"shadeeff.hlsl",
-		"minimap.hlsl",
-	};
-
-	D3DVERTEXELEMENT9* decl_tab[] =
-	{
-		ve_dec_effect1,
-		ve_dec_effect2,
-		ve_dec_effect1,
-		ve_dec_effect1,
-		ve_dec_shade,
-		ve_dec_map,
-	};
-
-	DWORD decl_type[] =
-	{
-		VDT_EFF_134,
-		VDT_EFF_2,
-		VDT_EFF_134,
-		VDT_EFF_134,
-		VDT_EFF_SHADE,
-		VDT_EFF_MINIMAP,
-	};
-
-	int decl_num = sizeof(decl_type) / sizeof(decl_type[0]);
-	_vecVDecl.resize(decl_num);
-
-	for (int i = 0; i < decl_num; i++) {
-		IDirect3DVertexDeclarationX* this_decl;
-		if (LW_SUCCEEDED(shader_mgr->QueryVertexDeclaration(&this_decl, decl_type[i]))) {
-			_vecVDecl[i] = this_decl;
-			continue;
-		}
-
-		if (LW_RESULT r = shader_mgr->RegisterVertexDeclaration(decl_type[i], decl_tab[i]); LW_FAILED(r)) {
-			ToLogService("errors", LogLevel::Error,
-						 "[{}] shader_mgr->RegisterVertexDeclaration failed: i={}, decl_type={}, ret={}",
-						 __FUNCTION__, i, decl_type[i], static_cast<long long>(r));
-			return false;
-		}
-		shader_mgr->QueryVertexDeclaration(&this_decl, decl_type[i]);
-		_vecVDecl[i] = this_decl;
-	}
-
-	for (int i = 0; i < decl_num; i++) {
-		const std::string path = std::format("{}{}", path_info->GetPath(PATH_TYPE_SHADER), shader_file[i]);
-		if (LW_RESULT r = shader_mgr->RegisterVertexShader(shader_type[i], path.c_str());
-			LW_FAILED(r)) {
-			ToLogService("errors", LogLevel::Error,
-						 "[{}] shader_mgr->RegisterVertexShader failed: i={}, shader_type={}, path={}, ret={}",
-						 __FUNCTION__, i, shader_type[i], path, static_cast<long long>(r));
-			return false;
-		}
-
-		if (i < 4) {
-			_iVShaderNum++;
-			_vecVShader.resize(_iVShaderNum);
-			_vecVShader[_iVShaderNum - 1] = 0;
-
-			shader_mgr->QueryVertexShader(&_vecVShader[_iVShaderNum - 1], shader_type[i]);
-		}
-		else if (i == 4) {
-			shader_mgr->QueryVertexShader(&_dwShadeMapVS, shader_type[i]);
-		}
-		else if (i == 5) {
-			shader_mgr->QueryVertexShader(&_dwMinimapVS, shader_type[i]);
-		}
-	}
-
-	return true;
+	return EffectShaderStore::Instance().LoadAll(sys_graphics);
 }
 
 int CMPResManger::GetEffPathID(const s_string& pszName) {
-	for (size_t i(0); i < _vecPathName.size(); ++i) {
-		if (_stricmp(_vecPathName[i].c_str(), pszName.c_str()) == 0)
-			return (int)i;
-	}
-	return -1;
+	return EffPathStore::Instance().GetID(pszName);
 }
 
 CEffPath* CMPResManger::GetEffPath(int iID) {
-	return &_vecPath[iID];
+	return EffPathStore::Instance().GetByID(iID);
 }
 
 bool CMPResManger::LoadTotalPath() {
-	{
-		WIN32_FIND_DATA t_sfd;
-		HANDLE t_hFind = NULL;
-
-		const std::string t_Path = _pszEFFectPath + "\\*.csf";
-
-		if ((t_hFind = FindFirstFile(t_Path.c_str(), &t_sfd)) == INVALID_HANDLE_VALUE)
-			return false;
-		do {
-			if (!(t_sfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-				const std::string t_pszFile = std::format("{}\\{}", _pszEFFectPath, t_sfd.cFileName);
-				_vecPathName.push_back(t_sfd.cFileName);
-
-				_iPathNum++;
-				_vecPath.resize(_iPathNum);
-				Corsairs::Engine::Render::EffPathLoader::Load(
-					_vecPath[_iPathNum - 1], t_pszFile);
-			}
-		}
-		while (FindNextFile(t_hFind, &t_sfd));
-		FindClose(t_hFind);
-	}
-
-	return true;
+	return EffPathStore::Instance().LoadAllFrom(_pszEFFectPath);
 }
 
 int CMPResManger::GetPartCtrlID(const s_string& pszName) {
@@ -1068,49 +796,8 @@ bool CMPResManger::DeleteTobMesh(CEffectModel& rEffectModel) {
 BOOL CMPResManger::OnResetDevice() {
 	if (!_CEffectFile.OnResetDevice())
 		return FALSE;
-	DWORD shader_type[] =
-	{
-		VSTU_EFFECT_E1,
-		VSTU_EFFECT_E2,
-		VSTU_EFFECT_E3,
-		VSTU_EFFECT_E4,
-		VSTU_SHADE_E6,
-		VSTU_MINIMAP_E6,
-	};
 
-	DWORD decl_type[] =
-	{
-		VDT_EFF_134,
-		VDT_EFF_2,
-		VDT_EFF_134,
-		VDT_EFF_134,
-		VDT_EFF_SHADE,
-		VDT_EFF_MINIMAP,
-	};
-	lwIShaderMgr* shader_mgr;
-	lwIResourceMgr* res_mgr;
-
-	m_pSysGraphics->GetInterface((LW_VOID**)&res_mgr, LW_GUID_RESOURCEMGR);
-	shader_mgr = res_mgr->GetShaderMgr();
-
-	if (m_bUseSoft) {
-		shader_mgr->QueryVertexShader(&_vecVShader[0], shader_type[1]);
-	}
-	else {
-		constexpr int total = sizeof(shader_type) / sizeof(shader_type[0]);
-		for (int i = 0; i < total; i++) {
-			if (i < 4) {
-				shader_mgr->QueryVertexShader(&_vecVShader[i], shader_type[i]);
-			}
-			else if (i == 4) {
-				shader_mgr->QueryVertexShader(&_dwShadeMapVS, shader_type[i]);
-			}
-			else if (i == 5) {
-				shader_mgr->QueryVertexShader(&_dwMinimapVS, shader_type[i]);
-			}
-			shader_mgr->QueryVertexDeclaration(&_vecVDecl[i], decl_type[i]);
-		}
-	}
+	EffectShaderStore::Instance().Restore(m_pSysGraphics);
 
 	IDirect3DSurfaceX* pBackBuffer;
 	m_pDev->GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);

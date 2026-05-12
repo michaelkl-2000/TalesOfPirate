@@ -142,13 +142,8 @@ public:
 		return _iMeshNum;
 	}
 
-	int GetEffectNum() {
-		return _iEffectNum;
-	}
-
-	int GetSubEffectNum(int idx) {
-		return (int)_vecEffectList[idx].size();
-	}
+	int GetEffectNum();
+	int GetSubEffectNum(int idx);
 
 	I_Effect* AddEffectToMgr(const s_string& strName);
 	void AddUniteEffectToMgr(std::vector<I_Effect>& vecEffArray);
@@ -178,9 +173,7 @@ public:
 	IDirect3DVertexShaderX* GetShadeVS();
 	IDirect3DVertexDeclarationX* GetShadeVDecl();
 
-	IDirect3DVertexShaderX* GetMinimapVS() {
-		return _dwMinimapVS;
-	}
+	IDirect3DVertexShaderX* GetMinimapVS();
 
 	IDirect3DVertexDeclarationX* GetMinimapVDecl();
 
@@ -246,9 +239,7 @@ public:
 		return _vecMeshName;
 	}
 
-	VEC_string& GetTotalEffectName() {
-		return _vecEffectName;
-	}
+	VEC_string& GetTotalEffectName();
 
 
 	bool IsCanFrame() {
@@ -298,9 +289,6 @@ public:
 	lwISysGraphics* m_pSysGraphics;
 
 protected:
-	//!
-	bool LoadEffectFromFile(int idx, std::string_view pszFileName);
-
 	void LoadTotalRes();
 	void LoadTotalData();
 	bool LoadTotalTexture();
@@ -319,19 +307,12 @@ protected:
 
 	int _iTexNum;
 	int _iMeshNum;
-	int _iEffectNum;
-
-	int _iVShaderNum;
 
 	VEC_string _vecTexName;
 	VEC_string _vecMeshName;
-	VEC_string _vecEffectName;
 
 	typedef std::map<std::string, int> MESH_MAP;
 	MESH_MAP _mapMesh;
-
-	typedef std::map<std::string, int> EFFECT_MAP;
-	EFFECT_MAP _mapEffect;
 
 	typedef std::map<std::string, int> TEXTURE_MAP;
 	TEXTURE_MAP _mapTexture;
@@ -339,15 +320,6 @@ protected:
 	std::vector<lwITex*> _vecTexList;
 	std::vector<CEffectModel*> _vecMeshList;
 	CEffectModel* _CShadeModel;
-	std::vector<std::vector<I_Effect>> _vecEffectList;
-
-	std::vector<EffParameter> _vecEffectParam;
-
-	std::vector<IDirect3DVertexShaderX*> _vecVShader;
-	std::vector<IDirect3DVertexDeclarationX*> _vecVDecl;
-	IDirect3DVertexShaderX* _dwShadeMapVS;
-
-	IDirect3DVertexShaderX* _dwMinimapVS;
 
 	CMPEffectFile _CEffectFile;
 
@@ -366,9 +338,6 @@ protected:
 	int _iFontBkHeight;
 
 
-	int _iPathNum;
-	VEC_string _vecPathName;
-	std::vector<CEffPath> _vecPath;
 	int _iPartCtrlNum;
 	VEC_string _vecPartName;
 	S_BVECTOR<CMPPartCtrl*> _vecPartCtrl;

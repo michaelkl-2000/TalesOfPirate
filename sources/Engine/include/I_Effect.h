@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <Util.h>
 //stl
@@ -13,7 +13,7 @@
 class MPRender;
 class CMPResManger;
 
-using namespace MindPower;
+using namespace Corsairs::Engine::Render;
 
 //--------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------
@@ -310,10 +310,7 @@ protected:
 long StringGetT(char* out, long out_max, const char* in, long* in_from, const char* end_list, long end_len);
 void StringSkipCompartmentT(const char* in, long* in_from, const char* skip_list, long skip_len);
 
-LW_USING
-
-
-struct ModelParam {
+using namespace Corsairs::Engine::Render;struct ModelParam {
 	int iSegments;
 	float fHei;
 	float fTopRadius;

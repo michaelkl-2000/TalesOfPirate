@@ -43,7 +43,7 @@ GeomObjCache& GeomObjCache::Instance() {
     return instance;
 }
 
-std::shared_ptr<LW_NAMESPACE::lwGeomObjInfo> GeomObjCache::GetOrLoad(std::string_view fullPath) {
+std::shared_ptr<Corsairs::Engine::Render::lwGeomObjInfo> GeomObjCache::GetOrLoad(std::string_view fullPath) {
     std::string key = NormalizeKey(fullPath);
 
     {
@@ -54,7 +54,7 @@ std::shared_ptr<LW_NAMESPACE::lwGeomObjInfo> GeomObjCache::GetOrLoad(std::string
     }
 
     // Парсинг — вне lock'а, чтобы не блокировать читателей на диск-I/O.
-    LW_NAMESPACE::lwGeomObjInfo* raw = LgoLoader::Load(fullPath);
+    Corsairs::Engine::Render::lwGeomObjInfo* raw = LgoLoader::Load(fullPath);
     if (raw == nullptr) {
         return nullptr;
     }

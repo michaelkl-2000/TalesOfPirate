@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "lwHeader.h"
 #include "lwStdInc.h"
@@ -7,7 +7,7 @@
 #include "lwITypes.h"
 #include "lwInterface.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwInitInternalRenderCtrlVSProc(lwIResourceMgr* mgr);
 
 	class lwRenderCtrlVSFixedFunction : public lwIRenderCtrlVS {
@@ -29,4 +29,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

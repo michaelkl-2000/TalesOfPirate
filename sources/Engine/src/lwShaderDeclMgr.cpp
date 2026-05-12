@@ -1,7 +1,7 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "lwShaderDeclMgr.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_STD_IMPLEMENTATION(lwShaderDeclMgr)
 
 
@@ -99,4 +99,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,4 +1,4 @@
-﻿// stdafx.h : include file for standard system include files,
+// stdafx.h : include file for standard system include files,
 // or project specific include files that are used frequently, but
 // are changed infrequently
 
@@ -33,7 +33,7 @@
 //    (PCH-) 
 // :      
 
-#include "lwHeader.h"       //  ,  (LW_BEGIN/LW_END, LW_SAFE_DELETE  ..)
+#include "lwHeader.h"       //  ,  (namespace Corsairs::Engine::Render {/} // namespace Corsairs::Engine::Render, LW_SAFE_DELETE  ..)
 #include "lwStdInc.h"       //  includes (mmsystem.h, lmaccess.h)
 #include "lwDirectX.h"      // DirectX 8/9   typedef'
 #include "lwErrorCode.h"    //  , LW_FAILED/LW_SUCCEEDED

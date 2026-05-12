@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 
@@ -8,7 +8,7 @@
 #include "lwShaderMgr.h"
 #include "lwD3D.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwRenderCtrlAgent
 	LW_STD_IMPLEMENTATION(lwRenderCtrlAgent)
 
@@ -206,4 +206,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

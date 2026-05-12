@@ -1,10 +1,10 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 #include "lwMath.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwPhysique;
 	class lwSkinObj;
 
@@ -68,4 +68,4 @@ LW_BEGIN
 	struct lwD3DCreateParam;
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

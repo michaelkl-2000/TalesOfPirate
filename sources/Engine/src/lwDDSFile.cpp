@@ -1,9 +1,9 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwDDSFile.h"
 #include "lwErrorCode.h"
 #include "lwGraphicsutil.h"
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_STD_IMPLEMENTATION(lwDDSFile)
 
 	lwDDSFile::lwDDSFile()
@@ -355,4 +355,4 @@ LW_BEGIN
 	// (см. AssetLoaders.h, реализация в ImageLoaders.cpp). SaveDDSHeader/
 	// SaveAllMipSurfaces/SaveAllVolumeSurfaces переехали туда же как free-
 	// функции в anon-namespace.
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,8 +1,8 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwCamera.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwCamera
 	void lwCamera::GetMatrixCameraToView(lwMatrix44* mat, const lwMatrix44* mat_cam) {
 		mat->m[0][0] = mat_cam->m[0][0];
@@ -130,4 +130,4 @@ LW_BEGIN
 		lwCamera::GetMatrixCameraToView(mat, &_m);
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

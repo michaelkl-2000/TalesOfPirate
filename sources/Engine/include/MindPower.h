@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 // API
@@ -22,8 +22,7 @@
 #include "ShaderLoad.h"
 
 #include "MPInterface.h"
-LW_USING
-
+using namespace Corsairs::Engine::Render;
 #include "GlobalInc.h"
 #include "MPRender.h"
 #include "MPTextureSet.h"

@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -8,7 +8,7 @@
 #include "lwInterfaceExt.h"
 #include <process.h>
 #include <queue>
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	enum lwThreadTaskStateType {
 		THREADTASKSTATE_INVALID = 0,
 		THREADTASKSTATE_WAITING = 1,
@@ -99,4 +99,4 @@ LW_BEGIN
 		}
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

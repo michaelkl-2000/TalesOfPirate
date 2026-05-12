@@ -1,10 +1,10 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwThreadPool.h"
 
 using namespace std;
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwThreadPool
 	LW_STD_IMPLEMENTATION(lwThreadPool)
 
@@ -325,4 +325,4 @@ LW_BEGIN
 		return _thread_num - GetCurrentRunningTaskNum();
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -286,6 +286,9 @@
     <ClInclude Include="include\EffectShaderStore.h">
       <Filter>Source Files\Mesh\include</Filter>
     </ClInclude>
+    <ClInclude Include="include\BoneAnimCache.h">
+      <Filter>Source Files\Mesh\include</Filter>
+    </ClInclude>
     <ClInclude Include="include\GeomObjCache.h">
       <Filter>Source Files\Mesh\include</Filter>
     </ClInclude>
@@ -612,6 +615,9 @@
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="src\EffectStore.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BoneAnimCache.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="src\GeomObjCache.cpp">

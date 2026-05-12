@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 
@@ -33,7 +33,7 @@
 
 using namespace std;
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	unsigned int __stdcall __thread_proc_load_tex(void* param) {
 		lwITex* tex = (lwITex*)param;
 
@@ -2589,7 +2589,7 @@ LW_BEGIN
 
 			for (DWORD j = 0; j < ci[i][0]; j++) {
 				DWORD id = ((lwThreadPool*)_pool_seq[i])->GetThreadId(j);
-				ToLogService("common", "{}:{}", id, "MindPower::LoadResource Thread");
+				ToLogService("common", "{}:{}", id, "Corsairs::Engine::Render::LoadResource Thread");
 			}
 		}
 
@@ -2960,25 +2960,19 @@ LW_BEGIN
 		return ret;
 	}
 
-	LW_RESULT lwResourceMgr::CreatePhysique(lwIPhysique** ret_obj) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		lwIPhysique* o = NULL;
-
-		if ((o = LW_NEW(lwPhysique(this))) == NULL)
-			goto __ret;
-
+	LW_RESULT lwResourceMgr::CreatePhysique(lwPhysique** ret_obj) {
+		lwPhysique* o = LW_NEW(lwPhysique(this));
+		if (o == nullptr) {
+			return LW_RET_FAILED;
+		}
 		*ret_obj = o;
-
-		ret = LW_RET_OK;
-	__ret:
-		return ret;
+		return LW_RET_OK;
 	}
 
-	LW_RESULT lwResourceMgr::CreateModel(lwIModel** ret_obj) {
+	LW_RESULT lwResourceMgr::CreateModel(lwModel** ret_obj) {
 		LW_RESULT ret = LW_RET_FAILED;
 
-		lwIModel* o = NULL;
+		lwModel* o = NULL;
 
 		if ((o = LW_NEW(lwModel(this))) == NULL)
 			goto __ret;
@@ -2990,19 +2984,13 @@ LW_BEGIN
 		return ret;
 	}
 
-	LW_RESULT lwResourceMgr::CreateItem(lwIItem** ret_obj) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		lwIItem* o = NULL;
-
-		if ((o = LW_NEW(lwItem(this))) == NULL)
-			goto __ret;
-
+	LW_RESULT lwResourceMgr::CreateItem(lwItem** ret_obj) {
+		lwItem* o = LW_NEW(lwItem(this));
+		if (o == nullptr) {
+			return LW_RET_FAILED;
+		}
 		*ret_obj = o;
-
-		ret = LW_RET_OK;
-	__ret:
-		return ret;
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwResourceMgr::CreateNode(lwINode** ret_obj, DWORD type) {
@@ -3352,44 +3340,29 @@ LW_BEGIN
 		});
 	}
 
+	// Register/Unregister обслуживают только OBJ_TYPE_MODEL. Для CHARACTER/ITEM
+	// pool'ы исторически заполнялись, но никем не сканировались — QueryObject
+	// по этим типам уже был пустым case (`break;`). Слой удалён 2026-05-12;
+	// если когда-нибудь понадобится обратный реестр items/characters — стоит
+	// делать через явный store, а не через generic OBJ_TYPE_*.
 	LW_RESULT lwResourceMgr::RegisterObject(DWORD* ret_id, void* obj, DWORD type) {
-		lwSlotMapVoidPtr1024* pool_obj;
-
 		switch (type) {
 		case OBJ_TYPE_MODEL:
 			return _pool_model.Register(ret_id, obj);
-			break;
-		case OBJ_TYPE_CHARACTER:
-			pool_obj = &_pool_physique;
-			break;
-		case OBJ_TYPE_ITEM:
-			pool_obj = &_pool_item;
-			break;
 		default:
-			assert(0 && "invaild type");
+			assert(0 && "invalid type");
+			return LW_RET_FAILED;
 		}
-
-		return pool_obj->Register(ret_id, obj);
 	}
 
 	LW_RESULT lwResourceMgr::UnregisterObject(void** ret_obj, DWORD id, DWORD type) {
-		lwSlotMapVoidPtr1024* pool_obj;
-
 		switch (type) {
 		case OBJ_TYPE_MODEL:
 			return _pool_model.Unregister(ret_obj, id);
-			break;
-		case OBJ_TYPE_CHARACTER:
-			pool_obj = &_pool_physique;
-			break;
-		case OBJ_TYPE_ITEM:
-			pool_obj = &_pool_item;
-			break;
 		default:
-			assert(0 && "invaild type");
+			assert(0 && "invalid type");
+			return LW_RET_FAILED;
 		}
-
-		return pool_obj->Unregister(ret_obj, id);
 	}
 
 	LW_RESULT lwResourceMgr::QueryModelObject(void** ret_obj, DWORD model_id) {
@@ -3425,12 +3398,8 @@ LW_BEGIN
 			}
 			break;
 		}
-		case OBJ_TYPE_CHARACTER:
-			break;
-		case OBJ_TYPE_ITEM:
-			break;
 		default:
-			assert(0 && "invaild type");
+			assert(0 && "invalid type");
 		}
 		return LW_RET_OK;
 	}
@@ -3712,4 +3681,4 @@ LW_BEGIN
 		return "";
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,11 +1,13 @@
-﻿//
+//
 #include "stdafx.h"
 
 #include "lwIUtil.h"
 #include "lwNodeObject.h"
 #include "lwAnimKeySetPRS.h"
+#include "lwItem.h"
+#include "lwPhysique.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwResetDevice(lwISysGraphics* sys_graphics, const D3DPRESENT_PARAMETERS* d3dpp) {
 		return 0;
 	}
@@ -98,7 +100,7 @@ LW_BEGIN
 		return ret;
 	}
 
-	void lwPhysiqueSetMaterial(lwIPhysique* phy, const lwMaterial* mtl) {
+	void lwPhysiqueSetMaterial(lwPhysique* phy, const lwMaterial* mtl) {
 		lwIPrimitive* p;
 
 		for (DWORD i = 0; i < LW_MAX_SUBSKIN_NUM; i++) {
@@ -109,7 +111,7 @@ LW_BEGIN
 		}
 	}
 
-	lwIAnimCtrl* lwItemGetAnimCtrl(lwIItem* item, DWORD ctrl_type) {
+	lwIAnimCtrl* lwItemGetAnimCtrl(lwItem* item, DWORD ctrl_type) {
 		lwIAnimCtrl* ret = 0;
 
 		if (item == 0)
@@ -142,7 +144,7 @@ LW_BEGIN
 		return ret;
 	}
 
-	lwPlayPoseInfo* lwItemGetPlayPoseInfo(lwIItem* item, DWORD ctrl_type) {
+	lwPlayPoseInfo* lwItemGetPlayPoseInfo(lwItem* item, DWORD ctrl_type) {
 		lwPlayPoseInfo* ret = 0;
 
 		if (item == 0)
@@ -807,4 +809,4 @@ LW_BEGIN
 		return lwNodeObject_PlayDefaultPose(obj);
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

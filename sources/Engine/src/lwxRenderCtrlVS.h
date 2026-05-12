@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "lwHeader.h"
 #include "lwStdInc.h"
@@ -7,7 +7,7 @@
 #include "lwITypes.h"
 #include "lwInterface.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// define base const register
 	//; c1-c4   = projection matrix
 	//; c5      = light direction
@@ -86,4 +86,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

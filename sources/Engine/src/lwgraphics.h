@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -6,7 +6,7 @@
 #include "lwDirectX.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 #define D3DFVF_XYZ_DIF			( D3DFVF_XYZ | D3DFVF_DIFFUSE )
 #define D3DFVF_XYZ_NORMAL_TEX1		( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1 )
 #define D3DFVF_XYZ_DIF_TEX1		( D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1 )
@@ -56,4 +56,4 @@ LW_BEGIN
 	class lwSprite;
 	class lwD3DSprite;
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,12 +1,6 @@
 ﻿//
 #pragma once
 
-#define LW_NAMESPACE            MindPower
-#define LW_BEGIN                namespace LW_NAMESPACE {
-#define LW_END                  }
-#define LW_USING                using namespace LW_NAMESPACE;
-
-
 #define LW_MAX_PATH             260
 #define LW_MAX_FILE             128
 #define LW_MAX_NAME             64

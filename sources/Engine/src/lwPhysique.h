@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -9,28 +9,15 @@
 #include "lwPrimitive.h"
 #include "lwLinkCtrl.h"
 
-LW_BEGIN
-	class lwGeomManager {
-	public:
-		lwGeomManager();
-		~lwGeomManager();
+namespace Corsairs::Engine::Render {
+	// Кеши .lgo и .lab вынесены в Corsairs::Engine::Render::{GeomObjCache,BoneAnimCache}.
+	// Старый класс lwGeomManager + extern g_GeomManager удалены 2026-05-12.
 
-		lwGeomObjInfo* GetGeomObjInfo(std::string_view file);
-		bool LoadGeomobj(std::string_view file);
-
-		lwIAnimDataBone* GetBoneData(std::string_view file);
-		bool LoadBoneData(std::string_view file);
-
+	// Был интерфейс lwIPhysique с единственным реализатором — удалён 2026-05-13.
+	// lwPhysique теперь standalone, наследует только lwLinkCtrl ради виртуального
+	// GetLinkCtrlMatrix (используется в lwItem через указатель lwLinkCtrl*).
+	class lwPhysique : public lwLinkCtrl {
 	private:
-		typedef std::map<std::string, lwIAnimDataBone*> ANIMDATA_MAP;
-		ANIMDATA_MAP m_AnimDataMap;
-	};
-
-	extern lwGeomManager g_GeomManager;
-
-	class lwPhysique : public lwIPhysique, public lwLinkCtrl {
-	private:
-		DWORD _id;
 		lwIResourceMgr* _res_mgr;
 		lwISceneMgr* _scene_mgr;
 		lwIPrimitive* _obj_seq[LW_MAX_SUBSKIN_NUM];
@@ -43,12 +30,15 @@ LW_BEGIN
 		bool _start;
 		bool _end;
 
-		LW_STD_DECLARATION();
-
 	public:
 		lwPhysique(lwIResourceMgr* res_mgr);
 		lwPhysique();
 		~lwPhysique();
+
+		// Был частью lwInterface — оставлен ради legacy-вызовов obj->Release().
+		void Release() {
+			delete this;
+		}
 
 		// link ctrl method
 		virtual LW_RESULT GetLinkCtrlMatrix(lwMatrix44* mat, DWORD link_id);
@@ -92,7 +82,7 @@ LW_BEGIN
 		void ShowBoundingObjectPhysique(int show);
 
 		LW_RESULT SetItemLink(const lwItemLinkInfo* info);
-		LW_RESULT ClearItemLink(lwIItem* obj);
+		LW_RESULT ClearItemLink(lwItem* obj);
 
 		void SetObjState(DWORD state, BYTE value) {
 			return _state_ctrl.SetState(state, value);
@@ -121,15 +111,15 @@ LW_BEGIN
 			return _opacity;
 		}
 
-		virtual void Start() {
+		void Start() {
 			_start = true;
 		}
 
-		virtual void End() {
+		void End() {
 			_end = true;
 		}
 
-		virtual bool isLoaded() {
+		bool isLoaded() {
 			return _end;
 		}
 
@@ -154,4 +144,4 @@ LW_BEGIN
 		IndexTextureOPPairList mIndexTextureOPList;
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

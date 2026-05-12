@@ -1,4 +1,4 @@
-﻿//
+//
 
 #include "stdafx.h"
 #include "MPCharacter.h"
@@ -9,8 +9,11 @@
 #include "lwIUtil.h"
 #include "lwgraphicsutil.h"
 #include "lwPhysique.h"
+#include "BoneAnimCache.h"
 
-LW_BEGIN
+#include <format>
+
+namespace Corsairs::Engine::Render {
 	MPCharacter::MPCharacter(lwISysGraphics* sys_graphics)
 		: _link_item_num(0),
 		  _pose_proc(0), _proc_param(0) {
@@ -255,10 +258,10 @@ LW_BEGIN
 		return _physique->isLoaded();
 	}
 
-	extern lwGeomManager g_GeomManager;
-
 	BOOL MPCharacter::InitBone(std::string_view file) {
-		g_GeomManager.LoadBoneData(file);
+		const std::string path = std::format("{}{}",
+			Corsairs::Engine::Render::BoneAnimCache::DirectoryPrefix(), file);
+		Corsairs::Engine::Render::BoneAnimCache::Instance().GetOrLoad(path);
 		return TRUE;
 	}
 
@@ -658,4 +661,4 @@ LW_BEGIN
 		return _physique->GetOpacity();
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 #include "MPSceneObject.h"
@@ -7,7 +7,7 @@
 #include "lwInterface.h"
 #include "lwGraphicsUtil.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	MPSceneObject::MPSceneObject(lwISysGraphics* sys_graphics)
 		: _model(0) {
 		sys_graphics->GetResourceMgr()->CreateModel(&_model);
@@ -382,4 +382,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

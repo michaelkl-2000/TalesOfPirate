@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "lwShaderMgr.h"
 #include "lwInterface.h"
 #include "lwSystem.h"
@@ -7,7 +7,7 @@
 #include "lwShaderDeclMgr.h"
 #include "ShaderLoader.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// =================================
 
 	LW_STD_IMPLEMENTATION(lwShaderMgr9)
@@ -236,4 +236,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

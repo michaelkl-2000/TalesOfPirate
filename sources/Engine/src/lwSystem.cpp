@@ -1,4 +1,4 @@
-﻿//
+//
 
 #include "stdafx.h"
 #include "lwSystem.h"
@@ -7,7 +7,7 @@
 #include "lwSystemInfo.h"
 #include "lwTimer.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	lwISystem* lwSystem::__system = LW_NULL;
 
 	LW_STD_RELEASE(lwSystem)
@@ -81,4 +81,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

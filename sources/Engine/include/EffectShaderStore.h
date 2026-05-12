@@ -5,9 +5,9 @@
 
 #include <vector>
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 class lwISysGraphics;
-LW_END
+} // namespace Corsairs::Engine::Render
 
 namespace Corsairs::Engine::Render {
 
@@ -34,8 +34,8 @@ public:
 
     void SetSoftFallback(bool useSoft) noexcept;
 
-    bool LoadAll(LW_NAMESPACE::lwISysGraphics* sysGraphics);
-    bool Restore(LW_NAMESPACE::lwISysGraphics* sysGraphics);
+    bool LoadAll(Corsairs::Engine::Render::lwISysGraphics* sysGraphics);
+    bool Restore(Corsairs::Engine::Render::lwISysGraphics* sysGraphics);
     void Clear();
 
     [[nodiscard]] IDirect3DVertexShaderX*      GetVShaderByID(int id) const;

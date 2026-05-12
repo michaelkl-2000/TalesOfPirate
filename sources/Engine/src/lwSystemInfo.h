@@ -1,11 +1,11 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 #include "lwInterfaceExt.h"
 #include "lwClassDecl.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwSystemInfo : public lwISystemInfo {
 		LW_STD_DECLARATION();
 
@@ -26,4 +26,4 @@ LW_BEGIN
 		DWORD GetDirectXVersion();
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -16,9 +16,9 @@ class CMPEffectFile;
 struct FONScontext;
 struct FONSparams;
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwITex;
-LW_END
+} // namespace Corsairs::Engine::Render
 
 namespace fons {
 	struct Dx9Backend {
@@ -30,7 +30,7 @@ namespace fons {
 		int Technique = 5;
 		int Width = 0;
 		int Height = 0;
-		MindPower::lwITex* Atlas = nullptr;
+		Corsairs::Engine::Render::lwITex* Atlas = nullptr;
 	};
 
 	// Заполнить FONSparams указателями на колбеки + userPtr=backend. width/height —

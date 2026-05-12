@@ -1,8 +1,8 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwSceneMgr.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	static int __qsort_transparent_primitive(const void* e1, const void* e2) {
 		return ((lwSortPriInfo*)e1)->d < ((lwSortPriInfo*)e2)->d;
 	}
@@ -225,4 +225,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

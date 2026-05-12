@@ -102,7 +102,7 @@ ValidationRecord ValidateLmo(const fs::path& file) {
     rec.file = file;
     rec.extension = "lmo";
 
-    MindPower::lwModelObjInfo info;
+    Corsairs::Engine::Render::lwModelObjInfo info;
     Corsairs::Engine::Render::LgoLoadDiagnostics diag;
     Corsairs::Engine::Render::LgoLoader::LoadModelObjEx(info, file.string(), diag);
     rec.version = diag.version;
@@ -122,7 +122,7 @@ ValidationRecord ValidateLxo(const fs::path& file) {
     rec.file = file;
     rec.extension = "lxo";
 
-    MindPower::lwModelInfo info;
+    Corsairs::Engine::Render::lwModelInfo info;
     Corsairs::Engine::Render::LgoLoadDiagnostics diag;
     Corsairs::Engine::Render::LgoLoader::LoadModelEx(info, file.string(), diag);
     rec.version = diag.version;
@@ -142,7 +142,7 @@ ValidationRecord ValidateLab(const fs::path& file) {
     rec.file = file;
     rec.extension = "lab";
 
-    MindPower::lwAnimDataBone info;
+    Corsairs::Engine::Render::lwAnimDataBone info;
     Corsairs::Engine::Render::LgoLoadDiagnostics diag;
     Corsairs::Engine::Render::LgoLoader::LoadAnimDataBoneEx(info, file.string(), diag);
     rec.version = diag.version;
@@ -435,7 +435,7 @@ ValidationRecord ValidateLet(const fs::path& file) {
     rec.file = file;
     rec.extension = "let";
 
-    MindPower::lwEfxTrack track;
+    Corsairs::Engine::Render::lwEfxTrack track;
     const LW_RESULT r = Corsairs::Engine::Render::EfxTrackLoader::Load(
         track, file.string());
     if (LW_FAILED(r)) {

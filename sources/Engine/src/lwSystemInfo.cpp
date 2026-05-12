@@ -1,4 +1,4 @@
-﻿//
+//
 
 #include "stdafx.h"
 #include "lwSystemInfo.h"
@@ -8,7 +8,7 @@
 #include <dxdiag.h>
 #include <windows.h>
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	//-----------------------------------------------------------------------------
 	// this routine was copyed from GetDxVer example
 	// Desc: Tries to get the DirectX version from DxDiag's COM interface
@@ -459,4 +459,4 @@ LW_BEGIN
 		return _dx_ver_info.version + _dx_ver_info.revision;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

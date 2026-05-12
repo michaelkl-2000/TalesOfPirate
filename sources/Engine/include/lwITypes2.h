@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -8,7 +8,7 @@
 #include "lwClassDecl.h"
 #include "lwITypes.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	template <DWORD set_size, DWORD seq_size>
 	struct lwRenderStateSetTemplate {
 		enum {
@@ -521,4 +521,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

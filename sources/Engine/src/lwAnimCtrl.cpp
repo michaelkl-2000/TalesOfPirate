@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 #include "lwAnimCtrl.h"
@@ -9,7 +9,7 @@
 
 //FILE* g_fp = 0;
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	//LW_STD_IMPLEMENTATION(lwAnimCtrlBone)
 	//LW_STD_RELEASE(lwAnimCtrlBone)
 	LW_RESULT lwAnimCtrlBone::Release() {
@@ -1181,4 +1181,4 @@ LW_BEGIN
 		return LW_RET_OK;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -9,7 +9,7 @@
 #include "lwITypes2.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwAnimKeySetPRS2 : public lwIAnimKeySetPRS {
 		LW_STD_DECLARATION()
 
@@ -108,4 +108,4 @@ LW_BEGIN
 		}
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,10 +1,10 @@
-﻿//
+//
 #include "stdafx.h"
 
 
 #include "lwRenderCtrlEmb.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	lwIRenderCtrlVS* __RenderCtrlVSProcFixedFuntion() {
 		return LW_NEW(lwRenderCtrlVSFixedFunction);
 	}
@@ -118,4 +118,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

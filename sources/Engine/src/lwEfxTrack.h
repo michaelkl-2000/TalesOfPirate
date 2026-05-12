@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -9,7 +9,7 @@
 // Forward-decl loader из AssetLoaders.h — самостоятельный include тут излишен.
 namespace Corsairs::Engine::Render { class EfxTrackLoader; }
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwEfxTrack {
 	private:
 		lwAnimDataMatrix* _data;
@@ -32,4 +32,4 @@ LW_BEGIN
 		}
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

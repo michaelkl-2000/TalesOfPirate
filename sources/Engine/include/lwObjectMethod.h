@@ -1,11 +1,11 @@
-﻿#pragma once
+#pragma once
 
 #include "lwHeader.h"
 #include "lwMath.h"
 #include <set>
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwMatrixCtrl {
 	protected:
 		float _angle_yaw;
@@ -73,4 +73,4 @@ LW_BEGIN
 		}
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 
@@ -10,7 +10,7 @@
 // Forward-decl loader из AssetLoaders.h — самостоятельный include тут излишен.
 namespace Corsairs::Engine::Render { class PoseCtrlLoader; }
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// by lsh
 	// PlayPoseCallBackPLAY_LOOP
 
@@ -75,4 +75,4 @@ LW_BEGIN
 
 	LW_RESULT lwPlayPoseSmooth(lwPlayPoseInfo* dst, const lwPlayPoseInfo* src, lwIPoseCtrl* ctrl);
 
-LW_END
+} // namespace Corsairs::Engine::Render

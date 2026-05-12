@@ -23,7 +23,7 @@
 #include "lwStdInc.h"
 #include "lwErrorCode.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	enum {
 		ERR_LWISLOTMAP_POOL_FULL = -2,
 		ERR_LWISLOTMAP_INVALID_HANDLE = -3,
@@ -227,4 +227,4 @@ LW_BEGIN
 	using lwSlotMapVoidPtr10240 = lwSlotMap<void*, 10240>;
 	using lwSlotMapVoidPtr40960 = lwSlotMap<void*, 40960>;
 
-LW_END
+} // namespace Corsairs::Engine::Render

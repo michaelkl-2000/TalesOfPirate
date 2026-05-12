@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "lwEfxTrack.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	lwEfxTrack::lwEfxTrack() {
 		_data = 0;
 	}
@@ -11,4 +11,4 @@ LW_BEGIN
 	lwEfxTrack::~lwEfxTrack() {
 		LW_SAFE_RELEASE(_data);
 	}
-LW_END
+} // namespace Corsairs::Engine::Render

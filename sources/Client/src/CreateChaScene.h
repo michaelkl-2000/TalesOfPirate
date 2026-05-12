@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Scene.h"
 
@@ -17,7 +17,7 @@ const int MAX_FACE_NUM = 8;
 const int MAX_CITY_NUM = 3;
 const int CITY_PICTURE_NUM = 4;
 
-LW_USING;
+using namespace Corsairs::Engine::Render;
 class CSceneObj;
 
 namespace GUI {
@@ -48,8 +48,8 @@ public:
 	DWORD _model_type; // lxo: 1, lmo: 2
 	lwIResourceMgr* _res_mgr;
 	lwINodeObject* _model_lxo;
-	lwIModel* _model_lmo;
-	lwIItem* _arrow;
+	lwModel* _model_lmo;
+	lwItem* _arrow;
 
 	DWORD _cha_num;
 	DWORD _act_num;
@@ -58,7 +58,7 @@ public:
 	lwVector3 _arrow_offset_pos[4];
 	IgnoreStruct ignoreStruct;
 
-	lwIItem* _ArrowMarks[4];
+	lwItem* _ArrowMarks[4];
 	lwVector3 _ArrowMarksOffset[4];
 
 private:

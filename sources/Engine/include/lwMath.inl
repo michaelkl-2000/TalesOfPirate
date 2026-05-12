@@ -1,10 +1,10 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	//#ifdef LW_USE_LWMATH_LIB
 
 	// _lwVector2
@@ -1646,4 +1646,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

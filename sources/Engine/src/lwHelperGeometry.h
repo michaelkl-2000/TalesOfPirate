@@ -1,4 +1,4 @@
-﻿//
+//
 #include "lwHeader.h"
 #include "lwPrimitive.h"
 #include "lwClassDecl.h"
@@ -6,7 +6,7 @@
 #include "lwInterface.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwLoadPrimitiveLineList(lwINodePrimitive* obj, const char* name, DWORD vert_num,
 									  const lwVector3* vert_buf, const DWORD* color_buf, const lwSubsetInfo* subset_seq,
 									  DWORD subset_num);
@@ -22,4 +22,4 @@ LW_BEGIN
 	LW_RESULT lwLoadPrimitiveLineCube(lwIPrimitive* obj, const char* name, DWORD color, const lwVector3* size);
 	LW_RESULT lwLoadPrimitivePlane(lwIPrimitive* obj, const char* name, DWORD color, float width, float height,
 								   int seg_width, int seg_height, BOOL two_side, BOOL wire_frame);
-LW_END
+} // namespace Corsairs::Engine::Render

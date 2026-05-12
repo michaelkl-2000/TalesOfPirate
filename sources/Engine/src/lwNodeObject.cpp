@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 #if 1
@@ -12,7 +12,7 @@
 
 #include "AssetLoaders.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwNodeBase
 	lwNodeBase::lwNodeBase() {
 		// base
@@ -2542,6 +2542,6 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render
 
 #endif

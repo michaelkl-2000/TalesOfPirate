@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -6,7 +6,7 @@
 #include "lwShaderTypes.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// ===============================================
 	enum {
 		SHADER_DECL_SET_NUM = 16,
@@ -64,4 +64,4 @@ LW_BEGIN
 		LW_RESULT QueryShaderHandle(DWORD* shader_handle, const lwShaderDeclQueryInfo* info);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 
@@ -10,79 +10,22 @@
 #include "lwRenderImp.h"
 #include "lwResourceMgr.h"
 #include "lwD3D.h"
-#include "lwShaderMgr.h"
 #include "lwItem.h"
 #include "lwExpObj.h"
 
 #include "AssetLoaders.h"
+#include "BoneAnimCache.h"
 #include "GeomObjCache.h"
 
 #include <format>
 
 using namespace std;
-LW_BEGIN
-	lwGeomManager g_GeomManager;
-
-	lwGeomManager::lwGeomManager() {
-		m_AnimDataMap.clear();
-	}
-
-	lwGeomManager::~lwGeomManager() {
-		ANIMDATA_MAP::iterator pos2 = m_AnimDataMap.begin();
-		for (; pos2 != m_AnimDataMap.end(); pos2++) {
-			(*pos2).second->Release();
-		}
-		m_AnimDataMap.clear();
-	}
-
-	// Геом-данные .lgo для characters теперь живут в Corsairs::Engine::Render::GeomObjCache.
-	// lwGeomManager сохраняет тонкий фасад для сохранения сигнатур legacy-колсайтов.
-	lwGeomObjInfo* lwGeomManager::GetGeomObjInfo(std::string_view file) {
-		const std::string path = std::format("{}{}",
-			Corsairs::Engine::Render::GeomObjCache::CategoryPrefix(Corsairs::Engine::Render::GeomCategory::Character),
-			file);
-		auto entry = Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(path);
-		return entry.get();
-	}
-
-	bool lwGeomManager::LoadGeomobj(std::string_view file) {
-		const std::string path = std::format("{}{}",
-			Corsairs::Engine::Render::GeomObjCache::CategoryPrefix(Corsairs::Engine::Render::GeomCategory::Character),
-			file);
-		return Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(path) != nullptr;
-	}
-
-	lwIAnimDataBone* lwGeomManager::GetBoneData(std::string_view file) {
-		ANIMDATA_MAP::iterator pos = m_AnimDataMap.find(std::string{file});
-		if (pos != m_AnimDataMap.end()) {
-			return (*pos).second;
-		}
-		return NULL;
-	}
-
-	bool lwGeomManager::LoadBoneData(std::string_view file) {
-		const std::string path = std::format("animation\\{}", file);
-		lwAnimDataBone* data = LW_NEW(lwAnimDataBone);
-		if (LW_RESULT r = Corsairs::Engine::Render::LgoLoader::LoadAnimDataBone(*data, path);
-			LW_FAILED(r)) {
-			ToLogService("errors", LogLevel::Error,
-						 "[{}] LgoLoader::LoadAnimDataBone failed: file={}, path={}, ret={}",
-						 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), path, static_cast<long long>(r));
-			data->Release();
-			return false;
-		}
-		m_AnimDataMap[std::string{file}] = data;  // upcast lwAnimDataBone* → lwIAnimDataBone*
-		return true;
-	}
-
-
+namespace Corsairs::Engine::Render {
 	// lwPhysique
-	LW_STD_IMPLEMENTATION(lwPhysique)
-
 
 	// begin construct
 	lwPhysique::lwPhysique(lwIResourceMgr* res_mgr)
-		: _res_mgr(res_mgr), _scene_mgr(0), _id(LW_INVALID_INDEX), _anim_agent(0) {
+		: _res_mgr(res_mgr), _scene_mgr(0), _anim_agent(0) {
 		_file_name[0] = '\0';
 		lwMatrix44Identity(&_mat_base);
 		memset(_obj_seq, 0, sizeof(lwIPrimitive*) * LW_MAX_SUBSKIN_NUM);
@@ -94,7 +37,7 @@ LW_BEGIN
 	// end construct
 
 	lwPhysique::lwPhysique()
-		: _id(LW_INVALID_INDEX), _anim_agent(0) {
+		: _anim_agent(0) {
 		_res_mgr = lwSysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr();
 
 		_file_name[0] = '\0';
@@ -107,57 +50,43 @@ LW_BEGIN
 	}
 
 	LW_RESULT lwPhysique::GetLinkCtrlMatrix(lwMatrix44* mat, DWORD link_id) {
-		LW_RESULT ret = LW_RET_FAILED;
-
 		lwAnimCtrlObjTypeInfo type_info;
 		type_info.type = ANIM_CTRL_TYPE_BONE;
 		type_info.data[0] = LW_INVALID_INDEX;
 		type_info.data[1] = LW_INVALID_INDEX;
 
-		lwIAnimCtrlObjBone* bone_ctrl = (lwIAnimCtrlObjBone*)_anim_agent->GetAnimCtrlObj(&type_info);
-		if (bone_ctrl == NULL)
-			goto __ret;
-
-		{
-			lwMatrix44* rtm = bone_ctrl->GetDummyRTM(link_id);
-
-			if (rtm == NULL)
-				goto __ret;
-
-			lwMatrix44Multiply(mat, rtm, &_mat_base);
+		auto* bone_ctrl = static_cast<lwIAnimCtrlObjBone*>(_anim_agent->GetAnimCtrlObj(&type_info));
+		if (bone_ctrl == nullptr) {
+			return LW_RET_FAILED;
 		}
-		ret = LW_RET_OK;
-	__ret:
-		return ret;
+
+		lwMatrix44* rtm = bone_ctrl->GetDummyRTM(link_id);
+		if (rtm == nullptr) {
+			return LW_RET_FAILED;
+		}
+
+		lwMatrix44Multiply(mat, rtm, &_mat_base);
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwPhysique::DestroyPrimitive(DWORD part_id) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		if (_obj_seq[part_id] == 0) {
-			ret = LW_RET_OK;
-			goto __ret;
+		if (_obj_seq[part_id] == nullptr) {
+			return LW_RET_OK;
 		}
 
 		if (LW_RESULT r = _obj_seq[part_id]->Destroy(); LW_FAILED(r)) {
 			ToLogService("errors", LogLevel::Error,
 						 "[{}] lwIPrimitive::Destroy failed: part_id={}, ret={}",
 						 __FUNCTION__, part_id, static_cast<long long>(r));
-			goto __ret;
+			return LW_RET_FAILED;
 		}
 
 		_obj_seq[part_id]->Release();
-		_obj_seq[part_id] = 0;
-
-		ret = LW_RET_OK;
-
-	__ret:
-		return ret;
+		_obj_seq[part_id] = nullptr;
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwPhysique::Destroy() {
-		LW_RESULT ret = LW_RET_FAILED;
-
 		for (DWORD i = 0; i < LW_MAX_SUBSKIN_NUM; i++) {
 			if (LW_RESULT r = DestroyPrimitive(i); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
@@ -168,16 +97,11 @@ LW_BEGIN
 		}
 
 		LW_SAFE_RELEASE(_anim_agent);
-
 		return LW_RET_OK;
 	}
 
 	LW_RESULT lwPhysique::LoadBone(std::string_view file) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		lwResFileAnimData res;
-
-		lwIAnimCtrlObjBone* bone_ctrl;
+		const auto fileSv = file.empty() ? std::string_view{"(null)"} : file;
 
 		lwAnimCtrlObjTypeInfo type_info;
 		type_info.type = ANIM_CTRL_TYPE_BONE;
@@ -186,109 +110,108 @@ LW_BEGIN
 
 		// check existing bone
 		if (_anim_agent && _anim_agent->GetAnimCtrlObj(&type_info)) {
-			bone_ctrl = (lwIAnimCtrlObjBone*)_anim_agent->RemoveAnimCtrlObj(&type_info);
-			LW_SAFE_RELEASE(bone_ctrl);
+			auto* existing = static_cast<lwIAnimCtrlObjBone*>(_anim_agent->RemoveAnimCtrlObj(&type_info));
+			LW_SAFE_RELEASE(existing);
 		}
 
-		if (_anim_agent == NULL) {
+		const bool ownsAgent = (_anim_agent == nullptr);
+		if (ownsAgent) {
 			if (LW_RESULT r = _res_mgr->CreateAnimCtrlAgent(&_anim_agent); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
 							 "[{}] CreateAnimCtrlAgent failed: file={}, ret={}",
-							 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), static_cast<long long>(r));
-				goto __ret;
+							 __FUNCTION__, fileSv, static_cast<long long>(r));
+				return LW_RET_FAILED;
 			}
 		}
 
-		if (LW_RESULT r = _res_mgr->CreateAnimCtrlObj((lwIAnimCtrlObj**)&bone_ctrl, ANIM_CTRL_TYPE_BONE);
+		// Локальный helper: освобождает agent при неудаче, если он только что
+		// был создан этим вызовом.
+		auto rollback = [this, ownsAgent]() {
+			if (ownsAgent) {
+				LW_SAFE_RELEASE(_anim_agent);
+			}
+		};
+
+		lwIAnimCtrlObjBone* bone_ctrl = nullptr;
+		if (LW_RESULT r = _res_mgr->CreateAnimCtrlObj(reinterpret_cast<lwIAnimCtrlObj**>(&bone_ctrl), ANIM_CTRL_TYPE_BONE);
 			LW_FAILED(r)) {
 			ToLogService("errors", LogLevel::Error,
 						 "[{}] CreateAnimCtrlObj(BONE) failed: file={}, ret={}",
-						 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), static_cast<long long>(r));
-			goto __ret;
+						 __FUNCTION__, fileSv, static_cast<long long>(r));
+			rollback();
+			return LW_RET_FAILED;
 		}
 
 		if (LW_RESULT r = _anim_agent->AddAnimCtrlObj(bone_ctrl); LW_FAILED(r)) {
 			ToLogService("errors", LogLevel::Error,
 						 "[{}] AddAnimCtrlObj failed: file={}, ret={}",
-						 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), static_cast<long long>(r));
-			goto __ret;
+						 __FUNCTION__, fileSv, static_cast<long long>(r));
+			rollback();
+			return LW_RET_FAILED;
 		}
 
-		{
-			lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
-			lwISystem* sys = sys_graphics->GetSystem();
-			lwIPathInfo* path_info = 0;
-			sys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO);
+		lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
+		lwISystem* sys = sys_graphics->GetSystem();
+		lwIPathInfo* path_info = nullptr;
+		sys->GetInterface(reinterpret_cast<LW_VOID**>(&path_info), LW_GUID_PATHINFO);
+		const std::string path = std::format("{}{}", path_info->GetPath(PATH_TYPE_ANIMATION), file);
 
-			const std::string path = std::format("{}{}", path_info->GetPath(PATH_TYPE_ANIMATION), file);
+		lwResFileAnimData res;
+		res.obj_id = 0;
+		res.res_type = RES_FILE_TYPE_GENERIC;
+		res.anim_type = ANIM_CTRL_TYPE_BONE;
+		std::memset(res.file_name, 0, sizeof(res.file_name));
+		std::memcpy(res.file_name, path.data(),
+					std::min<std::size_t>(path.size(), sizeof(res.file_name) - 1));
 
-			DWORD ret_id;
-
-			res.obj_id = 0;
-			res.res_type = RES_FILE_TYPE_GENERIC;
-			res.anim_type = ANIM_CTRL_TYPE_BONE;
-			std::memset(res.file_name, 0, sizeof(res.file_name));
-			std::memcpy(res.file_name, path.data(),
-						std::min<std::size_t>(path.size(), sizeof(res.file_name) - 1));
-
-			if (LW_SUCCEEDED(_res_mgr->QueryAnimCtrl(&ret_id, &res))) {
-				lwIAnimCtrlBone* anim_ctrl = NULL;
-				if (LW_RESULT r = _res_mgr->GetAnimCtrl((lwIAnimCtrl**)&anim_ctrl, ret_id); LW_FAILED(r)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] GetAnimCtrl failed: file={}, ret_id={}, ret={}",
-								 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), ret_id, static_cast<long long>(r));
-					goto __ret;
-				}
-				_res_mgr->AddRefAnimCtrl(anim_ctrl, 1);
-				bone_ctrl->AttachAnimCtrl(anim_ctrl);
+		DWORD ret_id = 0;
+		if (LW_SUCCEEDED(_res_mgr->QueryAnimCtrl(&ret_id, &res))) {
+			lwIAnimCtrlBone* anim_ctrl = nullptr;
+			if (LW_RESULT r = _res_mgr->GetAnimCtrl(reinterpret_cast<lwIAnimCtrl**>(&anim_ctrl), ret_id); LW_FAILED(r)) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] GetAnimCtrl failed: file={}, ret_id={}, ret={}",
+							 __FUNCTION__, fileSv, ret_id, static_cast<long long>(r));
+				rollback();
+				return LW_RET_FAILED;
 			}
-			else {
-				lwIAnimCtrlBone* ctrl_bone;
-				lwIAnimDataBone* i_data = g_GeomManager.GetBoneData(file);
-				if (i_data == NULL) {
-					lwAnimDataBone* data = new lwAnimDataBone;
-					if (LW_RESULT r = Corsairs::Engine::Render::LgoLoader::LoadAnimDataBone(*data, path);
-						LW_FAILED(r)) {
-						ToLogService("errors", LogLevel::Error,
-									 "[{}] LgoLoader::LoadAnimDataBone failed: file={}, path={}, ret={}",
-									 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), path, static_cast<long long>(r));
-						data->Release();
-						goto __ret;
-					}
-					i_data = data;  // upcast
-				}
-				if (LW_RESULT r = _res_mgr->CreateAnimCtrl((lwIAnimCtrl**)&ctrl_bone, ANIM_CTRL_TYPE_BONE);
-					LW_FAILED(r)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] CreateAnimCtrl(BONE) failed: file={}, path={}, ret={}",
-								 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), path, static_cast<long long>(r));
-					goto __ret;
-				}
-
-				if (LW_RESULT r = ctrl_bone->LoadData(i_data); LW_FAILED(r)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] ctrl_bone->LoadData failed: file={}, path={}, ret={}",
-								 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file), path, static_cast<long long>(r));
-					goto __ret;
-				}
-
-				ctrl_bone->SetResFile(&res);
-
-				bone_ctrl->AttachAnimCtrl(ctrl_bone);
-				bone_ctrl->SetTypeInfo(&type_info);
+			_res_mgr->AddRefAnimCtrl(anim_ctrl, 1);
+			bone_ctrl->AttachAnimCtrl(anim_ctrl);
+		}
+		else {
+			lwIAnimDataBone* i_data = Corsairs::Engine::Render::BoneAnimCache::Instance().GetOrLoad(path);
+			if (i_data == nullptr) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] BoneAnimCache::GetOrLoad failed: file={}, path={}",
+							 __FUNCTION__, fileSv, path);
+				rollback();
+				return LW_RET_FAILED;
 			}
+
+			lwIAnimCtrlBone* ctrl_bone = nullptr;
+			if (LW_RESULT r = _res_mgr->CreateAnimCtrl(reinterpret_cast<lwIAnimCtrl**>(&ctrl_bone), ANIM_CTRL_TYPE_BONE);
+				LW_FAILED(r)) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] CreateAnimCtrl(BONE) failed: file={}, path={}, ret={}",
+							 __FUNCTION__, fileSv, path, static_cast<long long>(r));
+				rollback();
+				return LW_RET_FAILED;
+			}
+
+			if (LW_RESULT r = ctrl_bone->LoadData(i_data); LW_FAILED(r)) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] ctrl_bone->LoadData failed: file={}, path={}, ret={}",
+							 __FUNCTION__, fileSv, path, static_cast<long long>(r));
+				rollback();
+				return LW_RET_FAILED;
+			}
+
+			ctrl_bone->SetResFile(&res);
+			bone_ctrl->AttachAnimCtrl(ctrl_bone);
+			bone_ctrl->SetTypeInfo(&type_info);
 		}
 
 		RegisterSceneMgr(_res_mgr->GetSysGraphics()->GetSceneMgr());
-
-		ret = LW_RET_OK;
-	__ret:
-		if (ret == LW_RET_FAILED) {
-			_anim_agent->Release();
-			_anim_agent = 0;
-		}
-
-		return ret;
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwPhysique::LoadPrimitive(DWORD part_id, lwGeomObjInfo* geom_info) {
@@ -304,7 +227,7 @@ LW_BEGIN
 
 		const std::string& tex_path = path_info->GetPath(PATH_TYPE_TEXTURE_CHARACTER);
 
-		lwGeomObjInfo* info = (lwGeomObjInfo*)geom_info;
+		lwGeomObjInfo* info = geom_info;
 
 		// query mesh pool
 		lwIPrimitive* imp;
@@ -399,10 +322,6 @@ LW_BEGIN
 		LW_SAFE_RELEASE(_obj_seq[ part_id ]);
 
 		_obj_seq[part_id] = imp;
-
-
-		_res_mgr->RegisterObject(&_id, this, OBJ_TYPE_CHARACTER);
-
 		return LW_RET_OK;
 	}
 
@@ -434,15 +353,13 @@ LW_BEGIN
 		res.res_type = RES_FILE_TYPE_GEOMETRY;
 		copyToFixedBuf(res.file_name, sizeof(res.file_name), path);
 
-		//    return LW_RET_FAILED;
-
-		lwGeomObjInfo* pInfo = g_GeomManager.GetGeomObjInfo(file);
-		if (!pInfo) {
-			g_GeomManager.LoadGeomobj(file);
-			pInfo = g_GeomManager.GetGeomObjInfo(file);
-			if (!pInfo)
-				return LW_RET_FAILED;
+		// info живёт в общем GeomObjCache, shared_ptr держит запись до конца
+		// LoadPrimitive (на самом деле — навсегда, т.к. cache strong-навсегда).
+		auto info = Corsairs::Engine::Render::GeomObjCache::Instance().GetOrLoad(path);
+		if (!info) {
+			return LW_RET_FAILED;
 		}
+		lwGeomObjInfo* pInfo = info.get();
 
 		lwIPrimitive* imp;
 		lwIMeshAgent* mesh_agent;
@@ -577,23 +494,17 @@ LW_BEGIN
 		LW_SAFE_RELEASE(_obj_seq[ part_id ]);
 
 		_obj_seq[part_id] = imp;
-
-
-		_res_mgr->RegisterObject(&_id, this, OBJ_TYPE_CHARACTER);
-
 		return LW_RET_OK;
 	}
 
 	LW_RESULT lwPhysique::Update() {
-		LW_RESULT ret = LW_RET_FAILED;
-
 		// update physique bone animation
 		if (_anim_agent) {
 			if (LW_RESULT r = _anim_agent->Update(); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
 							 "[{}] _anim_agent->Update failed: ret={}",
 							 __FUNCTION__, static_cast<long long>(r));
-				goto __ret;
+				return LW_RET_FAILED;
 			}
 
 			lwAnimCtrlObjTypeInfo type_info;
@@ -601,27 +512,23 @@ LW_BEGIN
 			type_info.data[0] = LW_INVALID_INDEX;
 			type_info.data[1] = LW_INVALID_INDEX;
 
-			lwIAnimCtrlObjBone* ctrl_obj = (lwIAnimCtrlObjBone*)_anim_agent->GetAnimCtrlObj(&type_info);
-			lwIAnimCtrlBone* ctrl = (lwIAnimCtrlBone*)ctrl_obj->GetAnimCtrl();
+			auto* ctrl_obj = static_cast<lwIAnimCtrlObjBone*>(_anim_agent->GetAnimCtrlObj(&type_info));
 
-
-			if (LW_RESULT r = ctrl_obj->UpdateObject(ctrl_obj, NULL); LW_FAILED(r)) {
+			if (LW_RESULT r = ctrl_obj->UpdateObject(ctrl_obj, nullptr); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
 							 "[{}] ctrl_obj->UpdateObject(self) failed: ret={}",
 							 __FUNCTION__, static_cast<long long>(r));
-				goto __ret;
+				return LW_RET_FAILED;
 			}
 
-			lwIPrimitive* pri;
-			lwIAnimCtrlObjBone* pri_ctrl;
-
 			for (DWORD i = 0; i < LW_MAX_SUBSKIN_NUM; i++) {
-				if ((pri = _obj_seq[i]) == 0)
+				lwIPrimitive* pri = _obj_seq[i];
+				if (pri == nullptr) {
 					continue;
+				}
 
-				pri_ctrl = (lwIAnimCtrlObjBone*)pri->GetAnimAgent()->GetAnimCtrlObj(&type_info);
-
-				if (pri_ctrl == 0) {
+				auto* pri_ctrl = static_cast<lwIAnimCtrlObjBone*>(pri->GetAnimAgent()->GetAnimCtrlObj(&type_info));
+				if (pri_ctrl == nullptr) {
 					LG_MSGBOX("crash!!!, call jack");
 					__debugbreak();
 				}
@@ -630,22 +537,20 @@ LW_BEGIN
 					ToLogService("errors", LogLevel::Error,
 								 "[{}] ctrl_obj->UpdateObject(pri) failed: subskin={}, ret={}",
 								 __FUNCTION__, i, static_cast<long long>(r));
-					goto __ret;
+					return LW_RET_FAILED;
 				}
 			}
 		}
 
 		// update object
-		lwIPrimitive* imp;
-		lwIPrimitive* pp;
-
 		for (DWORD i = 0; i < LW_MAX_SUBSKIN_NUM; i++) {
-			if ((imp = _obj_seq[i]) == 0)
+			lwIPrimitive* imp = _obj_seq[i];
+			if (imp == nullptr) {
 				continue;
-
+			}
 
 			lwMatrix44 mat(_mat_base);
-			pp = imp;
+			lwIPrimitive* pp = imp;
 			while (pp->GetParentID() != LW_INVALID_INDEX) {
 				if (_obj_seq[pp->GetParentID()]) {
 					lwMatrix44Multiply(&mat, _obj_seq[pp->GetParentID()]->GetMatrixLocal(), &mat);
@@ -665,85 +570,71 @@ LW_BEGIN
 			}
 		}
 
-
-		ret = LW_RET_OK;
-
-	__ret:
-		return ret;
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwPhysique::Render() {
-		LW_RESULT ret = LW_RET_FAILED;
+		if (_state_ctrl.GetState(STATE_VISIBLE) == 0) {
+			return LW_RET_OK;
+		}
 
-		if (_state_ctrl.GetState(STATE_VISIBLE) == 0)
-			goto __addr_ret_ok;
+		IDirect3DDeviceX* device = _res_mgr->GetDeviceObject()->GetDevice();
+		device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+		device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		device->SetTexture(1, 0);
 
-		{
-			lwIPrimitive* p;
+		for (DWORD i = 0; i < LW_MAX_SUBSKIN_NUM; i++) {
+			lwIPrimitive* p = _obj_seq[i];
+			if (p == nullptr) {
+				continue;
+			}
 
-			IDirect3DDeviceX* device = _res_mgr->GetDeviceObject()->GetDevice();
-			device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
-			device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-			device->SetTexture(1, 0);
-
-			for (DWORD i = 0; i < LW_MAX_SUBSKIN_NUM; i++) {
-				if ((p = _obj_seq[i]) == 0)
-					continue;
-
-				if (_scene_mgr && p->GetState(STATE_TRANSPARENT)) {
-					if (LW_RESULT r = _scene_mgr->AddTransparentPrimitive(p); LW_FAILED(r)) {
-						ToLogService("errors", LogLevel::Error,
-									 "[{}] AddTransparentPrimitive failed: subskin={}, ret={}",
-									 __FUNCTION__, i, static_cast<long long>(r));
-						goto __ret;
-					}
+			if (_scene_mgr && p->GetState(STATE_TRANSPARENT)) {
+				if (LW_RESULT r = _scene_mgr->AddTransparentPrimitive(p); LW_FAILED(r)) {
+					ToLogService("errors", LogLevel::Error,
+								 "[{}] AddTransparentPrimitive failed: subskin={}, ret={}",
+								 __FUNCTION__, i, static_cast<long long>(r));
+					return LW_RET_FAILED;
 				}
-				else {
-					if (mIndexColourFilterList.find(i) != mIndexColourFilterList.end()) {
-						IDirect3DDeviceX* device = _res_mgr->GetDeviceObject()->GetDevice();
+				continue;
+			}
 
-						static IDirect3DTextureX* texture = 0;
-						if (!texture) {
-							texture = _res_mgr->getMonochromaticTexture(mIndexColourFilterList[i].first,
-																		mIndexColourFilterList[i].second);
-						}
-						device->SetTexture(1, texture);
-						device->SetTextureStageState(1, D3DTSS_COLOROP, mIndexTextureOPList[i]);
-						device->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
-						device->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-
-						device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-						device->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
-						device->SetTextureStageState(1, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
-					}
-
-
-					if (LW_RESULT r = p->Render(); LW_FAILED(r)) {
-						ToLogService("errors", LogLevel::Error,
-									 "[{}] p->Render failed: subskin={}, ret={}",
-									 __FUNCTION__, i, static_cast<long long>(r));
-						goto __ret;
-					}
-
-					if (mIndexColourFilterList.find(i) != mIndexColourFilterList.end()) {
-						IDirect3DDeviceX* device = _res_mgr->GetDeviceObject()->GetDevice();
-						device->SetTexture(1, 0);
-						device->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
-						device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-						device->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTOP_DISABLE);
-						device->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTOP_DISABLE);
-
-						device->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTOP_DISABLE);
-						device->SetTextureStageState(1, D3DTSS_ALPHAARG2, D3DTOP_DISABLE);
-						device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-					}
+			const bool hasFilter = mIndexColourFilterList.find(i) != mIndexColourFilterList.end();
+			if (hasFilter) {
+				static IDirect3DTextureX* texture = nullptr;
+				if (!texture) {
+					texture = _res_mgr->getMonochromaticTexture(mIndexColourFilterList[i].first,
+																mIndexColourFilterList[i].second);
 				}
+				device->SetTexture(1, texture);
+				device->SetTextureStageState(1, D3DTSS_COLOROP, mIndexTextureOPList[i]);
+				device->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
+				device->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+				device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+				device->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
+				device->SetTextureStageState(1, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
+			}
+
+			if (LW_RESULT r = p->Render(); LW_FAILED(r)) {
+				ToLogService("errors", LogLevel::Error,
+							 "[{}] p->Render failed: subskin={}, ret={}",
+							 __FUNCTION__, i, static_cast<long long>(r));
+				return LW_RET_FAILED;
+			}
+
+			if (hasFilter) {
+				device->SetTexture(1, 0);
+				device->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+				device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+				device->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTOP_DISABLE);
+				device->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTOP_DISABLE);
+				device->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTOP_DISABLE);
+				device->SetTextureStageState(1, D3DTSS_ALPHAARG2, D3DTOP_DISABLE);
+				device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 			}
 		}
-	__addr_ret_ok:
-		ret = LW_RET_OK;
-	__ret:
-		return ret;
+
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwPhysique::HitTestPrimitive(lwPickInfo* info, const lwVector3* org, const lwVector3* ray) {
@@ -796,41 +687,37 @@ LW_BEGIN
 	}
 
 	LW_RESULT lwPhysique::SetItemLink(const lwItemLinkInfo* info) {
-		LW_RESULT ret = LW_RET_FAILED;
-
-		if (_anim_agent == NULL)
-			goto __ret;
-
-		{
-			lwAnimCtrlObjTypeInfo type_info;
-			type_info.type = ANIM_CTRL_TYPE_BONE;
-			type_info.data[0] = LW_INVALID_INDEX;
-			type_info.data[1] = LW_INVALID_INDEX;
-
-			lwIAnimCtrlObjBone* ctrl_obj = (lwIAnimCtrlObjBone*)_anim_agent->GetAnimCtrlObj(&type_info);
-			if (ctrl_obj == NULL)
-				goto __ret;
-
-			{
-				lwIAnimCtrlBone* ctrl_bone = (lwIAnimCtrlBone*)ctrl_obj->GetAnimCtrl();
-
-				if (ctrl_bone == NULL)
-					goto __ret;
-
-				if (ctrl_bone->GetDummyRTM(info->link_parent_id) == NULL)
-					goto __ret;
-
-				if (info->obj->GetPrimitive() == 0)
-					goto __ret;
-
-				ret = info->obj->SetLinkCtrl(this, info->link_parent_id, info->link_item_id);
-			}
+		if (_anim_agent == nullptr) {
+			return LW_RET_FAILED;
 		}
-	__ret:
-		return ret;
+
+		lwAnimCtrlObjTypeInfo type_info;
+		type_info.type = ANIM_CTRL_TYPE_BONE;
+		type_info.data[0] = LW_INVALID_INDEX;
+		type_info.data[1] = LW_INVALID_INDEX;
+
+		auto* ctrl_obj = static_cast<lwIAnimCtrlObjBone*>(_anim_agent->GetAnimCtrlObj(&type_info));
+		if (ctrl_obj == nullptr) {
+			return LW_RET_FAILED;
+		}
+
+		auto* ctrl_bone = static_cast<lwIAnimCtrlBone*>(ctrl_obj->GetAnimCtrl());
+		if (ctrl_bone == nullptr) {
+			return LW_RET_FAILED;
+		}
+
+		if (ctrl_bone->GetDummyRTM(info->link_parent_id) == nullptr) {
+			return LW_RET_FAILED;
+		}
+
+		if (info->obj->GetPrimitive() == nullptr) {
+			return LW_RET_FAILED;
+		}
+
+		return info->obj->SetLinkCtrl(this, info->link_parent_id, info->link_item_id);
 	}
 
-	LW_RESULT lwPhysique::ClearItemLink(lwIItem* obj) {
+	LW_RESULT lwPhysique::ClearItemLink(lwItem* obj) {
 		return obj->ClearLinkCtrl();
 	}
 
@@ -856,4 +743,4 @@ LW_BEGIN
 		return LW_RET_OK;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

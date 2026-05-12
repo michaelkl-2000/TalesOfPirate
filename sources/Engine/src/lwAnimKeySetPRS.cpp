@@ -1,10 +1,10 @@
-﻿//
+//
 #include "stdafx.h"
 
 #include "lwAnimKeySetPRS.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwAnimKeySetPRS2
 	template <class T>
 	LW_RESULT lwKeyDataSearch(DWORD* ret_min, DWORD* ret_max, DWORD key, T* data_seq, DWORD data_num) {
@@ -638,4 +638,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

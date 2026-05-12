@@ -1,8 +1,8 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 #include "MPTile.h"
 #include "MPMath.h"
 #include "lwTimer.h"
-LW_USING;
+using namespace Corsairs::Engine::Render;
 
 int MPTile::Offset[4][2] =
 {

@@ -1,27 +1,28 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 #include "lwMath.h"
 #include "lwInterface.h"
 #include "lwObjectMethod.h"
+#include "lwItem.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class MPSceneItem : public lwMatrixCtrl {
 	private:
-		lwIItem* _obj;
+		lwItem* _obj;
 
 	public:
 		MPSceneItem();
 		MPSceneItem(lwISysGraphics* sys_graphics);
 		virtual ~MPSceneItem();
 
-		lwIItem* GetObject() {
+		lwItem* GetObject() {
 			return _obj;
 		}
 
-		LW_RESULT Load(std::string_view file, lwItemLoadOptions opts = lwItemLoadOptions::Default);
+		LW_RESULT Load(std::string_view file);
 
 
 		void FrameMove();
@@ -60,4 +61,4 @@ LW_BEGIN
 	typedef MPSceneItem MSPceneItem;
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -82,7 +82,7 @@ BOOL CSceneObj::_Create(int nScriptID, int nType) {
 void CSceneObj::Render() {
 	if (_dwCullingFlag) {
 		DWORD x = 0;
-		lwIModel* model = MPSceneObject::GetObject();
+		lwModel* model = MPSceneObject::GetObject();
 		DWORD pri_num = model->GetPrimitiveNum();
 
 		for (DWORD i = 0; i < pri_num; i++) {

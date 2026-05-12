@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,7 +7,7 @@
 #include "lwInterfaceExt.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwDirectoryBrowser : public lwIDirectoryBrowser {
 		LW_STD_DECLARATION()
 
@@ -30,4 +30,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

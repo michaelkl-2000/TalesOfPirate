@@ -1,9 +1,9 @@
-﻿//
+//
 
 #include "stdafx.h"
 #include "lwxRenderCtrlVS.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	lwIRenderCtrlVS* __RenderCtrlVSProcVSVertexBlend_dx8() {
 		return LW_NEW(lwxRenderCtrlVSVertexBlend_dx8);
 	}
@@ -657,4 +657,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

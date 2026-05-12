@@ -13,10 +13,7 @@
 #include "AssetLoaders.h"
 #include "GeomObjCache.h"
 
-LW_BEGIN
-	//lwItem
-	LW_STD_IMPLEMENTATION(lwItem)
-
+namespace Corsairs::Engine::Render {
 	lwItem::lwItem(lwIResourceMgr* res_mgr)
 		: _res_mgr(res_mgr),
 		  _scene_mgr(nullptr),
@@ -24,7 +21,6 @@ LW_BEGIN
 		  _linkParentId(LW_INVALID_INDEX),
 		  _linkItemId(LW_INVALID_INDEX),
 		  _obj(nullptr),
-		  _id(LW_INVALID_INDEX),
 		  _opacity(1.0f) {
 		lwMatrix44Identity(&_mat_base);
 	}
@@ -33,37 +29,11 @@ LW_BEGIN
 		Destroy();
 	}
 
-	LW_RESULT lwItem::Load(std::string_view file, lwItemLoadOptions opts) {
+	LW_RESULT lwItem::Load(std::string_view file) {
 		if (_obj) {
 			return LW_RET_FAILED;
 		}
 
-		if (opts == lwItemLoadOptions::Default) {
-			if (_TryCopyFromProto(file) == LW_RET_OK) {
-				_FinalizeRegistration();
-				return LW_RET_OK;
-			}
-		}
-
-		if (LW_RESULT r = _LoadFromFile(file); LW_FAILED(r)) {
-			return r;
-		}
-
-		_FinalizeRegistration();
-		return LW_RET_OK;
-	}
-
-	LW_RESULT lwItem::_TryCopyFromProto(std::string_view file) {
-		lwItem* proto = nullptr;
-		_res_mgr->QueryObject(reinterpret_cast<void**>(&proto), OBJ_TYPE_ITEM, file);
-		if (proto == nullptr) {
-			return LW_RET_FAILED;
-		}
-		proto->Copy(this);
-		return LW_RET_OK;
-	}
-
-	LW_RESULT lwItem::_LoadFromFile(std::string_view file) {
 		lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
 		lwISystem* sys = sys_graphics->GetSystem();
 		lwIPathInfo* path_info = nullptr;
@@ -96,12 +66,8 @@ LW_BEGIN
 
 		_obj = imp;
 		SetFileName(file);
-		return LW_RET_OK;
-	}
-
-	void lwItem::_FinalizeRegistration() {
-		_res_mgr->RegisterObject(&_id, this, OBJ_TYPE_ITEM);
 		RegisterSceneMgr(_res_mgr->GetSysGraphics()->GetSceneMgr());
+		return LW_RET_OK;
 	}
 
 	LW_RESULT lwItem::Destroy() {
@@ -112,36 +78,24 @@ LW_BEGIN
 		_obj->Destroy();
 		LW_DELETE(_obj);
 		_obj = nullptr;
+		return LW_RET_OK;
+	}
 
-		_res_mgr->UnregisterObject(NULL, _id, OBJ_TYPE_ITEM);
-		_id = LW_INVALID_INDEX;
+	LW_RESULT lwItem::Copy(const lwItem* src_obj) {
+		_file_name = src_obj->_file_name;
+		src_obj->_obj->Clone(&_obj);
+
+		_mat_base = src_obj->_mat_base;
+		_link_ctrl = src_obj->_link_ctrl;
+		_linkItemId = src_obj->_linkItemId;
+		_linkParentId = src_obj->_linkParentId;
 
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwItem::Copy(lwIItem* src_obj) {
-		lwItem* o = static_cast<lwItem*>(src_obj);
-
-		_file_name = o->_file_name;
-		o->_obj->Clone(&_obj);
-
-		_mat_base = o->_mat_base;
-		_link_ctrl = o->_link_ctrl;
-		_linkItemId = o->_linkItemId;
-		_linkParentId = o->_linkParentId;
-
-		// _id не копируем — caller (lwItem::Load) сразу зарегистрирует новый
-		// id в _res_mgr через _FinalizeRegistration. Копирование чужого id
-		// раньше затиралось в Load — это был dead-write.
-
-		return LW_RET_OK;
-	}
-
-	LW_RESULT lwItem::Clone(lwIItem** ret_obj) {
-		lwIItem* item = nullptr;
-		_res_mgr->CreateItem(&item);
-		lwItem* o = static_cast<lwItem*>(item);
-
+	LW_RESULT lwItem::Clone(lwItem** ret_obj) {
+		lwItem* o = nullptr;
+		_res_mgr->CreateItem(&o);
 		o->Copy(this);
 
 		*ret_obj = o;
@@ -367,4 +321,4 @@ LW_BEGIN
 		return LW_RET_OK;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

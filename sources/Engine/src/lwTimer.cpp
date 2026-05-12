@@ -1,8 +1,8 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwTimer.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwTimer
 	LW_STD_IMPLEMENTATION(lwTimer)
 
@@ -364,4 +364,4 @@ LW_BEGIN
 	// lwTimerPeriod
 	LW_STD_IMPLEMENTATION(lwTimerPeriod)
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -17,7 +17,7 @@
 // (циклическая зависимость — он сам тянет lwExpObj.h).
 namespace Corsairs::Engine::Render { class LgoLoader; }
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 #define USE_ANIM_MAT43
 
 
@@ -908,4 +908,4 @@ LW_BEGIN
 
 	LW_RESULT lwCopyAnimKeySetPRS(lwAnimKeySetPRS* dst, const lwAnimKeySetPRS* src);
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -6,7 +6,7 @@
 #include "lwErrorCode.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwAnimCtrlObjMat : public lwIAnimCtrlObjMat {
 		enum { THIS_TYPE = ANIM_CTRL_TYPE_MAT };
 
@@ -280,4 +280,4 @@ LW_BEGIN
 		LW_RESULT ExtractAnimData(lwAnimDataInfo* data_info);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

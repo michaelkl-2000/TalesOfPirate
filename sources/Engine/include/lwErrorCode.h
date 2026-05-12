@@ -1,9 +1,9 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	enum lwErrCodeEnum {
 		LW_RET_OK_1 = 1,
 		LW_RET_OK_2 = 2,
@@ -31,4 +31,4 @@ LW_BEGIN
 #define LW_FAILED( r )      ( (LW_RESULT)(r) < 0 )
 #define LW_SUCCEEDED( r )   ( (LW_RESULT)(r) >= 0 )
 
-LW_END
+} // namespace Corsairs::Engine::Render

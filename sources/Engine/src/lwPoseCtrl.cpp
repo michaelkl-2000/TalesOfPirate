@@ -1,10 +1,10 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwPoseCtrl.h"
 #include "lwErrorCode.h"
 #include <string>
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_STD_IMPLEMENTATION(lwPoseCtrl)
 
 	// Load/Save (file и FILE*) перенесены в Corsairs::Engine::Render::PoseCtrlLoader
@@ -424,4 +424,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

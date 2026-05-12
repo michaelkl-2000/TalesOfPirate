@@ -1,10 +1,10 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 #include "lwStdInc.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	struct lwFVFStruct_XyzNormal {
 		lwVector3 pos;
 		lwVector3 normal;
@@ -172,4 +172,4 @@ LW_BEGIN
 #define FVF_XYZB4UBYTE4NORMALTEX2 (D3DFVF_XYZB4 | D3DFVF_LASTBETA_UBYTE4 | D3DFVF_NORMAL | D3DFVF_TEX2 )
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

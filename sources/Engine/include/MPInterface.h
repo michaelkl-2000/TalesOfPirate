@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 
@@ -12,7 +12,7 @@
 #include "lwIFunc.h"
 #include "lwIUtil.h"
 
-LW_USING;
+using namespace Corsairs::Engine::Render;
 
 typedef lwAnimCtrlObjTypeInfo MPAnimCtrlObjTypeInfo;
 typedef lwVector2 MPVector2;
@@ -38,7 +38,7 @@ typedef lwDwordByte4 MPDwordByte4;
 typedef lwIHelperObject MPIHelperObject;
 typedef lwIMesh MPIMesh;
 typedef lwIPathInfo MPIPathInfo;
-typedef lwIPhysique MPIPhysique;
+typedef lwPhysique MPIPhysique;
 typedef lwIPoseCtrl MPIPoseCtrl;
 typedef lwIPrimitive MPIPrimitive;
 typedef lwIRenderStateAtomSet MPIRenderStateAtomSet;

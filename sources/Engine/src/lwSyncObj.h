@@ -1,11 +1,11 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 #include "lwStdInc.h"
 #include "lwErrorCode.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwEvent {
 	public:
 		HANDLE _handle;
@@ -148,4 +148,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

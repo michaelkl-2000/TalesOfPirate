@@ -91,7 +91,7 @@ ResaveResult ResaveViaBak(const fs::path& path, LoadFn&& load, SaveFn&& save) {
 
 ResaveResult ResaveLgo(const fs::path& path) {
     using LgoLoader = Corsairs::Engine::Render::LgoLoader;
-    MindPower::lwGeomObjInfo* info = nullptr;
+    Corsairs::Engine::Render::lwGeomObjInfo* info = nullptr;
     auto cleanup = [&](){ delete info; info = nullptr; };
 
     auto load = [&](const std::string& f) {
@@ -111,7 +111,7 @@ ResaveResult ResaveLgo(const fs::path& path) {
 
 ResaveResult ResaveLmo(const fs::path& path) {
     using LgoLoader = Corsairs::Engine::Render::LgoLoader;
-    MindPower::lwModelObjInfo info;
+    Corsairs::Engine::Render::lwModelObjInfo info;
 
     auto load = [&](const std::string& f) {
         return !LW_FAILED(LgoLoader::LoadModelObj(info, f));
@@ -124,7 +124,7 @@ ResaveResult ResaveLmo(const fs::path& path) {
 
 ResaveResult ResaveLxo(const fs::path& path) {
     using LgoLoader = Corsairs::Engine::Render::LgoLoader;
-    MindPower::lwModelInfo info;
+    Corsairs::Engine::Render::lwModelInfo info;
 
     auto load = [&](const std::string& f) {
         return !LW_FAILED(LgoLoader::LoadModel(info, f));
@@ -137,7 +137,7 @@ ResaveResult ResaveLxo(const fs::path& path) {
 
 ResaveResult ResaveLab(const fs::path& path) {
     using LgoLoader = Corsairs::Engine::Render::LgoLoader;
-    MindPower::lwAnimDataBone info;
+    Corsairs::Engine::Render::lwAnimDataBone info;
 
     auto load = [&](const std::string& f) {
         return !LW_FAILED(LgoLoader::LoadAnimDataBone(info, f));
@@ -247,7 +247,7 @@ ResaveResult ResaveDds(const fs::path& path) {
     if (!d3d.IsValid()) {
         return {false, "Direct3D9 NULLREF device creation failed"};
     }
-    MindPower::lwDDSFile dds;
+    Corsairs::Engine::Render::lwDDSFile dds;
     dds.SetDevice(d3d.Device());
 
     auto load = [&](const std::string& f) {
@@ -322,7 +322,7 @@ ResaveResult ResaveCsf(const fs::path& path) {
 
 ResaveResult ResaveLet(const fs::path& path) {
     using EfxTrackLoader = Corsairs::Engine::Render::EfxTrackLoader;
-    MindPower::lwEfxTrack track;
+    Corsairs::Engine::Render::lwEfxTrack track;
 
     auto load = [&](const std::string& f) {
         return !LW_FAILED(EfxTrackLoader::Load(track, f));

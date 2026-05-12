@@ -1,10 +1,10 @@
-﻿//
+//
 #include "stdafx.h"
 
 
 #include "lwCoordinateSys.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_STD_IMPLEMENTATION(lwCoordinateSys)
 
 	lwCoordinateSys::lwCoordinateSys() {
@@ -53,4 +53,4 @@ LW_BEGIN
 		return LW_RET_OK;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

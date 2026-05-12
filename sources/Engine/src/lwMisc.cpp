@@ -1,8 +1,8 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwMisc.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwBuffer
 	LW_STD_IMPLEMENTATION(lwBuffer)
 
@@ -389,4 +389,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

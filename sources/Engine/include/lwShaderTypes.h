@@ -1,11 +1,11 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 #include "lwDirectX.h"
 #include "lwStdInc.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	enum lwVertexDeclarationTypesEnum {
 		// vertex declaration
 		__begin_decl_type = 0,
@@ -100,4 +100,4 @@ LW_BEGIN
 		return i;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

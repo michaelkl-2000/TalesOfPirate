@@ -12,7 +12,7 @@
 
 #include "fontstash.h"
 
-using MindPower::lwITex;
+using Corsairs::Engine::Render::lwITex;
 
 namespace fons {
 	namespace {

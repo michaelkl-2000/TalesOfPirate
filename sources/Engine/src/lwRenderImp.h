@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "lwHeader.h"
 #include "lwStdInc.h"
@@ -9,7 +9,7 @@
 #include "lwInterfaceExt.h"
 #include "lwShaderMgr.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// remarks
 	// 1shader
 	//    declshader
@@ -124,4 +124,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

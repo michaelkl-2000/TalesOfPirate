@@ -9,8 +9,10 @@
 #include "lwPrimitive.h"
 #include "lwLinkCtrl.h"
 
-LW_BEGIN
-	class lwItem : public lwIItem {
+namespace Corsairs::Engine::Render {
+	// Был интерфейс lwIItem с единственным реализатором — удалён 2026-05-12.
+	// lwItem теперь standalone, без виртуальной диспетчеризации.
+	class lwItem {
 	private:
 		lwIResourceMgr* _res_mgr;
 		lwISceneMgr* _scene_mgr;
@@ -23,14 +25,17 @@ LW_BEGIN
 		std::string _file_name;
 		lwIPrimitive* _obj;
 		lwMatrix44 _mat_base;
-		DWORD _id;
 		float _opacity;
-
-		LW_STD_DECLARATION()
 
 	public:
 		lwItem(lwIResourceMgr* res_mgr);
 		~lwItem();
+
+		// Был частью lwInterface; сохранён как удобный legacy-вызов
+		// (`obj->Release()` вместо `delete obj`).
+		void Release() {
+			delete this;
+		}
 
 		void SetFileName(std::string_view file) {
 			_file_name = file;
@@ -40,12 +45,12 @@ LW_BEGIN
 			return _file_name;
 		}
 
-		virtual lwIPrimitive* GetPrimitive() {
+		lwIPrimitive* GetPrimitive() {
 			return _obj;
 		}
 
-		LW_RESULT Copy(lwIItem* src_obj);
-		LW_RESULT Clone(lwIItem** ret_obj);
+		LW_RESULT Copy(const lwItem* src_obj);
+		LW_RESULT Clone(lwItem** ret_obj);
 
 		lwMatrix44* GetMatrix() {
 			return &_mat_base;
@@ -57,7 +62,7 @@ LW_BEGIN
 
 		void SetOpacity(float opacity);
 
-		LW_RESULT Load(std::string_view file, lwItemLoadOptions opts = lwItemLoadOptions::Default);
+		LW_RESULT Load(std::string_view file);
 		LW_RESULT Update();
 		LW_RESULT Render();
 		LW_RESULT Destroy();
@@ -99,13 +104,7 @@ LW_BEGIN
 		float GetOpacity() {
 			return _opacity;
 		}
-
-	private:
-		// Шаги Load(file, opts), вынесены ради читаемости.
-		LW_RESULT _TryCopyFromProto(std::string_view file);
-		LW_RESULT _LoadFromFile(std::string_view file);
-		void _FinalizeRegistration();
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -14,7 +14,7 @@ namespace Corsairs::Engine::Render {
 	};
 
 	struct DecodedImage {
-		MindPower::lwColorValue4b* ImageData{};
+		Corsairs::Engine::Render::lwColorValue4b* ImageData{};
 		std::uint32_t Width{};
 		std::uint32_t Height{};
 	};

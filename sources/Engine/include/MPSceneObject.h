@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,11 +7,12 @@
 #include "lwObjectMethod.h"
 #include "MPSceneItem.h"
 #include "MPCharacter.h"
+#include "lwModel.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class MPSceneObject : public lwMatrixCtrl {
 	private:
-		lwIModel* _model;
+		lwModel* _model;
 		MPSceneItem* _link_item_seq[LW_MAX_LINK_ITEM_NUM];
 		DWORD _link_item_num;
 
@@ -56,7 +57,7 @@ LW_BEGIN
 		void SetObjState(DWORD state, BYTE value);
 		DWORD GetObjState(DWORD state) const;
 
-		lwIModel* GetObject() {
+		lwModel* GetObject() {
 			return _model;
 		}
 
@@ -107,4 +108,4 @@ LW_BEGIN
 
 	typedef lwSceneObjectChair MPSceneObjectChair;
 
-LW_END
+} // namespace Corsairs::Engine::Render

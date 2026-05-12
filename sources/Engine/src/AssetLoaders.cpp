@@ -7,7 +7,7 @@
 #include <format>
 #include <memory>
 
-using namespace LW_NAMESPACE;
+using namespace Corsairs::Engine::Render;
 
 namespace Corsairs::Engine::Render {
 
@@ -2374,7 +2374,7 @@ LW_RESULT LgoLoader::LoadModelEx(lwModelInfo& info, std::string_view file,
 
 namespace Corsairs::Engine::Render {
 
-LW_RESULT EfxTrackLoader::Load(LW_NAMESPACE::lwEfxTrack& track, std::string_view file) {
+LW_RESULT EfxTrackLoader::Load(Corsairs::Engine::Render::lwEfxTrack& track, std::string_view file) {
     UniqueFile fp{std::fopen(std::string{file}.c_str(), "rb")};
     if (!fp) {
         ToLogService("errors", LogLevel::Error,
@@ -2382,7 +2382,7 @@ LW_RESULT EfxTrackLoader::Load(LW_NAMESPACE::lwEfxTrack& track, std::string_view
         return LW_RET_FAILED;
     }
 
-    track._data = LW_NEW(LW_NAMESPACE::lwAnimDataMatrix());
+    track._data = LW_NEW(Corsairs::Engine::Render::lwAnimDataMatrix());
     if (LW_RESULT r = LgoLoader::LoadAnimDataMatrix(*track._data, fp.get(), 0); LW_FAILED(r)) {
         ToLogService("errors", LogLevel::Error,
                      "[EfxTrackLoader::Load] LoadAnimDataMatrix failed: file={}, ret={}",
@@ -2392,7 +2392,7 @@ LW_RESULT EfxTrackLoader::Load(LW_NAMESPACE::lwEfxTrack& track, std::string_view
     return LW_RET_OK;
 }
 
-LW_RESULT EfxTrackLoader::Save(const LW_NAMESPACE::lwEfxTrack& track, std::string_view file) {
+LW_RESULT EfxTrackLoader::Save(const Corsairs::Engine::Render::lwEfxTrack& track, std::string_view file) {
     UniqueFile fp{std::fopen(std::string{file}.c_str(), "wb")};
     if (!fp) {
         ToLogService("errors", LogLevel::Error,
@@ -2417,7 +2417,7 @@ LW_RESULT EfxTrackLoader::Save(const LW_NAMESPACE::lwEfxTrack& track, std::strin
 // PoseCtrlLoader
 // =============================================================================
 
-LW_RESULT PoseCtrlLoader::LoadBody(LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp) {
+LW_RESULT PoseCtrlLoader::LoadBody(Corsairs::Engine::Render::lwPoseCtrl& ctrl, std::FILE* fp) {
     if (std::fread(&ctrl._pose_num, sizeof(ctrl._pose_num), 1, fp) != 1) {
         ToLogService("errors", LogLevel::Error,
                      "[PoseCtrlLoader::LoadBody] short fread of pose_num");
@@ -2428,8 +2428,8 @@ LW_RESULT PoseCtrlLoader::LoadBody(LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp
         ctrl._pose_seq = nullptr;
         return LW_RET_OK;
     }
-    ctrl._pose_seq = LGO_NEW_ARRAY(LW_NAMESPACE::lwPoseInfo, ctrl._pose_num);
-    if (std::fread(&ctrl._pose_seq[0], sizeof(LW_NAMESPACE::lwPoseInfo),
+    ctrl._pose_seq = LGO_NEW_ARRAY(Corsairs::Engine::Render::lwPoseInfo, ctrl._pose_num);
+    if (std::fread(&ctrl._pose_seq[0], sizeof(Corsairs::Engine::Render::lwPoseInfo),
                    ctrl._pose_num, fp) != ctrl._pose_num) {
         ToLogService("errors", LogLevel::Error,
                      "[PoseCtrlLoader::LoadBody] short fread of pose_seq[{}]",
@@ -2439,19 +2439,19 @@ LW_RESULT PoseCtrlLoader::LoadBody(LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp
     return LW_RET_OK;
 }
 
-LW_RESULT PoseCtrlLoader::SaveBody(const LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp) {
+LW_RESULT PoseCtrlLoader::SaveBody(const Corsairs::Engine::Render::lwPoseCtrl& ctrl, std::FILE* fp) {
     if (std::fwrite(&ctrl._pose_num, sizeof(ctrl._pose_num), 1, fp) != 1) {
         return LW_RET_FAILED;
     }
     if (ctrl._pose_num > 0
-        && std::fwrite(&ctrl._pose_seq[0], sizeof(LW_NAMESPACE::lwPoseInfo),
+        && std::fwrite(&ctrl._pose_seq[0], sizeof(Corsairs::Engine::Render::lwPoseInfo),
                        ctrl._pose_num, fp) != ctrl._pose_num) {
         return LW_RET_FAILED;
     }
     return LW_RET_OK;
 }
 
-LW_RESULT PoseCtrlLoader::Load(LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view file) {
+LW_RESULT PoseCtrlLoader::Load(Corsairs::Engine::Render::lwPoseCtrl& ctrl, std::string_view file) {
     UniqueFile fp{std::fopen(std::string{file}.c_str(), "rb")};
     if (!fp) {
         ToLogService("errors", LogLevel::Error,
@@ -2473,7 +2473,7 @@ LW_RESULT PoseCtrlLoader::Load(LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view 
     return LoadBody(ctrl, fp.get());
 }
 
-LW_RESULT PoseCtrlLoader::Save(const LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view file) {
+LW_RESULT PoseCtrlLoader::Save(const Corsairs::Engine::Render::lwPoseCtrl& ctrl, std::string_view file) {
     UniqueFile fp{std::fopen(std::string{file}.c_str(), "wb")};
     if (!fp) {
         ToLogService("errors", LogLevel::Error,

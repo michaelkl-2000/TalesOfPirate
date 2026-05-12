@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -9,7 +9,7 @@
 #include "lwClassDecl.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwVertexBuffer;
 	class lwIndexBuffer;
 
@@ -253,4 +253,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

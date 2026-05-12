@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -10,8 +10,11 @@
 #include "lwLinkCtrl.h"
 
 
-LW_BEGIN
-	class lwModel : public lwIModel, public lwLinkCtrl {
+namespace Corsairs::Engine::Render {
+	// Был интерфейс lwIModel с единственным реализатором — удалён 2026-05-13.
+	// lwModel теперь standalone, наследует только lwLinkCtrl ради виртуального
+	// GetLinkCtrlMatrix.
+	class lwModel : public lwLinkCtrl {
 	private:
 		lwIResourceMgr* _res_mgr;
 		lwISceneMgr* _scene_mgr;
@@ -27,11 +30,14 @@ LW_BEGIN
 		lwIHelperObject* _helper_object;
 		float _opacity;
 
-		LW_STD_DECLARATION()
-
 	public:
 		lwModel(lwIResourceMgr* res_mgr);
 		~lwModel();
+
+		// Был частью lwInterface — оставлен ради legacy-вызовов obj->Release().
+		void Release() {
+			delete this;
+		}
 
 		DWORD GetModelID() const {
 			return _model_id;
@@ -45,8 +51,8 @@ LW_BEGIN
 			return _file_name;
 		}
 
-		LW_RESULT Clone(lwIModel** ret_obj);
-		LW_RESULT Copy(lwIModel* src_obj);
+		LW_RESULT Clone(lwModel** ret_obj);
+		LW_RESULT Copy(const lwModel* src_obj);
 
 		lwMatrix44* GetMatrix() {
 			return &_mat_base;
@@ -114,7 +120,7 @@ LW_BEGIN
 		}
 
 		LW_RESULT SetItemLink(const lwItemLinkInfo* info);
-		LW_RESULT ClearItemLink(lwIItem* obj);
+		LW_RESULT ClearItemLink(lwItem* obj);
 
 		// link ctrl method
 		virtual LW_RESULT GetLinkCtrlMatrix(lwMatrix44* mat, DWORD link_id);
@@ -131,4 +137,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "lwD3DSettings.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwInitDefaultD3DCreateParam(lwD3DCreateParam* param, HWND hwnd) {
 		IDirect3DX* d3d = Direct3DCreateX(D3D_SDK_VERSION);
 
@@ -105,4 +105,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

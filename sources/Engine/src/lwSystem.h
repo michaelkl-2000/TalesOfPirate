@@ -1,11 +1,11 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 #include "lwInterfaceExt.h"
 #include "lwClassDecl.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwSystem : public lwISystem {
 	public:
 		static lwISystem* __system;
@@ -46,4 +46,4 @@ LW_BEGIN
 		}
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

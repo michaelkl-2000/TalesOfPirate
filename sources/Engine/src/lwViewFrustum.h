@@ -1,4 +1,4 @@
-﻿//
+//
 /*============================================================================
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -26,7 +26,7 @@ last modified: 2004-10-26, Jack li
 #include "lwInterfaceExt.h"
 #include "lwDirectX.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	enum lwViewFrustumPlaneEnum {
 		VIEWFRUSTUM_TOP = 0,
 		VIEWFRUSTUM_BOTTOM = 1,
@@ -56,4 +56,4 @@ LW_BEGIN
 		float GetDistanceFromNearPlane(const lwVector3* v);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

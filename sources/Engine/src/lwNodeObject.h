@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -9,7 +9,7 @@
 #include "lwMisc.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwNodeBase {
 	protected:
 		// base
@@ -539,4 +539,4 @@ LW_BEGIN
 	LW_RESULT lwNodeObject_DumpObjectTree(lwINodeObject* obj, std::string_view file);
 	LW_RESULT lwNodeObject_GetPrimitiveCullingNum(lwINodeObject* obj, DWORD* num);
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -8,7 +8,7 @@
 #include "lwITypes.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	enum lwInitMeshLibErrorType {
 		INIT_ERR_CREATE_D3D = -1000,
 		INIT_ERR_CREATE_DEVICE = -1001,
@@ -54,4 +54,4 @@ LW_BEGIN
 		lwIThreadPool* tp_loadres;
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

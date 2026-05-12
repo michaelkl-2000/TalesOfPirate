@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 
@@ -11,7 +11,7 @@
 
 #define USE_VS_INDEXED
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	lwVector3 getScale(const lwMatrix44& matrix) {
 		lwVector3 scale;
 		scale.x = sqrt(matrix._11 * matrix._11 + matrix._12 * matrix._12 + matrix._13 * matrix._13);
@@ -1303,4 +1303,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

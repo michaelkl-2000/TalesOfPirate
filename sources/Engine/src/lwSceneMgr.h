@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,7 +7,7 @@
 #include "lwITypes.h"
 #include "lwViewFrustum.h"
 #include "lwInterfaceExt.h"
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// remarks: by lsh
 	// 1scene manger
 	struct lwSortPriProcInfo {
@@ -76,4 +76,4 @@ LW_BEGIN
 		}
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

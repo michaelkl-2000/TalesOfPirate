@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,11 +7,11 @@
 #include "lwDirectX.h"
 #include "lwClassDecl.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwResetDevice(lwISysGraphics* sys_graphics, const D3DPRESENT_PARAMETERS* d3dpp);
-	void lwPhysiqueSetMaterial(lwIPhysique* phy, const lwMaterial* mtl);
-	lwPlayPoseInfo* lwItemGetPlayPoseInfo(lwIItem* item, DWORD ctrl_type);
-	lwIAnimCtrl* lwItemGetAnimCtrl(lwIItem* item, DWORD ctrl_type);
+	void lwPhysiqueSetMaterial(lwPhysique* phy, const lwMaterial* mtl);
+	lwPlayPoseInfo* lwItemGetPlayPoseInfo(lwItem* item, DWORD ctrl_type);
+	lwIAnimCtrl* lwItemGetAnimCtrl(lwItem* item, DWORD ctrl_type);
 	LW_RESULT lwPrimitiveSetRenderCtrl(lwIPrimitive* p, DWORD ctrl_type);
 	LW_RESULT lwPrimitiveSetVertexShader(lwIPrimitive* p, DWORD shader_type);
 	LW_RESULT lwPrimitiveGetObjHeight(lwIPrimitive* p, float* out_height);
@@ -42,4 +42,4 @@ LW_BEGIN
 		static LW_RESULT PlayDefaultPose(lwINodeObject* obj);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

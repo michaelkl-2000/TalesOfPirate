@@ -1,11 +1,11 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
 #include "lwMath.h"
 #include "lwDirectX.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwCamera {
 	public:
 		static void GetMatrixCameraToView(lwMatrix44* mat, const lwMatrix44* cam_mat);
@@ -45,4 +45,4 @@ LW_BEGIN
 		void GetMatrixProj(lwMatrix44* mat);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

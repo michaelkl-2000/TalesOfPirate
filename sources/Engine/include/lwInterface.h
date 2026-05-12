@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include <cstdint>
@@ -13,7 +13,7 @@
 #include "lwITypes2.h"
 #include "lwShaderTypes.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwISystem;
 	class lwISysGraphics;
 	class lwIDeviceObject;
@@ -49,6 +49,7 @@ LW_BEGIN
 	class lwITex;
 	class lwIAnimKeySetFloat;
 	class lwICoordinateSys;
+	class lwItem;
 
 	// ============= begin base interface method =============
 	class lwInterface {
@@ -113,8 +114,8 @@ LW_STD_GETINTERFACE( cls )
 		// Load/Save(string_view) для .lab-файлов перенесены в
 		// Corsairs::Engine::Render::LgoLoader::{Load,Save}AnimDataBone(...).
 		// Интерфейс остаётся как тип-маркер — `lwAnimCtrlBone::GetInterface`
-		// делает `static_cast<lwIAnimDataBone*>(&_data)`, и `m_AnimDataMap` в
-		// `lwGeomManager` хранит указатели именно этого типа.
+		// делает `static_cast<lwIAnimDataBone*>(&_data)`. Указатели хранит
+		// `Corsairs::Engine::Render::BoneAnimCache`.
 	};
 
 	class LW_DECLSPEC_NOVTABLE lwIAnimDataMatrix : public lwIAnimData {
@@ -269,150 +270,16 @@ LW_STD_GETINTERFACE( cls )
 	};
 
 
-	class LW_DECLSPEC_NOVTABLE lwIPhysique : public lwInterface {
-	public:
-		virtual lwIResourceMgr* GetResourceMgr() PURE_METHOD;
+	// lwIPhysique был интерфейсом с единственным реализатором (lwPhysique). Удалён
+	// 2026-05-13 — класс lwPhysique теперь standalone.
+	class lwPhysique;
 
-		virtual LW_RESULT Destroy() PURE_METHOD;
+	// lwIModel был интерфейсом с единственным реализатором (lwModel). Удалён
+	// 2026-05-13 — класс lwModel теперь standalone.
+	class lwModel;
 
-		virtual LW_RESULT LoadBone(std::string_view file) PURE_METHOD;
-		virtual LW_RESULT LoadPrimitive(DWORD part_id, std::string_view file) PURE_METHOD;
-		virtual LW_RESULT LoadPrimitive(DWORD part_id, lwGeomObjInfo* geom_info) PURE_METHOD;
-		virtual LW_RESULT DestroyPrimitive(DWORD part_id) PURE_METHOD;
-		virtual LW_RESULT CheckPrimitive(DWORD part_id) PURE_METHOD;
-
-		virtual LW_RESULT Update() PURE_METHOD;
-		virtual LW_RESULT Render() PURE_METHOD;
-
-		virtual lwMatrix44* GetMatrix() PURE_METHOD;
-		virtual void SetMatrix(const lwMatrix44* mat) PURE_METHOD;
-
-		virtual void SetOpacity(float opacity) PURE_METHOD;
-
-		virtual LW_RESULT HitTestPrimitive(lwPickInfo* info, const lwVector3* org, const lwVector3* ray) PURE_METHOD;
-		virtual LW_RESULT HitTestPhysique(lwPickInfo* info, const lwVector3* org, const lwVector3* ray) PURE_METHOD;
-
-		virtual void ShowHelperObject(int show) PURE_METHOD;
-		virtual void ShowBoundingObjectPhysique(int show) PURE_METHOD;
-
-		virtual LW_RESULT SetItemLink(const lwItemLinkInfo* info) PURE_METHOD;
-		virtual LW_RESULT ClearItemLink(lwIItem* obj) PURE_METHOD;
-
-		virtual void SetObjState(DWORD state, BYTE value) PURE_METHOD;
-		virtual DWORD GetObjState(DWORD state) const PURE_METHOD;
-
-		virtual lwIPrimitive* GetPrimitive(DWORD id) PURE_METHOD;
-		virtual lwIAnimCtrlAgent* GetAnimCtrlAgent() PURE_METHOD;
-
-		virtual LW_RESULT RegisterSceneMgr(lwISceneMgr* scene_mgr) PURE_METHOD;
-		virtual LW_RESULT SetTextureLOD(DWORD level) PURE_METHOD;
-		virtual float GetOpacity() PURE_METHOD;
-		virtual void Start() PURE_METHOD;
-		virtual void End() PURE_METHOD;
-		virtual bool isLoaded() PURE_METHOD;
-		virtual void setComponentColour(size_t index, D3DCOLOR colour, const std::string& filterTextureName)
-		PURE_METHOD;
-		virtual void setTextureOperation(size_t index, D3DTEXTUREOP operation) PURE_METHOD;
-		virtual std::string_view getTextureOperationDescription(size_t operation) PURE_METHOD;
-	};
-
-	class LW_DECLSPEC_NOVTABLE lwIModel : public lwInterface {
-	public:
-		virtual LW_RESULT Load(lwIModelObjInfo* info) PURE_METHOD;
-		virtual LW_RESULT Load(std::string_view file, DWORD model_id = LW_INVALID_INDEX) PURE_METHOD;
-		virtual LW_RESULT Update() PURE_METHOD;
-		virtual LW_RESULT Render() PURE_METHOD;
-		virtual LW_RESULT RenderPrimitive(DWORD id) PURE_METHOD;
-		virtual LW_RESULT RenderHelperObject() PURE_METHOD;
-		virtual LW_RESULT Destroy() PURE_METHOD;
-
-		virtual lwMatrix44* GetMatrix() PURE_METHOD;
-		virtual void SetMatrix(const lwMatrix44* mat) PURE_METHOD;
-		virtual void SetMaterial(const lwMaterial* mtl) PURE_METHOD;
-		virtual void SetOpacity(float opacity) PURE_METHOD;
-
-		virtual LW_RESULT HitTest(lwPickInfo* info, const lwVector3* org, const lwVector3* ray) PURE_METHOD;
-		virtual LW_RESULT HitTestHelperBox(lwPickInfo* info, const lwVector3* org, const lwVector3* ray,
-										   std::string_view type_name) PURE_METHOD;
-		virtual LW_RESULT HitTestHelperMesh(lwPickInfo* info, const lwVector3* org, const lwVector3* ray,
-											std::string_view type_name) PURE_METHOD;
-		virtual LW_RESULT HitTestPrimitive(lwPickInfo* info, const lwVector3* org, const lwVector3* ray) PURE_METHOD;
-		virtual LW_RESULT HitTestPrimitiveHelperBox(lwPickInfo* info, const lwVector3* org, const lwVector3* ray,
-													std::string_view type_name) PURE_METHOD;
-		virtual LW_RESULT HitTestPrimitiveHelperMesh(lwPickInfo* info, const lwVector3* org, const lwVector3* ray,
-													 std::string_view type_name) PURE_METHOD;
-
-		virtual LW_RESULT PlayDefaultAnimation(float velocity = 1.0f) PURE_METHOD;
-
-		virtual void ShowHelperObject(int show) PURE_METHOD;
-		virtual void ShowHelperMesh(int show);
-		virtual void ShowHelperBox(int show);
-		virtual void ShowBoundingObject(int show);
-
-		virtual DWORD GetPrimitiveNum() const PURE_METHOD;
-		virtual lwIPrimitive* GetPrimitive(DWORD id) PURE_METHOD;
-		virtual lwIHelperObject* GetHelperObject() PURE_METHOD;
-
-		virtual void SetObjState(DWORD state, BYTE value) PURE_METHOD;
-		virtual DWORD GetObjState(DWORD state) const PURE_METHOD;
-
-		virtual LW_RESULT RegisterSceneMgr(lwISceneMgr* scene_mgr) PURE_METHOD;
-
-		virtual LW_RESULT SetItemLink(const lwItemLinkInfo* info) PURE_METHOD;
-		virtual LW_RESULT ClearItemLink(lwIItem* obj) PURE_METHOD;
-		virtual LW_RESULT SetTextureLOD(DWORD level) PURE_METHOD;
-		virtual float GetOpacity() PURE_METHOD;
-
-		virtual LW_RESULT CullPrimitive() PURE_METHOD;
-		virtual DWORD GetCullingPrimitiveNum() PURE_METHOD;
-		virtual LW_RESULT ExtractModelInfo(lwIModelObjInfo* out_info) PURE_METHOD;
-	};
-
-	// Опции загрузки lwItem. `SkipPool` пропускает поиск готового
-	// прототипа в `_res_mgr` (OBJ_TYPE_ITEM) — используется при загрузке
-	// эффектов через EffectMeshStore, где прототип не нужен.
-	enum class lwItemLoadOptions : std::uint8_t {
-		Default = 0,
-		SkipPool = 1,
-	};
-
-	class LW_DECLSPEC_NOVTABLE lwIItem : public lwInterface {
-	public:
-		virtual lwMatrix44* GetMatrix() PURE_METHOD;
-		virtual void SetMatrix(const lwMatrix44* mat) PURE_METHOD;
-
-		virtual LW_RESULT Load(std::string_view file, lwItemLoadOptions opts = lwItemLoadOptions::Default) PURE_METHOD;
-		virtual LW_RESULT Update() PURE_METHOD;
-		virtual LW_RESULT Render() PURE_METHOD;
-		virtual LW_RESULT Destroy() PURE_METHOD;
-
-		virtual LW_RESULT Copy(lwIItem* src_obj) PURE_METHOD;
-		virtual LW_RESULT Clone(lwIItem** ret_obj) PURE_METHOD;
-
-		virtual lwIPrimitive* GetPrimitive() PURE_METHOD;
-
-		virtual LW_RESULT HitTestPrimitive(lwPickInfo* info, const lwVector3* org, const lwVector3* ray) PURE_METHOD;
-
-		virtual void SetMaterial(const lwMaterial* mtl) PURE_METHOD;
-		virtual void SetOpacity(float opacity) PURE_METHOD;
-
-		virtual void ShowBoundingObject(int show) PURE_METHOD;
-
-		virtual LW_RESULT PlayDefaultAnimation(float velocity = 1.0f) PURE_METHOD;
-
-		virtual LW_RESULT GetDummyMatrix(lwMatrix44* mat, DWORD id) PURE_METHOD;
-		virtual const lwMatrix44* GetObjDummyMatrix(DWORD id) PURE_METHOD;
-		virtual LW_RESULT GetObjDummyRunTimeMatrix(lwMatrix44* mat, DWORD id) PURE_METHOD;
-
-		virtual LW_RESULT SetLinkCtrl(lwLinkCtrl* ctrl, DWORD link_parent_id, DWORD link_item_id) PURE_METHOD;
-		virtual LW_RESULT ClearLinkCtrl() PURE_METHOD;
-		virtual void SetObjState(DWORD state, BYTE value) PURE_METHOD;
-		virtual DWORD GetObjState(DWORD state) const PURE_METHOD;
-
-		virtual LW_RESULT RegisterSceneMgr(lwISceneMgr* scene_mgr) PURE_METHOD;
-		virtual LW_RESULT SetTextureLOD(DWORD level) PURE_METHOD;
-		virtual float GetOpacity() PURE_METHOD;
-	};
+	// lwIItem был интерфейсом с единственным реализатором (lwItem). Удалён
+	// 2026-05-12 — класс lwItem теперь standalone, методы non-virtual.
 
 	class LW_DECLSPEC_NOVTABLE lwISysGraphics : public lwInterface {
 	public:
@@ -1008,9 +875,9 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT CreateRenderCtrlVS(lwIRenderCtrlVS** ret_obj, DWORD type) PURE_METHOD;
 		virtual LW_RESULT CreatePrimitive(lwIPrimitive** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreateHelperObject(lwIHelperObject** ret_obj) PURE_METHOD;
-		virtual LW_RESULT CreatePhysique(lwIPhysique** ret_obj) PURE_METHOD;
-		virtual LW_RESULT CreateModel(lwIModel** ret_obj) PURE_METHOD;
-		virtual LW_RESULT CreateItem(lwIItem** ret_obj) PURE_METHOD;
+		virtual LW_RESULT CreatePhysique(lwPhysique** ret_obj) PURE_METHOD;
+		virtual LW_RESULT CreateModel(lwModel** ret_obj) PURE_METHOD;
+		virtual LW_RESULT CreateItem(lwItem** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreateNode(lwINode** ret_obj, DWORD type) PURE_METHOD;
 		virtual LW_RESULT CreateNodeObject(lwINodeObject** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreateStaticStreamMgr(lwIStaticStreamMgr** mgr) PURE_METHOD;
@@ -1649,4 +1516,4 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT Clone(lwIHeap** out_heap) PURE_METHOD;
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

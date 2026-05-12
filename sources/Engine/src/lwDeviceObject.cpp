@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwDeviceObject.h"
 #include "lwSystem.h"
@@ -12,7 +12,7 @@
 
 // Del by lark.li 20080611
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_STD_IMPLEMENTATION(lwDeviceObject)
 
 	inline DWORD FTODW(float v) {
@@ -1251,4 +1251,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

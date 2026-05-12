@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,7 +7,7 @@
 #include "lwSlotMap.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 #define LW_INVALID_STREAM_ID        0xffff
 #define LW_INVALID_STREAMENTRY_ID   0xffff
 
@@ -590,4 +590,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

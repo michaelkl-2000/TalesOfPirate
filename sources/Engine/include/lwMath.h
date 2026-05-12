@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include <math.h>
@@ -39,7 +39,7 @@ typedef D3DXQUATERNION lwQuaternion;
 
 #endif
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 #define OP_MATRIX_REPLACE		0
 #define OP_MATRIX_LOCAL			1
 #define OP_MATRIX_GLOBAL		2
@@ -984,7 +984,7 @@ LW_BEGIN
 
 	// compatiable old method
 	// end namesapce lsh
-LW_END
+} // namespace Corsairs::Engine::Render
 
 #ifndef lwMatrix33Multiply
 #define lwMatrix33Multiply _lwMatrix33Multiply

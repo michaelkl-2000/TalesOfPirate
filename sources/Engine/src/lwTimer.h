@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -6,7 +6,7 @@
 #include "lwErrorCode.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	struct lwTimerInfo {
 		lwTimerProc proc;
 		DWORD interval;
@@ -176,4 +176,4 @@ LW_BEGIN
 	__declspec(selectany) int lwTimerPeriod::_period_ref = 0;
 	__declspec(selectany) TIMECAPS lwTimerPeriod::_time_caps;
 
-LW_END
+} // namespace Corsairs::Engine::Render

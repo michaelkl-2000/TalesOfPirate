@@ -1,4 +1,4 @@
-﻿//################################
+//################################
 // MindPower 3D Engine
 // Created By   : Ryan Wang 
 // Last Modifed : 2004/02/06
@@ -22,10 +22,7 @@
 using namespace std;
 //Del by lark.li 20080611
 
-LW_USING
-
-
-MPGameApp::MPGameApp()
+using namespace Corsairs::Engine::Render;MPGameApp::MPGameApp()
 	: _dwRenderUseTime(0),
 	  _dwFrameMoveUseTime(0),
 	  _bCheckInputWnd(TRUE) {

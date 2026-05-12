@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -6,7 +6,7 @@
 #include "lwShaderTypes.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// ===============================================
 	// directX8 shader manager
 
@@ -55,4 +55,4 @@ LW_BEGIN
 	typedef lwShaderMgr9 lwShaderMgr;
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

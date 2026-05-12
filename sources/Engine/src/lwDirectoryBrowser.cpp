@@ -1,9 +1,9 @@
-﻿//
+//
 #include "stdafx.h"
 
 #include "lwDirectoryBrowser.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwDirectoryBrowser
 	LW_STD_IMPLEMENTATION(lwDirectoryBrowser)
 
@@ -83,4 +83,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

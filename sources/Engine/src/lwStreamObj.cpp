@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwStreamObj.h"
 #include "lwDeviceObject.h"
@@ -8,7 +8,7 @@
 
 using Corsairs::Engine::Diagnostic::EngineDiag;
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwStreamObject::Init(DWORD buffer_size) {
 		_total_size = buffer_size;
 		_locked_size = 0;
@@ -2425,4 +2425,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

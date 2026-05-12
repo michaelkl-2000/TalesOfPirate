@@ -79,7 +79,7 @@ namespace Corsairs::Engine::Render {
 		const std::size_t pixelCount =
 			static_cast<std::size_t>(width) * static_cast<std::size_t>(height);
 
-		auto* buf = new MindPower::lwColorValue4b[pixelCount];
+		auto* buf = new Corsairs::Engine::Render::lwColorValue4b[pixelCount];
 
 		// colorKey сравнивается ТОЛЬКО по RGB (младшие 24 бита), alpha игнорируется —
 		// это совместимо с прежним поведением lwBitmap::_SetAlphaChannel.
@@ -90,7 +90,7 @@ namespace Corsairs::Engine::Render {
 
 		for (std::size_t i = 0; i < pixelCount; ++i) {
 			const stbi_uc* src = pixels + i * 4;
-			MindPower::lwColorValue4b* dst = &buf[i];
+			Corsairs::Engine::Render::lwColorValue4b* dst = &buf[i];
 			dst->r = src[0];
 			dst->g = src[1];
 			dst->b = src[2];

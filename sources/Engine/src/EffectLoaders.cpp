@@ -979,13 +979,13 @@ LW_RESULT EffPathLoader::LoadEx(::CEffPath& path, std::string_view file,
 }
 
 LW_RESULT EffPathLoader::LoadLet(::CEffPath& path, std::string_view file) {
-    LW_NAMESPACE::lwEfxTrack et;
+    Corsairs::Engine::Render::lwEfxTrack et;
     const std::string fileStr{file};
     if (LW_RESULT r = EfxTrackLoader::Load(et, fileStr); LW_FAILED(r)) {
         return r;
     }
 
-    LW_NAMESPACE::lwIAnimDataMatrix* data = et.GetData();
+    Corsairs::Engine::Render::lwIAnimDataMatrix* data = et.GetData();
     const int j = data->GetFrameNum();
     for (int i = 0; i < j; ++i) {
         ::lwMatrix44 mat;

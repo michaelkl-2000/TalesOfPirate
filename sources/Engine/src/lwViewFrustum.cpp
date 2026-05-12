@@ -1,8 +1,8 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwViewFrustum.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_STD_IMPLEMENTATION(lwViewFrustum)
 
 	void lwViewFrustum::Update(const lwMatrix44* mat_viewproj) {
@@ -161,4 +161,4 @@ LW_BEGIN
 		return lwPlaneClassify(&_plane_seq[VIEWFRUSTUM_FRONT], v);
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

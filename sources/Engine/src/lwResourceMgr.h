@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "lwHeader.h"
 #include "lwStdInc.h"
@@ -18,7 +18,7 @@
 
 #include <list>
 #include <vector>
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	enum lwResStateEnum {
 		RES_STATE_INVALID = 0x000,
 		RES_STATE_INIT = 0x0001,
@@ -558,8 +558,6 @@ LW_BEGIN
 		lwPoolAnimCtrl _pool_animctrl;
 
 		lwSlotMapVoidPtr10240 _pool_model;
-		lwSlotMapVoidPtr1024 _pool_physique;
-		lwSlotMapVoidPtr1024 _pool_item;
 
 
 		std::string _texture_path;
@@ -638,9 +636,9 @@ LW_BEGIN
 		LW_RESULT CreatePrimitive(lwIPrimitive** ret_obj);
 		LW_RESULT CreateHelperObject(lwIHelperObject** ret_obj);
 
-		LW_RESULT CreatePhysique(lwIPhysique** ret_obj);
-		LW_RESULT CreateModel(lwIModel** ret_obj);
-		LW_RESULT CreateItem(lwIItem** ret_obj);
+		LW_RESULT CreatePhysique(lwPhysique** ret_obj);
+		LW_RESULT CreateModel(lwModel** ret_obj);
+		LW_RESULT CreateItem(lwItem** ret_obj);
 
 		LW_RESULT CreateNode(lwINode** ret_obj, DWORD type);
 		LW_RESULT CreateNodeObject(lwINodeObject** ret_obj);
@@ -711,4 +709,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

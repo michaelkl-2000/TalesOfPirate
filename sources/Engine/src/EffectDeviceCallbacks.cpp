@@ -11,9 +11,7 @@
 #include "lwIUtil.h"
 #include "lwSysGraphics.h"
 
-LW_USING
-
-namespace Corsairs::Engine::Render {
+using namespace Corsairs::Engine::Render;namespace Corsairs::Engine::Render {
 
 EffectDeviceCallbacks& EffectDeviceCallbacks::Instance() {
     static EffectDeviceCallbacks instance;

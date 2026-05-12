@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,9 +7,7 @@
 #include "lwInterface.h"
 #include "lwShaderTypes.h"
 #include "lwIUtil.h"
-LW_USING
-
-enum UserVertexDeclarationType {
+using namespace Corsairs::Engine::Render;enum UserVertexDeclarationType {
 	VDTU_BEGIN = VDT_USER_DEFINE,
 	VDTU_EFFECT1,
 };

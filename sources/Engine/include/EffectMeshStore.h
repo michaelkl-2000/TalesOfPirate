@@ -10,10 +10,10 @@
 class CEffectModel;
 class MPRender;
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 class lwISystem;
 class lwISysGraphics;
-LW_END
+} // namespace Corsairs::Engine::Render
 
 namespace Corsairs::Engine::Render {
 
@@ -39,8 +39,8 @@ public:
     static EffectMeshStore& Instance();
 
     void SetDevice(MPRender* dev) noexcept;
-    void SetSystem(LW_NAMESPACE::lwISystem* sys,
-                   LW_NAMESPACE::lwISysGraphics* sysGraphics) noexcept;
+    void SetSystem(Corsairs::Engine::Render::lwISystem* sys,
+                   Corsairs::Engine::Render::lwISysGraphics* sysGraphics) noexcept;
 
     // Создаёт 7 primitive + shade-mesh и грузит .lgo из directory.
     // Вторая фаза reset device — см. RecreateBuiltins().
@@ -72,8 +72,8 @@ private:
     bool LoadLgoFrom(std::string_view directory);
 
     MPRender*                       _dev{nullptr};
-    LW_NAMESPACE::lwISystem*        _sys{nullptr};
-    LW_NAMESPACE::lwISysGraphics*   _sysGraphics{nullptr};
+    Corsairs::Engine::Render::lwISystem*        _sys{nullptr};
+    Corsairs::Engine::Render::lwISysGraphics*   _sysGraphics{nullptr};
 
     std::vector<CEffectModel*>           _meshes;   // capacity kCapacity
     VEC_string                           _names;    // только заполненные [0.._count)

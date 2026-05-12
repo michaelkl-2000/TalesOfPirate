@@ -1,9 +1,9 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwSysCharacter.h"
 #include "lwPhysique.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	lwSysCharacter::lwSysCharacter() {
 		_pool_skeleton = LW_NEW(lwObjectPoolSkeleton);
 		_pool_skinmesh = LW_NEW(lwObjectPoolSkin);
@@ -19,4 +19,4 @@ LW_BEGIN
 		return LW_RET_OK;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

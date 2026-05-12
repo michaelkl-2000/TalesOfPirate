@@ -1,8 +1,8 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwMath.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	//                                       0.0f, 1.0f, 0.0f,
 	//                                       0.0f, 1.0f, 0.0f,
 	//                                       0.0f, 0.0f, 1.0f,
@@ -1859,4 +1859,4 @@ LW_BEGIN
 	}
 
 	// end namesapce lsh
-LW_END
+} // namespace Corsairs::Engine::Render

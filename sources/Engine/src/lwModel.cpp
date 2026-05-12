@@ -1,7 +1,8 @@
-﻿//
+//
 #include "stdafx.h"
 
 #include "lwModel.h"
+#include "lwItem.h"
 #include "lwSystem.h"
 #include "lwSysGraphics.h"
 #include "lwResourceMgr.h"
@@ -10,9 +11,8 @@
 #include "lwPathInfo.h"
 #include <fstream>
 #include <iostream>
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	//lwModel
-	LW_STD_IMPLEMENTATION(lwModel)
 
 	lwModel::lwModel(lwIResourceMgr* res_mgr)
 		: _id(LW_INVALID_INDEX), _res_mgr(res_mgr), _scene_mgr(0), _helper_object(0) {
@@ -216,28 +216,26 @@ LW_BEGIN
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwModel::Copy(lwIModel* src_obj) {
-		lwModel* o = (lwModel*)src_obj;
-
-		_file_name = o->_file_name;
-		_id = o->_id;
-		_obj_num = o->_obj_num;
-		_mat_base = o->_mat_base;
+	LW_RESULT lwModel::Copy(const lwModel* src_obj) {
+		_file_name = src_obj->_file_name;
+		_id = src_obj->_id;
+		_obj_num = src_obj->_obj_num;
+		_mat_base = src_obj->_mat_base;
 
 		for (DWORD i = 0; i < _obj_num; i++) {
-			o->_obj_seq[i]->Clone(&_obj_seq[i]);
+			src_obj->_obj_seq[i]->Clone(&_obj_seq[i]);
 		}
 
-		if (o->_helper_object) {
-			o->_helper_object->Clone(&_helper_object);
+		if (src_obj->_helper_object) {
+			src_obj->_helper_object->Clone(&_helper_object);
 		}
 
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwModel::Clone(lwIModel** ret_obj) {
-		lwModel* o;
-		_res_mgr->CreateModel((lwIModel**)&o);
+	LW_RESULT lwModel::Clone(lwModel** ret_obj) {
+		lwModel* o = nullptr;
+		_res_mgr->CreateModel(&o);
 
 		if (LW_RESULT r = o->Copy(this); LW_FAILED(r)) {
 			ToLogService("errors", LogLevel::Error,
@@ -675,7 +673,7 @@ LW_BEGIN
 		return ret;
 	}
 
-	LW_RESULT lwModel::ClearItemLink(lwIItem* obj) {
+	LW_RESULT lwModel::ClearItemLink(lwItem* obj) {
 		return obj->ClearLinkCtrl();
 	}
 
@@ -770,4 +768,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

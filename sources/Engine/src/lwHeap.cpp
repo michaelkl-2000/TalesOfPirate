@@ -1,11 +1,11 @@
-﻿//
+//
 
 #include "stdafx.h"
 
 
 #include "lwHeap.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// lwHeap
 	LW_STD_IMPLEMENTATION(lwHeap);
 
@@ -19,4 +19,4 @@ LW_BEGIN
 		return LW_RET_OK;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

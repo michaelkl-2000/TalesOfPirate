@@ -1,4 +1,4 @@
-﻿//
+//
 
 #include "stdafx.h"
 
@@ -7,7 +7,7 @@
 #include "lwD3D.h"
 #include "lwRenderImp.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwLoadPrimitiveLineList(lwINodePrimitive* obj, const char* name, DWORD vert_num,
 									  const lwVector3* vert_buf, const DWORD* color_buf, const lwSubsetInfo* subset_seq,
 									  DWORD subset_num) {
@@ -482,4 +482,4 @@ LW_BEGIN
 		return LW_RET_OK;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

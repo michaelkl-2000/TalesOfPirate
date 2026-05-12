@@ -1,4 +1,4 @@
-﻿//
+//
 
 #include "stdafx.h"
 
@@ -17,7 +17,7 @@
 
 #define USE_VS_INDEXED
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	//LW_STD_RELEASE( lwPrimitive )
 	//    //switch( guid )
 	//    //{
@@ -1160,4 +1160,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

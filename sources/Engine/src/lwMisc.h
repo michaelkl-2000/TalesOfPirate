@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,7 +7,7 @@
 #include "lwITypes2.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwRenderStateAtomBeginSetRS(lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num);
 	LW_RESULT lwRenderStateAtomEndSetRS(lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num);
 	LW_RESULT lwRenderStateAtomBeginSetTSS(DWORD stage, lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq,
@@ -222,4 +222,4 @@ LW_BEGIN
 	LW_RESULT LoadFileInMemory(BYTE** data_seq, DWORD* data_size, std::string_view file, const char* load_flag);
 	int lwHexStrToInt(const char* str);
 
-LW_END
+} // namespace Corsairs::Engine::Render

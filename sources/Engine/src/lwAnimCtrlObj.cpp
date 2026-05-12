@@ -1,10 +1,10 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwAnimCtrlObj.h"
 #include "lwPoseCtrl.h"
 #include "lwExpObj.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// ===================
 	// lwAnimCtrlObjMat
 	LW_STD_IMPLEMENTATION(lwAnimCtrlObjMat)
@@ -1150,4 +1150,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

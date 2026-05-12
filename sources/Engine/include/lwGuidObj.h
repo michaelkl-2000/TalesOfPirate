@@ -6,7 +6,7 @@
 #include "lwHeader.h"
 #include "lwErrorCode.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	typedef LW_INT64 lwGUID;
 
 	const lwGUID LW_GUID_SYSTEM = LW_MAKEINT64(0, 1);
@@ -48,4 +48,4 @@ LW_BEGIN
 	const lwGUID LW_GUID_BUFFER = LW_MAKEINT64(43, 0);
 	const lwGUID LW_GUID_HEAP = LW_MAKEINT64(44, 0);
 
-LW_END
+} // namespace Corsairs::Engine::Render

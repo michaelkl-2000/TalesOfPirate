@@ -7,9 +7,9 @@
 class CEffectModel;
 class MPRender;
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 class lwISysGraphics;
-LW_END
+} // namespace Corsairs::Engine::Render
 
 namespace Corsairs::Engine::Render {
 
@@ -24,7 +24,7 @@ public:
     static TobMeshStore& Instance();
 
     void SetDevice(MPRender* dev) noexcept;
-    void SetSysGraphics(LW_NAMESPACE::lwISysGraphics* sysGraphics) noexcept;
+    void SetSysGraphics(Corsairs::Engine::Render::lwISysGraphics* sysGraphics) noexcept;
 
     CEffectModel* NewTobMesh();
     bool          DeleteTobMesh(CEffectModel& model);
@@ -40,7 +40,7 @@ private:
     TobMeshStore& operator=(const TobMeshStore&) = delete;
 
     MPRender*                            _dev{nullptr};
-    LW_NAMESPACE::lwISysGraphics*        _sysGraphics{nullptr};
+    Corsairs::Engine::Render::lwISysGraphics*        _sysGraphics{nullptr};
     std::unordered_set<CEffectModel*>    _meshes;
 };
 

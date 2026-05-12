@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -8,7 +8,7 @@
 #include "lwPoseCtrl.h"
 #include "lwITypes.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwAnimCtrl {
 	protected:
 		lwIResourceMgr* _res_mgr;
@@ -415,4 +415,4 @@ LW_BEGIN
 		virtual LW_RESULT UpdateObject(lwIAnimCtrlObj* ctrl_obj, lwIPrimitive* obj);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

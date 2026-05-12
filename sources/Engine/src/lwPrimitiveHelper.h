@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -8,7 +8,7 @@
 #include "lwErrorCode.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwHelperBase {
 	protected:
 		int _visible_flag;
@@ -352,4 +352,4 @@ LW_BEGIN
 		LW_RESULT ExtractHelperInfo(lwHelperInfo* out_info);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

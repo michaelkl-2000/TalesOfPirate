@@ -9,7 +9,7 @@
 
 #include "lwClassDecl.h"
 
-namespace LW_NAMESPACE {
+namespace Corsairs::Engine::Render {
     struct lwGeomObjInfo;
 }
 
@@ -42,7 +42,7 @@ public:
 
     // Загрузить .lgo по полному пути или вернуть существующую запись.
     // Ключ — lowercased полный путь с нормализованными разделителями ('\\').
-    [[nodiscard]] std::shared_ptr<LW_NAMESPACE::lwGeomObjInfo> GetOrLoad(std::string_view fullPath);
+    [[nodiscard]] std::shared_ptr<Corsairs::Engine::Render::lwGeomObjInfo> GetOrLoad(std::string_view fullPath);
 
     // Pre-scan каталога категории (FindFirstFile <prefix>*.lgo).
     void WarmUp(GeomCategory cat);
@@ -65,7 +65,7 @@ private:
     GeomObjCache() = default;
     ~GeomObjCache() = default;
 
-    using Entry = std::shared_ptr<LW_NAMESPACE::lwGeomObjInfo>;
+    using Entry = std::shared_ptr<Corsairs::Engine::Render::lwGeomObjInfo>;
 
     mutable std::shared_mutex _mutex;
     std::unordered_map<std::string, Entry> _cache;

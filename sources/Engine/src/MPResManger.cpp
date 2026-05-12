@@ -2,6 +2,7 @@
 #include "GlobalInc.h"
 #include "MPModelEff.h"
 #include "AssetLoaders.h"
+#include "BoneAnimCache.h"
 #include "GeomObjCache.h"
 #include "EffPathStore.h"
 #include "EffectDeviceCallbacks.h"
@@ -370,8 +371,11 @@ void CMPResManger::LoadTotalData() {
 	WIN32_FIND_DATA t_sfd;
 	HANDLE t_hFind = NULL;
 
-	// Pre-warm bone-кэша для animation\*.lab.
-	constexpr std::string_view t_Path = "animation\\\\*.lab";
+	// Pre-warm bone-кэша для animation\*.lab. Старый лимит 50 сохранён,
+	// чтобы не менять поведение старта.
+	constexpr std::string_view t_Path = "animation\\*.lab";
+	const std::string_view bonePrefix =
+		Corsairs::Engine::Render::BoneAnimCache::DirectoryPrefix();
 
 	int count = 0;
 	if ((t_hFind = FindFirstFile(t_Path.data(), &t_sfd)) == INVALID_HANDLE_VALUE)
@@ -383,7 +387,8 @@ void CMPResManger::LoadTotalData() {
 				continue;
 			}
 
-			g_GeomManager.LoadBoneData(t_sfd.cFileName);
+			const std::string fullPath = std::format("{}{}", bonePrefix, fileName);
+			Corsairs::Engine::Render::BoneAnimCache::Instance().GetOrLoad(fullPath);
 			count++;
 			if (count == 50) {
 				break;

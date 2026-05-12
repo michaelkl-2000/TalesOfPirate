@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,7 +7,7 @@
 #include "lwDirectX.h"
 #include "lwClassDecl.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// this is a min-heap class
 
 	template <typename T>
@@ -453,4 +453,4 @@ LW_BEGIN
 		LW_RESULT Clone(lwIHeap** out_heap);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

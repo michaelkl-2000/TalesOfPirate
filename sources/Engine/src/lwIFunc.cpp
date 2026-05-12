@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwGuidObj.h"
 #include "lwIFunc.h"
@@ -10,7 +10,7 @@
 #include "lwxRenderCtrlVS.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	static lwISystem* g_system = 0;
 	static lwISysGraphics* g_sys_graphics = 0;
 
@@ -626,4 +626,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

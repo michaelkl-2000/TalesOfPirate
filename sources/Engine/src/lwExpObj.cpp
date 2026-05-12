@@ -8,7 +8,7 @@
 #include "lwIUtil.h"
 #include "AssetLoaders.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	// ============================================================================
 	// Замки размеров структур, участвующих в fread/fwrite целиком.
 	// ============================================================================
@@ -1182,4 +1182,4 @@ LW_BEGIN
 		return ret == TREENODE_PROC_RET_CONTINUE ? LW_RET_OK : LW_RET_FAILED;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

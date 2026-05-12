@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -6,9 +6,10 @@
 #include "lwInterface.h"
 #include "lwObjectMethod.h"
 #include "MPSceneItem.h"
+#include "lwPhysique.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwActionObjectImp;
 	class lwActionSmith;
 
@@ -50,7 +51,7 @@ LW_BEGIN
 		};
 
 	private:
-		lwIPhysique* _physique;
+		lwPhysique* _physique;
 
 		MPLinkInfo _link_item_seq[LW_MAX_LINK_ITEM_NUM];
 		DWORD _link_item_num;
@@ -123,7 +124,7 @@ LW_BEGIN
 		void SetObjState(DWORD state, BYTE value);
 		DWORD GetObjState(DWORD state) const;
 
-		lwIPhysique* GetPhysique() {
+		lwPhysique* GetPhysique() {
 			return _physique;
 		}
 
@@ -149,4 +150,4 @@ LW_BEGIN
 
 	typedef MPCharacter MPCharacter;
 
-LW_END
+} // namespace Corsairs::Engine::Render

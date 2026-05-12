@@ -63,35 +63,35 @@ public:
     // -----------------------------------------------------------------------
 
     // Старая совместимая обёртка: возвращает nullptr при любой ошибке без объяснений.
-    [[nodiscard]] static LW_NAMESPACE::lwGeomObjInfo* Load(std::string_view file);
+    [[nodiscard]] static Corsairs::Engine::Render::lwGeomObjInfo* Load(std::string_view file);
 
     // Расширенная загрузка с диагностикой — для тулзы и тестов. При неуспехе
     // возвращает nullptr и заполняет `diag.status` + `diag.detail`.
-    [[nodiscard]] static LW_NAMESPACE::lwGeomObjInfo* LoadEx(std::string_view file,
+    [[nodiscard]] static Corsairs::Engine::Render::lwGeomObjInfo* LoadEx(std::string_view file,
                                                               LgoLoadDiagnostics& diag);
 
-    static LW_RESULT Save(LW_NAMESPACE::lwGeomObjInfo* info, std::string_view file);
+    static LW_RESULT Save(Corsairs::Engine::Render::lwGeomObjInfo* info, std::string_view file);
 
-    static LW_RESULT LoadFromStream(LW_NAMESPACE::lwGeomObjInfo* info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveToStream(LW_NAMESPACE::lwGeomObjInfo* info, std::FILE* fp);
+    static LW_RESULT LoadFromStream(Corsairs::Engine::Render::lwGeomObjInfo* info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveToStream(Corsairs::Engine::Render::lwGeomObjInfo* info, std::FILE* fp);
 
     // -----------------------------------------------------------------------
     // Подсчёт размеров (используется и сторонним кодом — `lwPrimitive::ExtractMeshInfo`,
     // `LoadModelObj/SaveModelObj` ниже).
     // -----------------------------------------------------------------------
 
-    static DWORD GetMtlTexInfoSize(const LW_NAMESPACE::lwGeomObjInfo* info);
-    static DWORD GetMeshInfoSize(const LW_NAMESPACE::lwGeomObjInfo* info);
-    static DWORD GetHelperInfoSize(const LW_NAMESPACE::lwHelperInfo& info);
-    static DWORD GetAnimDataInfoSize(const LW_NAMESPACE::lwAnimDataInfo& info);
+    static DWORD GetMtlTexInfoSize(const Corsairs::Engine::Render::lwGeomObjInfo* info);
+    static DWORD GetMeshInfoSize(const Corsairs::Engine::Render::lwGeomObjInfo* info);
+    static DWORD GetHelperInfoSize(const Corsairs::Engine::Render::lwHelperInfo& info);
+    static DWORD GetAnimDataInfoSize(const Corsairs::Engine::Render::lwAnimDataInfo& info);
 
     // -----------------------------------------------------------------------
     // Сериализация helper-блока. Дёргается из LoadFromStream/SaveToStream и
     // из .lmo-сериализаторов ниже.
     // -----------------------------------------------------------------------
 
-    static LW_RESULT LoadHelperInfo(LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveHelperInfo(const LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp);
+    static LW_RESULT LoadHelperInfo(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveHelperInfo(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
 
     // -----------------------------------------------------------------------
     // FILE*-сериализация data-классов (раньше жили как невиртуальные методы
@@ -99,65 +99,65 @@ public:
     // чтобы все алгоритмы чтения/записи .lgo были в одном месте.
     // -----------------------------------------------------------------------
 
-    static LW_RESULT LoadAnimDataBone(LW_NAMESPACE::lwAnimDataBone& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveAnimDataBone(const LW_NAMESPACE::lwAnimDataBone& info, std::FILE* fp);
+    static LW_RESULT LoadAnimDataBone(Corsairs::Engine::Render::lwAnimDataBone& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveAnimDataBone(const Corsairs::Engine::Render::lwAnimDataBone& info, std::FILE* fp);
     // Path-обёртки: открывают файл, читают/пишут DWORD-версию, делегируют в FILE*-вариант.
     // Раньше жили как виртуальные `lwIAnimDataBone::Load/Save(string_view)`. Перенесены сюда —
     // I/O `.lab`-файлов теперь полностью контролируется LgoLoader.
-    static LW_RESULT LoadAnimDataBone(LW_NAMESPACE::lwAnimDataBone& info, std::string_view file);
-    static LW_RESULT SaveAnimDataBone(const LW_NAMESPACE::lwAnimDataBone& info, std::string_view file);
+    static LW_RESULT LoadAnimDataBone(Corsairs::Engine::Render::lwAnimDataBone& info, std::string_view file);
+    static LW_RESULT SaveAnimDataBone(const Corsairs::Engine::Render::lwAnimDataBone& info, std::string_view file);
 
-    static LW_RESULT LoadAnimDataMatrix(LW_NAMESPACE::lwAnimDataMatrix& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveAnimDataMatrix(const LW_NAMESPACE::lwAnimDataMatrix& info, std::FILE* fp);
+    static LW_RESULT LoadAnimDataMatrix(Corsairs::Engine::Render::lwAnimDataMatrix& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveAnimDataMatrix(const Corsairs::Engine::Render::lwAnimDataMatrix& info, std::FILE* fp);
 
-    static LW_RESULT LoadAnimDataTexUV(LW_NAMESPACE::lwAnimDataTexUV& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveAnimDataTexUV(const LW_NAMESPACE::lwAnimDataTexUV& info, std::FILE* fp);
+    static LW_RESULT LoadAnimDataTexUV(Corsairs::Engine::Render::lwAnimDataTexUV& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveAnimDataTexUV(const Corsairs::Engine::Render::lwAnimDataTexUV& info, std::FILE* fp);
 
-    static LW_RESULT LoadAnimDataTexImg(LW_NAMESPACE::lwAnimDataTexImg& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveAnimDataTexImg(const LW_NAMESPACE::lwAnimDataTexImg& info, std::FILE* fp);
+    static LW_RESULT LoadAnimDataTexImg(Corsairs::Engine::Render::lwAnimDataTexImg& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveAnimDataTexImg(const Corsairs::Engine::Render::lwAnimDataTexImg& info, std::FILE* fp);
 
-    static LW_RESULT LoadAnimDataMtlOpacity(LW_NAMESPACE::lwAnimDataMtlOpacity& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveAnimDataMtlOpacity(LW_NAMESPACE::lwAnimDataMtlOpacity& info, std::FILE* fp);
+    static LW_RESULT LoadAnimDataMtlOpacity(Corsairs::Engine::Render::lwAnimDataMtlOpacity& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveAnimDataMtlOpacity(Corsairs::Engine::Render::lwAnimDataMtlOpacity& info, std::FILE* fp);
 
     // Сериализация одного lwMtlTexInfo (раньше — свободные функции
-    // lwMtlTexInfo_Load/lwMtlTexInfo_Save в LW_NAMESPACE).
-    static LW_RESULT LoadMtlTexInfoSingle(LW_NAMESPACE::lwMtlTexInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveMtlTexInfoSingle(const LW_NAMESPACE::lwMtlTexInfo& info, std::FILE* fp, DWORD version);
+    // lwMtlTexInfo_Load/lwMtlTexInfo_Save в Corsairs::Engine::Render).
+    static LW_RESULT LoadMtlTexInfoSingle(Corsairs::Engine::Render::lwMtlTexInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveMtlTexInfoSingle(const Corsairs::Engine::Render::lwMtlTexInfo& info, std::FILE* fp, DWORD version);
 
     // Сериализация lwAnimKeySetPRS (раньше — свободные функции
-    // lwLoadAnimKeySetPRS/lwSaveAnimKeySetPRS в LW_NAMESPACE).
-    static LW_RESULT LoadAnimKeySetPRS(LW_NAMESPACE::lwAnimKeySetPRS& info, std::FILE* fp);
-    static LW_RESULT SaveAnimKeySetPRS(const LW_NAMESPACE::lwAnimKeySetPRS& info, std::FILE* fp);
+    // lwLoadAnimKeySetPRS/lwSaveAnimKeySetPRS в Corsairs::Engine::Render).
+    static LW_RESULT LoadAnimKeySetPRS(Corsairs::Engine::Render::lwAnimKeySetPRS& info, std::FILE* fp);
+    static LW_RESULT SaveAnimKeySetPRS(const Corsairs::Engine::Render::lwAnimKeySetPRS& info, std::FILE* fp);
 
     // -----------------------------------------------------------------------
     // .lmo (lwModelObjInfo — array geom_obj + helper по offsets)
     // -----------------------------------------------------------------------
 
-    static LW_RESULT LoadModelObj(LW_NAMESPACE::lwModelObjInfo& info, std::string_view file);
-    static LW_RESULT SaveModelObj(LW_NAMESPACE::lwModelObjInfo& info, std::string_view file);
-    static DWORD     GetModelObjSize(const LW_NAMESPACE::lwModelObjInfo& info);
-    static LW_RESULT GetModelObjHeader(LW_NAMESPACE::lwModelObjInfo::lwModelObjInfoHeader* out_seq,
+    static LW_RESULT LoadModelObj(Corsairs::Engine::Render::lwModelObjInfo& info, std::string_view file);
+    static LW_RESULT SaveModelObj(Corsairs::Engine::Render::lwModelObjInfo& info, std::string_view file);
+    static DWORD     GetModelObjSize(const Corsairs::Engine::Render::lwModelObjInfo& info);
+    static LW_RESULT GetModelObjHeader(Corsairs::Engine::Render::lwModelObjInfo::lwModelObjInfoHeader* out_seq,
                                        DWORD* out_num,
                                        std::string_view file);
 
     // Расширенная диагностика для тулз и валидаторов: при неуспехе заполняет
     // `diag.status`+`diag.detail`. По смыслу аналогична `LoadEx` для .lgo.
-    static LW_RESULT LoadModelObjEx(LW_NAMESPACE::lwModelObjInfo& info, std::string_view file,
+    static LW_RESULT LoadModelObjEx(Corsairs::Engine::Render::lwModelObjInfo& info, std::string_view file,
                                     LgoLoadDiagnostics& diag);
-    static LW_RESULT LoadAnimDataBoneEx(LW_NAMESPACE::lwAnimDataBone& info, std::string_view file,
+    static LW_RESULT LoadAnimDataBoneEx(Corsairs::Engine::Render::lwAnimDataBone& info, std::string_view file,
                                         LgoLoadDiagnostics& diag);
 
     // -----------------------------------------------------------------------
     // Tree-based .lmo / .lxo (lwModelInfo с lwITreeNode-деревом lwModelNodeInfo)
     // -----------------------------------------------------------------------
 
-    static LW_RESULT LoadModel(LW_NAMESPACE::lwModelInfo& info, std::string_view file);
-    static LW_RESULT SaveModel(LW_NAMESPACE::lwModelInfo& info, std::string_view file);
+    static LW_RESULT LoadModel(Corsairs::Engine::Render::lwModelInfo& info, std::string_view file);
+    static LW_RESULT SaveModel(Corsairs::Engine::Render::lwModelInfo& info, std::string_view file);
 
     // Расширенная диагностика для tree-based .lxo (используется PkoTool/тулзами).
     // На успех — `diag.status=Ok`, `diag.version=info._head.version`. На неуспех —
     // конкретный `LgoLoadStatus` + текстовый detail.
-    static LW_RESULT LoadModelEx(LW_NAMESPACE::lwModelInfo& info, std::string_view file,
+    static LW_RESULT LoadModelEx(Corsairs::Engine::Render::lwModelInfo& info, std::string_view file,
                                  LgoLoadDiagnostics& diag);
 
     // -----------------------------------------------------------------------
@@ -169,7 +169,7 @@ public:
     // (обычно 0/0), но рантайм требует другие значения, чтобы primitive после Load
     // корректно пересчитал прозрачность и не отсекался frustum-culling'ом. В Load/
     // LoadFromStream этого делать НЕЛЬЗЯ, иначе ломается round-trip Load→Save.
-    static void ApplyRuntimeDefaults(LW_NAMESPACE::lwGeomObjInfo* info);
+    static void ApplyRuntimeDefaults(Corsairs::Engine::Render::lwGeomObjInfo* info);
 
     // Безопасная замена `LW_NEW(T[N])` для loader/copy-кода .lgo: тот же
     // `new T[N]`, но при превышении `kMaxArrayBytes` логирует контекст и
@@ -191,31 +191,31 @@ private:
     // `lwMeshInfo_Load`) или методы data-классов (`lwAnimDataInfo::Load`/`Save`).
     // -----------------------------------------------------------------------
 
-    static LW_RESULT LoadMtlTexInfo(LW_NAMESPACE::lwGeomObjInfo* info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveMtlTexInfo(const LW_NAMESPACE::lwGeomObjInfo* info, std::FILE* fp);
-    static LW_RESULT LoadMeshInfo(LW_NAMESPACE::lwGeomObjInfo* info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveMeshInfo(const LW_NAMESPACE::lwGeomObjInfo* info, std::FILE* fp);
-    static LW_RESULT LoadAnimDataInfo(LW_NAMESPACE::lwAnimDataInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveAnimDataInfo(LW_NAMESPACE::lwAnimDataInfo& info, std::FILE* fp);
+    static LW_RESULT LoadMtlTexInfo(Corsairs::Engine::Render::lwGeomObjInfo* info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveMtlTexInfo(const Corsairs::Engine::Render::lwGeomObjInfo* info, std::FILE* fp);
+    static LW_RESULT LoadMeshInfo(Corsairs::Engine::Render::lwGeomObjInfo* info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveMeshInfo(const Corsairs::Engine::Render::lwGeomObjInfo* info, std::FILE* fp);
+    static LW_RESULT LoadAnimDataInfo(Corsairs::Engine::Render::lwAnimDataInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveAnimDataInfo(Corsairs::Engine::Render::lwAnimDataInfo& info, std::FILE* fp);
 
     // 5+5 разделов lwHelperInfo (dummy/box/mesh/bbox/bsphere).
-    static LW_RESULT LoadHelperDummySection(LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT LoadHelperBoxSection(LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT LoadHelperMeshSection(LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT LoadBoundingBoxSection(LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT LoadBoundingSphereSection(LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadHelperDummySection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadHelperBoxSection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadHelperMeshSection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadBoundingBoxSection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadBoundingSphereSection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
 
-    static LW_RESULT SaveHelperDummySection(const LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp);
-    static LW_RESULT SaveHelperBoxSection(const LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp);
-    static LW_RESULT SaveHelperMeshSection(const LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp);
-    static LW_RESULT SaveBoundingBoxSection(const LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp);
-    static LW_RESULT SaveBoundingSphereSection(const LW_NAMESPACE::lwHelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveHelperDummySection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveHelperBoxSection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveHelperMeshSection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveBoundingBoxSection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveBoundingSphereSection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
 
     // .lmo tree-узлы и dummy-helper-объект.
-    static LW_RESULT LoadModelNode(LW_NAMESPACE::lwModelNodeInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveModelNode(LW_NAMESPACE::lwModelNodeInfo& info, std::FILE* fp);
-    static LW_RESULT LoadHelperDummyObj(LW_NAMESPACE::lwHelperDummyObjInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveHelperDummyObj(LW_NAMESPACE::lwHelperDummyObjInfo& info, std::FILE* fp);
+    static LW_RESULT LoadModelNode(Corsairs::Engine::Render::lwModelNodeInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveModelNode(Corsairs::Engine::Render::lwModelNodeInfo& info, std::FILE* fp);
+    static LW_RESULT LoadHelperDummyObj(Corsairs::Engine::Render::lwHelperDummyObjInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveHelperDummyObj(Corsairs::Engine::Render::lwHelperDummyObjInfo& info, std::FILE* fp);
 
     // Утилиты.
     [[nodiscard]] static bool          IsKnownVersion(DWORD v);
@@ -664,15 +664,15 @@ public:
 // заголовка; формат у lwEfxTrack тривиален: просто SaveAnimDataMatrix → файл).
 // =============================================================================
 
-// Forward-decls для классов из LW_NAMESPACE — полные определения в
+// Forward-decls для классов из Corsairs::Engine::Render — полные определения в
 // lwEfxTrack.h / lwPoseCtrl.h / lwDDSFile.h. Подключение этих заголовков из
 // AssetLoaders.h всё ещё избыточно для тулз (lwDDSFile тянет lwDirectX → DDK),
 // потому ограничиваемся forward-decl и работаем через ссылки.
 
 class EfxTrackLoader {
 public:
-    [[nodiscard]] static LW_RESULT Load(LW_NAMESPACE::lwEfxTrack& track, std::string_view file);
-    [[nodiscard]] static LW_RESULT Save(const LW_NAMESPACE::lwEfxTrack& track, std::string_view file);
+    [[nodiscard]] static LW_RESULT Load(Corsairs::Engine::Render::lwEfxTrack& track, std::string_view file);
+    [[nodiscard]] static LW_RESULT Save(const Corsairs::Engine::Render::lwEfxTrack& track, std::string_view file);
 };
 
 // =============================================================================
@@ -685,13 +685,13 @@ public:
     static constexpr std::uint32_t kCurrentVersion = 1;
 
     // Path-обёртки: открывают файл, валидируют version DWORD, делегируют в FILE*.
-    [[nodiscard]] static LW_RESULT Load(LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view file);
-    [[nodiscard]] static LW_RESULT Save(const LW_NAMESPACE::lwPoseCtrl& ctrl, std::string_view file);
+    [[nodiscard]] static LW_RESULT Load(Corsairs::Engine::Render::lwPoseCtrl& ctrl, std::string_view file);
+    [[nodiscard]] static LW_RESULT Save(const Corsairs::Engine::Render::lwPoseCtrl& ctrl, std::string_view file);
 
     // FILE*-вариант: читает/пишет «тело» (pose_num + pose_seq[]) без version-
     // заголовка. Используется path-обёртками.
-    [[nodiscard]] static LW_RESULT LoadBody(LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp);
-    [[nodiscard]] static LW_RESULT SaveBody(const LW_NAMESPACE::lwPoseCtrl& ctrl, std::FILE* fp);
+    [[nodiscard]] static LW_RESULT LoadBody(Corsairs::Engine::Render::lwPoseCtrl& ctrl, std::FILE* fp);
+    [[nodiscard]] static LW_RESULT SaveBody(const Corsairs::Engine::Render::lwPoseCtrl& ctrl, std::FILE* fp);
 };
 
 // =============================================================================
@@ -702,20 +702,20 @@ public:
 
 class DdsLoader {
 public:
-    [[nodiscard]] static LW_RESULT Save(LW_NAMESPACE::lwDDSFile& dds, std::string_view file);
+    [[nodiscard]] static LW_RESULT Save(Corsairs::Engine::Render::lwDDSFile& dds, std::string_view file);
 
 private:
     // Внутренние шаги — приватные static-методы DdsLoader (не free-функции),
     // чтобы единого friend-объявления `friend class DdsLoader;` в lwDDSFile
     // хватало для доступа к приватным полям (_tex_width, _mip_level и т.д.)
     // и приватным IsVolumeMap/IsCubeMap.
-    [[nodiscard]] static long SaveDDSHeader(LW_NAMESPACE::lwDDSFile& dds,
+    [[nodiscard]] static long SaveDDSHeader(Corsairs::Engine::Render::lwDDSFile& dds,
                                              struct IDirect3DBaseTexture9* tex, std::FILE* fp);
-    [[nodiscard]] static long SaveAllMipSurfaces(LW_NAMESPACE::lwDDSFile& dds,
+    [[nodiscard]] static long SaveAllMipSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
                                                   struct IDirect3DBaseTexture9* ptex,
                                                   unsigned int faceType,
                                                   std::FILE* fp);
-    [[nodiscard]] static long SaveAllVolumeSurfaces(LW_NAMESPACE::lwDDSFile& dds,
+    [[nodiscard]] static long SaveAllVolumeSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
                                                      struct IDirect3DVolumeTexture9* pvoltex,
                                                      std::FILE* fp);
 };

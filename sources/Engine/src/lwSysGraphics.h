@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -8,7 +8,7 @@
 #include "lwClassDecl.h"
 #include "lwCoordinateSys.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwSysGraphics : public lwISysGraphics {
 	public:
 		static lwISysGraphics* __sys_graphics;
@@ -75,4 +75,4 @@ LW_BEGIN
 		}
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

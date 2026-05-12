@@ -44,9 +44,9 @@ using UniqueFile = std::unique_ptr<std::FILE, FileCloser>;
 // friend-объявление в lwDDSFile открывало им доступ к приватным полям).
 // =============================================================================
 
-long DdsLoader::SaveDDSHeader(LW_NAMESPACE::lwDDSFile& dds,
+long DdsLoader::SaveDDSHeader(Corsairs::Engine::Render::lwDDSFile& dds,
                                struct IDirect3DBaseTexture9* texRaw, std::FILE* fp) {
-    using namespace LW_NAMESPACE;
+    using namespace Corsairs::Engine::Render;
     auto* tex = reinterpret_cast<IDirect3DBaseTextureX*>(texRaw);
 
     lwDDSHeader ddsh{};
@@ -173,11 +173,11 @@ long DdsLoader::SaveDDSHeader(LW_NAMESPACE::lwDDSFile& dds,
     return S_OK;
 }
 
-long DdsLoader::SaveAllMipSurfaces(LW_NAMESPACE::lwDDSFile& dds,
+long DdsLoader::SaveAllMipSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
                                     struct IDirect3DBaseTexture9* ptexRaw,
                                     unsigned int faceTypeRaw,
                                     std::FILE* fp) {
-    using namespace LW_NAMESPACE;
+    using namespace Corsairs::Engine::Render;
     auto* ptex = reinterpret_cast<IDirect3DBaseTextureX*>(ptexRaw);
     const auto FaceType = static_cast<D3DCUBEMAP_FACES>(faceTypeRaw);
     HRESULT hr;
@@ -261,10 +261,10 @@ long DdsLoader::SaveAllMipSurfaces(LW_NAMESPACE::lwDDSFile& dds,
     return S_OK;
 }
 
-long DdsLoader::SaveAllVolumeSurfaces(LW_NAMESPACE::lwDDSFile& dds,
+long DdsLoader::SaveAllVolumeSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
                                        struct IDirect3DVolumeTexture9* pvoltexRaw,
                                        std::FILE* fp) {
-    using namespace LW_NAMESPACE;
+    using namespace Corsairs::Engine::Render;
     auto* pvoltex = reinterpret_cast<IDirect3DVolumeTextureX*>(pvoltexRaw);
 
     for (UINT iLevel = 0; iLevel < dds._mip_level; ++iLevel) {
@@ -314,7 +314,7 @@ long DdsLoader::SaveAllVolumeSurfaces(LW_NAMESPACE::lwDDSFile& dds,
 // DdsLoader::Save
 // =============================================================================
 
-LW_RESULT DdsLoader::Save(LW_NAMESPACE::lwDDSFile& dds, std::string_view file) {
+LW_RESULT DdsLoader::Save(Corsairs::Engine::Render::lwDDSFile& dds, std::string_view file) {
     UniqueFile fp{std::fopen(std::string{file}.c_str(), "wb")};
     if (!fp) {
         ToLogService("errors", LogLevel::Error,

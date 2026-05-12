@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -11,7 +11,7 @@
 #include "lwResourceMgr.h"
 #include "lwPrimitiveHelper.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwPrimitive : public lwIPrimitive {
 		LW_STD_DECLARATION()
 
@@ -151,4 +151,4 @@ LW_BEGIN
 
 	LW_RESULT lwPrimitivePlayDefaultAnimation(lwIPrimitive* obj, float velocity = 1.0f);
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -1,9 +1,9 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwPathInfo.h"
 #include "lwStdInc.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_STD_IMPLEMENTATION(lwPathInfo)
 
 	lwPathInfo::lwPathInfo() = default;
@@ -29,4 +29,4 @@ LW_BEGIN
 	}
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

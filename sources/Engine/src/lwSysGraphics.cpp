@@ -1,4 +1,4 @@
-﻿//
+//
 
 #include "stdafx.h"
 #include "lwSysGraphics.h"
@@ -6,7 +6,7 @@
 #include "lwResourceMgr.h"
 #include "lwSceneMgr.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	lwISysGraphics* lwSysGraphics::__sys_graphics = LW_NULL;
 
 
@@ -287,4 +287,4 @@ LW_BEGIN
 		return ret;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

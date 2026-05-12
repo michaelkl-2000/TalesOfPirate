@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -6,7 +6,7 @@
 #include "lwITypes.h"
 #include "lwInterfaceExt.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwTreeNode : public lwITreeNode {
 		LW_STD_DECLARATION()
 
@@ -65,4 +65,4 @@ LW_BEGIN
 		DWORD GetDepthLevel() const;
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

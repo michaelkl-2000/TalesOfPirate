@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -11,7 +11,7 @@
 // Forward-decl loader из AssetLoaders.h — самостоятельный include тут излишен.
 namespace Corsairs::Engine::Render { class DdsLoader; }
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	class lwDDSFile : public lwIDDSFile {
 		LW_STD_DECLARATION()
 
@@ -60,4 +60,4 @@ LW_BEGIN
 		LW_RESULT Convert(std::string_view file, D3DFORMAT src_fmt, D3DFORMAT dds_fmt, DWORD mip_level, DWORD src_colorkey);
 	};
 
-LW_END
+} // namespace Corsairs::Engine::Render

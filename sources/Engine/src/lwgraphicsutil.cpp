@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwgraphicsutil.h"
 
@@ -8,7 +8,7 @@
 #include "lwD3D.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	float lwGetFPS() {
 		static double __tick_frequency_reci = 0.0; // 1000ms
 		static DWORD __last_tick_time = 0;
@@ -1692,4 +1692,4 @@ LW_BEGIN
 		D3DXMatrixLookAtLH((D3DXMATRIX*)mat, &vEyePt, &vLookDir, &vUpDir);
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

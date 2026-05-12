@@ -1,9 +1,9 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwObjectMethod.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	lwMatrixCtrl::lwMatrixCtrl()
 		:
 		_mat_ptr(0),
@@ -51,4 +51,4 @@ LW_BEGIN
 		memcpy(_mat_ptr, &m, sizeof(float) * 12);
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

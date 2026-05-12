@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 #include "MPSceneItem.h"
@@ -8,7 +8,7 @@
 #include "lwGraphicsUtil.h"
 
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	MPSceneItem::MPSceneItem(lwISysGraphics* sys_graphics) {
 		sys_graphics->GetResourceMgr()->CreateItem(&_obj);
 
@@ -42,14 +42,13 @@ LW_BEGIN
 		}
 	}
 
-	LW_RESULT MPSceneItem::Load(std::string_view file, lwItemLoadOptions opts) {
-		LW_RESULT ret;
-		ret = _obj->Load(file, opts);
+	LW_RESULT MPSceneItem::Load(std::string_view file) {
+		LW_RESULT ret = _obj->Load(file);
 		if (LW_FAILED(ret)) {
 			ToLogService("errors", LogLevel::Error,
-						 "[{}] _obj->Load failed: file={}, opts={}, ret={}",
+						 "[{}] _obj->Load failed: file={}, ret={}",
 						 __FUNCTION__, (file.empty() ? std::string_view{"(null)"} : file),
-						 static_cast<int>(opts), static_cast<long long>(ret));
+						 static_cast<long long>(ret));
 			LG_MSGBOX("Load MPSceneItem {} error", (file.empty() ? std::string_view{"(null)"} : file));
 		}
 
@@ -69,16 +68,13 @@ LW_BEGIN
 	}
 
 	LW_RESULT MPSceneItem::Copy(const MPSceneItem* obj) {
-		LW_RESULT ret = LW_RET_FAILED;
-		lwIItem* item = 0;
-
-		LW_FAILED_RET(obj->_obj->Clone(&item));
+		lwItem* item = nullptr;
+		if (LW_RESULT r = obj->_obj->Clone(&item); LW_FAILED(r)) {
+			return r;
+		}
 		_obj = item;
 		BindMatrix(_obj->GetMatrix());
-
-		ret = LW_RET_OK;
-	__ret:
-		return ret;
+		return LW_RET_OK;
 	}
 
 	void MPSceneItem::Destroy() {
@@ -87,63 +83,45 @@ LW_BEGIN
 
 	LW_RESULT MPSceneItem::PlayObjImpPose(DWORD ctrl_type, DWORD pose_id, DWORD play_type, float start_frame,
 										  float velocity) {
-		LW_RESULT ret = LW_RET_FAILED;
-
 		lwPlayPoseInfo info;
 		memset(&info, 0, sizeof(info));
 		info.bit_mask = PPI_MASK_DEFAULT;
-
 		info.velocity = velocity;
 		info.pose = pose_id;
 		info.frame = start_frame;
 		info.type = play_type;
 
 		lwIPrimitive* p = _obj->GetPrimitive();
-		if (p == NULL)
-			goto __ret;
-
-		{
-			lwIAnimCtrlAgent* anim_agent = p->GetAnimAgent();
-			if (anim_agent == 0)
-				goto __ret;
-
-			{
-				lwIAnimCtrlObj* ctrl_obj = NULL;
-
-				lwAnimCtrlObjTypeInfo type_info;
-				type_info.type = ctrl_type;
-				type_info.data[0] = LW_INVALID_INDEX;
-				type_info.data[1] = LW_INVALID_INDEX;
-
-				switch (ctrl_type) {
-				case ANIM_CTRL_TYPE_MAT:
-					break;
-				case ANIM_CTRL_TYPE_BONE:
-					break;
-				case ANIM_CTRL_TYPE_TEXUV:
-					type_info.data[0] = 0;
-					type_info.data[1] = 0;
-					break;
-				case ANIM_CTRL_TYPE_TEXIMG:
-					break;
-				}
-
-				ctrl_obj = anim_agent->GetAnimCtrlObj(&type_info);
-
-				if (ctrl_obj == 0)
-					goto __ret;
-
-				if (LW_RESULT r = ctrl_obj->PlayPose(&info); LW_FAILED(r)) {
-					ToLogService("errors", LogLevel::Error,
-								 "[{}] ctrl_obj->PlayPose failed: ctrl_type={}, pose_id={}, ret={}",
-								 __FUNCTION__, ctrl_type, pose_id, static_cast<long long>(r));
-					goto __ret;
-				}
-			}
+		if (p == nullptr) {
+			return LW_RET_FAILED;
 		}
-		ret = LW_RET_OK;
-	__ret:
-		return ret;
+
+		lwIAnimCtrlAgent* anim_agent = p->GetAnimAgent();
+		if (anim_agent == nullptr) {
+			return LW_RET_FAILED;
+		}
+
+		lwAnimCtrlObjTypeInfo type_info;
+		type_info.type = ctrl_type;
+		type_info.data[0] = LW_INVALID_INDEX;
+		type_info.data[1] = LW_INVALID_INDEX;
+		if (ctrl_type == ANIM_CTRL_TYPE_TEXUV) {
+			type_info.data[0] = 0;
+			type_info.data[1] = 0;
+		}
+
+		lwIAnimCtrlObj* ctrl_obj = anim_agent->GetAnimCtrlObj(&type_info);
+		if (ctrl_obj == nullptr) {
+			return LW_RET_FAILED;
+		}
+
+		if (LW_RESULT r = ctrl_obj->PlayPose(&info); LW_FAILED(r)) {
+			ToLogService("errors", LogLevel::Error,
+						 "[{}] ctrl_obj->PlayPose failed: ctrl_type={}, pose_id={}, ret={}",
+						 __FUNCTION__, ctrl_type, pose_id, static_cast<long long>(r));
+			return LW_RET_FAILED;
+		}
+		return LW_RET_OK;
 	}
 
 	LW_RESULT MPSceneItem::HitTestPrimitive(lwPickInfo* info, const lwVector3* org, const lwVector3* ray) {
@@ -247,4 +225,4 @@ LW_BEGIN
 		_obj->SetTextureLOD(level);
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

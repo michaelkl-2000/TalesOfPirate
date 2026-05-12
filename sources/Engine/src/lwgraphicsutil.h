@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -6,7 +6,7 @@
 #include "lwITypes.h"
 #include "GlobalInc.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 #define LW_RGB555_R(rgb) (BYTE)( ( rgb & 0x7c00) >> 7 )
 #define LW_RGB555_G(rgb) (BYTE)( ( rgb & 0x3e0) >> 2 )
 #define LW_RGB555_B(rgb) (BYTE)( ( rgb & 0x1f) << 3 )
@@ -102,4 +102,4 @@ LW_BEGIN
 								D3DFORMAT vb_fvf, D3DFORMAT ib_fvf);
 	DWORD lwGetSurfaceSize(UINT width, UINT height, D3DFORMAT format);
 	LW_RESULT lwGetDirectXVersion(char* o_buf, DWORD version);
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -7,9 +7,7 @@
 #include "MPRender.h"
 #include "lwSysGraphics.h"
 
-LW_USING
-
-namespace Corsairs::Engine::Render {
+using namespace Corsairs::Engine::Render;namespace Corsairs::Engine::Render {
 
 TobMeshStore& TobMeshStore::Instance() {
     static TobMeshStore instance;

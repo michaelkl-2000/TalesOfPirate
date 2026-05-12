@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,7 +7,7 @@
 #include "lwMath.h"
 #include "lwErrorCode.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 #define LW_MAX_SUBSET_NUM                   16
 #define LW_MAX_BLENDWEIGHT_NUM              4
 #define LW_MAX_BONE_NUM                     25
@@ -317,10 +317,10 @@ LW_BEGIN
 		return ret;
 	}
 
-	class lwIItem;
+	class lwItem;
 
 	struct lwItemLinkInfo {
-		lwIItem* obj;
+		lwItem* obj;
 		DWORD id;
 		DWORD link_item_id;
 		DWORD link_parent_id;
@@ -766,4 +766,4 @@ LW_BEGIN
 	typedef BOOL (*lwHeapCompProc)(const void*& i, const void*& j);
 	typedef void (*lwHeapFilterProc)(const void*& i, DWORD j);
 
-LW_END
+} // namespace Corsairs::Engine::Render

@@ -61,7 +61,7 @@
 // эти лоадеры не нужны, не пуллили цепочку MPModelEff/MPParticleCtrl/I_Effect.
 #include "MPModelEff.h"      // CEffPath — для EffPathLoader-тестов
 #include "MPParticleCtrl.h"
-#include "lwEfxTrack.h"      // MindPower::lwEfxTrack — для .let round-trip
+#include "lwEfxTrack.h"      // Corsairs::Engine::Render::lwEfxTrack — для .let round-trip
 
 #include "Blake2s.h"
 
@@ -130,7 +130,7 @@ struct AssetKind {
     std::string_view subRoot = "Client/model";
     std::vector<std::string_view> categories;
     std::size_t versionOffset = 0;
-    std::uint32_t currentVersion = MindPower::EXP_OBJ_VERSION;
+    std::uint32_t currentVersion = Corsairs::Engine::Render::EXP_OBJ_VERSION;
     // Совпадает ли source и saved побайтово при детерминированном Save'е?
     // Для .lgo/.lmo/.lxo/.lab — да. Для .eff/.par — нет: в исходных файлах
     // фиксированные char[N]-буферы имён содержат мусор после терминирующего
@@ -826,7 +826,7 @@ int main(int argc, char** argv) {
                           const std::string& savePath,
                           Corsairs::Engine::Render::LgoLoadDiagnostics& diag)
                           -> std::optional<LW_RESULT> {
-            MindPower::lwModelObjInfo info;
+            Corsairs::Engine::Render::lwModelObjInfo info;
             const LW_RESULT loadRet = LgoLoader::LoadModelObjEx(info, srcPath, diag);
             if (LW_FAILED(loadRet)) {
                 return std::nullopt;
@@ -847,7 +847,7 @@ int main(int argc, char** argv) {
                           const std::string& savePath,
                           Corsairs::Engine::Render::LgoLoadDiagnostics& /*diag*/)
                           -> std::optional<LW_RESULT> {
-            MindPower::lwModelInfo info;
+            Corsairs::Engine::Render::lwModelInfo info;
             const LW_RESULT loadRet = LgoLoader::LoadModel(info, srcPath);
             if (LW_FAILED(loadRet)) {
                 return std::nullopt;
@@ -867,7 +867,7 @@ int main(int argc, char** argv) {
                           const std::string& savePath,
                           Corsairs::Engine::Render::LgoLoadDiagnostics& diag)
                           -> std::optional<LW_RESULT> {
-            MindPower::lwAnimDataBone info;
+            Corsairs::Engine::Render::lwAnimDataBone info;
             const LW_RESULT loadRet = LgoLoader::LoadAnimDataBoneEx(info, srcPath, diag);
             if (LW_FAILED(loadRet)) {
                 return std::nullopt;
@@ -1060,7 +1060,7 @@ int main(int argc, char** argv) {
                           const std::string& savePath,
                           Corsairs::Engine::Render::LgoLoadDiagnostics& /*diag*/)
                           -> std::optional<LW_RESULT> {
-            MindPower::lwEfxTrack track;
+            Corsairs::Engine::Render::lwEfxTrack track;
             const LW_RESULT loadRet =
                 Corsairs::Engine::Render::EfxTrackLoader::Load(track, srcPath);
             if (LW_FAILED(loadRet)) {

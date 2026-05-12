@@ -1,4 +1,4 @@
-﻿//
+//
 #pragma once
 
 #include "lwHeader.h"
@@ -7,7 +7,7 @@
 #include "lwDirectX.h"
 #include "lwClassDecl.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	struct lwCoordInfo {
 		DWORD type;
 		lwMatrix44 mat;
@@ -44,4 +44,4 @@ LW_BEGIN
 	};
 
 
-LW_END
+} // namespace Corsairs::Engine::Render

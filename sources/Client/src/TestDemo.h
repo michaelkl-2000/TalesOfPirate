@@ -13,7 +13,7 @@
 class CTestDemo {
 private:
 	lwIResourceMgr* _res_mgr;
-	lwIModel* _skybox;
+	lwModel* _skybox;
 
 public:
 	CTestDemo();

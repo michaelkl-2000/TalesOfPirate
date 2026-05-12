@@ -1,8 +1,8 @@
-﻿//
+//
 #include "stdafx.h"
 #include "lwTreeNode.h"
 
-LW_BEGIN
+namespace Corsairs::Engine::Render {
 	LW_RESULT lwTreeNodeEnumPreOrder(lwITreeNode* node, lwTreeNodeEnumProc proc, void* param) {
 		LW_RESULT ret = TREENODE_PROC_RET_CONTINUE;
 
@@ -355,4 +355,4 @@ LW_BEGIN
 		return d;
 	}
 
-LW_END
+} // namespace Corsairs::Engine::Render

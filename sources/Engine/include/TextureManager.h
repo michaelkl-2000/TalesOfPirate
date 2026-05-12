@@ -6,9 +6,7 @@
 #include <vector>
 #include <unordered_map>
 
-LW_USING
-
-// Менеджер текстур — замена MPTexSet (без наследования от CRawDataSet).
+using namespace Corsairs::Engine::Render;// Менеджер текстур — замена MPTexSet (без наследования от CRawDataSet).
 // Lazy loading: текстура загружается при первом обращении через GetTexture().
 // DynamicRelease(): периодически выгружает неиспользуемые текстуры.
 class TextureManager {

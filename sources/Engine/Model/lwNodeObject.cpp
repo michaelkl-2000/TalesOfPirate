@@ -7,7 +7,7 @@
 #include "lwMisc.h"
 #include "lwIUtil.h"
 #include "lwPrimitiveHelper.h"
-#include "lwHelperGeometry.h"
+#include "HelperGeometry.h"
 #include "lwTreeNode.h"
 
 #include "AssetLoaders.h"
@@ -39,7 +39,7 @@ namespace Corsairs::Engine::Render {
 	static DWORD __tree_proc_loadmodel(lwITreeNode* node, void* param) {
 		DWORD ret = TREENODE_PROC_RET_ABORT;
 
-		lwIResourceMgr* res_mgr = (lwIResourceMgr*)param;
+		IResourceMgr* res_mgr = (IResourceMgr*)param;
 		lwModelNodeInfo* node_info = (lwModelNodeInfo*)node->GetData();
 
 		const std::string& tex_path = res_mgr->GetTexturePath();
@@ -80,7 +80,7 @@ namespace Corsairs::Engine::Render {
 			}
 			break;
 		case NODE_DUMMY:
-			if (LW_RESULT r = ((lwINodeDummy*)model_node)->Load((lwIHelperDummyObjInfo*)node_info->_data);
+			if (LW_RESULT r = ((lwINodeDummy*)model_node)->Load((IHelperDummyObjInfo*)node_info->_data);
 				LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
 							 "[{}] NodeDummy::Load failed: id={}, ret={}",
@@ -121,7 +121,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwLoadModelInfo(lwITreeNode** ret_obj_tree, lwModelInfo* info, lwIResourceMgr* res_mgr) {
+	LW_RESULT lwLoadModelInfo(lwITreeNode** ret_obj_tree, lwModelInfo* info, IResourceMgr* res_mgr) {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		if (info->_obj_tree->EnumTree(__tree_proc_loadmodel, (void*)res_mgr, TreeNodeProcType::TREENODE_PROC_PREORDER)
@@ -140,7 +140,7 @@ namespace Corsairs::Engine::Render {
 	// lwNodePrimitive
 	LW_STD_IMPLEMENTATION(lwNodePrimitive)
 
-	lwNodePrimitive::lwNodePrimitive(lwIResourceMgr* res_mgr)
+	lwNodePrimitive::lwNodePrimitive(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr) {
 		_type = NODE_PRIMITIVE;
 
@@ -262,8 +262,8 @@ namespace Corsairs::Engine::Render {
 
 		lwGeomObjInfo* info = (lwGeomObjInfo*)geom_info;
 
-		lwISystem* sys = _res_mgr->GetSysGraphics()->GetSystem();
-		lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+		ISystem* sys = _res_mgr->GetSysGraphics()->GetSystem();
+		IOptionMgr* opt_mgr = sys->GetOptionMgr();
 		BYTE create_helper_primitive = opt_mgr->GetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE);
 
 		LoadRenderCtrl(&info->rcci);
@@ -699,7 +699,7 @@ namespace Corsairs::Engine::Render {
 				}
 			}
 
-			lwIHelperObject* src_helper_object = src_obj->GetHelperObject();
+			IHelperObject* src_helper_object = src_obj->GetHelperObject();
 			if (src_helper_object) {
 				if (LW_RESULT r = src_helper_object->Clone(&_helper_object); LW_FAILED(r)) {
 					ToLogService("errors", LogLevel::Error,
@@ -1080,11 +1080,11 @@ namespace Corsairs::Engine::Render {
 			if (_helper_object == 0)
 				goto __ret;
 
-			lwIHelperDummy* hd = _helper_object->GetHelperDummy();
+			IHelperDummy* hd = _helper_object->GetHelperDummy();
 			if (hd == 0)
 				goto __ret;
 
-			lwHelperDummyInfo* info = hd->GetDataInfoWithID(link_id);
+			HelperDummyInfo* info = hd->GetDataInfoWithID(link_id);
 
 			if (info == 0)
 				goto __ret;
@@ -1225,7 +1225,7 @@ namespace Corsairs::Engine::Render {
 	// lwNodeBoneCtrl
 	LW_STD_IMPLEMENTATION(lwNodeBoneCtrl)
 
-	lwNodeBoneCtrl::lwNodeBoneCtrl(lwIResourceMgr* res_mgr)
+	lwNodeBoneCtrl::lwNodeBoneCtrl(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _ctrl_obj(0) {
 		_type = NODE_BONECTRL;
 	}
@@ -1377,7 +1377,7 @@ namespace Corsairs::Engine::Render {
 	//lwNodeDummy
 	LW_STD_IMPLEMENTATION(lwNodeDummy)
 
-	lwNodeDummy::lwNodeDummy(lwIResourceMgr* res_mgr)
+	lwNodeDummy::lwNodeDummy(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _ctrl_obj(0), _ass_obj(0) {
 		_type = NODE_DUMMY;
 	}
@@ -1400,10 +1400,10 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwNodeDummy::Load(lwIHelperDummyObjInfo* data) {
+	LW_RESULT lwNodeDummy::Load(IHelperDummyObjInfo* data) {
 		LW_RESULT ret = LW_RET_FAILED;
 
-		lwHelperDummyObjInfo* info = (lwHelperDummyObjInfo*)data;
+		HelperDummyObjInfo* info = (HelperDummyObjInfo*)data;
 
 		_id = info->GetID();
 		_mat_local = *info->GetMatrix();
@@ -1655,7 +1655,7 @@ namespace Corsairs::Engine::Render {
 	// lwNodeHelper
 	LW_STD_IMPLEMENTATION(lwNodeHelper)
 
-	lwNodeHelper::lwNodeHelper(lwIResourceMgr* res_mgr)
+	lwNodeHelper::lwNodeHelper(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr) {
 		_type = NODE_HELPER;
 
@@ -1676,11 +1676,11 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwNodeHelper::LoadHelperInfo(const lwHelperInfo* info, int create_instance_flag) {
+	LW_RESULT lwNodeHelper::LoadHelperInfo(const HelperInfo* info, int create_instance_flag) {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		if (info->type & HELPER_TYPE_DUMMY) {
-			lwHelperDummy* d = LW_NEW(lwHelperDummy);
+			HelperDummy* d = LW_NEW(HelperDummy);
 
 			d->SetResourceMgr(_res_mgr);
 			d->SetDataInfo(&info->dummy_seq[0], info->dummy_num);
@@ -1699,7 +1699,7 @@ namespace Corsairs::Engine::Render {
 		}
 
 		if (info->type & HELPER_TYPE_BOX) {
-			lwHelperBox* b = LW_NEW(lwHelperBox);
+			HelperBox* b = LW_NEW(HelperBox);
 
 			b->SetResourceMgr(_res_mgr);
 			b->SetDataInfo(&info->box_seq[0], info->box_num);
@@ -1718,7 +1718,7 @@ namespace Corsairs::Engine::Render {
 		}
 
 		if (info->type & HELPER_TYPE_MESH) {
-			lwHelperMesh* m = LW_NEW(lwHelperMesh);
+			HelperMesh* m = LW_NEW(HelperMesh);
 
 			m->SetResourceMgr(_res_mgr);
 			m->SetDataInfo(&info->mesh_seq[0], info->mesh_num);
@@ -1745,18 +1745,18 @@ namespace Corsairs::Engine::Render {
 		lwNodeHelper* s = (lwNodeHelper*)src;
 
 		if (s->_obj_dummy) {
-			lwHelperDummy* d = LW_NEW(lwHelperDummy);
-			d->Clone((lwHelperDummy*)s->_obj_dummy);
+			HelperDummy* d = LW_NEW(HelperDummy);
+			d->Clone((HelperDummy*)s->_obj_dummy);
 			_obj_dummy = d;
 		}
 		if (s->_obj_box) {
-			lwHelperBox* b = LW_NEW(lwHelperBox);
-			b->Clone((lwHelperBox*)s->_obj_box);
+			HelperBox* b = LW_NEW(HelperBox);
+			b->Clone((HelperBox*)s->_obj_box);
 			_obj_box = b;
 		}
 		if (s->_obj_mesh) {
-			lwHelperMesh* m = LW_NEW(lwHelperMesh);
-			m->Clone((lwHelperMesh*)s->_obj_mesh);
+			HelperMesh* m = LW_NEW(HelperMesh);
+			m->Clone((HelperMesh*)s->_obj_mesh);
 			_obj_mesh = m;
 		}
 
@@ -1952,7 +1952,7 @@ namespace Corsairs::Engine::Render {
 
 	LW_STD_IMPLEMENTATION(lwNodeObject)
 
-	lwNodeObject::lwNodeObject(lwIResourceMgr* res_mgr)
+	lwNodeObject::lwNodeObject(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _obj_root(0) {
 		_obj_root = LW_NEW(lwTreeNode);
 		lwINode* node = 0;
@@ -2004,9 +2004,9 @@ namespace Corsairs::Engine::Render {
 	LW_RESULT lwNodeObject::CullPrimitive() {
 		LW_RESULT ret = LW_RET_FAILED;
 
-		lwISysGraphics* sys_grh = _res_mgr->GetSysGraphics();
+		ISysGraphics* sys_grh = _res_mgr->GetSysGraphics();
 		lwISceneMgr* scn_mgr = sys_grh->GetSceneMgr();
-		lwIOptionMgr* opt_mgr = sys_grh->GetSystem()->GetOptionMgr();
+		IOptionMgr* opt_mgr = sys_grh->GetSystem()->GetOptionMgr();
 		BOOL cull_flag = opt_mgr->GetByteFlag(OptionByteFlag::OPTION_FLAG_CULLPRIMITIVE_MODEL);
 
 		if (cull_flag == 0)
@@ -2405,7 +2405,7 @@ namespace Corsairs::Engine::Render {
 	LW_RESULT lwNode_ShowBoundingObject(lwINode* obj, DWORD flag) {
 		LW_RESULT ret = LW_RET_FAILED;
 
-		lwIHelperObject* helper_obj;
+		IHelperObject* helper_obj;
 		lwINodePrimitive* dummy_obj;
 
 		DWORD type = obj->GetType();

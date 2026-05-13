@@ -88,7 +88,9 @@ MPMap::~MPMap() {
 
 void MPMap::FrameMove(DWORD dwTimeParam) {
 	_nWaterLoopFrame++;
-	if (_nWaterLoopFrame >= MAX_WATER_LOOP) _nWaterLoopFrame = 0;
+	if (_nWaterLoopFrame >= MAX_WATER_LOOP) {
+		_nWaterLoopFrame = 0;
+	}
 }
 
 float AlphaNo2UV[16][2] =
@@ -117,7 +119,9 @@ float AlphaNo2UV[16][2] =
 
 
 void MPMap::Render() {
-	if (!_stream.IsOpen()) return;
+	if (!_stream.IsOpen()) {
+		return;
+	}
 
 	MPTimer t;
 	t.Begin();
@@ -285,7 +289,9 @@ void MPMap::Render() {
 }
 
 void MPMap::RenderSmMap() {
-	if (!_stream.IsOpen()) return;
+	if (!_stream.IsOpen()) {
+		return;
+	}
 
 	g_Render.ResetWorldTransform();
 
@@ -358,11 +364,15 @@ void MPMap::RenderSmMap() {
 			int nX = nTileStartX + x;
 			int nY = nTileStartY + y;
 
-			if (nX < 0 || nX >= _nWidth || nY < 0 || nY >= _nHeight) continue;
+			if (nX < 0 || nX >= _nWidth || nY < 0 || nY >= _nHeight) {
+				continue;
+			}
 
 			MPTile* pTile = GetTile(nX, nY);
 
-			if (!pTile) continue;
+			if (!pTile) {
+				continue;
+			}
 
 			TileList[0] = pTile;
 			TileList[1] = GetGroupTile(nX, nY, 1);
@@ -374,7 +384,9 @@ void MPMap::RenderSmMap() {
 			for (i = 0; i < 4; i++) {
 				MPTileTex* pLayer = &(pTile->TexLayer[i]);
 
-				if (pLayer->btTexNo == 0) break;
+				if (pLayer->btTexNo == 0) {
+					break;
+				}
 				if (pLayer->btAlphaNo == 0) continue;
 
 				float fScale = 0.25f;
@@ -428,7 +440,9 @@ void MPMap::_RenderFocusRect() {
 		nY = nTileStartY;
 
 		MPTile* pTile = GetTile(nX, nY);
-		if (pTile->IsDefault()) fHeight = SEA_LEVEL + fStep;
+		if (pTile->IsDefault()) {
+			fHeight = SEA_LEVEL + fStep;
+		}
 		else fHeight = pTile->fHeight + fStep;
 		v[n].x = (float)nX;
 		v[n].y = (float)nY;
@@ -440,7 +454,9 @@ void MPMap::_RenderFocusRect() {
 		nY = nTileStartY + y;
 
 		MPTile* pTile = GetTile(nX, nY);
-		if (pTile->IsDefault()) fHeight = SEA_LEVEL + fStep;
+		if (pTile->IsDefault()) {
+			fHeight = SEA_LEVEL + fStep;
+		}
 		else fHeight = pTile->fHeight + fStep;
 		v[n].x = (float)nX;
 		v[n].y = (float)nY;
@@ -452,7 +468,9 @@ void MPMap::_RenderFocusRect() {
 		nY = nTileStartY + _nSectionHeight;
 
 		MPTile* pTile = GetTile(nX, nY);
-		if (pTile->IsDefault()) fHeight = SEA_LEVEL + fStep;
+		if (pTile->IsDefault()) {
+			fHeight = SEA_LEVEL + fStep;
+		}
 		else fHeight = pTile->fHeight + fStep;
 		v[n].x = (float)nX;
 		v[n].y = (float)nY;
@@ -463,7 +481,9 @@ void MPMap::_RenderFocusRect() {
 		nX = nTileStartX;
 		nY = nTileStartY + _nSectionHeight - y;
 		MPTile* pTile = GetTile(nX, nY);
-		if (pTile->IsDefault()) fHeight = SEA_LEVEL + fStep;
+		if (pTile->IsDefault()) {
+			fHeight = SEA_LEVEL + fStep;
+		}
 		else fHeight = pTile->fHeight + fStep;
 		v[n].x = (float)nX;
 		v[n].y = (float)nY;
@@ -480,7 +500,9 @@ void MPMap::_RenderFocusRect() {
 }
 
 void MPMap::RenderSea() {
-	if (!_bRenderSea) return;
+	if (!_bRenderSea) {
+		return;
+	}
 
 	MPTimer t;
 	t.Begin();
@@ -540,7 +562,9 @@ void MPMap::RenderSea() {
 	int nSeaCntX = _nShowWidth / nSize;
 	int nSeaCntY = _nShowHeight / nSize;
 
-	if (_nShowWidth % nSize != 0) nSeaCntX++;
+	if (_nShowWidth % nSize != 0) {
+		nSeaCntX++;
+	}
 	if (_nShowHeight % nSize != 0) nSeaCntY++;
 
 	int nTileCnt = nSeaCntX * nSeaCntY;
@@ -565,7 +589,9 @@ void MPMap::RenderSea() {
 				int nX = (nSeaStartX + x) * nSize;
 				int nY = (nSeaStartY + y) * nSize;
 
-				if (nX < 0 || nX >= _nWidth || nY < 0 || nY >= _nHeight) continue;
+				if (nX < 0 || nX >= _nWidth || nY < 0 || nY >= _nHeight) {
+					continue;
+				}
 
 				SVertex[0].dwColor = _dwSeaDefaultColor;
 				SVertex[1].dwColor = _dwSeaDefaultColor;
@@ -610,7 +636,9 @@ void MPMap::RenderSea() {
 				int nX = (nSeaStartX + x) * nSize;
 				int nY = (nSeaStartY + y) * nSize;
 
-				if (nX < 0 || nX >= _nWidth || nY < 0 || nY >= _nHeight) continue;
+				if (nX < 0 || nX >= _nWidth || nY < 0 || nY >= _nHeight) {
+					continue;
+				}
 
 				SVertex[0].dwColor = _dwSeaDefaultColor;
 				SVertex[1].dwColor = _dwSeaDefaultColor;
@@ -632,8 +660,8 @@ void MPMap::RenderSea() {
 				// begin by lsh
 #if(defined DRAW_TERRAIN_USE_DYNAMIC_BUFFER)
 
-				lwInterfaceMgr* imgr = g_Render.GetInterfaceMgr();
-				lwIDynamicStreamMgr* dsm = imgr->res_mgr->GetDynamicStreamMgr();
+				InterfaceMgr* imgr = g_Render.GetInterfaceMgr();
+				IDynamicStreamMgr* dsm = imgr->res_mgr->GetDynamicStreamMgr();
 				dsm->BindDataVB(0, &SVertex, sizeof(MPSeaTileVertex) * 4, sizeof(MPSeaTileVertex));
 				if (LW_RESULT r = dsm->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2); LW_FAILED(r))
 					ToLogService("errors", LogLevel::Error,
@@ -676,7 +704,9 @@ BOOL MPMap::GetPickPos(int nPosX, int nPosY, D3DXVECTOR3& vPickPos) {
 		int nX = (int)(pVec->x);
 		int nY = (int)(pVec->y);
 
-		if (nX < 0 || nX >= _nWidth) continue;
+		if (nX < 0 || nX >= _nWidth) {
+			continue;
+		}
 		if (nY < 0 || nY >= _nHeight) continue;
 
 		int nOffX = nX;
@@ -734,7 +764,9 @@ BOOL MPMap::GetPickPosEditor(int nPosX, int nPosY, D3DXVECTOR3& vPickPos) {
 		int nX = (int)(pVec->x);
 		int nY = (int)(pVec->y);
 
-		if (nX < 0 || nX >= _nWidth) continue;
+		if (nX < 0 || nX >= _nWidth) {
+			continue;
+		}
 		if (nY < 0 || nY >= _nHeight) continue;
 
 		int nOffX = nX;
@@ -749,7 +781,9 @@ BOOL MPMap::GetPickPosEditor(int nPosX, int nPosY, D3DXVECTOR3& vPickPos) {
 		if (pTile) {
 			for (int i = 0; i < 4; i++) {
 				MPTile* pCurTile = GetTile(nX + MPTile::Offset[i][0], nY + MPTile::Offset[i][1]);
-				if (!pCurTile->IsDefault()) fHeight[i] = pCurTile->fHeight;
+				if (!pCurTile->IsDefault()) {
+					fHeight[i] = pCurTile->fHeight;
+				}
 			}
 		}
 
@@ -929,10 +963,14 @@ void MPMap::_GenerateTerrainGroup(int nTileStartX, int nTileStartY) {
 		for (short x = 0; x < _nShowWidth; x++) {
 			short sX = nTileStartX + x;
 			short sY = nTileStartY + y;
-			if (sX < 0 || sX >= _nWidth || sY < 0 || sY >= _nHeight) continue;
+			if (sX < 0 || sX >= _nWidth || sY < 0 || sY >= _nHeight) {
+				continue;
+			}
 
 			MPTile* pTile = GetTile(sX, sY);
-			if (!pTile) continue;
+			if (!pTile) {
+				continue;
+			}
 
 			if (pTile->fHeight < (SEA_LEVEL - 0.05f)) {
 				_bRenderSea = TRUE; // 
@@ -965,7 +1003,9 @@ void MPMap::_GenerateTerrainGroup(int nTileStartX, int nTileStartY) {
 					continue;
 			}
 
-			if (pTile->TexLayer[0].btTexNo == 0) continue;
+			if (pTile->TexLayer[0].btTexNo == 0) {
+				continue;
+			}
 
 			if (pTile->TexLayer[0].btAlphaNo == 15) {
 				if (!_AddRenderGroup(0, pTile->TexLayer[0].btTexNo, pTile, sX, sY)) {
@@ -977,7 +1017,9 @@ void MPMap::_GenerateTerrainGroup(int nTileStartX, int nTileStartY) {
 			for (int i = 1; i < 4; i++) {
 				MPTileTex* pLayer = &(pTile->TexLayer[i]);
 
-				if (pLayer->btTexNo == 0) break;
+				if (pLayer->btTexNo == 0) {
+					break;
+				}
 				if (pLayer->btAlphaNo == 0) continue;
 
 				if (!_AddRenderGroup(i, pLayer->btTexNo, pTile, sX, sY)) {
@@ -998,10 +1040,14 @@ void MPMap::_GenerateTerrainGroup(int nTileStartX, int nTileStartY) {
 			for (short x = 0; x < _pathFindRange; x++) {
 				short sX = nBlockStartX + x;
 				short sY = nBlockStartY + y;
-				if (sX < 0 || sX >= _nWidth || sY < 0 || sY >= _nHeight) continue;
+				if (sX < 0 || sX >= _nWidth || sY < 0 || sY >= _nHeight) {
+					continue;
+				}
 
 				ZRBlockData* pBlockData = _block->GetBlock(sX, sY);
-				if (!pBlockData) continue;
+				if (!pBlockData) {
+					continue;
+				}
 
 				_block->_tileRegionAttr[y][x] = pBlockData->sRegion;
 
@@ -1017,7 +1063,9 @@ void MPMap::_GenerateTerrainGroup(int nTileStartX, int nTileStartY) {
 	}
 groupend:
 
-	if (bFull) ToLogService("errors", LogLevel::Error, "(>{})", MAX_RENDER_TILE * 2);
+	if (bFull) {
+		ToLogService("errors", LogLevel::Error, "(>{})", MAX_RENDER_TILE * 2);
+	}
 
 	nLockVertex = 0;
 
@@ -1035,7 +1083,9 @@ groupend:
 }
 
 void MPMap::_FillVB() {
-	if (_pLandVB == NULL) return;
+	if (_pLandVB == NULL) {
+		return;
+	}
 
 	MPTimer t;
 	t.Begin();
@@ -1107,14 +1157,18 @@ void MPMap::_FillVB() {
 }
 
 void MPMap::_RenderVB(BOOL bWireframe) {
-	if (_pLandVB == NULL) return;
+	if (_pLandVB == NULL) {
+		return;
+	}
 
 	g_Render.GetDevice()->SetStreamSource(0, _pLandVB, 0, sizeof(MPTileVertex));
 
 	int nStartVertex = 0;
 	for (int j = 0; j < nRenderGroupCnt; j++) {
 		STileGroup* pGroup = RenderGroup[j];
-		if (pGroup->sTileCnt == 0) continue;
+		if (pGroup->sTileCnt == 0) {
+			continue;
+		}
 
 		if (pGroup->btLayer == 0) {
 			g_Render.EnableAlpha(FALSE);
@@ -1126,7 +1180,9 @@ void MPMap::_RenderVB(BOOL bWireframe) {
 			}
 		}
 		else {
-			if (bWireframe) continue;
+			if (bWireframe) {
+				continue;
+			}
 			g_Render.SetTexture(0, GetTextureByID(Corsairs::Common::World::GetTerrainAlphaTextureID_I()));
 			g_Render.EnableAlpha(TRUE);
 			g_Render.SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_MIRROR);

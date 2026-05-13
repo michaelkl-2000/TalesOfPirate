@@ -2,13 +2,13 @@
 #include "stdafx.h"
 
 #include "MPSceneObject.h"
-#include "lwSystem.h"
-#include "lwSysGraphics.h"
+#include "System.h"
+#include "SysGraphics.h"
 #include "lwInterface.h"
 #include "lwGraphicsUtil.h"
 
 namespace Corsairs::Engine::Render {
-	MPSceneObject::MPSceneObject(lwISysGraphics* sys_graphics)
+	MPSceneObject::MPSceneObject(ISysGraphics* sys_graphics)
 		: _model(0) {
 		sys_graphics->GetResourceMgr()->CreateModel(&_model);
 
@@ -17,7 +17,7 @@ namespace Corsairs::Engine::Render {
 
 	MPSceneObject::MPSceneObject()
 		: _model(0) {
-		lwSysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr()->CreateModel(&_model);
+		SysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr()->CreateModel(&_model);
 
 		BindMatrix(_model->GetMatrix());
 	}
@@ -261,7 +261,7 @@ namespace Corsairs::Engine::Render {
 		if (p == NULL)
 			return 0;
 
-		lwIHelperObject* h = p->GetHelperObject();
+		IHelperObject* h = p->GetHelperObject();
 		lwIBoundingBox* b = h->GetBoundingBox();
 		if (b == NULL)
 			return 0;
@@ -327,7 +327,7 @@ namespace Corsairs::Engine::Render {
 		_box.c = lwVector3(0.0f, 0.0f, 0.0f);
 		_box.r = lwVector3(0.5f, 0.5f, 0.5f);
 
-		lwSysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr()->CreatePrimitive(&_obj);
+		SysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr()->CreatePrimitive(&_obj);
 
 		const DWORD vert_num = 24 + 6;
 		lwVector3 vert_buf[vert_num];

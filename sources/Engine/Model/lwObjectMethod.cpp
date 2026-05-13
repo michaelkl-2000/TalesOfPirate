@@ -38,14 +38,14 @@ namespace Corsairs::Engine::Render {
 	void lwMatrixCtrl::UpdateYawPitchRoll() {
 		lwMatrix44 m(lwMatrix44_Identity);
 
-		lwMatrix44 m_yaw = lwMatrix44RotateZ(-_angle_yaw + LW_PI);
-		lwMatrix44 m_pitch = lwMatrix44RotateY(-_angle_pitch);
-		lwMatrix44 m_roll = lwMatrix44RotateX(-_angle_roll);
-		lwMatrix44 m_scale = lwMatrix44Scale(_scale.x, _scale.y, _scale.z);
+		lwMatrix44 yawMtx = lwMatrix44RotateZ(-_angle_yaw + LW_PI);
+		lwMatrix44 pitchMtx = lwMatrix44RotateY(-_angle_pitch);
+		lwMatrix44 rollMtx = lwMatrix44RotateX(-_angle_roll);
+		lwMatrix44 scaleMtx = lwMatrix44Scale(_scale.x, _scale.y, _scale.z);
 
-		lwMatrix44Multiply(&m, &m_yaw, &m_pitch);
-		lwMatrix44Multiply(&m, &m, &m_roll);
-		lwMatrix44Multiply(&m, &m, &m_scale);
+		lwMatrix44Multiply(&m, &yawMtx, &pitchMtx);
+		lwMatrix44Multiply(&m, &m, &rollMtx);
+		lwMatrix44Multiply(&m, &m, &scaleMtx);
 
 
 		memcpy(_mat_ptr, &m, sizeof(float) * 12);

@@ -249,7 +249,7 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 mat;
 	};
 
-	struct lwHelperDummyInfo {
+	struct HelperDummyInfo {
 		DWORD id;
 		lwMatrix44 mat;
 		lwMatrix44 mat_local;
@@ -257,7 +257,7 @@ namespace Corsairs::Engine::Render {
 		DWORD parent_id;
 	};
 
-	struct lwHelperMeshFaceInfo {
+	struct HelperMeshFaceInfo {
 		DWORD vertex[3];
 		DWORD adj_face[3];
 
@@ -265,19 +265,19 @@ namespace Corsairs::Engine::Render {
 		lwVector3 center;
 	};
 
-	struct lwHelperMeshInfo {
-		lwHelperMeshInfo()
+	struct HelperMeshInfo {
+		HelperMeshInfo()
 			: id(LW_INVALID_INDEX), type(0), sub_type(0), state(1),
 			  vertex_seq(0), face_seq(0), vertex_num(0), face_num(0) {
 			name[0] = '\0';
 		}
 
-		~lwHelperMeshInfo() {
+		~HelperMeshInfo() {
 			LW_SAFE_DELETE_A(vertex_seq);
 			LW_SAFE_DELETE_A(face_seq);
 		}
 
-		LW_RESULT Copy(const lwHelperMeshInfo* src);
+		LW_RESULT Copy(const HelperMeshInfo* src);
 
 		DWORD id;
 		DWORD type; // helper mesh type
@@ -287,14 +287,14 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 mat;
 		lwBox box;
 		lwVector3* vertex_seq;
-		lwHelperMeshFaceInfo* face_seq;
+		HelperMeshFaceInfo* face_seq;
 
 		DWORD vertex_num;
 		DWORD face_num;
 	};
 
-	struct lwHelperBoxInfo {
-		lwHelperBoxInfo()
+	struct HelperBoxInfo {
+		HelperBoxInfo()
 			: id(0), type(0), state(1) {
 			name[0] = '\0';
 		}
@@ -306,8 +306,8 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 mat;
 		char name[LW_CHAR_32];
 
-		LW_RESULT Copy(const lwHelperBoxInfo* src) {
-			memcpy(this, src, sizeof(lwHelperBoxInfo));
+		LW_RESULT Copy(const HelperBoxInfo* src) {
+			memcpy(this, src, sizeof(HelperBoxInfo));
 			return LW_RET_OK;
 		}
 	};

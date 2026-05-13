@@ -18,7 +18,7 @@ namespace Corsairs::Engine::Render {
 	// GetLinkCtrlMatrix (используется в lwItem через указатель lwLinkCtrl*).
 	class lwPhysique : public lwLinkCtrl {
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwISceneMgr* _scene_mgr;
 		lwIPrimitive* _obj_seq[LW_MAX_SUBSKIN_NUM];
 		lwIAnimCtrlAgent* _anim_agent;
@@ -31,7 +31,7 @@ namespace Corsairs::Engine::Render {
 		bool _end;
 
 	public:
-		lwPhysique(lwIResourceMgr* res_mgr);
+		lwPhysique(IResourceMgr* res_mgr);
 		lwPhysique();
 		~lwPhysique();
 
@@ -43,7 +43,7 @@ namespace Corsairs::Engine::Render {
 		// link ctrl method
 		virtual LW_RESULT GetLinkCtrlMatrix(lwMatrix44* mat, DWORD link_id);
 
-		lwIResourceMgr* GetResourceMgr() {
+		IResourceMgr* GetResourceMgr() {
 			return _res_mgr;
 		}
 

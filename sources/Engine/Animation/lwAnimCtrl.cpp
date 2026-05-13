@@ -4,7 +4,7 @@
 #include "lwAnimCtrl.h"
 #include "lwMath.h"
 #include "lwPrimitive.h"
-#include "lwResourceMgr.h"
+#include "ResourceMgr.h"
 #include "lwRenderImp.h"
 
 //FILE* g_fp = 0;
@@ -49,7 +49,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	lwAnimCtrlBone::lwAnimCtrlBone(lwIResourceMgr* res_mgr)
+	lwAnimCtrlBone::lwAnimCtrlBone(IResourceMgr* res_mgr)
 		: lwAnimCtrl(res_mgr),
 		  _bone_rtmat_seq(0), _dummy_rtmat_seq(0), _rtbuf_seq(0), _rtmat_ptr(0),
 		  _bone_rtmat_blend_seq(0) {
@@ -644,7 +644,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	lwAnimCtrlMatrix::lwAnimCtrlMatrix(lwIResourceMgr* res_mgr)
+	lwAnimCtrlMatrix::lwAnimCtrlMatrix(IResourceMgr* res_mgr)
 		: lwAnimCtrl(res_mgr) {
 	}
 
@@ -766,7 +766,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	lwAnimCtrlTexUV::lwAnimCtrlTexUV(lwIResourceMgr* res_mgr)
+	lwAnimCtrlTexUV::lwAnimCtrlTexUV(IResourceMgr* res_mgr)
 		: lwAnimCtrl(res_mgr), _keyset_prs(0) {
 	}
 
@@ -913,7 +913,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	lwAnimCtrlTexImg::lwAnimCtrlTexImg(lwIResourceMgr* res_mgr)
+	lwAnimCtrlTexImg::lwAnimCtrlTexImg(IResourceMgr* res_mgr)
 		: lwAnimCtrl(res_mgr),
 		  _tex_seq(0), _tex_num(0), _rttex(LW_INVALID_INDEX) {
 	}
@@ -1064,7 +1064,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	lwAnimCtrlMtlOpacity::lwAnimCtrlMtlOpacity(lwIResourceMgr* res_mgr)
+	lwAnimCtrlMtlOpacity::lwAnimCtrlMtlOpacity(IResourceMgr* res_mgr)
 		: lwAnimCtrl(res_mgr), _data(0), _rt_opacity(0.0f) {
 	}
 

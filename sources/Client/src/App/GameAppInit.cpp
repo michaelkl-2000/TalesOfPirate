@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 
 #include "InputSystem.h"
 #include "SteadyFrameSync.h"
@@ -29,7 +29,7 @@
 #include "UIsystemform.h"
 #include "UICozeForm.h"
 #include "GameMovie.h"
-#include "lwTimer.h"
+#include "Timer.h"
 
 using namespace std;
 
@@ -217,7 +217,7 @@ BOOL CGameApp::_Init() {
 
 	{
 		// init loading helper object instance flag
-		lwIOptionMgr* opt_mgr = g_Render.GetInterfaceMgr()->sys->GetOptionMgr();
+		IOptionMgr* opt_mgr = g_Render.GetInterfaceMgr()->sys->GetOptionMgr();
 		opt_mgr->SetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE, GlobalAppConfig.IsEditor());
 	}
 
@@ -343,11 +343,11 @@ BOOL CGameApp::_Init() {
 	//DWORD fps = (DWORD)((1.0f / 30.0f) * 1000);
 	DWORD fps = _dwFPSInterval;
 	HWND hwnd = g_pGameApp->GetHWND();
-	_TimerPeriod = LW_NEW(lwTimerPeriod);
+	_TimerPeriod = LW_NEW(TimerPeriod);
 	_TimerPeriod->SetEvent(fps, fps, __timer_period_proc, (DWORD_PTR)hwnd, TIME_PERIODIC | TIME_CALLBACK_FUNCTION);
 #endif
 
-	lwIOptionMgr* opt_mgr = g_Render.GetInterfaceMgr()->sys->GetOptionMgr();
+	IOptionMgr* opt_mgr = g_Render.GetInterfaceMgr()->sys->GetOptionMgr();
 #if(defined OPT_CULL_1)
 #pragma message("-------------Primitive Culling Opened-------------")
 	opt_mgr->SetByteFlag(OptionByteFlag::OPTION_FLAG_CULLPRIMITIVE_MODEL, 1);

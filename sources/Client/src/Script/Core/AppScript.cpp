@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "script.h"
 #include "scene.h"
 #include "GameApp.h"
@@ -31,12 +31,12 @@ void CGameApp::LoadScriptScene(const char* script_file) {
 //---------------------------------------------------------------------------
 int GP_SetCameraPos(float ex, float ey, float ez, float rx, float ry, float rz) {
 	CCameraCtrl* pCam = g_pGameApp->GetMainCam();
-	pCam->m_EyePos.x = ex;
-	pCam->m_EyePos.y = ey;
-	pCam->m_EyePos.z = ez;
-	pCam->m_RefPos.x = rx;
-	pCam->m_RefPos.y = ry;
-	pCam->m_RefPos.z = rz;
+	pCam->_EyePos.x = ex;
+	pCam->_EyePos.y = ey;
+	pCam->_EyePos.z = ez;
+	pCam->_RefPos.x = rx;
+	pCam->_RefPos.y = ry;
+	pCam->_RefPos.z = rz;
 
 	return R_OK;
 }

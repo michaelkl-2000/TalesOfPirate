@@ -4,13 +4,13 @@
 
 
 #include "lwPrimitive.h"
-#include "lwSystem.h"
-#include "lwSysGraphics.h"
+#include "System.h"
+#include "SysGraphics.h"
 #include "lwAnimCtrl.h"
-#include "lwPathInfo.h"
+#include "PathInfo.h"
 #include "lwD3D.h"
-#include "lwShaderMgr.h"
-#include "lwResourceMgr.h"
+#include "ShaderMgr.h"
+#include "ResourceMgr.h"
 #include "lwRenderImp.h"
 
 #include "AssetLoaders.h"
@@ -27,7 +27,7 @@ namespace Corsairs::Engine::Render {
 	LW_STD_IMPLEMENTATION(lwPrimitive)
 
 	// lwPrimitive
-	lwPrimitive::lwPrimitive(lwIResourceMgr* mgr)
+	lwPrimitive::lwPrimitive(IResourceMgr* mgr)
 		: _res_mgr(mgr), _id(LW_INVALID_INDEX), _parent_id(LW_INVALID_INDEX), _helper_object(0) {
 		_anim_agent = NULL;
 		_render_agent = NULL;
@@ -134,8 +134,8 @@ namespace Corsairs::Engine::Render {
 
 		lwGeomObjInfo* info = (lwGeomObjInfo*)geom_info;
 
-		lwISystem* sys = _res_mgr->GetSysGraphics()->GetSystem();
-		lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+		ISystem* sys = _res_mgr->GetSysGraphics()->GetSystem();
+		IOptionMgr* opt_mgr = sys->GetOptionMgr();
 		BYTE create_helper_primitive = opt_mgr->GetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE);
 
 
@@ -596,7 +596,7 @@ namespace Corsairs::Engine::Render {
 		}
 
 		if (_helper_object) {
-			lwIHelperObject* helper_obj;
+			IHelperObject* helper_obj;
 			_helper_object->Clone(&helper_obj);
 			o->SetHelperObject(helper_obj);
 		}

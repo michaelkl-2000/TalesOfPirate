@@ -29,7 +29,7 @@ namespace Corsairs::Engine::Render {
 		VS_CONST_REG_MAT_PALETTE = 21,
 	};
 
-	LW_RESULT lwInitUserRenderCtrlVSProc(lwIResourceMgr* mgr);
+	LW_RESULT lwInitUserRenderCtrlVSProc(IResourceMgr* mgr);
 
 	class lwxRenderCtrlVSVertexBlend_dx8 : public lwIRenderCtrlVS {
 		typedef lwxRenderCtrlVSVertexBlend_dx8 this_type;

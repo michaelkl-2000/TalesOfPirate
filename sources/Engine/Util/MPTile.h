@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 
 #include "MPRender.h"
@@ -57,7 +57,9 @@ inline float _getObjHeight(BYTE btValue, int no) {
 
 
 inline BYTE _setObjHeight(BYTE btOldValue, float fHeight, int no) {
-	if (fHeight > 3.1f) fHeight = 3.1f;
+	if (fHeight > 3.1f) {
+		fHeight = 3.1f;
+	}
 	if (fHeight < -3.1f) fHeight = -3.1f;
 	if (fHeight < 0.0f) {
 		fHeight *= -1.0f;
@@ -103,7 +105,9 @@ public:
 	}
 
 	BOOL IsDefault() {
-		if (TexLayer[1].btTexNo == 255) return TRUE;
+		if (TexLayer[1].btTexNo == 255) {
+			return TRUE;
+		}
 		return FALSE;
 	}
 
@@ -114,12 +118,16 @@ public:
 	}
 
 	void AddHeight(float fAddHeight) {
-		if (IsDefault()) return;
+		if (IsDefault()) {
+			return;
+		}
 		fHeight += fAddHeight;
 	}
 
 	void setHeight(float fSetHeight) {
-		if (IsDefault()) return;
+		if (IsDefault()) {
+			return;
+		}
 		fHeight = fSetHeight;
 	}
 
@@ -128,7 +136,9 @@ public:
 	}
 
 	BYTE IsBlock(BYTE no) {
-		if (btBlock[no] & 128) return 1;
+		if (btBlock[no] & 128) {
+			return 1;
+		}
 		return 0;
 	}
 
@@ -150,10 +160,14 @@ public:
 	}
 
 	void setRegion(int nRegionNo, BOOL bSet) {
-		if (IsDefault()) return;
+		if (IsDefault()) {
+			return;
+		}
 		short s = 1;
 		s <<= (nRegionNo - 1);
-		if (bSet) sRegion |= s;
+		if (bSet) {
+			sRegion |= s;
+		}
 		else if (sRegion & s) sRegion ^= s;
 	}
 

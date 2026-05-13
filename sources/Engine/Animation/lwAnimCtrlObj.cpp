@@ -9,7 +9,7 @@ namespace Corsairs::Engine::Render {
 	// lwAnimCtrlObjMat
 	LW_STD_IMPLEMENTATION(lwAnimCtrlObjMat)
 
-	lwAnimCtrlObjMat::lwAnimCtrlObjMat(lwIResourceMgr* res_mgr)
+	lwAnimCtrlObjMat::lwAnimCtrlObjMat(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _anim_ctrl(0) {
 		memset(&_type_info, 0, sizeof(_type_info));
 		_type_info.type = THIS_TYPE;
@@ -171,7 +171,7 @@ namespace Corsairs::Engine::Render {
 	// lwAnimCtrlObjBone
 	LW_STD_IMPLEMENTATION(lwAnimCtrlObjBone)
 
-	lwAnimCtrlObjBone::lwAnimCtrlObjBone(lwIResourceMgr* res_mgr)
+	lwAnimCtrlObjBone::lwAnimCtrlObjBone(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _anim_ctrl(0) {
 		memset(&_type_info, 0, sizeof(_type_info));
 		_type_info.type = THIS_TYPE;
@@ -359,7 +359,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwAnimCtrlObjBone::UpdateHelperObject(lwIHelperObject* helper_obj) {
+	LW_RESULT lwAnimCtrlObjBone::UpdateHelperObject(IHelperObject* helper_obj) {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		// IsPlaying()lwAnimCtrlObjBone
@@ -369,7 +369,7 @@ namespace Corsairs::Engine::Render {
 
 		{
 			lwIBoundingSphere* b = helper_obj->GetBoundingSphere();
-			lwIHelperDummy* d = helper_obj->GetHelperDummy();
+			IHelperDummy* d = helper_obj->GetHelperDummy();
 
 			if (b) {
 				lwBoundingSphereInfo* s;
@@ -388,7 +388,7 @@ namespace Corsairs::Engine::Render {
 			}
 
 			if (d) {
-				lwHelperDummyInfo* di;
+				HelperDummyInfo* di;
 				DWORD num = d->GetObjNum();
 
 				for (DWORD i = 0; i < num; i++) {
@@ -421,7 +421,7 @@ namespace Corsairs::Engine::Render {
 	// lwAnimCtrlObjTexUV
 	LW_STD_IMPLEMENTATION(lwAnimCtrlObjTexUV)
 
-	lwAnimCtrlObjTexUV::lwAnimCtrlObjTexUV(lwIResourceMgr* res_mgr)
+	lwAnimCtrlObjTexUV::lwAnimCtrlObjTexUV(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _anim_ctrl(0) {
 		memset(&_type_info, 0, sizeof(_type_info));
 		_type_info.type = THIS_TYPE;
@@ -582,7 +582,7 @@ namespace Corsairs::Engine::Render {
 	// lwAnimCtrlObjTexImg
 	LW_STD_IMPLEMENTATION(lwAnimCtrlObjTexImg)
 
-	lwAnimCtrlObjTexImg::lwAnimCtrlObjTexImg(lwIResourceMgr* res_mgr)
+	lwAnimCtrlObjTexImg::lwAnimCtrlObjTexImg(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _anim_ctrl(0) {
 		memset(&_type_info, 0, sizeof(_type_info));
 		_type_info.type = THIS_TYPE;
@@ -744,7 +744,7 @@ namespace Corsairs::Engine::Render {
 	// lwAnimCtrlObjMtlOpacity
 	LW_STD_IMPLEMENTATION(lwAnimCtrlObjMtlOpacity)
 
-	lwAnimCtrlObjMtlOpacity::lwAnimCtrlObjMtlOpacity(lwIResourceMgr* res_mgr)
+	lwAnimCtrlObjMtlOpacity::lwAnimCtrlObjMtlOpacity(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _anim_ctrl(0) {
 		memset(&_type_info, 0, sizeof(_type_info));
 		_type_info.type = THIS_TYPE;
@@ -906,7 +906,7 @@ namespace Corsairs::Engine::Render {
 	// lwAnimCtrlAgent
 	LW_STD_IMPLEMENTATION(lwAnimCtrlAgent)
 
-	lwAnimCtrlAgent::lwAnimCtrlAgent(lwIResourceMgr* res_mgr)
+	lwAnimCtrlAgent::lwAnimCtrlAgent(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _obj_seq(0), _obj_num(0) {
 	}
 

@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 namespace Corsairs::Common::Effect {}
 using namespace Corsairs::Common::Effect;
 namespace Corsairs::Common::Misc {}
@@ -582,7 +582,7 @@ void CGameApp::MouseButtonDB(int nButton) {
 		//	pCam->SetFollowObj(vecCha);
 		//	pCam->FrameMove(0);
 		//	g_Render.SetWorldViewFOV(Angle2Radian(pCam->m_ffov));
-		//	g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+		//	g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 		//	g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 		//}
 	}
@@ -639,7 +639,7 @@ void CGameApp::HandleSuperKey() {
 		//	pCam->FrameMove(0);
 
 		//	g_Render.SetWorldViewFOV(Angle2Radian(pCam->m_ffov));
-		//	g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+		//	g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 		//	g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 		//	//g_pGameApp->ResetGameCamera( GetCurScene()->GetMainCha()->IsBoat() ? 1 : 0 );
 		//}
@@ -765,7 +765,7 @@ void CGameApp::HandleContinueSuperKey() {
 			}
 		}
 		else {
-			VECTOR3 vecPos = GetMainCam()->m_RefPos;
+			VECTOR3 vecPos = GetMainCam()->_RefPos;
 			GetMainCam()->Turn(0.4f, &vecPos);
 		}
 	}
@@ -782,7 +782,7 @@ void CGameApp::HandleContinueSuperKey() {
 			}
 		}
 		else {
-			VECTOR3 vecPos = GetMainCam()->m_RefPos;
+			VECTOR3 vecPos = GetMainCam()->_RefPos;
 			GetMainCam()->Turn(-0.4f, &vecPos);
 		}
 	}

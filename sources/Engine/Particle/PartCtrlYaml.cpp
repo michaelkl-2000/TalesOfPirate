@@ -9,10 +9,10 @@
 // статические методы здесь ходят в private/protected напрямую. Поля CEffPath
 // public — friend не нужен.
 //
-// Особенность формата .par: SavePath / LoadPath пишут и читают m_vecDist
+// Особенность формата .par: SavePath / LoadPath пишут и читают _vecDist
 // (объявлено как float[200]) через `sizeof(D3DXVECTOR3) = 12` байт за слот.
-// Итерации перекрываются по памяти (writes m_vecDist[k..k+2]). Чтобы
-// round-trip через YAML был побайтным, m_vecDist сериализуется как массив
+// Итерации перекрываются по памяти (writes _vecDist[k..k+2]). Чтобы
+// round-trip через YAML был побайтным, _vecDist сериализуется как массив
 // (frameCount + 1) float'ов — этого достаточно, чтобы Save reproduce те же
 // 12*(frameCount-1) байт за счёт перекрывающихся read'ов.
 
@@ -157,21 +157,21 @@ void EmitPath(std::ostringstream& out, const ::CEffPath* path, int indent) {
         out << pad << "null: true  # path absent — bool flag in .par is false\n";
         return;
     }
-    out << pad << "frameCount: " << path->m_iFrameCount << '\n';
+    out << pad << "frameCount: " << path->_iFrameCount << '\n';
     out << pad << "vel: "        << y::FmtFloat(path->m_fVel) << '\n';
 
     out << pad << "vecPath:";
-    if (path->m_iFrameCount == 0) {
+    if (path->_iFrameCount == 0) {
         out << " []\n";
     }
     else {
         out << '\n';
-        for (int n = 0; n < path->m_iFrameCount; ++n) {
-            out << pad << "  - " << y::FmtVec3(path->m_vecPath[n]) << '\n';
+        for (int n = 0; n < path->_iFrameCount; ++n) {
+            out << pad << "  - " << y::FmtVec3(path->_vecPath[n]) << '\n';
         }
     }
 
-    const int iter = path->m_iFrameCount - 1;
+    const int iter = path->_iFrameCount - 1;
     out << pad << "vecDir:";
     if (iter <= 0) {
         out << " []\n";
@@ -179,19 +179,19 @@ void EmitPath(std::ostringstream& out, const ::CEffPath* path, int indent) {
     else {
         out << '\n';
         for (int n = 0; n < iter; ++n) {
-            out << pad << "  - " << y::FmtVec3(path->m_vecDir[n]) << '\n';
+            out << pad << "  - " << y::FmtVec3(path->_vecDir[n]) << '\n';
         }
     }
 
-    // m_vecDist is float[200], but Save writes sizeof(vec3)=12 bytes per iter
-    // starting at &m_vecDist[k]. Iterations overlap; final byte stream covers
-    // m_vecDist[0..iter+1] (= frameCount floats). Persist exactly that range
+    // _vecDist is float[200], but Save writes sizeof(vec3)=12 bytes per iter
+    // starting at &_vecDist[k]. Iterations overlap; final byte stream covers
+    // _vecDist[0..iter+1] (= frameCount floats). Persist exactly that range
     // to make Save reproduce identical bytes.
     out << pad << "vecDistFloats: [";
-    if (path->m_iFrameCount > 0) {
+    if (path->_iFrameCount > 0) {
         for (int n = 0; n <= iter + 1 && n < 200; ++n) {
             if (n) { out << ", "; }
-            out << y::FmtFloat(path->m_vecDist[n]);
+            out << y::FmtFloat(path->_vecDist[n]);
         }
     }
     out << "]\n";
@@ -205,31 +205,33 @@ void EmitPath(std::ostringstream& out, const ::CEffPath* path, int indent) {
         return nullptr;
     }
     auto* p = new ::CEffPath{};
-    if (auto* x = node.Find("frameCount")) p->m_iFrameCount = y::ParseInt(*x);
+    if (auto* x = node.Find("frameCount")) {
+    	p->_iFrameCount = y::ParseInt(*x);
+    }
     if (auto* x = node.Find("vel"))        p->m_fVel        = y::ParseFloat(*x);
 
     if (auto* x = node.Find("vecPath"); x && x->kind == y::YamlNode::Sequence) {
         for (std::size_t n = 0;
              n < x->sequence.size() && n < 200 &&
-             static_cast<int>(n) < p->m_iFrameCount;
+             static_cast<int>(n) < p->_iFrameCount;
              ++n) {
-            p->m_vecPath[n] = y::ParseVec3(x->sequence[n]);
+            p->_vecPath[n] = y::ParseVec3(x->sequence[n]);
         }
     }
 
-    const int iter = p->m_iFrameCount - 1;
+    const int iter = p->_iFrameCount - 1;
     if (auto* x = node.Find("vecDir"); x && x->kind == y::YamlNode::Sequence) {
         for (std::size_t n = 0;
              n < x->sequence.size() && n < 200 &&
              static_cast<int>(n) < iter;
              ++n) {
-            p->m_vecDir[n] = y::ParseVec3(x->sequence[n]);
+            p->_vecDir[n] = y::ParseVec3(x->sequence[n]);
         }
     }
 
     if (auto* x = node.Find("vecDistFloats"); x && x->kind == y::YamlNode::Sequence) {
         for (std::size_t n = 0; n < x->sequence.size() && n < 200; ++n) {
-            p->m_vecDist[n] = y::ParseFloat(x->sequence[n]);
+            p->_vecDist[n] = y::ParseFloat(x->sequence[n]);
         }
     }
 
@@ -251,17 +253,17 @@ LW_RESULT PartCtrlLoader::ExportToYaml(const ::CMPPartCtrl& ctrl,
     auto& c = const_cast<::CMPPartCtrl&>(ctrl);
 
     out << "version: " << static_cast<int>(::CMPPartCtrl::ParVersion) << '\n';
-    out << "name: "    << y::QuoteString(c.m_strName) << '\n';
-    out << "length: "  << y::FmtFloat(c.m_fLength) << '\n';
+    out << "name: "    << y::QuoteString(c._strName) << '\n';
+    out << "length: "  << y::FmtFloat(c._fLength) << '\n';
 
     out << "particles:";
-    if (c.m_iPartNum <= 0) {
+    if (c._iPartNum <= 0) {
         out << " []\n";
     }
     else {
         out << '\n';
-        for (int i = 0; i < c.m_iPartNum; ++i) {
-            ::CMPPartSys* psPtr = c.m_vecPartSys[i];
+        for (int i = 0; i < c._iPartNum; ++i) {
+            ::CMPPartSys* psPtr = c._vecPartSys[i];
             if (!psPtr) {
                 out << "  - {}\n";
                 continue;
@@ -340,8 +342,8 @@ LW_RESULT PartCtrlLoader::ExportToYaml(const ::CMPPartCtrl& ctrl,
                 EmitPath(out, ps._pcPath, 6);
             }
 
-            out << "    shade: "  << y::FmtBool(ps.m_bShade) << '\n';
-            out << "    hitEff: " << y::QuoteString(ps.m_strHitEff) << '\n';
+            out << "    shade: "  << y::FmtBool(ps._bShade) << '\n';
+            out << "    hitEff: " << y::QuoteString(ps._strHitEff) << '\n';
 
             out << "    pointRange:";
             if (!ps._bModelRange || ps._wVecNum == 0) {
@@ -361,13 +363,13 @@ LW_RESULT PartCtrlLoader::ExportToYaml(const ::CMPPartCtrl& ctrl,
     }
 
     out << "strips:";
-    if (c.m_iStripNum <= 0) {
+    if (c._iStripNum <= 0) {
         out << " []\n";
     }
     else {
         out << '\n';
-        for (int i = 0; i < c.m_iStripNum; ++i) {
-            ::CMPStrip& s = c.m_pcStrip[i];
+        for (int i = 0; i < c._iStripNum; ++i) {
+            ::CMPStrip& s = c._pcStrip[i];
             out << "  - maxLen: "    << s.m_iMaxLen << '\n';
             out << "    dummy: ["    << s._iDummy[0] << ", " << s._iDummy[1] << "]\n";
             out << "    color: "     << y::FmtColor(s._dwColor) << '\n';
@@ -382,20 +384,20 @@ LW_RESULT PartCtrlLoader::ExportToYaml(const ::CMPPartCtrl& ctrl,
     }
 
     out << "charModels:";
-    if (c.m_iModelNum <= 0) {
+    if (c._iModelNum <= 0) {
         out << " []\n";
     }
     else {
         out << '\n';
-        for (int i = 0; i < c.m_iModelNum; ++i) {
-            ::CChaModel* mPtr = c.m_vecModel[i];
+        for (int i = 0; i < c._iModelNum; ++i) {
+            ::CChaModel* mPtr = c._vecModel[i];
             if (!mPtr) {
                 out << "  - {}\n";
                 continue;
             }
             ::CChaModel& m = *mPtr;
             out << "  - id: "        << m._iID << '\n';
-            out << "    vel: "       << y::FmtFloat(m._fVel) << '\n';
+            out << "    vel: "       << y::FmtFloat(m.m_fVel) << '\n';
             out << "    playType: "  << PlayPoseToYaml(m._iPlayType)
                                      << "  " << PlayPoseChoicesComment() << '\n';
             out << "    curPose: "   << m._iCurPose << '\n';
@@ -403,7 +405,7 @@ LW_RESULT PartCtrlLoader::ExportToYaml(const ::CMPPartCtrl& ctrl,
                                      << "  " << y::BlendChoicesComment() << '\n';
             out << "    destBlend: " << y::BlendToYaml(m._eDestBlend)
                                      << "  " << y::BlendChoicesComment() << '\n';
-            out << "    curColor: "  << y::FmtColor(m._dwCurColor) << '\n';
+            out << "    curColor: "  << y::FmtColor(m.m_dwCurColor) << '\n';
         }
     }
 
@@ -448,34 +450,44 @@ LW_RESULT PartCtrlLoader::ImportFromYaml(::CMPPartCtrl& ctrl,
         return LW_RET_FAILED;
     }
 
-    if (auto* x = root.Find("name"))   ctrl.m_strName = y::ParseString(*x);
-    if (auto* x = root.Find("length")) ctrl.m_fLength = y::ParseFloat(*x);
+    if (auto* x = root.Find("name")) {
+    	ctrl._strName = y::ParseString(*x);
+    }
+    if (auto* x = root.Find("length")) ctrl._fLength = y::ParseFloat(*x);
 
     auto* pArr = root.Find("particles");
     if (pArr && pArr->kind == y::YamlNode::Sequence) {
-        ctrl.m_iPartNum = static_cast<int>(pArr->sequence.size());
+        ctrl._iPartNum = static_cast<int>(pArr->sequence.size());
 #ifdef USE_GAME
-        ctrl.m_vecPartSys.resize(ctrl.m_iPartNum);
+        ctrl._vecPartSys.resize(ctrl._iPartNum);
 #endif
-        ctrl.m_vecPartSys.setsize(ctrl.m_iPartNum);
+        ctrl._vecPartSys.setsize(ctrl._iPartNum);
 
-        for (int i = 0; i < ctrl.m_iPartNum; ++i) {
+        for (int i = 0; i < ctrl._iPartNum; ++i) {
             const y::YamlNode& pn = pArr->sequence[i];
             if (pn.kind != y::YamlNode::Mapping) { continue; }
-            ::CMPPartSys& ps = *ctrl.m_vecPartSys[i];
+            ::CMPPartSys& ps = *ctrl._vecPartSys[i];
 
-            if (auto* x = pn.Find("type"))       ps._iType        = PartTypeFromYaml(*x);
+            if (auto* x = pn.Find("type")) {
+            	ps._iType        = PartTypeFromYaml(*x);
+            }
             if (auto* x = pn.Find("partName"))   ps._strPartName  = y::ParseString(*x);
-            if (auto* x = pn.Find("parNum"))     ps._iParNum      = y::ParseInt(*x);
+            if (auto* x = pn.Find("parNum")) {
+            	ps._iParNum      = y::ParseInt(*x);
+            }
             if (auto* x = pn.Find("texName"))    ps._strTexName   = y::ParseString(*x);
-            if (auto* x = pn.Find("modelName"))  ps._strModelName = y::ParseString(*x);
+            if (auto* x = pn.Find("modelName")) {
+            	ps._strModelName = y::ParseString(*x);
+            }
             if (auto* x = pn.Find("range"); x && x->kind == y::YamlNode::Sequence
                                             && x->sequence.size() >= 3) {
                 ps._fRange[0] = y::ParseFloat(x->sequence[0]);
                 ps._fRange[1] = y::ParseFloat(x->sequence[1]);
                 ps._fRange[2] = y::ParseFloat(x->sequence[2]);
             }
-            if (auto* x = pn.Find("frameCount")) ps._wFrameCount = static_cast<WORD>(y::ParseInt(*x));
+            if (auto* x = pn.Find("frameCount")) {
+            	ps._wFrameCount = static_cast<WORD>(y::ParseInt(*x));
+            }
 
             const WORD fc = ps._wFrameCount;
             ps._vecFrameSize.setsize(fc);
@@ -498,23 +510,41 @@ LW_RESULT PartCtrlLoader::ImportFromYaml(::CMPPartCtrl& ctrl,
                 }
             }
 
-            if (auto* x = pn.Find("billBoard")) ps._bBillBoard = y::ParseBool(*x);
+            if (auto* x = pn.Find("billBoard")) {
+            	ps._bBillBoard = y::ParseBool(*x);
+            }
             if (auto* x = pn.Find("srcBlend"))  ps._eSrcBlend  = y::BlendFromYaml(*x);
-            if (auto* x = pn.Find("destBlend")) ps._eDestBlend = y::BlendFromYaml(*x);
+            if (auto* x = pn.Find("destBlend")) {
+            	ps._eDestBlend = y::BlendFromYaml(*x);
+            }
             if (auto* x = pn.Find("minFilter")) ps._eMinFilter = FilterFromYaml(*x);
-            if (auto* x = pn.Find("magFilter")) ps._eMagFilter = FilterFromYaml(*x);
+            if (auto* x = pn.Find("magFilter")) {
+            	ps._eMagFilter = FilterFromYaml(*x);
+            }
 
-            if (auto* x = pn.Find("life"))      ps._fLife    = y::ParseFloat(*x);
+            if (auto* x = pn.Find("life")) {
+            	ps._fLife    = y::ParseFloat(*x);
+            }
             if (auto* x = pn.Find("vecl"))      ps._fVecl    = y::ParseFloat(*x);
-            if (auto* x = pn.Find("dir"))       ps._vDir     = y::ParseVec3(*x);
+            if (auto* x = pn.Find("dir")) {
+            	ps._vDir     = y::ParseVec3(*x);
+            }
             if (auto* x = pn.Find("accel"))     ps._vAccel   = y::ParseVec3(*x);
-            if (auto* x = pn.Find("step"))      ps._fStep    = y::ParseFloat(*x);
+            if (auto* x = pn.Find("step")) {
+            	ps._fStep    = y::ParseFloat(*x);
+            }
 
-            if (auto* x = pn.Find("modelRange"))  ps._bModelRange    = y::ParseBool(*x);
+            if (auto* x = pn.Find("modelRange")) {
+            	ps._bModelRange    = y::ParseBool(*x);
+            }
             if (auto* x = pn.Find("virualModel")) ps._strVirualModel = y::ParseString(*x);
-            if (auto* x = pn.Find("offset"))      ps._vOffset        = y::ParseVec3(*x);
+            if (auto* x = pn.Find("offset")) {
+            	ps._vOffset        = y::ParseVec3(*x);
+            }
             if (auto* x = pn.Find("delayTime"))   ps._fDelayTime     = y::ParseFloat(*x);
-            if (auto* x = pn.Find("playTime"))    ps._fPlayTime      = y::ParseFloat(*x);
+            if (auto* x = pn.Find("playTime")) {
+            	ps._fPlayTime      = y::ParseFloat(*x);
+            }
 
             // Path: explicit `null` scalar OR mapping with the path fields.
             ps._pcPath = nullptr;
@@ -525,8 +555,10 @@ LW_RESULT PartCtrlLoader::ImportFromYaml(::CMPPartCtrl& ctrl,
                 // Scalar "null" → keep ps._pcPath = nullptr.
             }
 
-            if (auto* x = pn.Find("shade"))  ps.m_bShade   = y::ParseBool(*x);
-            if (auto* x = pn.Find("hitEff")) ps.m_strHitEff = y::ParseString(*x);
+            if (auto* x = pn.Find("shade")) {
+            	ps._bShade   = y::ParseBool(*x);
+            }
+            if (auto* x = pn.Find("hitEff")) ps._strHitEff = y::ParseString(*x);
 
             if (auto* x = pn.Find("pointRange"); x && x->kind == y::YamlNode::Sequence) {
                 ps._wVecNum = static_cast<WORD>(x->sequence.size());
@@ -540,72 +572,92 @@ LW_RESULT PartCtrlLoader::ImportFromYaml(::CMPPartCtrl& ctrl,
                 ps._vecPointRange.clear();
             }
 
-            if (auto* x = pn.Find("roadom"))   ps._iRoadom   = y::ParseInt(*x);
+            if (auto* x = pn.Find("roadom")) {
+            	ps._iRoadom   = y::ParseInt(*x);
+            }
             if (auto* x = pn.Find("modelDir")) ps._bModelDir = y::ParseBool(*x);
-            if (auto* x = pn.Find("mediay"))   ps._bMediay   = y::ParseBool(*x);
+            if (auto* x = pn.Find("mediay")) {
+            	ps._bMediay   = y::ParseBool(*x);
+            }
         }
     }
 
-    if (ctrl.m_pcStrip) {
-        delete[] ctrl.m_pcStrip;
-        ctrl.m_pcStrip = nullptr;
+    if (ctrl._pcStrip) {
+        delete[] ctrl._pcStrip;
+        ctrl._pcStrip = nullptr;
     }
     auto* sArr = root.Find("strips");
     if (sArr && sArr->kind == y::YamlNode::Sequence) {
-        ctrl.m_iStripNum = static_cast<int>(sArr->sequence.size());
-        if (ctrl.m_iStripNum > 0) {
-            ctrl.m_pcStrip = new ::CMPStrip[ctrl.m_iStripNum];
-            for (int i = 0; i < ctrl.m_iStripNum; ++i) {
+        ctrl._iStripNum = static_cast<int>(sArr->sequence.size());
+        if (ctrl._iStripNum > 0) {
+            ctrl._pcStrip = new ::CMPStrip[ctrl._iStripNum];
+            for (int i = 0; i < ctrl._iStripNum; ++i) {
                 const y::YamlNode& sn = sArr->sequence[i];
                 if (sn.kind != y::YamlNode::Mapping) { continue; }
-                ::CMPStrip& s = ctrl.m_pcStrip[i];
+                ::CMPStrip& s = ctrl._pcStrip[i];
 
-                if (auto* x = sn.Find("maxLen")) s.m_iMaxLen = y::ParseInt(*x);
+                if (auto* x = sn.Find("maxLen")) {
+                	s.m_iMaxLen = y::ParseInt(*x);
+                }
                 if (auto* x = sn.Find("dummy"); x && x->kind == y::YamlNode::Sequence
                                                 && x->sequence.size() >= 2) {
                     s._iDummy[0] = y::ParseInt(x->sequence[0]);
                     s._iDummy[1] = y::ParseInt(x->sequence[1]);
                 }
-                if (auto* x = sn.Find("color"))     s._dwColor    = y::ParseColor(*x);
+                if (auto* x = sn.Find("color")) {
+                	s._dwColor    = y::ParseColor(*x);
+                }
                 if (auto* x = sn.Find("life"))      s._fLife      = y::ParseFloat(*x);
-                if (auto* x = sn.Find("step"))      s._fStep      = y::ParseFloat(*x);
+                if (auto* x = sn.Find("step")) {
+                	s._fStep      = y::ParseFloat(*x);
+                }
                 if (auto* x = sn.Find("texName"))   s._strTexName = y::ParseString(*x);
-                if (auto* x = sn.Find("srcBlend"))  s._eSrcBlend  = y::BlendFromYaml(*x);
+                if (auto* x = sn.Find("srcBlend")) {
+                	s._eSrcBlend  = y::BlendFromYaml(*x);
+                }
                 if (auto* x = sn.Find("destBlend")) s._eDestBlend = y::BlendFromYaml(*x);
             }
         }
     }
     else {
-        ctrl.m_iStripNum = 0;
+        ctrl._iStripNum = 0;
     }
 
-    for (auto* p : ctrl.m_vecModel) {
+    for (auto* p : ctrl._vecModel) {
         delete p;
     }
-    ctrl.m_vecModel.clear();
+    ctrl._vecModel.clear();
 
     auto* mArr = root.Find("charModels");
     if (mArr && mArr->kind == y::YamlNode::Sequence) {
-        ctrl.m_iModelNum = static_cast<int>(mArr->sequence.size());
-        ctrl.m_vecModel.resize(ctrl.m_iModelNum, nullptr);
-        for (int i = 0; i < ctrl.m_iModelNum; ++i) {
+        ctrl._iModelNum = static_cast<int>(mArr->sequence.size());
+        ctrl._vecModel.resize(ctrl._iModelNum, nullptr);
+        for (int i = 0; i < ctrl._iModelNum; ++i) {
             const y::YamlNode& mn = mArr->sequence[i];
             if (mn.kind != y::YamlNode::Mapping) { continue; }
             auto* model = new ::CChaModel{};
-            ctrl.m_vecModel[i] = model;
+            ctrl._vecModel[i] = model;
             ::CChaModel& m = *model;
 
-            if (auto* x = mn.Find("id"))        m._iID        = y::ParseInt(*x);
-            if (auto* x = mn.Find("vel"))       m._fVel       = y::ParseFloat(*x);
-            if (auto* x = mn.Find("playType"))  m._iPlayType  = PlayPoseFromYaml(*x);
+            if (auto* x = mn.Find("id")) {
+            	m._iID        = y::ParseInt(*x);
+            }
+            if (auto* x = mn.Find("vel"))       m.m_fVel       = y::ParseFloat(*x);
+            if (auto* x = mn.Find("playType")) {
+            	m._iPlayType  = PlayPoseFromYaml(*x);
+            }
             if (auto* x = mn.Find("curPose"))   m._iCurPose   = y::ParseInt(*x);
-            if (auto* x = mn.Find("srcBlend"))  m._eSrcBlend  = y::BlendFromYaml(*x);
+            if (auto* x = mn.Find("srcBlend")) {
+            	m._eSrcBlend  = y::BlendFromYaml(*x);
+            }
             if (auto* x = mn.Find("destBlend")) m._eDestBlend = y::BlendFromYaml(*x);
-            if (auto* x = mn.Find("curColor"))  m._dwCurColor = y::ParseColor(*x);
+            if (auto* x = mn.Find("curColor")) {
+            	m.m_dwCurColor = y::ParseColor(*x);
+            }
         }
     }
     else {
-        ctrl.m_iModelNum = 0;
+        ctrl._iModelNum = 0;
     }
 
     return LW_RET_OK;

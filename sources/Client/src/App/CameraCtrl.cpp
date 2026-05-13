@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 #include "cameractrl.h"
 #include "GameConfig.h"
 #include "GameApp.h"
@@ -146,11 +146,11 @@ void CCameraCtrl::InitModel(const int iType, D3DXVECTOR3* pInitPos) {
 	m_vDefaultDir = m_vDir;
 	m_fSubVel = 0;
 	if (pInitPos) {
-		m_RefPos = *pInitPos;
-		InitPos(m_RefPos.x, m_RefPos.y, m_RefPos.z);
+		_RefPos = *pInitPos;
+		InitPos(_RefPos.x, _RefPos.y, _RefPos.z);
 	}
-	GetEyePos(m_EyePos, m_RefPos);
-	const auto val = m_EyePos - m_RefPos;
+	GetEyePos(_EyePos, _RefPos);
+	const auto val = _EyePos - _RefPos;
 	D3DXVec3Normalize(&m_vDir, &val);
 	m_vDir.z = 0;
 
@@ -195,12 +195,12 @@ void CCameraCtrl::SetModel(int iType, D3DXVECTOR3* pInitPos) {
 
 		//if(pInitPos)
 		//{
-		//	m_RefPos = *pInitPos;
-		//	//InitPos(m_RefPos.x,m_RefPos.y,m_RefPos.z);
+		//	_RefPos = *pInitPos;
+		//	//InitPos(_RefPos.x,_RefPos.y,_RefPos.z);
 
 		//}
-		//GetEyePos(m_EyePos,m_RefPos);
-		//D3DXVec3Normalize(&m_vDir, &(m_EyePos - m_RefPos));
+		//GetEyePos(_EyePos,_RefPos);
+		//D3DXVec3Normalize(&m_vDir, &(_EyePos - _RefPos));
 		//m_vDir.z = 0;
 	}
 }
@@ -339,8 +339,8 @@ bool CCameraCtrl::IsDefaultView() {
 //	m_ffov = g_Config.m_fmaxfov;
 //	//SetModel(0);
 //	m_fSubVel = 0;
-//	GetEyePos(m_EyePos,m_RefPos);
-//	D3DXVec3Normalize(&m_vDir, &(m_EyePos - m_RefPos));
+//	GetEyePos(_EyePos,_RefPos);
+//	D3DXVec3Normalize(&m_vDir, &(_EyePos - _RefPos));
 //	m_vDir.z = 0;
 //}
 
@@ -470,10 +470,10 @@ void CCameraCtrl::FrameMove(DWORD dwTailTime) {
 		ScrollToDefault();
 		MoveForwardBack(0.1f);
 	}
-	//m_EyePos = m_RefPos + vDistFrom;
-	GetEyePos(m_EyePos, m_RefPos);
+	//_EyePos = _RefPos + vDistFrom;
+	GetEyePos(_EyePos, _RefPos);
 
-	const auto v = m_RefPos - m_EyePos;
+	const auto v = _RefPos - _EyePos;
 	D3DXVec3Normalize(&m_vViewDir, &v);
 	//m_vDir.z = 0;
 
@@ -596,7 +596,7 @@ bool CCameraCtrl::ScroolFB(float fStep) {
 }
 
 void CCameraCtrl::SetFollowObj(D3DXVECTOR3& vRefObj) {
-	m_RefPos = vRefObj;
+	_RefPos = vRefObj;
 }
 
 
@@ -846,7 +846,7 @@ void CCameraCtrl::EndMove() {
 
 void CCameraCtrl::SetViewTransform() {
 	//g_Render.SetWorldViewFOV(Angle2Radian(m_ffov));
-	D3DXVECTOR3 vRef(m_RefPos);
+	D3DXVECTOR3 vRef(_RefPos);
 #ifdef TESTDEMO
 
 	if (g_pGameApp->GetCurScene()) {
@@ -866,7 +866,7 @@ void CCameraCtrl::SetViewTransform() {
 		g_Render.SetTransformView(&mat);
 	}
 	else {
-		g_Render.LookAt(m_EyePos, vRef);
+		g_Render.LookAt(_EyePos, vRef);
 		g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 	}
 }

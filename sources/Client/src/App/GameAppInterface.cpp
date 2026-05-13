@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 namespace Corsairs::Common::Localization {}
 using namespace Corsairs::Common::Localization;
 
@@ -35,7 +35,7 @@ using namespace Corsairs::Common::Effect;
 #include "World/SceneObjRecordStore.h"
 #include "Effect/EffectRecordStore.h"
 #include "World/ShadeRecordStore.h"
-#include "lwTimer.h"
+#include "Timer.h"
 #include "Audio/EventSoundRecordStore.h"
 #include "Audio/MusicRecordStore.h"
 #include "Character/PoseRecordStore.h"
@@ -221,7 +221,7 @@ int CGameApp::Run() {
 	_dwCurTick = 0;
 
 #if(defined USE_INDIVIDUAL_TIMER)
-	MPITimer* timer = LW_NEW(lwTimer);
+	MPITimer* timer = LW_NEW(Timer);
 	timer->SetTimer(0, __timer_frame, 1.0 f / 30);
 	timer->SetTimer(1, __timer_render, 1.0 f / 30);
 #endif
@@ -826,7 +826,7 @@ void CGameApp::PlaySound(int nSoundNo) {
 	if (nSoundNo == -1) return;
 
 	CMusicInfo* pInfo = GetMusicInfo(nSoundNo);
-	if (!pInfo || pInfo->nType != 1) return;
+	if (!pInfo || pInfo->Type != 1) return;
 
 #ifdef USE_DSOUND
 	PlaySample(pInfo->DataName.c_str());
@@ -1107,7 +1107,7 @@ void CGameApp::SetCameraPos(D3DXVECTOR3& pos, bool bRestoreCustom) {
 	pCam->FrameMove(0);
 
 	g_Render.SetWorldViewFOV(Angle2Radian(pCam->m_ffov));
-	g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+	g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 	g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 }
 

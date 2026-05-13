@@ -2,8 +2,8 @@
 
 #include "stdafx.h"
 #include "MPCharacter.h"
-#include "lwSystem.h"
-#include "lwSysGraphics.h"
+#include "System.h"
+#include "SysGraphics.h"
 #include "lwInterface.h"
 #include "lwExpObj.h"
 #include "lwIUtil.h"
@@ -14,7 +14,7 @@
 #include <format>
 
 namespace Corsairs::Engine::Render {
-	MPCharacter::MPCharacter(lwISysGraphics* sys_graphics)
+	MPCharacter::MPCharacter(ISysGraphics* sys_graphics)
 		: _link_item_num(0),
 		  _pose_proc(0), _proc_param(0) {
 		sys_graphics->GetResourceMgr()->CreatePhysique(&_physique);
@@ -25,7 +25,7 @@ namespace Corsairs::Engine::Render {
 	MPCharacter::MPCharacter()
 		: _link_item_num(0),
 		  _pose_proc(0), _proc_param(0) {
-		lwSysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr()->CreatePhysique(&_physique);
+		SysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr()->CreatePhysique(&_physique);
 
 		BindMatrix(_physique->GetMatrix());
 	}
@@ -46,7 +46,9 @@ namespace Corsairs::Engine::Render {
 	}
 
 	LW_RESULT MPCharacter::PlayPose(const lwPlayPoseInfo* info) {
-		if (!_physique->isLoaded()) return 0;
+		if (!_physique->isLoaded()) {
+			return 0;
+		}
 		lwIAnimCtrlAgent* agent = _physique->GetAnimCtrlAgent();
 		if (agent == NULL)
 			return LW_RET_FAILED;
@@ -82,7 +84,9 @@ namespace Corsairs::Engine::Render {
 	}
 
 	LW_RESULT MPCharacter::PlayObjImpPose(DWORD obj_id, DWORD ctrl_type, const lwPlayPoseInfo* info) {
-		if (!_physique->isLoaded()) return 0;
+		if (!_physique->isLoaded()) {
+			return 0;
+		}
 		lwIPrimitive* p = _physique->GetPrimitive(obj_id);
 		if (p == NULL)
 			return LW_RET_FAILED;
@@ -593,15 +597,15 @@ namespace Corsairs::Engine::Render {
 		if (p == NULL)
 			goto __ret;
 		{
-			lwIHelperObject* h = p->GetHelperObject();
+			IHelperObject* h = p->GetHelperObject();
 			if (h == 0)
 				goto __ret;
 
-			lwIHelperDummy* dummy = h->GetHelperDummy();
+			IHelperDummy* dummy = h->GetHelperDummy();
 			if (dummy == NULL)
 				goto __ret;
 
-			lwHelperDummyInfo* dummy_info = dummy->GetDataInfoWithID(dummy_id);
+			HelperDummyInfo* dummy_info = dummy->GetDataInfoWithID(dummy_id);
 
 			if (dummy_info == NULL)
 				goto __ret;

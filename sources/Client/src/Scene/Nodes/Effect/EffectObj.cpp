@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 namespace Corsairs::Common::Effect {}
 using namespace Corsairs::Common::Effect;
 namespace Corsairs::Common::Misc {}
@@ -351,7 +351,7 @@ inline void Part_trace(CMagicCtrl* pEffCtrl, void* pParam) {
 		pEffCtrl->Stop();
 		return;
 	}
-	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
+	float fDist = pEffCtrl->m_fVel * *CMPResManger::Instance().GetDailTime();
 	if (fDist * fDist > pEffCtrl->_fDist) {
 		pEffCtrl->_vPos = pEffCtrl->_vOldTarget;
 		pEffCtrl->Stop();
@@ -414,10 +414,10 @@ inline void Part_drop(CMagicCtrl* pEffCtrl, void* pParam) {
 	CMagicEff* pEff = (CMagicEff*)pParam;
 	CGameScene* pScene = pEff->GetScene();
 	pEffCtrl->Render();
-	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
+	float fDist = pEffCtrl->m_fVel * *CMPResManger::Instance().GetDailTime();
 
-	pEffCtrl->_fCurDist += fDist;
-	if (pEffCtrl->_fCurDist > pEffCtrl->_fStartDist) {
+	pEffCtrl->m_fCurDist += fDist;
+	if (pEffCtrl->m_fCurDist > pEffCtrl->_fStartDist) {
 		pEffCtrl->_vPos = pEffCtrl->_vOldTarget;
 		pEffCtrl->Stop();
 		return;
@@ -434,10 +434,10 @@ inline void Part_fly(CMagicCtrl* pEffCtrl, void* pParam) {
 	CMagicEff* pEff = (CMagicEff*)pParam;
 	CGameScene* pScene = pEff->GetScene();
 	pEffCtrl->Render();
-	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
+	float fDist = pEffCtrl->m_fVel * *CMPResManger::Instance().GetDailTime();
 
-	pEffCtrl->_fCurDist += fDist;
-	if (pEffCtrl->_fCurDist > pEffCtrl->_fStartDist) {
+	pEffCtrl->m_fCurDist += fDist;
+	if (pEffCtrl->m_fCurDist > pEffCtrl->_fStartDist) {
 		pEffCtrl->_vPos = pEffCtrl->_vOldTarget;
 		pEffCtrl->Stop();
 		return;
@@ -456,7 +456,7 @@ inline void Part_fshade(CMagicCtrl* pEffCtrl, void* pParam) {
 		return;
 	}
 
-	pEffCtrl->_vPos += pEffCtrl->_vDir * (pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime());
+	pEffCtrl->_vPos += pEffCtrl->_vDir * (pEffCtrl->m_fVel * *CMPResManger::Instance().GetDailTime());
 	if (pEff->HitTestMap(&pEffCtrl->_vPos)) {
 		pEffCtrl->_vPos = pEffCtrl->_vOldTarget;
 		pEffCtrl->Stop();
@@ -495,7 +495,7 @@ inline void Part_arc(CMagicCtrl* pEffCtrl, void* pParam) {
 	}
 
 	pEffCtrl->Render();
-	pEffCtrl->_fCurArc += (pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime());
+	pEffCtrl->_fCurArc += (pEffCtrl->m_fVel * *CMPResManger::Instance().GetDailTime());
 	D3DXVECTOR3 vp = pEffCtrl->_vOldPos + pEffCtrl->_vDir * pEffCtrl->_fCurArc;
 	D3DXVECTOR3 vd = vp - pEffCtrl->_vArcOrg;
 	D3DXVec3Normalize(&vd, &vd);
@@ -535,11 +535,11 @@ inline void Part_dist(CMagicCtrl* pEffCtrl, void* pParam) {
 
 	pEffCtrl->Render();
 
-	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
-	pEffCtrl->_fCurDist += fDist;
+	float fDist = pEffCtrl->m_fVel * *CMPResManger::Instance().GetDailTime();
+	pEffCtrl->m_fCurDist += fDist;
 	pEffCtrl->_vPos += pEffCtrl->_vDir * fDist;
 
-	if (pEffCtrl->_fCurDist > pEffCtrl->_fStartDist)
+	if (pEffCtrl->m_fCurDist > pEffCtrl->_fStartDist)
 		pEffCtrl->Stop();
 }
 
@@ -550,13 +550,13 @@ inline void Part_dist2(CMagicCtrl* pEffCtrl, void* pParam) {
 
 	pEffCtrl->Render();
 
-	float fDist = pEffCtrl->_fVel * *CMPResManger::Instance().GetDailTime();
-	pEffCtrl->_fCurDist += fDist;
+	float fDist = pEffCtrl->m_fVel * *CMPResManger::Instance().GetDailTime();
+	pEffCtrl->m_fCurDist += fDist;
 	pEffCtrl->_vPos += pEffCtrl->_vDir * fDist;
 
-	float falpha = 1.0f - (pEffCtrl->_fCurDist / pEffCtrl->_fStartDist);
+	float falpha = 1.0f - (pEffCtrl->m_fCurDist / pEffCtrl->_fStartDist);
 	pEffCtrl->SetAlpha(falpha);
-	if (pEffCtrl->_fCurDist > pEffCtrl->_fStartDist)
+	if (pEffCtrl->m_fCurDist > pEffCtrl->_fStartDist)
 		pEffCtrl->Stop();
 }
 

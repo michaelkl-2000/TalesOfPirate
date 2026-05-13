@@ -15,25 +15,25 @@ namespace Corsairs::Engine::Render {
 		INIT_ERR_DX_VERSION = -1002,
 	};
 
-	void lwSetActiveIGraphicsSystem(lwISysGraphics* sys_graphics);
-	lwISysGraphics* lwGetActiveIGraphicsSystem();
+	void lwSetActiveIGraphicsSystem(ISysGraphics* sys_graphics);
+	ISysGraphics* lwGetActiveIGraphicsSystem();
 
 	LW_RESULT lwAdjustD3DCreateParam(IDirect3DX* d3d, lwD3DCreateParam* param, lwD3DCreateParamAdjustInfo* adjust_info);
-	LW_RESULT lwInitMeshLibSystem(lwISystem** ret_sys, lwISysGraphics** ret_sys_graphics);
-	LW_RESULT lwInitMeshLibSystem(lwISystem** ret_sys, lwISysGraphics** ret_sys_graphics, IDirect3DX* d3d,
+	LW_RESULT lwInitMeshLibSystem(ISystem** ret_sys, ISysGraphics** ret_sys_graphics);
+	LW_RESULT lwInitMeshLibSystem(ISystem** ret_sys, ISysGraphics** ret_sys_graphics, IDirect3DX* d3d,
 								  IDirect3DDeviceX* dev, HWND hwnd);
-	LW_RESULT lwInitMeshLibSystem(lwISystem** ret_sys, lwISysGraphics** ret_sys_graphics, lwD3DCreateParam* param,
+	LW_RESULT lwInitMeshLibSystem(ISystem** ret_sys, ISysGraphics** ret_sys_graphics, lwD3DCreateParam* param,
 								  lwD3DCreateParamAdjustInfo* param_info);
 	LW_RESULT lwReleaseMeshLibSystem();
 
-	void lwSetActiveISystem(lwISystem* sys);
-	lwISystem* lwGetActiveISystem();
+	void lwSetActiveISystem(ISystem* sys);
+	ISystem* lwGetActiveISystem();
 
-	LW_RESULT lwReleaseD3DObject(lwISystem* sys, lwISysGraphics* sys_graphics);
+	LW_RESULT lwReleaseD3DObject(ISystem* sys, ISysGraphics* sys_graphics);
 
 	LW_RESULT lwHitTestBox(lwPickInfo* info, const lwVector3* org, const lwVector3* ray, const lwBox* box,
 						   const lwMatrix44* mat);
-	void lwHelperSetForceIgnoreTexFlag(DWORD flag);
+	void HelperSetForceIgnoreTexFlag(DWORD flag);
 
 	void lwWorldToScreen(int* x, int* y, float* z, const lwVector3* vec, int width, int height,
 						 const lwMatrix44* mat_proj, const lwMatrix44* mat_view);
@@ -44,14 +44,14 @@ namespace Corsairs::Engine::Render {
 	LW_RESULT lwUnregisterOutputLoseDeviceProc(lwOutputLoseDeviceProc proc);
 	LW_RESULT lwUnregisterOutputResetDeviceProc(lwOutputResetDeviceProc proc);
 
-	LW_RESULT LoadResModelBuf(lwIResourceMgr* res_mgr, std::string_view file);
+	LW_RESULT LoadResModelBuf(IResourceMgr* res_mgr, std::string_view file);
 
-	struct lwInterfaceMgr {
-		lwISystem* sys;
-		lwISysGraphics* sys_graphics;
-		lwIDeviceObject* dev_obj;
-		lwIResourceMgr* res_mgr;
-		lwIThreadPool* tp_loadres;
+	struct InterfaceMgr {
+		ISystem* sys;
+		ISysGraphics* sys_graphics;
+		IDeviceObject* dev_obj;
+		IResourceMgr* res_mgr;
+		IThreadPool* tp_loadres;
 	};
 
 } // namespace Corsairs::Engine::Render

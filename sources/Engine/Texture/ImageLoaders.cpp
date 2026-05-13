@@ -1,5 +1,5 @@
-// DdsLoader — запись .dds-файлов из lwDDSFile (тело перенесено из
-// lwDDSFile.cpp). Чтение DDS живёт в lwDDSFile::LoadOriginTexture через
+// DdsLoader — запись .dds-файлов из DDSFile (тело перенесено из
+// DDSFile.cpp). Чтение DDS живёт в DDSFile::LoadOriginTexture через
 // D3DXCreateTextureFromFileEx; никакого fopen в нём нет, потому к loader-
 // паттерну подключать его незачем.
 //
@@ -14,7 +14,7 @@
 #include "stdafx.h"
 #include "AssetLoaders.h"
 
-#include "lwDDSFile.h"
+#include "DDSFile.h"
 #include "lwgraphicsutil.h"
 #include "logutil.h"
 
@@ -41,15 +41,15 @@ using UniqueFile = std::unique_ptr<std::FILE, FileCloser>;
 
 // =============================================================================
 // Внутренние шаги .dds-Save'а (приватные static-методы DdsLoader, чтобы
-// friend-объявление в lwDDSFile открывало им доступ к приватным полям).
+// friend-объявление в DDSFile открывало им доступ к приватным полям).
 // =============================================================================
 
-long DdsLoader::SaveDDSHeader(Corsairs::Engine::Render::lwDDSFile& dds,
+long DdsLoader::SaveDDSHeader(Corsairs::Engine::Render::DDSFile& dds,
                                struct IDirect3DBaseTexture9* texRaw, std::FILE* fp) {
     using namespace Corsairs::Engine::Render;
     auto* tex = reinterpret_cast<IDirect3DBaseTextureX*>(texRaw);
 
-    lwDDSHeader ddsh{};
+    DDSHeader ddsh{};
     DWORD dwMagic = MAKEFOURCC('D', 'D', 'S', ' ');
     D3DFORMAT fmt = D3DFMT_UNKNOWN;
     DWORD size = 0;
@@ -173,7 +173,7 @@ long DdsLoader::SaveDDSHeader(Corsairs::Engine::Render::lwDDSFile& dds,
     return S_OK;
 }
 
-long DdsLoader::SaveAllMipSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
+long DdsLoader::SaveAllMipSurfaces(Corsairs::Engine::Render::DDSFile& dds,
                                     struct IDirect3DBaseTexture9* ptexRaw,
                                     unsigned int faceTypeRaw,
                                     std::FILE* fp) {
@@ -261,7 +261,7 @@ long DdsLoader::SaveAllMipSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
     return S_OK;
 }
 
-long DdsLoader::SaveAllVolumeSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
+long DdsLoader::SaveAllVolumeSurfaces(Corsairs::Engine::Render::DDSFile& dds,
                                        struct IDirect3DVolumeTexture9* pvoltexRaw,
                                        std::FILE* fp) {
     using namespace Corsairs::Engine::Render;
@@ -314,7 +314,7 @@ long DdsLoader::SaveAllVolumeSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
 // DdsLoader::Save
 // =============================================================================
 
-LW_RESULT DdsLoader::Save(Corsairs::Engine::Render::lwDDSFile& dds, std::string_view file) {
+LW_RESULT DdsLoader::Save(Corsairs::Engine::Render::DDSFile& dds, std::string_view file) {
     UniqueFile fp{std::fopen(std::string{file}.c_str(), "wb")};
     if (!fp) {
         ToLogService("errors", LogLevel::Error,
@@ -391,9 +391,13 @@ namespace {
                                    == std::tolower(static_cast<unsigned char>(b));
                           });
     };
-    if (ends_with(".bmp")) return D3DXIFF_BMP;
+    if (ends_with(".bmp")) {
+    	return D3DXIFF_BMP;
+    }
     if (ends_with(".jpg") || ends_with(".jpeg")) return D3DXIFF_JPG;
-    if (ends_with(".tga")) return D3DXIFF_TGA;
+    if (ends_with(".tga")) {
+    	return D3DXIFF_TGA;
+    }
     if (ends_with(".dds")) return D3DXIFF_DDS;
     return D3DXIFF_PNG;
 }

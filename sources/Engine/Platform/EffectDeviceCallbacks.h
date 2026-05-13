@@ -23,7 +23,7 @@ class EffectDeviceCallbacks {
 public:
     static EffectDeviceCallbacks& Instance();
 
-    void Install(MPRender* dev, Corsairs::Engine::Render::lwISysGraphics* sysGraphics);
+    void Install(MPRender* dev, Corsairs::Engine::Render::ISysGraphics* sysGraphics);
 
     // Внутренние реализации (вызываются через статические C-trampoline'ы).
     LW_RESULT OnLost();
@@ -38,7 +38,7 @@ private:
     static LW_RESULT TrampolineOnReset();
 
     MPRender*                       _dev{nullptr};
-    Corsairs::Engine::Render::lwISysGraphics*   _sysGraphics{nullptr};
+    Corsairs::Engine::Render::ISysGraphics*   _sysGraphics{nullptr};
 };
 
 } // namespace Corsairs::Engine::Render

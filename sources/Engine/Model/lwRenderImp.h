@@ -7,7 +7,7 @@
 #include "lwDirectX.h"
 #include "lwITypes.h"
 #include "lwInterfaceExt.h"
-#include "lwShaderMgr.h"
+#include "ShaderMgr.h"
 
 namespace Corsairs::Engine::Render {
 	// remarks
@@ -15,7 +15,7 @@ namespace Corsairs::Engine::Render {
 	//    declshader
 	// 2shader
 	//    decl
-	//    lwShaderDeclMgr
+	//    ShaderDeclMgr
 	// 3Shaderuser-defined shader
 
 
@@ -27,7 +27,7 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 _mat_parent;
 		lwMatrix44 _mat_global;
 
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIMeshAgent* _mesh_agent;
 		lwIMtlTexAgent* _mtltex_agent;
 		lwIAnimCtrlAgent* _anim_agent;
@@ -38,10 +38,10 @@ namespace Corsairs::Engine::Render {
 		DWORD _ps_type;
 
 	public:
-		lwRenderCtrlAgent(lwIResourceMgr* res_mgr);
+		lwRenderCtrlAgent(IResourceMgr* res_mgr);
 		~lwRenderCtrlAgent();
 
-		lwIResourceMgr* GetResourceMgr() {
+		IResourceMgr* GetResourceMgr() {
 			return _res_mgr;
 		}
 

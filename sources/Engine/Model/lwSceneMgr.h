@@ -26,8 +26,8 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION()
 
 	private:
-		lwISysGraphics* _sys_graphics;
-		lwIResourceMgr* _res_mgr;
+		ISysGraphics* _sys_graphics;
+		IResourceMgr* _res_mgr;
 		lwIViewFrustum* _vf;
 		lwSortPriInfo* _sort_obj_seq;
 		lwSortPriProcInfo _sppi;
@@ -41,7 +41,7 @@ namespace Corsairs::Engine::Render {
 		lwSceneFrameInfo _frame_info;
 
 	public:
-		lwSceneMgr(lwISysGraphics* sys_graphics);
+		lwSceneMgr(ISysGraphics* sys_graphics);
 		~lwSceneMgr();
 
 		LW_RESULT Update();

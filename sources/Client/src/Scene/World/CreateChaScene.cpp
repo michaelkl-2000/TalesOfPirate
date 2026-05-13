@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 
 #include "createchascene.h"
 #include "EncodingUtil.h"
@@ -502,7 +502,7 @@ void LoginScene_CreateCha::OnMouseMove(int flag, int x, int y) {
 		return;
 
 	lwINodePrimitive* pri;
-	lwIDeviceObject* dev_obj = _res_mgr->GetDeviceObject();
+	IDeviceObject* dev_obj = _res_mgr->GetDeviceObject();
 
 	lwPickInfo info;
 	lwVector3 org, ray;
@@ -590,7 +590,7 @@ int LoginScene_CreateCha::OnLButtonDown(int flag, int x, int y) {
 	}
 
 	lwINodePrimitive* pri;
-	lwIDeviceObject* dev_obj = _res_mgr->GetDeviceObject();
+	IDeviceObject* dev_obj = _res_mgr->GetDeviceObject();
 
 	lwPickInfo info;
 	lwVector3 org, ray;
@@ -758,19 +758,19 @@ bool CCreateChaScene::_Init() {
 	CCameraCtrl* pCam = g_pGameApp->GetMainCam();
 	if (pCam) {
 		g_pGameApp->EnableCameraFollow(TRUE);
-		pCam->m_EyePos.x = -32.713f;
-		pCam->m_EyePos.y = 71.002f;
-		pCam->m_EyePos.z = 7.006f;
+		pCam->_EyePos.x = -32.713f;
+		pCam->_EyePos.y = 71.002f;
+		pCam->_EyePos.z = 7.006f;
 
-		pCam->m_RefPos.x = -0.259f;
-		pCam->m_RefPos.y = 0.565f;
-		pCam->m_RefPos.z = 6.366f;
+		pCam->_RefPos.x = -0.259f;
+		pCam->_RefPos.y = 0.565f;
+		pCam->_RefPos.z = 6.366f;
 	}
 	g_Render.SetWorldViewFOV(Angle2Radian(42.0f));
 	g_Render.SetWorldViewAspect(1.0f);
 	g_Render.SetClip(1.0f, 2000.0f);
 
-	g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+	g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 	g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 
 	//Create four character models

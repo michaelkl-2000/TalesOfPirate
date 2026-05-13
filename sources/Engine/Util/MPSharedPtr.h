@@ -1,4 +1,4 @@
-﻿#ifndef MPSharedPtr_H
+#ifndef MPSharedPtr_H
 #define MPSharedPtr_H
 
 #include "MPEffPrerequisites.h"
@@ -6,8 +6,8 @@
 template <class T>
 class MPSharedPtr {
 protected:
-	T* m_pRep;
-	unsigned int* m_pUseCount;
+	T* _pRep;
+	unsigned int* _pUseCount;
 
 public:
 	MP_AUTO_SHARED_MUTEX; // 
@@ -16,10 +16,10 @@ public:
 	@remarks
 	<b>!</b> SharedPtrbind() .
 	*/
-	MPSharedPtr() : m_pRep(0), m_pUseCount(0) {
+	MPSharedPtr() : _pRep(0), _pUseCount(0) {
 	}
 
-	explicit MPSharedPtr(T* rep) : m_pRep(rep), m_pUseCount(new unsigned int(1)) {
+	explicit MPSharedPtr(T* rep) : _pRep(rep), _pUseCount(new unsigned int(1)) {
 		MP_NEW_AUTO_SHARED_MUTEX
 	}
 
@@ -28,16 +28,16 @@ public:
 		MP_LOCK_MUTEX(*(r.MP_AUTO_MUTEX_NAME));
 		MP_COPY_AUTO_SHARED_MUTEX(r.MP_AUTO_MUTEX_NAME);
 
-		m_pRep = r.m_pRep;
-		m_pUseCount = r.m_pUseCount;
+		_pRep = r._pRep;
+		_pUseCount = r._pUseCount;
 
-		if (m_pUseCount) {
-			++(*m_pUseCount);
+		if (_pUseCount) {
+			++(*_pUseCount);
 		}
 	}
 
 	MPSharedPtr& operator=(const MPSharedPtr& r) {
-		if (m_pRep == r.m_pRep)
+		if (_pRep == r._pRep)
 			return *this;
 		release();
 
@@ -45,10 +45,10 @@ public:
 		MP_LOCK_MUTEX(*(r.MP_AUTO_MUTEX_NAME));
 		MP_COPY_AUTO_SHARED_MUTEX(r.MP_AUTO_MUTEX_NAME);
 
-		m_pRep = r.m_pRep;
-		m_pUseCount = r.m_pUseCount;
-		if (m_pUseCount) {
-			++(*m_pUseCount);
+		_pRep = r._pRep;
+		_pUseCount = r._pUseCount;
+		if (_pUseCount) {
+			++(*_pUseCount);
 		}
 		return *this;
 	}
@@ -58,17 +58,17 @@ public:
 	}
 
 	inline T& operator*() const {
-		assert(m_pRep);
-		return *m_pRep;
+		assert(_pRep);
+		return *_pRep;
 	}
 
 	inline T* operator->() const {
-		assert(m_pRep);
-		return m_pRep;
+		assert(_pRep);
+		return _pRep;
 	}
 
 	inline T* get() const {
-		return m_pRep;
+		return _pRep;
 	}
 
 	/** SharedPtr.
@@ -80,38 +80,38 @@ public:
 		MP_NEW_AUTO_SHARED_MUTEX;
 		MP_LOCK_AUTO_SHARED_MUTEX;
 
-		m_pUseCount = new unsigned int(1);
-		m_pRep = rep;
+		_pUseCount = new unsigned int(1);
+		_pRep = rep;
 	}
 
 	inline bool unique() const {
-		assert(m_pUseCount);
+		assert(_pUseCount);
 		MP_LOCK_AUTO_SHARED_MUTEX;
-		return (*m_pUseCount) == 1;
+		return (*_pUseCount) == 1;
 	}
 
 	inline unsigned int useCount() const {
-		assert(m_pUseCount);
-		MP_LOCK_AUTO_SHARED_MUTEX return *m_pUseCount;
+		assert(_pUseCount);
+		MP_LOCK_AUTO_SHARED_MUTEX return *_pUseCount;
 	}
 
 	inline unsigned int* useCountPointer() const {
-		return m_pUseCount;
+		return _pUseCount;
 	}
 
 	inline T* getPointer() const {
-		return m_pRep;
+		return _pRep;
 	}
 
 	inline bool isNull(void) const {
-		return m_pRep == 0;
+		return _pRep == 0;
 	}
 
 	inline void setNull(void) {
-		if (m_pRep) {
+		if (_pRep) {
 			release();
-			m_pRep = 0;
-			m_pUseCount = 0;
+			_pRep = 0;
+			_pUseCount = 0;
 			MP_COPY_AUTO_SHARED_MUTEX(0)
 		}
 	}
@@ -123,8 +123,8 @@ protected:
 			// mutex()
 			MP_LOCK_AUTO_SHARED_MUTEX;
 
-			if (m_pUseCount) {
-				if (--(*m_pUseCount) == 0) {
+			if (_pUseCount) {
+				if (--(*_pUseCount) == 0) {
 					destroyThis = true;
 				}
 			}
@@ -136,8 +136,8 @@ protected:
 
 	virtual void destroy(void) {
 		// setNull(),
-		delete m_pRep;
-		delete m_pUseCount;
+		delete _pRep;
+		delete _pUseCount;
 		MP_DELETE_AUTO_SHARED_MUTEX;
 	}
 };

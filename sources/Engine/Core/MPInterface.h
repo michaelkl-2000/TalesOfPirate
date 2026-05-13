@@ -22,7 +22,7 @@ using MPBoundingBoxInfo           = Corsairs::Engine::Render::lwBoundingBoxInfo;
 using MPPickInfo                  = Corsairs::Engine::Render::lwPickInfo;
 using MPPlayPoseInfo              = Corsairs::Engine::Render::lwPlayPoseInfo;
 using MPPoseInfo                  = Corsairs::Engine::Render::lwPoseInfo;
-using MPInterfaceMgr              = Corsairs::Engine::Render::lwInterfaceMgr;
+using MPInterfaceMgr              = Corsairs::Engine::Render::InterfaceMgr;
 using MPMeshInfo                  = Corsairs::Engine::Render::lwMeshInfo;
 using MPWatchDevVideoMemInfo      = Corsairs::Engine::Render::lwWatchDevVideoMemInfo;
 
@@ -31,27 +31,27 @@ using MPIAnimCtrlAgent            = Corsairs::Engine::Render::lwIAnimCtrlAgent;
 using MPIAnimCtrlBone             = Corsairs::Engine::Render::lwIAnimCtrlBone;
 using MPIAnimCtrlObjBone          = Corsairs::Engine::Render::lwIAnimCtrlObjBone;
 using MPIBoundingBox              = Corsairs::Engine::Render::lwIBoundingBox;
-using MPIDeviceObject             = Corsairs::Engine::Render::lwIDeviceObject;
-using MPStaticStreamMgrDebugInfo  = Corsairs::Engine::Render::lwStaticStreamMgrDebugInfo;
+using MPIDeviceObject             = Corsairs::Engine::Render::IDeviceObject;
+using MPStaticStreamMgrDebugInfo  = Corsairs::Engine::Render::StaticStreamMgrDebugInfo;
 using MPD3DCreateParamAdjustInfo  = Corsairs::Engine::Render::lwD3DCreateParamAdjustInfo;
 using MPDwordByte4                = Corsairs::Engine::Render::lwDwordByte4;
-using MPIHelperObject             = Corsairs::Engine::Render::lwIHelperObject;
+using MPIHelperObject             = Corsairs::Engine::Render::IHelperObject;
 using MPIMesh                     = Corsairs::Engine::Render::lwIMesh;
-using MPIPathInfo                 = Corsairs::Engine::Render::lwIPathInfo;
+using MPIPathInfo                 = Corsairs::Engine::Render::IPathInfo;
 using MPIPhysique                 = Corsairs::Engine::Render::lwPhysique;
 using MPIPoseCtrl                 = Corsairs::Engine::Render::lwIPoseCtrl;
 using MPIPrimitive                = Corsairs::Engine::Render::lwIPrimitive;
 using MPIRenderStateAtomSet       = Corsairs::Engine::Render::lwIRenderStateAtomSet;
 using MPIResBufMgr                = Corsairs::Engine::Render::lwIResBufMgr;
-using MPIResourceMgr              = Corsairs::Engine::Render::lwIResourceMgr;
+using MPIResourceMgr              = Corsairs::Engine::Render::IResourceMgr;
 using MPISceneMgr                 = Corsairs::Engine::Render::lwISceneMgr;
-using MPIStaticStreamMgr          = Corsairs::Engine::Render::lwIStaticStreamMgr;
-using MPISysGraphics              = Corsairs::Engine::Render::lwISysGraphics;
-using MPISystemInfo               = Corsairs::Engine::Render::lwISystemInfo;
-using MPISystem                   = Corsairs::Engine::Render::lwISystem;
+using MPIStaticStreamMgr          = Corsairs::Engine::Render::IStaticStreamMgr;
+using MPISysGraphics              = Corsairs::Engine::Render::ISysGraphics;
+using MPISystemInfo               = Corsairs::Engine::Render::ISystemInfo;
+using MPISystem                   = Corsairs::Engine::Render::ISystem;
 using MPITex                      = Corsairs::Engine::Render::lwITex;
-using MPITimer                    = Corsairs::Engine::Render::lwITimer;
-using MPITimerPeriod              = Corsairs::Engine::Render::lwITimerPeriod;
+using MPITimer                    = Corsairs::Engine::Render::ITimer;
+using MPITimerPeriod              = Corsairs::Engine::Render::ITimerPeriod;
 
 // macro
 #ifndef MP_NEW

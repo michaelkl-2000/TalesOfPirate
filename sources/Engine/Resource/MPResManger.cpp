@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 #include "GlobalInc.h"
 #include "MPModelEff.h"
 #include "AssetLoaders.h"
@@ -17,7 +17,7 @@
 #include "TobMeshStore.h"
 
 #include "mpresmanger.h"
-#include "lwSysGraphics.h"
+#include "SysGraphics.h"
 #include "mpeffectctrl.h"
 #include "lwIUtil.h"
 #include "ShaderLoad.h"
@@ -74,13 +74,13 @@ CMPResManger::CMPResManger() {
 	EffPathStore::Instance().Clear();
 
 
-	m_bUseSoft = FALSE;
+	_bUseSoft = FALSE;
 
-	m_pSys = 0;
-	m_pSysGraphics = 0;
+	_pSys = 0;
+	_pSysGraphics = 0;
 
-	m_bCanFrame = false;
-	m_iCurFrame = 0;
+	_bCanFrame = false;
+	_iCurFrame = 0;
 }
 
 CMPResManger::~CMPResManger() {
@@ -146,22 +146,22 @@ bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatvie
 	renderCtx.GetFontBkWidth()  = (rc_client.right - rc_client.left) / 2;
 	renderCtx.GetFontBkHeight() = (rc_client.bottom - rc_client.top) / 2;
 
-	m_caps = _dev->GetOrgCap();
-	if (m_caps.VertexShaderVersion < D3DVS_VERSION(1, 1) || m_caps.PixelShaderVersion < D3DPS_VERSION(1, 4))
-		m_bUseSoftOrg = true;
+	_caps = _dev->GetOrgCap();
+	if (_caps.VertexShaderVersion < D3DVS_VERSION(1, 1) || _caps.PixelShaderVersion < D3DPS_VERSION(1, 4))
+		_bUseSoftOrg = true;
 	else
-		m_bUseSoftOrg = false;
+		_bUseSoftOrg = false;
 
 
-	_dev->GetDevice()->GetDeviceCaps(&m_caps);
-	if (m_caps.VertexShaderVersion < D3DVS_VERSION(1, 1) || m_caps.PixelShaderVersion < D3DPS_VERSION(1, 4)) {
-		m_bUseSoft = true;
+	_dev->GetDevice()->GetDeviceCaps(&_caps);
+	if (_caps.VertexShaderVersion < D3DVS_VERSION(1, 1) || _caps.PixelShaderVersion < D3DPS_VERSION(1, 4)) {
+		_bUseSoft = true;
 	}
 	else {
-		m_bUseSoft = false;
+		_bUseSoft = false;
 	}
 
-	EffectShaderStore::Instance().SetSoftFallback(m_bUseSoft);
+	EffectShaderStore::Instance().SetSoftFallback(_bUseSoft);
 
 	if (!EffectFxRenderer::Instance().Init(pDev, "shader\\dx9\\eff.fx")) {
 		MessageBox(NULL, "shader\\eff.fx", "ERROR", 0);
@@ -189,15 +189,15 @@ bool CMPResManger::InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatvie
 
 	auto& meshStore = EffectMeshStore::Instance();
 	meshStore.SetDevice(pDev);
-	meshStore.SetSystem(m_pSys, m_pSysGraphics);
+	meshStore.SetSystem(_pSys, _pSysGraphics);
 
 	auto& tobStore = TobMeshStore::Instance();
 	tobStore.SetDevice(pDev);
-	tobStore.SetSysGraphics(m_pSysGraphics);
+	tobStore.SetSysGraphics(_pSysGraphics);
 
 	ParticleInstancePool::Instance().SetResMgr(this);
 
-	EffectDeviceCallbacks::Instance().Install(pDev, m_pSysGraphics);
+	EffectDeviceCallbacks::Instance().Install(pDev, _pSysGraphics);
 
 	return true;
 }
@@ -453,7 +453,7 @@ bool CMPResManger::LoadTotalEffect() {
 	return EffectStore::Instance().LoadAllFrom(_pszEFFectPath);
 }
 
-bool CMPResManger::LoadTotalVShader(lwISysGraphics* sys_graphics) {
+bool CMPResManger::LoadTotalVShader(ISysGraphics* sys_graphics) {
 	return EffectShaderStore::Instance().LoadAll(sys_graphics);
 }
 
@@ -506,8 +506,8 @@ int CMPResManger::GetTobMeshNum() {
 
 //-----------------------------------------------------------------------------
 void CMPResManger::FrameMove(DWORD dwTime) {
-	m_iCurFrame += 1;
-	if (m_iCurFrame > 1)
+	_iCurFrame += 1;
+	if (_iCurFrame > 1)
 		return;
 
 
@@ -525,9 +525,9 @@ void CMPResManger::FrameMove(DWORD dwTime) {
 
 //-----------------------------------------------------------------------------
 void CMPResManger::Render() {
-	if (m_iCurFrame < 1)
+	if (_iCurFrame < 1)
 		return;
-	m_iCurFrame = 0;
+	_iCurFrame = 0;
 	ParticleInstancePool::Instance().Render();
 }
 

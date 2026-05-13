@@ -6,6 +6,8 @@
 //#################################
 #pragma once
 
+#include <chrono>
+
 #include "InputSystem.h"
 
 #define KEYBOARD_BUFFERSIZE		10
@@ -218,11 +220,11 @@ protected:
 	BYTE _btButtonState[3];
 	BYTE _btLastButtonState[3];
 
-	UINT _nDBClickTime;
-	UINT _nLastClickTime;
+	std::chrono::milliseconds _dbClickTime{};
+	std::chrono::steady_clock::time_point _lastClickTime{};
 	bool _bLastDBClick;
 
-	UINT _nDBTime;
+	std::chrono::steady_clock::time_point _dbTime{};
 
 
 	BOOL _bDrag;

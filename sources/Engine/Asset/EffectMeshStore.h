@@ -11,8 +11,8 @@ class CEffectModel;
 class MPRender;
 
 namespace Corsairs::Engine::Render {
-class lwISystem;
-class lwISysGraphics;
+class ISystem;
+class ISysGraphics;
 } // namespace Corsairs::Engine::Render
 
 namespace Corsairs::Engine::Render {
@@ -26,8 +26,8 @@ namespace Corsairs::Engine::Render {
 // Контекст (device/system/sysGraphics) инжектится из CMPResManger::InitRes до
 // LoadAllFrom — InitDevice применяется ко всем созданным CEffectModel:
 //   * MPRender* dev — для InitDevice.
-//   * lwISystem* sys — для смены PathInfoType::PATH_TYPE_MODEL_ITEM при LoadModel(.lgo).
-//   * lwISysGraphics* sysGraphics — для GetResourceMgr() в InitDevice primitive'ов.
+//   * ISystem* sys — для смены PathInfoType::PATH_TYPE_MODEL_ITEM при LoadModel(.lgo).
+//   * ISysGraphics* sysGraphics — для GetResourceMgr() в InitDevice primitive'ов.
 //
 // ID-семантика стабильна: 0..6 — primitive в фиксированном порядке, 7+ —
 // порядок FindFirstFile в model/effect/*.lgo (сериализуется в .par/.eff —
@@ -39,8 +39,8 @@ public:
     static EffectMeshStore& Instance();
 
     void SetDevice(MPRender* dev) noexcept;
-    void SetSystem(Corsairs::Engine::Render::lwISystem* sys,
-                   Corsairs::Engine::Render::lwISysGraphics* sysGraphics) noexcept;
+    void SetSystem(Corsairs::Engine::Render::ISystem* sys,
+                   Corsairs::Engine::Render::ISysGraphics* sysGraphics) noexcept;
 
     // Создаёт 7 primitive + shade-mesh и грузит .lgo из directory.
     // Вторая фаза reset device — см. RecreateBuiltins().
@@ -72,8 +72,8 @@ private:
     bool LoadLgoFrom(std::string_view directory);
 
     MPRender*                       _dev{nullptr};
-    Corsairs::Engine::Render::lwISystem*        _sys{nullptr};
-    Corsairs::Engine::Render::lwISysGraphics*   _sysGraphics{nullptr};
+    Corsairs::Engine::Render::ISystem*        _sys{nullptr};
+    Corsairs::Engine::Render::ISysGraphics*   _sysGraphics{nullptr};
 
     std::vector<CEffectModel*>           _meshes;   // capacity kCapacity
     VEC_string                           _names;    // только заполненные [0.._count)

@@ -38,12 +38,12 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIMeshAgent* _mesh_agent;
 		lwIMtlTexAgent** _mtltex_agent_seq;
 		lwIAnimCtrlAgent* _anim_agent;
 		lwIRenderCtrlAgent* _render_agent;
-		lwIHelperObject* _helper_object;
+		IHelperObject* _helper_object;
 		lwIAnimCtrlObjBone* _ref_ctrl_obj_bone;
 
 		DWORD _mtltex_agent_seqsize;
@@ -54,7 +54,7 @@ namespace Corsairs::Engine::Render {
 		LW_RESULT _UpdateTransparentState();
 
 	public:
-		lwNodePrimitive(lwIResourceMgr* res_mgr);
+		lwNodePrimitive(IResourceMgr* res_mgr);
 		virtual ~lwNodePrimitive();
 
 		// base method
@@ -135,14 +135,14 @@ namespace Corsairs::Engine::Render {
 			_render_agent = obj;
 		}
 
-		void SetHelperObject(lwIHelperObject* obj) {
+		void SetHelperObject(IHelperObject* obj) {
 			_helper_object = obj;
 		}
 
 		void SetMaterial(const lwMaterial* mtl);
 		void SetOpacity(float opacity);
 
-		lwIResourceMgr* GetResourceMgr() {
+		IResourceMgr* GetResourceMgr() {
 			return _res_mgr;
 		}
 
@@ -162,7 +162,7 @@ namespace Corsairs::Engine::Render {
 			return _render_agent;
 		}
 
-		lwIHelperObject* GetHelperObject() {
+		IHelperObject* GetHelperObject() {
 			return _helper_object;
 		}
 
@@ -196,11 +196,11 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIAnimCtrlObjBone* _ctrl_obj;
 
 	public:
-		lwNodeBoneCtrl(lwIResourceMgr* res_mgr);
+		lwNodeBoneCtrl(IResourceMgr* res_mgr);
 		~lwNodeBoneCtrl();
 
 		// base method
@@ -291,12 +291,12 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIAnimCtrlObjMat* _ctrl_obj;
 		lwINodePrimitive* _ass_obj;
 
 	public:
-		lwNodeDummy(lwIResourceMgr* res_mgr);
+		lwNodeDummy(IResourceMgr* res_mgr);
 		~lwNodeDummy();
 
 		// base method
@@ -374,7 +374,7 @@ namespace Corsairs::Engine::Render {
 		LW_RESULT Update();
 		LW_RESULT Render();
 
-		LW_RESULT Load(lwIHelperDummyObjInfo* data);
+		LW_RESULT Load(IHelperDummyObjInfo* data);
 		LW_RESULT CreateAssistantObject(const lwVector3* size, DWORD color);
 
 		lwINodePrimitive* GetAssistantObject() {
@@ -386,14 +386,14 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 
-		lwIHelperDummy* _obj_dummy;
-		lwIHelperBox* _obj_box;
-		lwIHelperMesh* _obj_mesh;
+		IHelperDummy* _obj_dummy;
+		IHelperBox* _obj_box;
+		IHelperMesh* _obj_mesh;
 
 	public:
-		lwNodeHelper(lwIResourceMgr* mgr);
+		lwNodeHelper(IResourceMgr* mgr);
 		~lwNodeHelper();
 
 		// base method
@@ -463,20 +463,20 @@ namespace Corsairs::Engine::Render {
 		LW_RESULT Render();
 
 		// helper object method
-		LW_RESULT LoadHelperInfo(const lwHelperInfo* info, int create_instance_flag);
+		LW_RESULT LoadHelperInfo(const HelperInfo* info, int create_instance_flag);
 		LW_RESULT Copy(const lwINodeHelper* src);
 		LW_RESULT Destroy();
 
 
-		lwIHelperDummy* GetHelperDummy() {
+		IHelperDummy* GetHelperDummy() {
 			return _obj_dummy;
 		}
 
-		lwIHelperBox* GetHelperBox() {
+		IHelperBox* GetHelperBox() {
 			return _obj_box;
 		}
 
-		lwIHelperMesh* GetHelperMesh() {
+		IHelperMesh* GetHelperMesh() {
 			return _obj_mesh;
 		}
 	};
@@ -486,13 +486,13 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwITreeNode* _obj_root;
 
 		std::string _name;
 
 	public:
-		lwNodeObject(lwIResourceMgr* res_mgr);
+		lwNodeObject(IResourceMgr* res_mgr);
 		virtual ~lwNodeObject();
 
 

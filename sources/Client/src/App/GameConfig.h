@@ -123,7 +123,7 @@ public:
 		return _textureLogEnabled;
 	}
 
-	//  [Logging] streampool — диагностический канал для lwDynamicStreamVB/IB.
+	//  [Logging] streampool — диагностический канал для DynamicStreamVB/IB.
 	//  При включении пишет в канал "vbstream" события Create/wrap с параметрами
 	//  кольцевого буфера (total/free_addr/free_size, branch=A|B). Нужно для
 	//  понимания, штатный ли это wrap-around или реальная нехватка места.

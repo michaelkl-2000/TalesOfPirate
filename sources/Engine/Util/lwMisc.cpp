@@ -95,7 +95,7 @@ namespace Corsairs::Engine::Render {
 		return v;
 	}
 
-	LW_RESULT lwRenderStateAtomBeginSetRS(lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num) {
+	LW_RESULT lwRenderStateAtomBeginSetRS(IDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num) {
 		lwRenderStateAtom* p;
 		for (DWORD i = 0; i < num; i++) {
 			p = &rsa_seq[i];
@@ -118,7 +118,7 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwRenderStateAtomEndSetRS(lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num) {
+	LW_RESULT lwRenderStateAtomEndSetRS(IDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num) {
 		lwRenderStateAtom* p;
 		for (DWORD i = 0; i < num; i++) {
 			p = &rsa_seq[i];
@@ -138,7 +138,7 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwRenderStateAtomBeginSetTSS(DWORD stage, lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq,
+	LW_RESULT lwRenderStateAtomBeginSetTSS(DWORD stage, IDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq,
 										   DWORD num) {
 		lwRenderStateAtom* p;
 		for (DWORD i = 0; i < num; i++) {
@@ -156,7 +156,7 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwRenderStateAtomEndSetTSS(DWORD stage, lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num) {
+	LW_RESULT lwRenderStateAtomEndSetTSS(DWORD stage, IDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num) {
 		lwRenderStateAtom* p;
 		for (DWORD i = 0; i < num; i++) {
 			p = &rsa_seq[i];

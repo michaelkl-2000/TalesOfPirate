@@ -123,11 +123,12 @@ void ConsoleProcessor::_AddText(std::string text, bool isCmd) {
 }
 
 void ConsoleProcessor::Tick() {
-	const std::uint32_t tick = ::GetTickCount();
-	if (_cursorTick == 0) {
+	using namespace std::chrono_literals;
+	const auto tick = std::chrono::steady_clock::now();
+	if (_cursorTick == std::chrono::steady_clock::time_point{}) {
 		_cursorTick = tick;
 	}
-	if (tick - _cursorTick < 500) {
+	if (tick - _cursorTick < 500ms) {
 		return;
 	}
 	_cursorTick = tick;

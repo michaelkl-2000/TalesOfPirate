@@ -42,17 +42,23 @@ void ZRBlock::GetBlockByRange(int CenterX, int CenterY, int range) {
 	int nShowSectionCntX = nEndSectionX - nCurSectionX;
 	int nShowSectionCntY = nEndSectionY - nCurSectionY;
 
-	if (range % _sectionWidth != 0) nShowSectionCntX++;
+	if (range % _sectionWidth != 0) {
+		nShowSectionCntX++;
+	}
 	if (range % _sectionHeight != 0) nShowSectionCntY++;
 
 	for (int y = 0; y < nShowSectionCntY; y++) {
 		int nSectionY = nCurSectionY + y;
 
-		if (nSectionY < 0 || nSectionY >= _sectionCntY) continue;
+		if (nSectionY < 0 || nSectionY >= _sectionCntY) {
+			continue;
+		}
 		for (int x = 0; x < nShowSectionCntX; x++) {
 			int nSectionX = nCurSectionX + x;
 
-			if (nSectionX < 0 || nSectionX >= _sectionCntX) continue;
+			if (nSectionX < 0 || nSectionX >= _sectionCntX) {
+				continue;
+			}
 
 			if (!GetBlockSection(nSectionX, nSectionY)) {
 				LoadBlockData(nSectionX, nSectionY);

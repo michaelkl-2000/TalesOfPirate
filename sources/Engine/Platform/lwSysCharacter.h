@@ -1,10 +1,10 @@
 //
 #include "lwHeader.h"
-#include "lwSlotMap.h"
+#include "SlotMap.h"
 
 namespace Corsairs::Engine::Render {
-	typedef lwSlotMapVoidPtr1024 lwObjectPoolSkeleton;
-	typedef lwSlotMapVoidPtr1024 lwObjectPoolSkin;
+	typedef SlotMapVoidPtr1024 lwObjectPoolSkeleton;
+	typedef SlotMapVoidPtr1024 lwObjectPoolSkin;
 
 
 	class lwSysCharacter {

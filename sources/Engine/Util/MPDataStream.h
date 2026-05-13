@@ -1,4 +1,4 @@
-﻿#ifndef MPDataStream_H
+#ifndef MPDataStream_H
 #define MPDataStream_H
 
 #include "MPEffPrerequisites.h"
@@ -22,10 +22,10 @@ ArchiveMPDataStream
 */
 class MPDataStream {
 public:
-	MPDataStream() : m_Size(0) {
+	MPDataStream() : _Size(0) {
 	}
 
-	MPDataStream(const String& name) : m_Name(name), m_Size(0) {
+	MPDataStream(const String& name) : _Name(name), _Size(0) {
 	}
 
 	virtual ~MPDataStream() {
@@ -90,21 +90,21 @@ public:
 
 	/** 0. */
 	size_t size(void) const {
-		return m_Size;
+		return _Size;
 	}
 
 	/// .
 	const String& getName(void) const {
-		return m_Name;
+		return _Name;
 	}
 
 protected:
 	/// ()
-	String m_Name;
+	String _Name;
 	/// (0)
-	size_t m_Size;
+	size_t _Size;
 #define MP_STREAM_TEMP_SIZE 128
-	char m_TmpArea[MP_STREAM_TEMP_SIZE];
+	char _TmpArea[MP_STREAM_TEMP_SIZE];
 };
 
 typedef MPSharedPtr<MPDataStream> MPDataStreamPtr;
@@ -168,17 +168,17 @@ public:
 
 	/** . */
 	uchar* getPtr(void) {
-		return m_Data;
+		return _Data;
 	}
 
 	/** . */
 	uchar* getCurrentPtr(void) {
-		return m_Pos;
+		return _Pos;
 	}
 
 	/** . */
 	void setFreeOnClose(bool free) {
-		m_FreeOnClose = free;
+		_FreeOnClose = free;
 	}
 
 	/** @copydoc DataStream::read		*/
@@ -199,10 +199,10 @@ public:
 	void close(void);
 
 protected:
-	uchar* m_Data;
-	uchar* m_Pos;
-	uchar* m_End;
-	bool m_FreeOnClose;
+	uchar* _Data;
+	uchar* _Pos;
+	uchar* _End;
+	bool _FreeOnClose;
 };
 
 typedef MPSharedPtr<MPMemoryDataStream> MPMemoryDataStreamPtr;
@@ -254,8 +254,8 @@ public:
 	void close(void);
 
 protected:
-	std::ifstream* m_pStream;
-	bool m_FreeOnClose;
+	std::ifstream* _pStream;
+	bool _FreeOnClose;
 };
 
 /** DataStream,C.*/
@@ -285,7 +285,7 @@ public:
 	void close(void);
 
 protected:
-	FILE* m_FileHandle;
+	FILE* _FileHandle;
 };
 
 

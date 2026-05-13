@@ -10,9 +10,6 @@
     <Filter Include="Crypto">
       <UniqueIdentifier>{a1000003-0000-4000-8000-000000000003}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Discord">
-      <UniqueIdentifier>{a1000004-0000-4000-8000-000000000004}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Network">
       <UniqueIdentifier>{a1000005-0000-4000-8000-000000000005}</UniqueIdentifier>
     </Filter>
@@ -283,385 +280,379 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="include\Database\AssetDatabase.h">
+    <ClInclude Include="src\Database\AssetDatabase.h">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="include\Database\GameRecordset.h">
+    <ClInclude Include="src\Database\GameRecordset.h">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="include\Database\RenderAssetDatabase.h">
+    <ClInclude Include="src\Database\RenderAssetDatabase.h">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="include\Database\SqliteDatabase.h">
+    <ClInclude Include="src\Database\SqliteDatabase.h">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="include\Database\TableData.h">
+    <ClInclude Include="src\Database\TableData.h">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\CommFunc.h">
+    <ClInclude Include="src\Core\CommFunc.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\GameCommon.h">
+    <ClInclude Include="src\Core\GameCommon.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\JobType.h">
+    <ClInclude Include="src\Core\JobType.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\RoleCommon.h">
+    <ClInclude Include="src\Core\RoleCommon.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\StringLib.h">
+    <ClInclude Include="src\Core\StringLib.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\ToolClass.h">
+    <ClInclude Include="src\Core\ToolClass.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\i18n.h">
+    <ClInclude Include="src\Core\i18n.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\Crypto\Blake2s.h">
+    <ClInclude Include="src\Crypto\Blake2s.h">
       <Filter>Crypto</Filter>
     </ClInclude>
-    <ClInclude Include="include\Discord\discord_register.h">
-      <Filter>Discord</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Discord\discord_rpc.h">
-      <Filter>Discord</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Network\CompCommand.h">
+    <ClInclude Include="src\Network\CompCommand.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="include\Network\NetCommand.h">
+    <ClInclude Include="src\Network\NetCommand.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="include\Network\NetRetCode.h">
+    <ClInclude Include="src\Network\NetRetCode.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaAction.h">
+    <ClInclude Include="src\Character\ChaAction.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaAttr.h">
+    <ClInclude Include="src\Character\ChaAttr.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaAttrType.h">
+    <ClInclude Include="src\Character\ChaAttrType.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaCreateRecord.h">
+    <ClInclude Include="src\Character\ChaCreateRecord.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaCreateRecordStore.h">
+    <ClInclude Include="src\Character\ChaCreateRecordStore.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaMask.h">
+    <ClInclude Include="src\Character\ChaMask.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaNameFilterRecord.h">
+    <ClInclude Include="src\Character\ChaNameFilterRecord.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaNameFilterStore.h">
+    <ClInclude Include="src\Character\ChaNameFilterStore.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\ChaRecordStore.h">
+    <ClInclude Include="src\Character\ChaRecordStore.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\CharacterActionRecord.h">
+    <ClInclude Include="src\Character\CharacterActionRecord.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\CharacterActionStore.h">
+    <ClInclude Include="src\Character\CharacterActionStore.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\CharacterModelRecord.h">
+    <ClInclude Include="src\Character\CharacterModelRecord.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\CharacterModelStore.h">
+    <ClInclude Include="src\Character\CharacterModelStore.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\CharacterRecord.h">
+    <ClInclude Include="src\Character\CharacterRecord.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\HairRecord.h">
+    <ClInclude Include="src\Character\HairRecord.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\HairRecordStore.h">
+    <ClInclude Include="src\Character\HairRecordStore.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\PoseRecord.h">
+    <ClInclude Include="src\Character\PoseRecord.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Character\PoseRecordStore.h">
+    <ClInclude Include="src\Character\PoseRecordStore.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ForgeRecord.h">
+    <ClInclude Include="src\Item\ForgeRecord.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ForgeRecordStore.h">
+    <ClInclude Include="src\Item\ForgeRecordStore.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemAttr.h">
+    <ClInclude Include="src\Item\ItemAttr.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemAttrType.h">
+    <ClInclude Include="src\Item\ItemAttrType.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemContent.h">
+    <ClInclude Include="src\Item\ItemContent.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemLitRecord.h">
+    <ClInclude Include="src\Item\ItemLitRecord.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemLitStore.h">
+    <ClInclude Include="src\Item\ItemLitStore.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemPreRecord.h">
+    <ClInclude Include="src\Item\ItemPreRecord.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemPreRecordStore.h">
+    <ClInclude Include="src\Item\ItemPreRecordStore.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemRecord.h">
+    <ClInclude Include="src\Item\ItemRecord.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemRecordStore.h">
+    <ClInclude Include="src\Item\ItemRecordStore.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemRefineEffectRecord.h">
+    <ClInclude Include="src\Item\ItemRefineEffectRecord.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemRefineEffectRecordStore.h">
+    <ClInclude Include="src\Item\ItemRefineEffectRecordStore.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemRefineRecord.h">
+    <ClInclude Include="src\Item\ItemRefineRecord.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemRefineRecordStore.h">
+    <ClInclude Include="src\Item\ItemRefineRecordStore.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemTypeRecord.h">
+    <ClInclude Include="src\Item\ItemTypeRecord.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\ItemTypeRecordStore.h">
+    <ClInclude Include="src\Item\ItemTypeRecordStore.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\StoneRecord.h">
+    <ClInclude Include="src\Item\StoneRecord.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Item\StoneRecordStore.h">
+    <ClInclude Include="src\Item\StoneRecordStore.h">
       <Filter>Item</Filter>
     </ClInclude>
-    <ClInclude Include="include\Inventory\JobEquipRecordStore.h">
+    <ClInclude Include="src\Inventory\JobEquipRecordStore.h">
       <Filter>Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="include\Inventory\JobInitEquip.h">
+    <ClInclude Include="src\Inventory\JobInitEquip.h">
       <Filter>Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="include\Inventory\Kitbag.h">
+    <ClInclude Include="src\Inventory\Kitbag.h">
       <Filter>Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="include\Inventory\KitbagEnCode.h">
+    <ClInclude Include="src\Inventory\KitbagEnCode.h">
       <Filter>Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="include\Inventory\ShipSet.h">
+    <ClInclude Include="src\Inventory\ShipSet.h">
       <Filter>Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="include\Inventory\SkillBag.h">
+    <ClInclude Include="src\Inventory\SkillBag.h">
       <Filter>Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="include\Skill\ElfSkillRecord.h">
+    <ClInclude Include="src\Skill\ElfSkillRecord.h">
       <Filter>Skill</Filter>
     </ClInclude>
-    <ClInclude Include="include\Skill\ElfSkillRecordStore.h">
+    <ClInclude Include="src\Skill\ElfSkillRecordStore.h">
       <Filter>Skill</Filter>
     </ClInclude>
-    <ClInclude Include="include\Skill\SkillRecord.h">
+    <ClInclude Include="src\Skill\SkillRecord.h">
       <Filter>Skill</Filter>
     </ClInclude>
-    <ClInclude Include="include\Skill\SkillRecordStore.h">
+    <ClInclude Include="src\Skill\SkillRecordStore.h">
       <Filter>Skill</Filter>
     </ClInclude>
-    <ClInclude Include="include\Skill\SkillStateRecord.h">
+    <ClInclude Include="src\Skill\SkillStateRecord.h">
       <Filter>Skill</Filter>
     </ClInclude>
-    <ClInclude Include="include\Skill\SkillStateRecordStore.h">
+    <ClInclude Include="src\Skill\SkillStateRecordStore.h">
       <Filter>Skill</Filter>
     </ClInclude>
-    <ClInclude Include="include\Skill\SkillStateType.h">
+    <ClInclude Include="src\Skill\SkillStateType.h">
       <Filter>Skill</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\MonRefRecord.h">
+    <ClInclude Include="src\NPC\MonRefRecord.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\MonRefRecordStore.h">
+    <ClInclude Include="src\NPC\MonRefRecordStore.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\MonsterInfoRecord.h">
+    <ClInclude Include="src\NPC\MonsterInfoRecord.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\MonsterInfoRecordStore.h">
+    <ClInclude Include="src\NPC\MonsterInfoRecordStore.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\MonsterListRecordStore.h">
+    <ClInclude Include="src\NPC\MonsterListRecordStore.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\NPCDataRecord.h">
+    <ClInclude Include="src\NPC\NPCDataRecord.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\NPCListRecordStore.h">
+    <ClInclude Include="src\NPC\NPCListRecordStore.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\NpcRecord.h">
+    <ClInclude Include="src\NPC\NpcRecord.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\NPC\NpcRecordStore.h">
+    <ClInclude Include="src\NPC\NpcRecordStore.h">
       <Filter>NPC</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\AnimatedLightRecord.h">
+    <ClInclude Include="src\World\AnimatedLightRecord.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\AnimatedLightStore.h">
+    <ClInclude Include="src\World\AnimatedLightStore.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\AreaRecord.h">
+    <ClInclude Include="src\World\AreaRecord.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\AreaRecordStore.h">
+    <ClInclude Include="src\World\AreaRecordStore.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\EventRecord.h">
+    <ClInclude Include="src\World\EventRecord.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\EventRecordStore.h">
+    <ClInclude Include="src\World\EventRecordStore.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\MapRecord.h">
+    <ClInclude Include="src\World\MapRecord.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\MapRecordStore.h">
+    <ClInclude Include="src\World\MapRecordStore.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\SceneObjRecord.h">
+    <ClInclude Include="src\World\SceneObjRecord.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\SceneObjRecordStore.h">
+    <ClInclude Include="src\World\SceneObjRecordStore.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\ShadeRecord.h">
+    <ClInclude Include="src\World\ShadeRecord.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\ShadeRecordStore.h">
+    <ClInclude Include="src\World\ShadeRecordStore.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\SwitchMapRecord.h">
+    <ClInclude Include="src\World\SwitchMapRecord.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\SwitchMapRecordStore.h">
+    <ClInclude Include="src\World\SwitchMapRecordStore.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\TerrainAttrib.h">
+    <ClInclude Include="src\World\TerrainAttrib.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\TerrainRecord.h">
+    <ClInclude Include="src\World\TerrainRecord.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\World\TerrainRecordStore.h">
+    <ClInclude Include="src\World\TerrainRecordStore.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\EventSoundRecord.h">
+    <ClInclude Include="src\Audio\EventSoundRecord.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\EventSoundRecordStore.h">
+    <ClInclude Include="src\Audio\EventSoundRecordStore.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\MusicRecord.h">
+    <ClInclude Include="src\Audio\MusicRecord.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\MusicRecordStore.h">
+    <ClInclude Include="src\Audio\MusicRecordStore.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="include\Effect\EffParamRecord.h">
+    <ClInclude Include="src\Effect\EffParamRecord.h">
       <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="include\Effect\EffParamRecordStore.h">
+    <ClInclude Include="src\Effect\EffParamRecordStore.h">
       <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="include\Effect\EffectRecord.h">
+    <ClInclude Include="src\Effect\EffectRecord.h">
       <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="include\Effect\EffectRecordStore.h">
+    <ClInclude Include="src\Effect\EffectRecordStore.h">
       <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="include\Mount\MountRecord.h">
+    <ClInclude Include="src\Mount\MountRecord.h">
       <Filter>Mount</Filter>
     </ClInclude>
-    <ClInclude Include="include\Mount\MountRecordStore.h">
+    <ClInclude Include="src\Mount\MountRecordStore.h">
       <Filter>Mount</Filter>
     </ClInclude>
-    <ClInclude Include="include\Mount\ShipPartRecordStore.h">
+    <ClInclude Include="src\Mount\ShipPartRecordStore.h">
       <Filter>Mount</Filter>
     </ClInclude>
-    <ClInclude Include="include\Mount\ShipRecordStore.h">
+    <ClInclude Include="src\Mount\ShipRecordStore.h">
       <Filter>Mount</Filter>
     </ClInclude>
-    <ClInclude Include="include\Progression\LevelRecord.h">
+    <ClInclude Include="src\Progression\LevelRecord.h">
       <Filter>Progression</Filter>
     </ClInclude>
-    <ClInclude Include="include\Progression\LevelRecordStore.h">
+    <ClInclude Include="src\Progression\LevelRecordStore.h">
       <Filter>Progression</Filter>
     </ClInclude>
-    <ClInclude Include="include\Progression\LifeLvRecord.h">
+    <ClInclude Include="src\Progression\LifeLvRecord.h">
       <Filter>Progression</Filter>
     </ClInclude>
-    <ClInclude Include="include\Progression\LifeLvRecordStore.h">
+    <ClInclude Include="src\Progression\LifeLvRecordStore.h">
       <Filter>Progression</Filter>
     </ClInclude>
-    <ClInclude Include="include\Progression\SailLvRecord.h">
+    <ClInclude Include="src\Progression\SailLvRecord.h">
       <Filter>Progression</Filter>
     </ClInclude>
-    <ClInclude Include="include\Progression\SailLvRecordStore.h">
+    <ClInclude Include="src\Progression\SailLvRecordStore.h">
       <Filter>Progression</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\ChatIconRecord.h">
+    <ClInclude Include="src\Localization\ChatIconRecord.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\ChatIconRecordStore.h">
+    <ClInclude Include="src\Localization\ChatIconRecordStore.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\HelpEntryRecord.h">
+    <ClInclude Include="src\Localization\HelpEntryRecord.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\HelpEntryStore.h">
+    <ClInclude Include="src\Localization\HelpEntryStore.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\LanguageRecordStore.h">
+    <ClInclude Include="src\Localization\LanguageRecordStore.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\LitEntryRecord.h">
+    <ClInclude Include="src\Localization\LitEntryRecord.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\LitEntryStore.h">
+    <ClInclude Include="src\Localization\LitEntryStore.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\NotifyRecord.h">
+    <ClInclude Include="src\Localization\NotifyRecord.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Localization\NotifyRecordStore.h">
+    <ClInclude Include="src\Localization\NotifyRecordStore.h">
       <Filter>Localization</Filter>
     </ClInclude>
-    <ClInclude Include="include\Server\ServerRecord.h">
+    <ClInclude Include="src\Server\ServerRecord.h">
       <Filter>Server</Filter>
     </ClInclude>
-    <ClInclude Include="include\Server\ServerRecordStore.h">
+    <ClInclude Include="src\Server\ServerRecordStore.h">
       <Filter>Server</Filter>
     </ClInclude>
-    <ClInclude Include="include\Misc\GroupParamRecord.h">
+    <ClInclude Include="src\Misc\GroupParamRecord.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\Misc\GroupParamRecordStore.h">
+    <ClInclude Include="src\Misc\GroupParamRecordStore.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\Misc\ResourceRecord.h">
+    <ClInclude Include="src\Misc\ResourceRecord.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\Misc\ResourceRecordStore.h">
+    <ClInclude Include="src\Misc\ResourceRecordStore.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\sqlite3\sqlite3.h">

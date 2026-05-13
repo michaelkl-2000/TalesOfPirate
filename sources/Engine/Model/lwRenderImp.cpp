@@ -3,16 +3,16 @@
 
 
 #include "lwRenderImp.h"
-#include "lwDeviceObject.h"
-#include "lwResourceMgr.h"
-#include "lwShaderMgr.h"
+#include "DeviceObject.h"
+#include "ResourceMgr.h"
+#include "ShaderMgr.h"
 #include "lwD3D.h"
 
 namespace Corsairs::Engine::Render {
 	// lwRenderCtrlAgent
 	LW_STD_IMPLEMENTATION(lwRenderCtrlAgent)
 
-	lwRenderCtrlAgent::lwRenderCtrlAgent(lwIResourceMgr* res_mgr)
+	lwRenderCtrlAgent::lwRenderCtrlAgent(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _mesh_agent(0), _mtltex_agent(0), _anim_agent(0),
 		  _render_ctrl(0), _decl_type(VDT_INVALID), _vs_type(VST_INVALID) {
 		lwMatrix44Identity(&_mat_local);

@@ -16,8 +16,9 @@
     ],
     "defaultMode": "auto"
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "github"
   ],
-  "enableAllProjectMcpServers": true
+  "outputStyle": "Explanatory"
 }

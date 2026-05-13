@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // File: D3DUtil.cpp
 // Desc: Shortcut macros and functions for using DX objects
 // Copyright (c) 1997-2000 Microsoft Corporation. All rights reserved
@@ -124,7 +124,9 @@ D3DXQUATERNION D3DUtil_GetRotationFromCursor(HWND hWnd,
 	// Calculate angle for the rotation about that axis
 	const auto v = p2 - p1;
 	FLOAT t = D3DXVec3Length(&v) / (2.0f * fTrackBallRadius);
-	if (t > +1.0f) t = +1.0f;
+	if (t > +1.0f) {
+		t = +1.0f;
+	}
 	if (t < -1.0f) t = -1.0f;
 	FLOAT fAngle = 2.0f * asinf(t);
 

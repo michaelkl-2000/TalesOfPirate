@@ -9,7 +9,7 @@
 
 #include "MPModelEff.h"      // EffectFileInfo, EffParameter, I_Effect, CEffPath
 #include "MPParticleCtrl.h"  // CMPPartCtrl
-#include "lwEfxTrack.h"      // EffPathLoader::LoadLet — matrix-track формат
+#include "EfxTrack.h"      // EffPathLoader::LoadLet — matrix-track формат
 
 #include <algorithm>
 #include <cctype>
@@ -89,32 +89,32 @@ LW_RESULT EffectLoader::LoadEx(::EffectFileInfo& info, std::string_view file,
     int idxTech = 0;
     if (std::fread(&idxTech, sizeof(int), 1, fp.get()) != 1) {
         diag.status = EffectLoadStatus::HeaderTruncated;
-        diag.detail = "short read of m_iIdxTech";
+        diag.detail = "short read of idxTech";
         return LW_RET_FAILED;
     }
-    info.param.m_iIdxTech = idxTech;
+    info.param._idxTech = idxTech;
 
     char nameBuf[32]{};
 
-    if (std::fread(&info.param.m_bUsePath, sizeof(bool), 1, fp.get()) != 1 ||
+    if (std::fread(&info.param._usePath, sizeof(bool), 1, fp.get()) != 1 ||
         std::fread(nameBuf, 1, sizeof(nameBuf), fp.get()) != sizeof(nameBuf)) {
         diag.status = EffectLoadStatus::HeaderTruncated;
         diag.detail = "short read of path block";
         return LW_RET_FAILED;
     }
-    info.param.m_szPathName = nameBuf;
+    info.param._pathName = nameBuf;
 
-    if (std::fread(&info.param.m_bUseSound, sizeof(bool), 1, fp.get()) != 1 ||
+    if (std::fread(&info.param._useSound, sizeof(bool), 1, fp.get()) != 1 ||
         std::fread(nameBuf, 1, sizeof(nameBuf), fp.get()) != sizeof(nameBuf)) {
         diag.status = EffectLoadStatus::HeaderTruncated;
         diag.detail = "short read of sound block";
         return LW_RET_FAILED;
     }
-    info.param.m_szSoundName = nameBuf;
+    info.param._soundName = nameBuf;
 
-    if (std::fread(&info.param.m_bRotating, sizeof(bool), 1, fp.get()) != 1 ||
-        std::fread(&info.param.m_SVerRota, sizeof(D3DXVECTOR3), 1, fp.get()) != 1 ||
-        std::fread(&info.param.m_fRotaVel, sizeof(float), 1, fp.get()) != 1) {
+    if (std::fread(&info.param._rotating, sizeof(bool), 1, fp.get()) != 1 ||
+        std::fread(&info.param._verRota, sizeof(D3DXVECTOR3), 1, fp.get()) != 1 ||
+        std::fread(&info.param._rotaVel, sizeof(float), 1, fp.get()) != 1) {
         diag.status = EffectLoadStatus::HeaderTruncated;
         diag.detail = "short read of rotation block";
         return LW_RET_FAILED;
@@ -156,18 +156,18 @@ LW_RESULT EffectLoader::Save(::EffectFileInfo& info, std::string_view file) {
     DWORD version = kCurrentVersion;
     std::fwrite(&version, sizeof(version), 1, fp.get());
 
-    int idxTech = info.param.m_iIdxTech;
+    int idxTech = info.param._idxTech;
     std::fwrite(&idxTech, sizeof(int), 1, fp.get());
 
-    std::fwrite(&info.param.m_bUsePath, sizeof(bool), 1, fp.get());
-    WriteFixedName32(info.param.m_szPathName, fp.get());
+    std::fwrite(&info.param._usePath, sizeof(bool), 1, fp.get());
+    WriteFixedName32(info.param._pathName, fp.get());
 
-    std::fwrite(&info.param.m_bUseSound, sizeof(bool), 1, fp.get());
-    WriteFixedName32(info.param.m_szSoundName, fp.get());
+    std::fwrite(&info.param._useSound, sizeof(bool), 1, fp.get());
+    WriteFixedName32(info.param._soundName, fp.get());
 
-    std::fwrite(&info.param.m_bRotating, sizeof(bool), 1, fp.get());
-    std::fwrite(&info.param.m_SVerRota, sizeof(D3DXVECTOR3), 1, fp.get());
-    std::fwrite(&info.param.m_fRotaVel, sizeof(float), 1, fp.get());
+    std::fwrite(&info.param._rotating, sizeof(bool), 1, fp.get());
+    std::fwrite(&info.param._verRota, sizeof(D3DXVECTOR3), 1, fp.get());
+    std::fwrite(&info.param._rotaVel, sizeof(float), 1, fp.get());
 
     int count = static_cast<int>(info.effects.size());
     std::fwrite(&count, sizeof(int), 1, fp.get());
@@ -194,7 +194,7 @@ bool EffectLoader::SaveElement(::I_Effect& e, std::FILE* fp) {
                     std::min<std::size_t>(src.size(), sizeof(t_pszName) - 1));
         std::fwrite(t_pszName, sizeof(char), 32, fp);
     };
-    writeFixedName(e.m_strEffectName);
+    writeFixedName(e._strEffectName);
 
     int t_temp = (int)e._eEffectType;
     std::fwrite(&t_temp, sizeof(int), 1, fp);
@@ -223,46 +223,46 @@ bool EffectLoader::SaveElement(::I_Effect& e, std::FILE* fp) {
         std::fwrite(&e._vecFrameColor[n], sizeof(D3DXCOLOR), 1, fp);
     }
 
-    std::fwrite(&e.m_CTexCoordlist.m_wVerCount, sizeof(WORD), 1, fp);
-    std::fwrite(&e.m_CTexCoordlist.m_wCoordCount, sizeof(WORD), 1, fp);
-    std::fwrite(&e.m_CTexCoordlist.m_fFrameTime, sizeof(float), 1, fp);
+    std::fwrite(&e._CTexCoordlist._wVerCount, sizeof(WORD), 1, fp);
+    std::fwrite(&e._CTexCoordlist._wCoordCount, sizeof(WORD), 1, fp);
+    std::fwrite(&e._CTexCoordlist._fFrameTime, sizeof(float), 1, fp);
 
-    for (WORD n = 0; n < e.m_CTexCoordlist.m_wCoordCount; ++n) {
-        std::fwrite(&e.m_CTexCoordlist.m_vecCoordList[n].front(),
-                    sizeof(D3DXVECTOR2), e.m_CTexCoordlist.m_wVerCount, fp);
+    for (WORD n = 0; n < e._CTexCoordlist._wCoordCount; ++n) {
+        std::fwrite(&e._CTexCoordlist._vecCoordList[n].front(),
+                    sizeof(D3DXVECTOR2), e._CTexCoordlist._wVerCount, fp);
     }
 
-    std::fwrite(&e.m_CTextruelist.m_wTexCount, sizeof(WORD), 1, fp);
-    std::fwrite(&e.m_CTextruelist.m_fFrameTime, sizeof(float), 1, fp);
+    std::fwrite(&e._CTextruelist._wTexCount, sizeof(WORD), 1, fp);
+    std::fwrite(&e._CTextruelist._fFrameTime, sizeof(float), 1, fp);
 
-    writeFixedName(e.m_CTextruelist.m_vecTexName);
+    writeFixedName(e._CTextruelist._vecTexName);
 
-    for (WORD n = 0; n < e.m_CTextruelist.m_wTexCount; n++) {
-        std::fwrite(&e.m_CTextruelist.m_vecTexList[n].front(),
-                    sizeof(D3DXVECTOR2), e.m_CTexCoordlist.m_wVerCount, fp);
+    for (WORD n = 0; n < e._CTextruelist._wTexCount; n++) {
+        std::fwrite(&e._CTextruelist._vecTexList[n].front(),
+                    sizeof(D3DXVECTOR2), e._CTexCoordlist._wVerCount, fp);
     }
 
     // Имя модели и cylinder-параметры пишем из собственных полей I_Effect
     // (LoadElement наполняет именно их). Раньше Save обращался через
-    // m_pCModel->m_strName / ->m_nSegments — что валится с nullptr-deref'ом
+    // _pCModel->_strName / ->_nSegments — что валится с nullptr-deref'ом
     // на тулз-/тестовом round-trip'е, где engine-binding (Reset) пропущен.
-    // При нормальной работе клиента m_pCModel и I_Effect-поля синхронны.
-    writeFixedName(e.m_strModelName);
+    // При нормальной работе клиента _pCModel и I_Effect-поля синхронны.
+    writeFixedName(e._strModelName);
 
     std::fwrite(&e._bBillBoard, sizeof(bool), 1, fp);
     std::fwrite(&e._iVSIndex, sizeof(int), 1, fp);
 
-    std::fwrite(&e.m_nSegments, sizeof(int), 1, fp);
-    std::fwrite(&e.m_rHeight, sizeof(float), 1, fp);
-    std::fwrite(&e.m_rRadius, sizeof(float), 1, fp);
-    std::fwrite(&e.m_rBotRadius, sizeof(float), 1, fp);
+    std::fwrite(&e._nSegments, sizeof(int), 1, fp);
+    std::fwrite(&e._rHeight, sizeof(float), 1, fp);
+    std::fwrite(&e._rRadius, sizeof(float), 1, fp);
+    std::fwrite(&e._rBotRadius, sizeof(float), 1, fp);
 
-    std::fwrite(&e.m_CTexFrame.m_wTexCount, sizeof(WORD), 1, fp);
-    std::fwrite(&e.m_CTexFrame.m_fFrameTime, sizeof(float), 1, fp);
-    for (WORD n = 0; n < e.m_CTexFrame.m_wTexCount; ++n) {
-        writeFixedName(e.m_CTexFrame.m_vecTexName[n]);
+    std::fwrite(&e._CTexFrame._wTexCount, sizeof(WORD), 1, fp);
+    std::fwrite(&e._CTexFrame._fFrameTime, sizeof(float), 1, fp);
+    for (WORD n = 0; n < e._CTexFrame._wTexCount; ++n) {
+        writeFixedName(e._CTexFrame._vecTexName[n]);
     }
-    std::fwrite(&e.m_CTexFrame.m_fFrameTime, sizeof(float), 1, fp);
+    std::fwrite(&e._CTexFrame._fFrameTime, sizeof(float), 1, fp);
 
     std::fwrite(&e._iUseParam, sizeof(int), 1, fp);
     if (e._iUseParam > 0) {
@@ -287,7 +287,7 @@ bool EffectLoader::LoadElement(::I_Effect& e, std::FILE* fp, DWORD dwVersion) {
 
     char t_pszName[32];
     std::fread(t_pszName, sizeof(char), 32, fp);
-    e.m_strEffectName = t_pszName;
+    e._strEffectName = t_pszName;
 
     int t_temp;
     std::fread(&t_temp, sizeof(int), 1, fp);
@@ -322,18 +322,18 @@ bool EffectLoader::LoadElement(::I_Effect& e, std::FILE* fp, DWORD dwVersion) {
         std::fread(&e._vecFrameColor[n], sizeof(D3DXCOLOR), 1, fp);
     }
 
-    std::fread(&e.m_CTexCoordlist.m_wVerCount, sizeof(WORD), 1, fp);
-    std::fread(&e.m_CTexCoordlist.m_wCoordCount, sizeof(WORD), 1, fp);
-    std::fread(&e.m_CTexCoordlist.m_fFrameTime, sizeof(float), 1, fp);
-    e.m_CTexCoordlist.m_vecCoordList.resize(e.m_CTexCoordlist.m_wCoordCount);
-    for (WORD n = 0; n < e.m_CTexCoordlist.m_wCoordCount; n++) {
-        e.m_CTexCoordlist.m_vecCoordList[n].resize(e.m_CTexCoordlist.m_wVerCount);
-        std::fread(&e.m_CTexCoordlist.m_vecCoordList[n].front(),
-                   sizeof(D3DXVECTOR2), e.m_CTexCoordlist.m_wVerCount, fp);
+    std::fread(&e._CTexCoordlist._wVerCount, sizeof(WORD), 1, fp);
+    std::fread(&e._CTexCoordlist._wCoordCount, sizeof(WORD), 1, fp);
+    std::fread(&e._CTexCoordlist._fFrameTime, sizeof(float), 1, fp);
+    e._CTexCoordlist._vecCoordList.resize(e._CTexCoordlist._wCoordCount);
+    for (WORD n = 0; n < e._CTexCoordlist._wCoordCount; n++) {
+        e._CTexCoordlist._vecCoordList[n].resize(e._CTexCoordlist._wVerCount);
+        std::fread(&e._CTexCoordlist._vecCoordList[n].front(),
+                   sizeof(D3DXVECTOR2), e._CTexCoordlist._wVerCount, fp);
     }
 
-    std::fread(&e.m_CTextruelist.m_wTexCount, sizeof(WORD), 1, fp);
-    std::fread(&e.m_CTextruelist.m_fFrameTime, sizeof(float), 1, fp);
+    std::fread(&e._CTextruelist._wTexCount, sizeof(WORD), 1, fp);
+    std::fread(&e._CTextruelist._fFrameTime, sizeof(float), 1, fp);
 
     std::fread(t_pszName, sizeof(char), 32, fp);
     std::string lowerName{t_pszName};
@@ -342,43 +342,43 @@ bool EffectLoader::LoadElement(::I_Effect& e, std::FILE* fp, DWORD dwVersion) {
 
     std::string_view lowerView{lowerName};
     if (lowerView.ends_with(".dds") || lowerView.ends_with(".tga") || lowerView.ends_with(".png")) {
-        e.m_CTextruelist.m_vecTexName.assign(lowerView.substr(0, lowerView.size() - 4));
+        e._CTextruelist._vecTexName.assign(lowerView.substr(0, lowerView.size() - 4));
     }
     else {
-        e.m_CTextruelist.m_vecTexName = lowerName;
+        e._CTextruelist._vecTexName = lowerName;
     }
 
-    e.m_CTextruelist.m_vecTexList.resize(e.m_CTextruelist.m_wTexCount);
-    for (WORD n = 0; n < e.m_CTextruelist.m_wTexCount; n++) {
-        e.m_CTextruelist.m_vecTexList[n].resize(e.m_CTexCoordlist.m_wVerCount);
-        std::fread(&e.m_CTextruelist.m_vecTexList[n].front(),
-                   sizeof(D3DXVECTOR2), e.m_CTexCoordlist.m_wVerCount, fp);
+    e._CTextruelist._vecTexList.resize(e._CTextruelist._wTexCount);
+    for (WORD n = 0; n < e._CTextruelist._wTexCount; n++) {
+        e._CTextruelist._vecTexList[n].resize(e._CTexCoordlist._wVerCount);
+        std::fread(&e._CTextruelist._vecTexList[n].front(),
+                   sizeof(D3DXVECTOR2), e._CTexCoordlist._wVerCount, fp);
     }
 
     std::fread(t_pszName, sizeof(char), 32, fp);
-    e.m_strModelName = t_pszName;
+    e._strModelName = t_pszName;
 
     std::fread(&e._bBillBoard, sizeof(bool), 1, fp);
     std::fread(&e._iVSIndex, sizeof(int), 1, fp);
 
     if (dwVersion > 1) {
-        std::fread(&e.m_nSegments, sizeof(int), 1, fp);
-        std::fread(&e.m_rHeight, sizeof(float), 1, fp);
-        std::fread(&e.m_rRadius, sizeof(float), 1, fp);
-        std::fread(&e.m_rBotRadius, sizeof(float), 1, fp);
+        std::fread(&e._nSegments, sizeof(int), 1, fp);
+        std::fread(&e._rHeight, sizeof(float), 1, fp);
+        std::fread(&e._rRadius, sizeof(float), 1, fp);
+        std::fread(&e._rBotRadius, sizeof(float), 1, fp);
     }
     if (dwVersion > 2) {
-        std::fread(&e.m_CTexFrame.m_wTexCount, sizeof(WORD), 1, fp);
-        std::fread(&e.m_CTexFrame.m_fFrameTime, sizeof(float), 1, fp);
+        std::fread(&e._CTexFrame._wTexCount, sizeof(WORD), 1, fp);
+        std::fread(&e._CTexFrame._fFrameTime, sizeof(float), 1, fp);
 
-        e.m_CTexFrame.m_vecTexName.resize(e.m_CTexFrame.m_wTexCount);
-        e.m_CTexFrame.m_vecTexs.resize(e.m_CTexFrame.m_wTexCount);
+        e._CTexFrame._vecTexName.resize(e._CTexFrame._wTexCount);
+        e._CTexFrame._vecTexs.resize(e._CTexFrame._wTexCount);
 
-        for (WORD n = 0; n < e.m_CTexFrame.m_wTexCount; ++n) {
+        for (WORD n = 0; n < e._CTexFrame._wTexCount; ++n) {
             std::fread(t_pszName, sizeof(char), 32, fp);
-            e.m_CTexFrame.m_vecTexName[n] = t_pszName;
+            e._CTexFrame._vecTexName[n] = t_pszName;
         }
-        std::fread(&e.m_CTexFrame.m_fFrameTime, sizeof(float), 1, fp);
+        std::fread(&e._CTexFrame._fFrameTime, sizeof(float), 1, fp);
     }
     e._iUseParam = 0;
     e._CylinderParam.resize(e._wFrameCount);
@@ -396,26 +396,26 @@ bool EffectLoader::LoadElement(::I_Effect& e, std::FILE* fp, DWORD dwVersion) {
             }
         }
         else {
-            if (IsCylinderMesh(e.m_strModelName)) {
+            if (IsCylinderMesh(e._strModelName)) {
                 for (int n = 0; n < e._wFrameCount; ++n) {
-                    e._CylinderParam[n].iSegments = e.m_nSegments;
-                    e._CylinderParam[n].fTopRadius = e.m_rRadius;
-                    e._CylinderParam[n].fBottomRadius = e.m_rBotRadius;
-                    e._CylinderParam[n].fHei = e.m_rHeight;
+                    e._CylinderParam[n].iSegments = e._nSegments;
+                    e._CylinderParam[n].fTopRadius = e._rRadius;
+                    e._CylinderParam[n].fBottomRadius = e._rBotRadius;
+                    e._CylinderParam[n].fHei = e._rHeight;
                     e._CylinderParam[n].Create();
                 }
             }
         }
     }
     else {
-        if (IsCylinderMesh(e.m_strModelName)) {
+        if (IsCylinderMesh(e._strModelName)) {
             e._iUseParam = 0;
 
             for (int n = 0; n < e._wFrameCount; ++n) {
-                e._CylinderParam[n].iSegments = e.m_nSegments;
-                e._CylinderParam[n].fTopRadius = e.m_rRadius;
-                e._CylinderParam[n].fBottomRadius = e.m_rBotRadius;
-                e._CylinderParam[n].fHei = e.m_rHeight;
+                e._CylinderParam[n].iSegments = e._nSegments;
+                e._CylinderParam[n].fTopRadius = e._rRadius;
+                e._CylinderParam[n].fBottomRadius = e._rBotRadius;
+                e._CylinderParam[n].fHei = e._rHeight;
                 e._CylinderParam[n].Create();
             }
         }
@@ -503,9 +503,9 @@ bool PartCtrlLoader::SavePartSys(::CMPPartSys& ps, std::FILE* fp) {
         EffPathLoader::WritePath(*ps._pcPath, fp);
     }
 
-    std::fwrite(&ps.m_bShade, sizeof(bool), 1, fp);
+    std::fwrite(&ps._bShade, sizeof(bool), 1, fp);
 
-    writeFixedName(ps.m_strHitEff);
+    writeFixedName(ps._strHitEff);
 
     if (ps._bModelRange) {
         std::fwrite(&ps._wVecNum, sizeof(WORD), 1, fp);
@@ -612,11 +612,11 @@ bool PartCtrlLoader::LoadPartSys(::CMPPartSys& ps, std::FILE* fp, DWORD dwVersio
         }
     }
     if (dwVersion > 9) {
-        std::fread(&ps.m_bShade, sizeof(bool), 1, fp);
+        std::fread(&ps._bShade, sizeof(bool), 1, fp);
     }
     if (dwVersion > 10) {
         std::fread(t_pszName, sizeof(char), 32, fp);
-        ps.m_strHitEff = t_pszName;
+        ps._strHitEff = t_pszName;
     }
     if (dwVersion > 11) {
         if (ps._bModelRange) {
@@ -698,7 +698,7 @@ bool PartCtrlLoader::LoadStrip(::CMPStrip& s, std::FILE* fp, DWORD /*dwVersion*/
 
 void PartCtrlLoader::SaveCharModel(::CChaModel& m, std::FILE* fp) {
     std::fwrite(&m._iID, sizeof(int), 1, fp);
-    std::fwrite(&m._fVel, sizeof(float), 1, fp);
+    std::fwrite(&m.m_fVel, sizeof(float), 1, fp);
     std::fwrite(&m._iPlayType, sizeof(int), 1, fp);
     std::fwrite(&m._iCurPose, sizeof(int), 1, fp);
 
@@ -706,12 +706,12 @@ void PartCtrlLoader::SaveCharModel(::CChaModel& m, std::FILE* fp) {
     std::fwrite(&eblend, sizeof(int), 1, fp);
     eblend = (int)m._eDestBlend;
     std::fwrite(&eblend, sizeof(int), 1, fp);
-    std::fwrite(&m._dwCurColor, sizeof(D3DXCOLOR), 1, fp);
+    std::fwrite(&m.m_dwCurColor, sizeof(D3DXCOLOR), 1, fp);
 }
 
 void PartCtrlLoader::LoadCharModel(::CChaModel& m, std::FILE* fp) {
     std::fread(&m._iID, sizeof(int), 1, fp);
-    std::fread(&m._fVel, sizeof(float), 1, fp);
+    std::fread(&m.m_fVel, sizeof(float), 1, fp);
     std::fread(&m._iPlayType, sizeof(int), 1, fp);
     std::fread(&m._iCurPose, sizeof(int), 1, fp);
 
@@ -720,13 +720,13 @@ void PartCtrlLoader::LoadCharModel(::CChaModel& m, std::FILE* fp) {
     m._eSrcBlend = (D3DBLEND)eblend;
     std::fread(&eblend, sizeof(int), 1, fp);
     m._eDestBlend = (D3DBLEND)eblend;
-    std::fread(&m._dwCurColor, sizeof(D3DXCOLOR), 1, fp);
+    std::fread(&m.m_dwCurColor, sizeof(D3DXCOLOR), 1, fp);
 
     // Engine-binding после чтения raw-данных. Те же действия, что делал
     // CChaModel::LoadFromFile до миграции (script binding + initial pose).
     const std::string psID = std::format("{}", m._iID);
     m.LoadScript(psID);
-    m.SetVel((int)(m._fVel * 1000));
+    m.SetVel((int)(m.m_fVel * 1000));
     m.SetPlayType(m._iPlayType);
     m.SetCurPose(m._iCurPose);
     m.PlayPose(m._iCurPose, PLAY_PAUSE);
@@ -758,53 +758,53 @@ bool PartCtrlLoader::LoadCtrl(::CMPPartCtrl& ctrl, std::string_view pszName) {
 
     char pszPartName[32];
     std::fread(pszPartName, sizeof(char), 32, fp.get());
-    ctrl.m_strName = pszPartName;
+    ctrl._strName = pszPartName;
 
-    std::fread(&ctrl.m_iPartNum, sizeof(int), 1, fp.get());
+    std::fread(&ctrl._iPartNum, sizeof(int), 1, fp.get());
 #ifdef USE_GAME
-    ctrl.m_vecPartSys.resize(ctrl.m_iPartNum);
+    ctrl._vecPartSys.resize(ctrl._iPartNum);
 #endif
-    ctrl.m_vecPartSys.setsize(ctrl.m_iPartNum);
+    ctrl._vecPartSys.setsize(ctrl._iPartNum);
 
     if (t_dwVersion >= 3) {
-        std::fread(&ctrl.m_fLength, sizeof(float), 1, fp.get());
+        std::fread(&ctrl._fLength, sizeof(float), 1, fp.get());
     }
     else {
-        ctrl.m_fLength = 0;
+        ctrl._fLength = 0;
     }
-    for (int n = 0; n < ctrl.m_iPartNum; ++n) {
-        if (!LoadPartSys(*ctrl.m_vecPartSys[n], fp.get(), t_dwVersion)) {
+    for (int n = 0; n < ctrl._iPartNum; ++n) {
+        if (!LoadPartSys(*ctrl._vecPartSys[n], fp.get(), t_dwVersion)) {
             ToLogService("errors", LogLevel::Error,
                          "[{}][{}].(PartCtrlLoader::Load)", pszName, n);
             return false;
         }
         if (t_dwVersion < 6) {
-            ctrl.m_vecPartSys[n]->SetPlayTime(ctrl.m_fLength);
+            ctrl._vecPartSys[n]->SetPlayTime(ctrl._fLength);
         }
     }
     if (t_dwVersion >= 7) {
-        SAFE_DELETE_ARRAY(ctrl.m_pcStrip);
+        SAFE_DELETE_ARRAY(ctrl._pcStrip);
 
-        std::fread(&ctrl.m_iStripNum, sizeof(int), 1, fp.get());
+        std::fread(&ctrl._iStripNum, sizeof(int), 1, fp.get());
 
-        ctrl.m_pcStrip = new ::CMPStrip[ctrl.m_iStripNum];
+        ctrl._pcStrip = new ::CMPStrip[ctrl._iStripNum];
 
-        for (int n = 0; n < ctrl.m_iStripNum; ++n) {
-            if (!LoadStrip(ctrl.m_pcStrip[n], fp.get(), t_dwVersion)) {
+        for (int n = 0; n < ctrl._iStripNum; ++n) {
+            if (!LoadStrip(ctrl._pcStrip[n], fp.get(), t_dwVersion)) {
                 ToLogService("errors", LogLevel::Error,
                              "[{}][{}]Strip.(PartCtrlLoader::Load)", pszName, n);
-                delete[] ctrl.m_pcStrip;
-                ctrl.m_pcStrip = nullptr;
+                delete[] ctrl._pcStrip;
+                ctrl._pcStrip = nullptr;
                 return false;
             }
         }
     }
     if (t_dwVersion >= 8) {
-        std::fread(&ctrl.m_iModelNum, sizeof(int), 1, fp.get());
-        ctrl.m_vecModel.resize(ctrl.m_iModelNum);
-        for (int n = 0; n < ctrl.m_iModelNum; ++n) {
-            ctrl.m_vecModel[n] = new ::CChaModel;
-            LoadCharModel(*ctrl.m_vecModel[n], fp.get());
+        std::fread(&ctrl._iModelNum, sizeof(int), 1, fp.get());
+        ctrl._vecModel.resize(ctrl._iModelNum);
+        for (int n = 0; n < ctrl._iModelNum; ++n) {
+            ctrl._vecModel[n] = new ::CChaModel;
+            LoadCharModel(*ctrl._vecModel[n], fp.get());
         }
     }
     return true;
@@ -824,23 +824,23 @@ bool PartCtrlLoader::SaveCtrl(::CMPPartCtrl& ctrl, std::string_view pszName) {
     std::fwrite(&t_dwVersion, sizeof(t_dwVersion), 1, fp.get());
 
     char pszPartName[32]{};
-    std::memcpy(pszPartName, ctrl.m_strName.data(),
-                std::min<std::size_t>(ctrl.m_strName.size(), sizeof(pszPartName) - 1));
+    std::memcpy(pszPartName, ctrl._strName.data(),
+                std::min<std::size_t>(ctrl._strName.size(), sizeof(pszPartName) - 1));
     std::fwrite(pszPartName, sizeof(char), 32, fp.get());
 
-    std::fwrite(&ctrl.m_iPartNum, sizeof(int), 1, fp.get());
-    std::fwrite(&ctrl.m_fLength, sizeof(float), 1, fp.get());
+    std::fwrite(&ctrl._iPartNum, sizeof(int), 1, fp.get());
+    std::fwrite(&ctrl._fLength, sizeof(float), 1, fp.get());
 
-    for (int n = 0; n < ctrl.m_iPartNum; ++n) {
-        SavePartSys(*ctrl.m_vecPartSys[n], fp.get());
+    for (int n = 0; n < ctrl._iPartNum; ++n) {
+        SavePartSys(*ctrl._vecPartSys[n], fp.get());
     }
-    std::fwrite(&ctrl.m_iStripNum, sizeof(int), 1, fp.get());
-    for (int n = 0; n < ctrl.m_iStripNum; ++n) {
-        SaveStrip(ctrl.m_pcStrip[n], fp.get());
+    std::fwrite(&ctrl._iStripNum, sizeof(int), 1, fp.get());
+    for (int n = 0; n < ctrl._iStripNum; ++n) {
+        SaveStrip(ctrl._pcStrip[n], fp.get());
     }
-    std::fwrite(&ctrl.m_iModelNum, sizeof(int), 1, fp.get());
-    for (int n = 0; n < ctrl.m_iModelNum; ++n) {
-        SaveCharModel(*ctrl.m_vecModel[n], fp.get());
+    std::fwrite(&ctrl._iModelNum, sizeof(int), 1, fp.get());
+    for (int n = 0; n < ctrl._iModelNum; ++n) {
+        SaveCharModel(*ctrl._vecModel[n], fp.get());
     }
     return true;
 }
@@ -953,7 +953,7 @@ LW_RESULT EffPathLoader::LoadEx(::CEffPath& path, std::string_view file,
         return LW_RET_FAILED;
     }
 
-    path.m_iFrameCount = static_cast<int>(num);
+    path._iFrameCount = static_cast<int>(num);
 
     // Файл хранит right-handed координаты: на лету меняем Y/Z.
     for (DWORD n = 0; n < num; ++n) {
@@ -966,13 +966,13 @@ LW_RESULT EffPathLoader::LoadEx(::CEffPath& path, std::string_view file,
         const float ftemp = tvec.y;
         tvec.y = -tvec.z;
         tvec.z = ftemp;
-        path.m_vecPath[n] = tvec;
+        path._vecPath[n] = tvec;
     }
 
     for (DWORD n = 0; n + 1 < num; ++n) {
-        path.m_vecDir[n] = path.m_vecPath[n + 1] - path.m_vecPath[n];
-        path.m_vecDist[n] = D3DXVec3Length(&path.m_vecDir[n]);
-        D3DXVec3Normalize(&path.m_vecDir[n], &path.m_vecDir[n]);
+        path._vecDir[n] = path._vecPath[n + 1] - path._vecPath[n];
+        path._vecDist[n] = D3DXVec3Length(&path._vecDir[n]);
+        D3DXVec3Normalize(&path._vecDir[n], &path._vecDir[n]);
     }
 
     diag.status = EffPathLoadStatus::Ok;
@@ -980,7 +980,7 @@ LW_RESULT EffPathLoader::LoadEx(::CEffPath& path, std::string_view file,
 }
 
 LW_RESULT EffPathLoader::LoadLet(::CEffPath& path, std::string_view file) {
-    Corsairs::Engine::Render::lwEfxTrack et;
+    Corsairs::Engine::Render::EfxTrack et;
     const std::string fileStr{file};
     if (LW_RESULT r = EfxTrackLoader::Load(et, fileStr); LW_FAILED(r)) {
         return r;
@@ -991,23 +991,23 @@ LW_RESULT EffPathLoader::LoadLet(::CEffPath& path, std::string_view file) {
     for (int i = 0; i < j; ++i) {
         ::lwMatrix44 mat;
         data->GetValue(&mat, static_cast<float>(i));
-        path.m_vecPath[i].x = mat._41;
-        path.m_vecPath[i].y = mat._42;
-        path.m_vecPath[i].z = mat._43;
+        path._vecPath[i].x = mat._41;
+        path._vecPath[i].y = mat._42;
+        path._vecPath[i].z = mat._43;
     }
     for (int i = 0; i + 1 < j; ++i) {
-        path.m_vecDir[i] = path.m_vecPath[i + 1] - path.m_vecPath[i];
-        path.m_vecDist[i] = D3DXVec3Length(&path.m_vecDir[i]);
-        D3DXVec3Normalize(&path.m_vecDir[i], &path.m_vecDir[i]);
+        path._vecDir[i] = path._vecPath[i + 1] - path._vecPath[i];
+        path._vecDist[i] = D3DXVec3Length(&path._vecDir[i]);
+        D3DXVec3Normalize(&path._vecDir[i], &path._vecDir[i]);
     }
 
-    path.m_iFrameCount = j;
+    path._iFrameCount = j;
     return LW_RET_OK;
 }
 
 LW_RESULT EffPathLoader::Save(const ::CEffPath& path, std::string_view file) {
-    if (path.m_iFrameCount <= 0
-        || static_cast<std::uint32_t>(path.m_iFrameCount) > kMaxFrames) {
+    if (path._iFrameCount <= 0
+        || static_cast<std::uint32_t>(path._iFrameCount) > kMaxFrames) {
         return LW_RET_FAILED;
     }
 
@@ -1022,7 +1022,7 @@ LW_RESULT EffPathLoader::Save(const ::CEffPath& path, std::string_view file) {
     }
 
     constexpr DWORD kVersion = kCurrentVersion;
-    const DWORD num = static_cast<DWORD>(path.m_iFrameCount);
+    const DWORD num = static_cast<DWORD>(path._iFrameCount);
     if (std::fwrite(&kVersion, sizeof(DWORD), 1, fp.get()) != 1 ||
         std::fwrite(&num, sizeof(DWORD), 1, fp.get()) != 1) {
         return LW_RET_FAILED;
@@ -1032,9 +1032,9 @@ LW_RESULT EffPathLoader::Save(const ::CEffPath& path, std::string_view file) {
     // Симметрично Load: runtime{x,y,z} ↔ disk{x, z, -y}.
     for (DWORD n = 0; n < num; ++n) {
         D3DXVECTOR3 tvec;
-        tvec.x = path.m_vecPath[n].x;
-        tvec.y = path.m_vecPath[n].z;
-        tvec.z = -path.m_vecPath[n].y;
+        tvec.x = path._vecPath[n].x;
+        tvec.y = path._vecPath[n].z;
+        tvec.z = -path._vecPath[n].y;
         if (std::fwrite(&tvec, sizeof(D3DXVECTOR3), 1, fp.get()) != 1) {
             return LW_RET_FAILED;
         }
@@ -1044,31 +1044,31 @@ LW_RESULT EffPathLoader::Save(const ::CEffPath& path, std::string_view file) {
 }
 
 void EffPathLoader::WritePath(const ::CEffPath& path, std::FILE* fp) {
-    std::fwrite(&path.m_iFrameCount, sizeof(int), 1, fp);
+    std::fwrite(&path._iFrameCount, sizeof(int), 1, fp);
     std::fwrite(&path.m_fVel, sizeof(float), 1, fp);
 
-    for (int n = 0; n < path.m_iFrameCount; ++n) {
-        std::fwrite(&path.m_vecPath[n], sizeof(D3DXVECTOR3), 1, fp);
+    for (int n = 0; n < path._iFrameCount; ++n) {
+        std::fwrite(&path._vecPath[n], sizeof(D3DXVECTOR3), 1, fp);
     }
-    // Историческая особенность: m_vecDist — float[200], но размер записи
+    // Историческая особенность: _vecDist — float[200], но размер записи
     // указан sizeof(D3DXVECTOR3) (12 байт). Сохраняем legacy-layout, чтобы
     // существующие .par-файлы оставались совместимы.
-    for (int n = 0; n + 1 < path.m_iFrameCount; ++n) {
-        std::fwrite(&path.m_vecDir[n], sizeof(D3DXVECTOR3), 1, fp);
-        std::fwrite(&path.m_vecDist[n], sizeof(D3DXVECTOR3), 1, fp);
+    for (int n = 0; n + 1 < path._iFrameCount; ++n) {
+        std::fwrite(&path._vecDir[n], sizeof(D3DXVECTOR3), 1, fp);
+        std::fwrite(&path._vecDist[n], sizeof(D3DXVECTOR3), 1, fp);
     }
 }
 
 void EffPathLoader::ReadPath(::CEffPath& path, std::FILE* fp) {
-    std::fread(&path.m_iFrameCount, sizeof(int), 1, fp);
+    std::fread(&path._iFrameCount, sizeof(int), 1, fp);
     std::fread(&path.m_fVel, sizeof(float), 1, fp);
 
-    for (int n = 0; n < path.m_iFrameCount; ++n) {
-        std::fread(&path.m_vecPath[n], sizeof(D3DXVECTOR3), 1, fp);
+    for (int n = 0; n < path._iFrameCount; ++n) {
+        std::fread(&path._vecPath[n], sizeof(D3DXVECTOR3), 1, fp);
     }
-    for (int n = 0; n + 1 < path.m_iFrameCount; ++n) {
-        std::fread(&path.m_vecDir[n], sizeof(D3DXVECTOR3), 1, fp);
-        std::fread(&path.m_vecDist[n], sizeof(D3DXVECTOR3), 1, fp);
+    for (int n = 0; n + 1 < path._iFrameCount; ++n) {
+        std::fread(&path._vecDir[n], sizeof(D3DXVECTOR3), 1, fp);
+        std::fread(&path._vecDist[n], sizeof(D3DXVECTOR3), 1, fp);
     }
 }
 

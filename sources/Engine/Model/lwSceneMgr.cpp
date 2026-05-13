@@ -10,7 +10,7 @@ namespace Corsairs::Engine::Render {
 	//lwSceneMgr
 	LW_STD_IMPLEMENTATION(lwSceneMgr)
 
-	lwSceneMgr::lwSceneMgr(lwISysGraphics* sys_graphics)
+	lwSceneMgr::lwSceneMgr(ISysGraphics* sys_graphics)
 		: _sys_graphics(sys_graphics), _vf(0)
 		  , _sort_obj_seq(0), _sort_obj_seq_size(0), _sort_obj_num(0), _max_sort_num(0) {
 		_vf = LW_NEW(lwViewFrustum);
@@ -45,7 +45,7 @@ namespace Corsairs::Engine::Render {
 		_cull_pri_info.total_cnt = 0;
 		_cull_pri_info.culling_cnt = 0;
 
-		lwIDeviceObject* dev_obj = _sys_graphics->GetDeviceObject();
+		IDeviceObject* dev_obj = _sys_graphics->GetDeviceObject();
 
 		_vf->Update(dev_obj->GetMatViewProj());
 
@@ -132,7 +132,7 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 mat;
 		lwBox box;
 
-		lwIHelperObject* hb = obj->GetHelperObject();
+		IHelperObject* hb = obj->GetHelperObject();
 		if (hb == 0) {
 			ret = LW_RET_FAILED_2;
 			goto __ret;

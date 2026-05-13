@@ -5,9 +5,9 @@
 #include "lwPrimitiveHelper.h"
 #include "lwD3D.h"
 #include "lwRenderImp.h"
-#include "lwResourceMgr.h"
-#include "lwDeviceObject.h"
-#include "lwHelperGeometry.h"
+#include "ResourceMgr.h"
+#include "DeviceObject.h"
+#include "HelperGeometry.h"
 
 #define USE_VS_INDEXED
 
@@ -24,29 +24,29 @@ namespace Corsairs::Engine::Render {
 		return vec.x >= vec.y ? (vec.x >= vec.z ? vec.x : vec.z) : (vec.y >= vec.z ? vec.y : vec.z);
 	}
 
-	// lwHelperDummy
-	LW_STD_IMPLEMENTATION(lwHelperDummy)
+	// HelperDummy
+	LW_STD_IMPLEMENTATION(HelperDummy)
 
-	lwHelperDummy::lwHelperDummy()
+	HelperDummy::HelperDummy()
 		: _obj_seq(0), _obj_num(0), _obj(0) {
 	}
 
-	lwHelperDummy::~lwHelperDummy() {
+	HelperDummy::~HelperDummy() {
 		LW_IF_RELEASE(_obj);
 		LW_IF_DELETE_A(_obj_seq);
 	}
 
-	LW_RESULT lwHelperDummy::SetDataInfo(const lwHelperDummyInfo* obj_seq, DWORD obj_num) {
+	LW_RESULT HelperDummy::SetDataInfo(const HelperDummyInfo* obj_seq, DWORD obj_num) {
 		LW_SAFE_DELETE_A(_obj_seq);
 
 		_obj_num = obj_num;
-		_obj_seq = LW_NEW(lwHelperDummyInfo[ _obj_num ]);
-		memcpy(&_obj_seq[0], &obj_seq[0], sizeof(lwHelperDummyInfo) * _obj_num);
+		_obj_seq = LW_NEW(HelperDummyInfo[ _obj_num ]);
+		memcpy(&_obj_seq[0], &obj_seq[0], sizeof(HelperDummyInfo) * _obj_num);
 
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwHelperDummy::Clone(const lwHelperDummy* src) {
+	LW_RESULT HelperDummy::Clone(const HelperDummy* src) {
 		if (src->IsValidObject() == 0)
 			return LW_RET_OK;
 
@@ -58,15 +58,15 @@ namespace Corsairs::Engine::Render {
 		}
 
 		_obj_num = src->_obj_num;
-		_obj_seq = LW_NEW(lwHelperDummyInfo[ _obj_num ]);
+		_obj_seq = LW_NEW(HelperDummyInfo[ _obj_num ]);
 
-		memcpy(&_obj_seq[0], &src->_obj_seq[0], sizeof(lwHelperDummyInfo) * _obj_num);
+		memcpy(&_obj_seq[0], &src->_obj_seq[0], sizeof(HelperDummyInfo) * _obj_num);
 
 
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwHelperDummy::CreateInstance() {
+	LW_RESULT HelperDummy::CreateInstance() {
 		if (_obj_num == 0)
 			return LW_RET_FAILED;
 
@@ -126,7 +126,7 @@ namespace Corsairs::Engine::Render {
 		return lwLoadPrimitiveLineList(_obj, "object_dummy", 24, vert_buf, cor_buf);
 	}
 
-	LW_RESULT lwHelperDummy::Render() {
+	LW_RESULT HelperDummy::Render() {
 		if (_obj == 0 || _visible_flag == 0)
 			return LW_RET_OK;
 
@@ -151,7 +151,7 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	lwHelperDummyInfo* lwHelperDummy::GetDataInfoWithID(DWORD obj_id) {
+	HelperDummyInfo* HelperDummy::GetDataInfoWithID(DWORD obj_id) {
 		for (DWORD i = 0; i < _obj_num; i++) {
 			if (_obj_seq[i].id == obj_id)
 				return &_obj_seq[i];
@@ -529,28 +529,28 @@ namespace Corsairs::Engine::Render {
 		return NULL;
 	}
 
-	// lwHelperMesh
-	LW_STD_IMPLEMENTATION(lwHelperMesh)
+	// HelperMesh
+	LW_STD_IMPLEMENTATION(HelperMesh)
 
-	lwHelperMesh::lwHelperMesh()
+	HelperMesh::HelperMesh()
 		: _obj_seq(0), _obj_num(0), _obj(0) {
 	}
 
-	lwHelperMesh::~lwHelperMesh() {
+	HelperMesh::~HelperMesh() {
 		LW_SAFE_DELETE_A(_obj_seq);
 		LW_IF_RELEASE(_obj);
 	}
 
-	void lwHelperMesh::SetDataInfo(const lwHelperMeshInfo* obj_seq, DWORD obj_num) {
+	void HelperMesh::SetDataInfo(const HelperMeshInfo* obj_seq, DWORD obj_num) {
 		_obj_num = obj_num;
-		_obj_seq = LW_NEW(lwHelperMeshInfo[ _obj_num ]);
+		_obj_seq = LW_NEW(HelperMeshInfo[ _obj_num ]);
 
 		for (DWORD i = 0; i < _obj_num; i++) {
 			_obj_seq[i].Copy(&obj_seq[i]);
 		}
 	}
 
-	LW_RESULT lwHelperMesh::CreateInstance() {
+	LW_RESULT HelperMesh::CreateInstance() {
 		if (_obj_num == 0)
 			return LW_RET_FAILED;
 
@@ -605,7 +605,7 @@ namespace Corsairs::Engine::Render {
 		}
 
 
-		lwHelperMeshInfo* hmi;
+		HelperMeshInfo* hmi;
 		DWORD* index_ptr = info.index_seq;
 
 		vert_num = 0;
@@ -672,7 +672,7 @@ namespace Corsairs::Engine::Render {
 	// LW_RET_FAILED_2: no valid helper mesh
 	// LW_RET_FAILED: hit test failed
 	// LW_RET_OK: hit test succeeded
-	LW_RESULT lwHelperMesh::HitTest(lwPickInfo* info, const lwVector3* org, const lwVector3* ray,
+	LW_RESULT HelperMesh::HitTest(lwPickInfo* info, const lwVector3* org, const lwVector3* ray,
 									const lwMatrix44* mat_parent, std::string_view type_name) {
 		// USE_INVERSE_MAThit test
 #ifdef USE_INVERSE_MAT
@@ -690,7 +690,7 @@ namespace Corsairs::Engine::Render {
 
 		lwPickInfo u, v;
 		lwVector3* v_seq[3];
-		lwHelperMeshInfo* hmi;
+		HelperMeshInfo* hmi;
 
 		v.obj_id = LW_INVALID_INDEX;
 
@@ -762,7 +762,7 @@ namespace Corsairs::Engine::Render {
 
 		lwPickInfo u, v;
 		lwVector3 v_seq[3];
-		lwHelperMeshInfo* hmi;
+		HelperMeshInfo* hmi;
 
 		v.obj_id = LW_INVALID_INDEX;
 
@@ -816,7 +816,7 @@ namespace Corsairs::Engine::Render {
 #endif
 	}
 
-	LW_RESULT lwHelperMesh::Render() {
+	LW_RESULT HelperMesh::Render() {
 		if (_obj == 0 || _visible_flag == 0)
 			return LW_RET_OK;
 
@@ -843,7 +843,7 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwHelperMesh::Clone(const lwHelperMesh* src) {
+	LW_RESULT HelperMesh::Clone(const HelperMesh* src) {
 		if (src->IsValidObject() == 0)
 			return LW_RET_OK;
 
@@ -855,7 +855,7 @@ namespace Corsairs::Engine::Render {
 		}
 
 		_obj_num = src->_obj_num;
-		_obj_seq = LW_NEW(lwHelperMeshInfo[ _obj_num ]);
+		_obj_seq = LW_NEW(HelperMeshInfo[ _obj_num ]);
 
 		for (DWORD i = 0; i < _obj_num; i++) {
 			_obj_seq[i].Copy(&src->_obj_seq[i]);
@@ -864,7 +864,7 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	lwHelperMeshInfo* lwHelperMesh::GetDataInfoWithID(DWORD obj_id) {
+	HelperMeshInfo* HelperMesh::GetDataInfoWithID(DWORD obj_id) {
 		for (DWORD i = 0; i < _obj_num; i++) {
 			if (_obj_seq[i].id == obj_id)
 				return &_obj_seq[i];
@@ -873,29 +873,29 @@ namespace Corsairs::Engine::Render {
 		return NULL;
 	}
 
-	// lwHelperBox
-	LW_STD_IMPLEMENTATION(lwHelperBox)
+	// HelperBox
+	LW_STD_IMPLEMENTATION(HelperBox)
 
-	lwHelperBox::lwHelperBox()
+	HelperBox::HelperBox()
 		: _obj_seq(0), _obj_num(0), _obj(0) {
 	}
 
-	lwHelperBox::~lwHelperBox() {
+	HelperBox::~HelperBox() {
 		LW_SAFE_DELETE_A(_obj_seq);
 		LW_IF_RELEASE(_obj);
 	}
 
-	LW_RESULT lwHelperBox::SetDataInfo(const lwHelperBoxInfo* obj_seq, DWORD obj_num) {
+	LW_RESULT HelperBox::SetDataInfo(const HelperBoxInfo* obj_seq, DWORD obj_num) {
 		LW_SAFE_DELETE_A(_obj_seq);
 
 		_obj_num = obj_num;
-		_obj_seq = LW_NEW(lwHelperBoxInfo[ _obj_num ]);
-		memcpy(&_obj_seq[0], &obj_seq[0], sizeof(lwHelperBoxInfo) * _obj_num);
+		_obj_seq = LW_NEW(HelperBoxInfo[ _obj_num ]);
+		memcpy(&_obj_seq[0], &obj_seq[0], sizeof(HelperBoxInfo) * _obj_num);
 
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwHelperBox::CreateInstance() {
+	LW_RESULT HelperBox::CreateInstance() {
 		if (_obj_num == 0)
 			return LW_RET_FAILED;
 
@@ -930,7 +930,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwHelperBox::HitTest(lwPickInfo* info, const lwVector3* org, const lwVector3* ray,
+	LW_RESULT HelperBox::HitTest(lwPickInfo* info, const lwVector3* org, const lwVector3* ray,
 								   const lwMatrix44* mat_parent, std::string_view type_name) {
 		LW_RESULT ret = LW_RET_FAILED;
 
@@ -976,7 +976,7 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwHelperBox::Render() {
+	LW_RESULT HelperBox::Render() {
 		if (_obj == 0 || _visible_flag == 0)
 			return LW_RET_OK;
 
@@ -1003,7 +1003,7 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	lwHelperBoxInfo* lwHelperBox::GetDataInfoWithID(DWORD obj_id) {
+	HelperBoxInfo* HelperBox::GetDataInfoWithID(DWORD obj_id) {
 		for (DWORD i = 0; i < _obj_num; i++) {
 			if (_obj_seq[i].id == obj_id)
 				return &_obj_seq[i];
@@ -1012,12 +1012,12 @@ namespace Corsairs::Engine::Render {
 		return NULL;
 	}
 
-	LW_RESULT lwHelperBox::Clone(const lwHelperBox* src) {
+	LW_RESULT HelperBox::Clone(const HelperBox* src) {
 		if (src->IsValidObject() == 0)
 			return LW_RET_OK;
 
 		_obj_num = src->_obj_num;
-		_obj_seq = LW_NEW(lwHelperBoxInfo[ _obj_num ]);
+		_obj_seq = LW_NEW(HelperBoxInfo[ _obj_num ]);
 
 		for (DWORD i = 0; i < _obj_num; i++) {
 			_obj_seq[i].Copy(&src->_obj_seq[i]);
@@ -1035,14 +1035,14 @@ namespace Corsairs::Engine::Render {
 	}
 
 
-	// lwHelperObject
-	LW_STD_IMPLEMENTATION(lwHelperObject)
+	// HelperObject
+	LW_STD_IMPLEMENTATION(HelperObject)
 
-	lwHelperObject::lwHelperObject(lwIResourceMgr* mgr)
+	HelperObject::HelperObject(IResourceMgr* mgr)
 		: _res_mgr(mgr), _obj_dummy(0), _obj_box(0), _obj_mesh(0), _obj_boundingbox(0), _obj_boundingsphere(0) {
 	}
 
-	lwHelperObject::~lwHelperObject() {
+	HelperObject::~HelperObject() {
 		LW_SAFE_DELETE(_obj_dummy);
 		LW_SAFE_DELETE(_obj_box);
 		LW_SAFE_DELETE(_obj_mesh);
@@ -1050,13 +1050,13 @@ namespace Corsairs::Engine::Render {
 		LW_SAFE_DELETE(_obj_boundingsphere);
 	}
 
-	LW_RESULT lwHelperObject::LoadHelperInfo(const lwHelperInfo* info, int create_instance_flag) {
+	LW_RESULT HelperObject::LoadHelperInfo(const HelperInfo* info, int create_instance_flag) {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		if (info->type & HELPER_TYPE_DUMMY) {
 			LW_SAFE_DELETE(_obj_dummy);
 
-			_obj_dummy = LW_NEW(lwHelperDummy);
+			_obj_dummy = LW_NEW(HelperDummy);
 
 			_obj_dummy->SetResourceMgr(_res_mgr);
 			_obj_dummy->SetDataInfo(&info->dummy_seq[0], info->dummy_num);
@@ -1074,7 +1074,7 @@ namespace Corsairs::Engine::Render {
 		if (info->type & HELPER_TYPE_BOX) {
 			LW_SAFE_DELETE(_obj_box);
 
-			_obj_box = LW_NEW(lwHelperBox);
+			_obj_box = LW_NEW(HelperBox);
 
 			_obj_box->SetResourceMgr(_res_mgr);
 			_obj_box->SetDataInfo(&info->box_seq[0], info->box_num);
@@ -1092,7 +1092,7 @@ namespace Corsairs::Engine::Render {
 		if (info->type & HELPER_TYPE_MESH) {
 			LW_SAFE_DELETE(_obj_mesh);
 
-			_obj_mesh = LW_NEW(lwHelperMesh);
+			_obj_mesh = LW_NEW(HelperMesh);
 
 			_obj_mesh->SetResourceMgr(_res_mgr);
 			_obj_mesh->SetDataInfo(&info->mesh_seq[0], info->mesh_num);
@@ -1148,19 +1148,19 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwHelperObject::Copy(const lwIHelperObject* src) {
-		lwHelperObject* s = (lwHelperObject*)src;
+	LW_RESULT HelperObject::Copy(const IHelperObject* src) {
+		HelperObject* s = (HelperObject*)src;
 
 		if (s->_obj_dummy) {
-			_obj_dummy = LW_NEW(lwHelperDummy);
+			_obj_dummy = LW_NEW(HelperDummy);
 			_obj_dummy->Clone(s->_obj_dummy);
 		}
 		if (s->_obj_box) {
-			_obj_box = LW_NEW(lwHelperBox);
+			_obj_box = LW_NEW(HelperBox);
 			_obj_box->Clone(s->_obj_box);
 		}
 		if (s->_obj_mesh) {
-			_obj_mesh = LW_NEW(lwHelperMesh);
+			_obj_mesh = LW_NEW(HelperMesh);
 			_obj_mesh->Clone(s->_obj_mesh);
 		}
 		if (s->_obj_boundingbox) {
@@ -1175,15 +1175,15 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwHelperObject::Clone(lwIHelperObject** ret_obj) {
-		lwIHelperObject* o;
+	LW_RESULT HelperObject::Clone(IHelperObject** ret_obj) {
+		IHelperObject* o;
 		_res_mgr->CreateHelperObject(&o);
 		o->Copy(this);
 		*ret_obj = o;
 		return LW_RET_OK;
 	}
 
-	void lwHelperObject::SetParentMatrix(const lwMatrix44* mat) {
+	void HelperObject::SetParentMatrix(const lwMatrix44* mat) {
 		if (_obj_dummy) {
 			_obj_dummy->SetMatrixParent(mat);
 		}
@@ -1201,11 +1201,11 @@ namespace Corsairs::Engine::Render {
 		}
 	}
 
-	LW_RESULT lwHelperObject::Update() {
+	LW_RESULT HelperObject::Update() {
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwHelperObject::Render() {
+	LW_RESULT HelperObject::Render() {
 		if (_obj_dummy) {
 			if (LW_RESULT r = _obj_dummy->Render(); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
@@ -1245,7 +1245,7 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	void lwHelperObject::SetVisible(int flag) {
+	void HelperObject::SetVisible(int flag) {
 		if (_obj_dummy) {
 			_obj_dummy->SetVisible(flag);
 		}
@@ -1263,25 +1263,25 @@ namespace Corsairs::Engine::Render {
 		}
 	}
 
-	LW_RESULT lwHelperObject::ExtractHelperInfo(lwHelperInfo* out_info) {
-		lwHelperInfo* a = (lwHelperInfo*)out_info;
+	LW_RESULT HelperObject::ExtractHelperInfo(HelperInfo* out_info) {
+		HelperInfo* a = (HelperInfo*)out_info;
 
 		if (_obj_dummy) {
 			a->type |= HELPER_TYPE_DUMMY;
 			a->dummy_num = _obj_dummy->GetObjNum();
-			a->dummy_seq = LW_NEW(lwHelperDummyInfo[a->dummy_num]);
-			memcpy(a->dummy_seq, _obj_dummy->GetDataInfo(0), sizeof(lwHelperDummyInfo) * a->dummy_num);
+			a->dummy_seq = LW_NEW(HelperDummyInfo[a->dummy_num]);
+			memcpy(a->dummy_seq, _obj_dummy->GetDataInfo(0), sizeof(HelperDummyInfo) * a->dummy_num);
 		}
 		if (_obj_box) {
 			a->type |= HELPER_TYPE_BOX;
 			a->box_num = _obj_box->GetObjNum();
-			a->box_seq = LW_NEW(lwHelperBoxInfo[a->box_num]);
-			memcpy(a->box_seq, _obj_box->GetDataInfo(0), sizeof(lwHelperBoxInfo) * a->box_num);
+			a->box_seq = LW_NEW(HelperBoxInfo[a->box_num]);
+			memcpy(a->box_seq, _obj_box->GetDataInfo(0), sizeof(HelperBoxInfo) * a->box_num);
 		}
 		if (_obj_mesh) {
 			a->type |= HELPER_TYPE_MESH;
 			a->mesh_num = _obj_mesh->GetObjNum();
-			a->mesh_seq = LW_NEW(lwHelperMeshInfo[a->mesh_num]);
+			a->mesh_seq = LW_NEW(HelperMeshInfo[a->mesh_num]);
 			for (DWORD i = 0; i < a->mesh_num; i++) {
 				a->mesh_seq[i].Copy(_obj_mesh->GetDataInfo(i));
 			}

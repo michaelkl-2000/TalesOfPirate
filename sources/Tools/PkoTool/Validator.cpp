@@ -2,7 +2,7 @@
 
 #include "AssetLoaders.h"
 #include "SceneFileLoaders.h"
-#include "lwEfxTrack.h"      // EfxTrackLoader::Load — для .let
+#include "EfxTrack.h"      // EfxTrackLoader::Load — для .let
 #include "lwExpObj.h"
 #include "MPModelEff.h"      // EffectFileInfo, CEffPath
 
@@ -435,7 +435,7 @@ ValidationRecord ValidateLet(const fs::path& file) {
     rec.file = file;
     rec.extension = "let";
 
-    Corsairs::Engine::Render::lwEfxTrack track;
+    Corsairs::Engine::Render::EfxTrack track;
     const LW_RESULT r = Corsairs::Engine::Render::EfxTrackLoader::Load(
         track, file.string());
     if (LW_FAILED(r)) {
@@ -472,7 +472,7 @@ ValidationRecord ValidatePar(const fs::path& file) {
 // .dds — DDS-текстура. Полная валидация требует D3D-девайса (для парсинга
 // pixel format / mip-цепочки), но для отсева повреждённых/чужих файлов
 // достаточно проверить magic 'DDS ' + header.size==124 + положительные
-// width/height. Структура header известна как lwDDSHeader (124 байта).
+// width/height. Структура header известна как DDSHeader (124 байта).
 ValidationRecord ValidateDds(const fs::path& file) {
     ValidationRecord rec;
     rec.file = file;
@@ -510,7 +510,7 @@ ValidationRecord ValidateDds(const fs::path& file) {
         return rec;
     }
 
-    // lwDDSHeader: первое поле — DWORD size (= 124 для стандартного DDS).
+    // DDSHeader: первое поле — DWORD size (= 124 для стандартного DDS).
     // Положение width/height: после size, header_flag (offsets +0, +4, +8, +12).
     std::uint32_t headerSize = 0;
     std::uint32_t headerFlag = 0;

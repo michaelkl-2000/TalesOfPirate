@@ -9,7 +9,7 @@
 
 #include "AssetLoaders.h"
 #include "lwExpObj.h"
-#include "lwHeap.h"
+#include "Heap.h"
 
 namespace Corsairs::Engine::Render {
 

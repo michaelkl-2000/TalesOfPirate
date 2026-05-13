@@ -36,109 +36,109 @@ using namespace Corsairs::Engine::Render;
 
 template <class _Ty>
 class S_BVECTOR {
-	std::vector<_Ty> m_VECPath;
-	int m_nCount;
-	int m_nPos;
+	std::vector<_Ty> _VECPath;
+	int _nCount;
+	int _nPos;
 
 public:
 	S_BVECTOR() {
-		m_VECPath.clear();
-		m_nCount = 0;
-		m_nPos = 0;
+		_VECPath.clear();
+		_nCount = 0;
+		_nPos = 0;
 	}
 
 	void resize(WORD _nSize = 100) {
-		m_VECPath.clear();
-		m_VECPath.resize(_nSize);
+		_VECPath.clear();
+		_VECPath.resize(_nSize);
 		clear();
 	}
 
 	void addsize(WORD _nSize = 100) {
-		WORD size = (WORD)m_VECPath.size();
-		m_VECPath.resize(size + _nSize);
+		WORD size = (WORD)_VECPath.size();
+		_VECPath.resize(size + _nSize);
 	}
 
 	void setsize(WORD _nSize = 1) {
-		if (m_VECPath.size() < _nSize) {
-			m_VECPath.resize(_nSize);
+		if (_VECPath.size() < _nSize) {
+			_VECPath.resize(_nSize);
 		}
 		clear();
-		m_nCount = _nSize;
+		_nCount = _nSize;
 	}
 
 	void setsizeNew(WORD _nSize = 1) {
 		std::vector<_Ty> temp;
-		temp.resize(m_nCount);
-		for (WORD i = 0; i < m_nCount; i++) {
-			temp[i] = m_VECPath[i];
+		temp.resize(_nCount);
+		for (WORD i = 0; i < _nCount; i++) {
+			temp[i] = _VECPath[i];
 		}
 
-		m_VECPath.resize(_nSize);
-		for (WORD i = 0; i < m_nCount; i++) {
-			m_VECPath[i] = temp[i];
+		_VECPath.resize(_nSize);
+		for (WORD i = 0; i < _nCount; i++) {
+			_VECPath[i] = temp[i];
 		}
 	}
 
 	void clear() {
-		m_nCount = 0;
-		m_nPos = 0;
+		_nCount = 0;
+		_nPos = 0;
 	}
 
 	void push_back(_Ty& _Base) {
-		m_VECPath[m_nCount] = _Base;
-		++m_nCount;
+		_VECPath[_nCount] = _Base;
+		++_nCount;
 	}
 
 	void pop_front() {
-		if (m_nCount > m_nPos) {
-			++m_nPos;
-			if (m_nPos == m_nCount) {
+		if (_nCount > _nPos) {
+			++_nPos;
+			if (_nPos == _nCount) {
 				clear();
 			}
 		}
 	}
 
 	void pop_back() {
-		if (m_nCount > m_nPos) {
-			m_nCount--;
-			if (m_nPos == m_nCount) {
+		if (_nCount > _nPos) {
+			_nCount--;
+			if (_nPos == _nCount) {
 				clear();
 			}
 		}
 	}
 
 	int size() const {
-		return m_nCount - m_nPos;
+		return _nCount - _nPos;
 	}
 
 	bool empty() const {
-		return m_nPos == m_nCount ? true : false;
+		return _nPos == _nCount ? true : false;
 	}
 
 	_Ty* front() {
 		if (!empty())
-			return &m_VECPath[m_nPos];
+			return &_VECPath[_nPos];
 		return NULL;
 	}
 
 	_Ty* next() {
 		if (!empty()) {
-			if ((m_nPos + 1) != m_nCount)
-				return &m_VECPath[m_nPos + 1];
+			if ((_nPos + 1) != _nCount)
+				return &_VECPath[_nPos + 1];
 		}
 		return NULL;
 	}
 
 	_Ty* end() {
 		if (!empty()) {
-			return &m_VECPath[m_nCount - 1];
+			return &_VECPath[_nCount - 1];
 		}
 		return NULL;
 	}
 
 	_Ty* operator[](int i) {
 		if (!empty() && i >= 0 && i < size()) {
-			return &m_VECPath[m_nPos + i];
+			return &_VECPath[_nPos + i];
 		}
 		return NULL;
 	}
@@ -146,13 +146,13 @@ public:
 	void remove(int _iIndex) {
 		if (empty())
 			return;
-		int ipos = m_nPos + _iIndex;
+		int ipos = _nPos + _iIndex;
 
-		for (int n = ipos; n < m_nCount - 1; ++n) {
-			m_VECPath[n] = m_VECPath[n + 1];
+		for (int n = ipos; n < _nCount - 1; ++n) {
+			_VECPath[n] = _VECPath[n + 1];
 		}
-		m_nCount--;
-		if (m_nPos == m_nCount) {
+		_nCount--;
+		if (_nPos == _nCount) {
 			clear();
 		}
 		return;
@@ -177,22 +177,22 @@ class EffParameter;
 /*  */
 /************************************************************************/
 struct SEFFECT_VERTEX {
-	D3DXVECTOR3 m_SPos;
-	FLOAT m_fIdx; //MESHUV
-	DWORD m_dwDiffuse;
-	D3DXVECTOR2 m_SUV;
+	D3DXVECTOR3 _SPos;
+	FLOAT _fIdx; //MESHUV
+	DWORD _dwDiffuse;
+	D3DXVECTOR2 _SUV;
 };
 
 #define		EFFECT_VER_FVF	(D3DFVF_XYZB1 | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 
 
 struct SEFFECT_SHADE_VERTEX {
-	D3DXVECTOR3 m_SPos;
-	//float			m_fIdx;//MESH
-	//m_fIdx[0]m_fIdx[1]uv
-	DWORD m_dwDiffuse;
-	D3DXVECTOR2 m_SUV;
-	D3DXVECTOR2 m_SUV2;
+	D3DXVECTOR3 _SPos;
+	//float			_fIdx;//MESH
+	//_fIdx[0]_fIdx[1]uv
+	DWORD _dwDiffuse;
+	D3DXVECTOR2 _SUV;
+	D3DXVECTOR2 _SUV2;
 };
 
 #define		EFFECT_SHADE_FVF	(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2)
@@ -330,13 +330,13 @@ public:
 
 	bool Copy(const CEffectModel& rhs);
 
-	CEffectModel(MPRender* pDev, lwIResourceMgr* pRes = NULL);
+	CEffectModel(MPRender* pDev, IResourceMgr* pRes = NULL);
 	virtual ~CEffectModel();
 
 public:
 	void ReleaseModel();
 
-	void InitDevice(MPRender* pDev, lwIResourceMgr* pRes = NULL);
+	void InitDevice(MPRender* pDev, IResourceMgr* pRes = NULL);
 
 	bool CreateTriangle();
 	bool CreatePlaneTriangle();
@@ -363,7 +363,7 @@ public:
 	}
 
 	bool IsChangeably() {
-		return m_bChangeably;
+		return _bChangeably;
 	}
 
 	bool IsItem() {
@@ -390,11 +390,11 @@ public:
 	}
 
 
-	lwILockableStreamIB* GetIndexBuffer() {
+	ILockableStreamIB* GetIndexBuffer() {
 		return _lpSIB;
 	}
 
-	lwILockableStreamVB* GetVertexBuffer() {
+	ILockableStreamVB* GetVertexBuffer() {
 		return _lpSVB;
 	}
 
@@ -411,31 +411,31 @@ public:
 	//!3D
 	MPRender* _dev;
 
-	lwIResourceMgr* m_pRes;
+	IResourceMgr* _pRes;
 
-	s_string m_strName;
+	s_string _strName;
 
-	bool m_bChangeably;
+	bool _bChangeably;
 
-	int m_nSegments;
-	float m_rHeight;
-	float m_rRadius;
-	float m_rBotRadius;
+	int _nSegments;
+	float _rHeight;
+	float _rRadius;
+	float _rBotRadius;
 
-	SEFFECT_VERTEX* m_vEffVer;
+	SEFFECT_VERTEX* _vEffVer;
 
-	lwITex* m_oldtex;
-	lwITex* m_oldtex2;
-	bool m_bItem;
+	lwITex* _oldtex;
+	lwITex* _oldtex2;
+	bool _bItem;
 
-	int m_iID;
+	int _iID;
 
-	bool m_bUsing;
+	bool _bUsing;
 
 protected:
 	lwIMesh* _lwMesh;
-	lwILockableStreamVB* _lpSVB;
-	lwILockableStreamIB* _lpSIB;
+	ILockableStreamVB* _lpSVB;
+	ILockableStreamIB* _lpSIB;
 
 
 	DWORD _dwVerCount;
@@ -444,11 +444,11 @@ protected:
 public:
 	// Getters and Setters
 	bool IsUsing() {
-		return m_bUsing;
+		return _bUsing;
 	}
 
 	void SetUsing(bool bUsing) {
-		m_bUsing = bUsing;
+		_bUsing = bUsing;
 	}
 };
 
@@ -476,11 +476,11 @@ public:
 
 public:
 	//!
-	WORD m_wVerCount;
+	WORD _wVerCount;
 	//.
-	WORD m_wCoordCount;
-	float m_fFrameTime;
-	std::vector<TEXCOORD> m_vecCoordList;
+	WORD _wCoordCount;
+	float _fFrameTime;
+	std::vector<TEXCOORD> _vecCoordList;
 
 	////!
 	////!
@@ -512,16 +512,16 @@ public:
 	void Copy(CTexList* pList);
 
 public:
-	WORD m_wTexCount;
-	float m_fFrameTime;
-	std::vector<TEXCOORD> m_vecTexList;
+	WORD _wTexCount;
+	float _fFrameTime;
+	std::vector<TEXCOORD> _vecTexList;
 
 	//!
-	s_string m_vecTexName;
+	s_string _vecTexName;
 	//!
-	IDirect3DTextureX* m_lpCurTex;
+	IDirect3DTextureX* _lpCurTex;
 
-	lwITex* m_pTex;
+	lwITex* _pTex;
 };
 
 /************************************************************************/
@@ -544,16 +544,16 @@ public:
 	void Copy(CTexFrame* pList);
 
 public:
-	WORD m_wTexCount;
-	float m_fFrameTime;
+	WORD _wTexCount;
+	float _fFrameTime;
 	//!
-	std::vector<s_string> m_vecTexName;
+	std::vector<s_string> _vecTexName;
 	//!
-	lwITex* m_lpCurTex;
+	lwITex* _lpCurTex;
 
-	std::vector<lwITex*> m_vecTexs;
+	std::vector<lwITex*> _vecTexs;
 
-	TEXCOORD m_vecCoord;
+	TEXCOORD _vecCoord;
 };
 
 class CEffectFont : public CTexList, CEffectModel {
@@ -625,15 +625,15 @@ public:
 	void SetVertexShader(); //		{ _dev->SetVertexShader(*_pdwVShader);}
 	//!
 	virtual void Begin() {
-		if (m_pCModel)
-			m_pCModel->Begin();
+		if (_pCModel)
+			_pCModel->Begin();
 	}
 
 	virtual void Render();
 
 	virtual void End() {
-		if (m_pCModel)
-			m_pCModel->End();
+		if (_pCModel)
+			_pCModel->End();
 	}
 
 	//!
@@ -712,57 +712,57 @@ public:
 
 	//!
 	float getFrameCoordTime() {
-		return m_CTexCoordlist.m_fFrameTime;
+		return _CTexCoordlist._fFrameTime;
 	}
 
 	void setFrameCoordTime(float fTime) {
-		m_CTexCoordlist.m_fFrameTime = fTime;
+		_CTexCoordlist._fFrameTime = fTime;
 	}
 
 	int getFrameCoordCount() {
-		return (int)m_CTexCoordlist.m_vecCoordList.size();
+		return (int)_CTexCoordlist._vecCoordList.size();
 	}
 
 	void setFrameCoordCount(int iNum) {
-		m_CTexCoordlist.m_wCoordCount = iNum;
-		m_CTexCoordlist.m_vecCoordList.resize(m_CTexCoordlist.m_wCoordCount);
+		_CTexCoordlist._wCoordCount = iNum;
+		_CTexCoordlist._vecCoordList.resize(_CTexCoordlist._wCoordCount);
 	}
 
 	//!
 	void getFrameCoord(TEXCOORD& vecOutCoord, WORD wIndex) {
 		vecOutCoord.clear();
-		vecOutCoord.resize(m_CTexCoordlist.m_wVerCount);
-		for (WORD n = 0; n < m_CTexCoordlist.m_wVerCount; ++n) {
-			vecOutCoord[n] = m_CTexCoordlist.m_vecCoordList[wIndex][n];
+		vecOutCoord.resize(_CTexCoordlist._wVerCount);
+		for (WORD n = 0; n < _CTexCoordlist._wVerCount; ++n) {
+			vecOutCoord[n] = _CTexCoordlist._vecCoordList[wIndex][n];
 		}
 	}
 
 	void setFrameCoord(TEXCOORD& vecInCoord, WORD wIndex) {
-		m_CTexCoordlist.m_vecCoordList[wIndex] = vecInCoord;
+		_CTexCoordlist._vecCoordList[wIndex] = vecInCoord;
 	}
 
 	//!
 	TEXCOORD& getFrameTexture(WORD wIndex) {
-		return m_CTextruelist.m_vecTexList[wIndex];
+		return _CTextruelist._vecTexList[wIndex];
 	}
 
 	void setFrameTexture(WORD wIndex, TEXCOORD& lptex) {
-		m_CTextruelist.m_vecTexList[wIndex] = lptex;
+		_CTextruelist._vecTexList[wIndex] = lptex;
 	}
 
 	void SpliteTexture(int iRow, int iCol);
 	void SetTextureTime(float ftime);
 
 	bool IsModelRect() {
-		return m_strModelName == MESH_RECT;
+		return _strModelName == MESH_RECT;
 	}
 
 	bool IsModelPlaneRect() {
-		return m_strModelName == MESH_PLANERECT;
+		return _strModelName == MESH_PLANERECT;
 	}
 
 	bool IsModelTri() {
-		return m_strModelName == MESH_TRI;
+		return _strModelName == MESH_TRI;
 	}
 
 	bool IsItem();
@@ -776,36 +776,36 @@ public:
 
 	//!
 	void GetLerpCoord(S_BVECTOR<D3DXVECTOR2>& vecOutCoord, WORD& wCurIndex, float& fCurTime, float fDailTime) {
-		m_CTexCoordlist.GetCurCoord(vecOutCoord, wCurIndex, fCurTime, fDailTime);
+		_CTexCoordlist.GetCurCoord(vecOutCoord, wCurIndex, fCurTime, fDailTime);
 	}
 
 	void GetLerpTexture(S_BVECTOR<D3DXVECTOR2>& vecOutCoord, WORD& wCurIndex, float& fCurTime, float fDailTime) {
-		m_CTextruelist.GetCurTexture(vecOutCoord, wCurIndex, fCurTime, fDailTime);
+		_CTextruelist.GetCurTexture(vecOutCoord, wCurIndex, fCurTime, fDailTime);
 	}
 
 	void GetLerpFrame(WORD& wCurIndex, float& fCurTime, float fDailTime) {
-		m_CTexFrame.GetCurTexture(wCurIndex, fCurTime, fDailTime);
+		_CTexFrame.GetCurTexture(wCurIndex, fCurTime, fDailTime);
 	}
 
 	void GetLerpVertex(WORD wIdx1, WORD wIdx2, float fLerp) {
-		m_ilast = wIdx1;
-		m_inext = wIdx2;
-		m_flerp = fLerp;
+		_ilast = wIdx1;
+		_inext = wIdx2;
+		_flerp = fLerp;
 	}
 
 	void GetRotaLoopMatrix(D3DXMATRIX* pmat, float& pCurRota, float fTime);
 
 	//!
-	void BindingResInit(CMPResManger* m_CResMagr);
+	void BindingResInit(CMPResManger* _CResMagr);
 	//!0123shade
-	int BoundingRes(CMPResManger* m_CResMagr, const char* pszParentName = "temp");
+	int BoundingRes(CMPResManger* _CResMagr, const char* pszParentName = "temp");
 
 	s_string GetTextureName() {
-		return m_CTextruelist.m_vecTexName;
+		return _CTextruelist._vecTexName;
 	}
 
 	void SetTextureName(const s_string& pszName) {
-		m_CTextruelist.SetTextureName(pszName);
+		_CTextruelist.SetTextureName(pszName);
 	}
 
 	void SetModel(CEffectModel* pCModel);
@@ -815,7 +815,7 @@ public:
 		}
 		else {
 			SetTextureName(pszName);
-			m_CTextruelist.GetTextureFromModel(m_pCModel);
+			_CTextruelist.GetTextureFromModel(_pCModel);
 		}
 	}
 
@@ -824,18 +824,18 @@ public:
 
 	//!
 	s_string& getEffectName() {
-		return m_strEffectName;
+		return _strEffectName;
 	}
 
 	void setEffectName(const s_string& strName) {
-		m_strEffectName = strName;
+		_strEffectName = strName;
 	}
 
 	//!
 	s_string& getEffectModelName();
 
 	void setEffectModelName(const s_string& strModelName) {
-		m_strModelName = strModelName;
+		_strModelName = strModelName;
 	}
 
 	//!BILLBOARD
@@ -892,23 +892,23 @@ public:
 	void IsSame();
 
 	void RemoveTexBack() {
-		m_CTextruelist.Remove();
+		_CTextruelist.Remove();
 	}
 
 	void AddFrameTex(const s_string& str) {
 		if (_eEffectType == EFFECT_FRAMETEX) {
-			m_CTexFrame.AddTexture(str);
+			_CTexFrame.AddTexture(str);
 		}
 	}
 
 	VEC_string& GetFrameTex() {
 		{
-			return m_CTexFrame.m_vecTexName;
+			return _CTexFrame._vecTexName;
 		}
 	}
 
 	void RemoveFrameTex() {
-		m_CTexFrame.Remove();
+		_CTexFrame.Remove();
 	}
 
 	void InitTopParam() {
@@ -940,9 +940,11 @@ public:
 	void GetRes(CMPResManger* pCResMagr, std::vector<INT>& vecTex, std::vector<INT>& vecModel);
 
 	void PlayModel() {
-		if (!m_pCModel) return;
-		if (m_pCModel->IsItem())
-			m_pCModel->PlayDefaultAnimation();
+		if (!_pCModel) {
+			return;
+		}
+		if (_pCModel->IsItem())
+			_pCModel->PlayDefaultAnimation();
 	}
 
 	void ResetModel();
@@ -954,24 +956,24 @@ public:
 	//!3D
 	MPRender* _dev;
 	//!
-	CTexCoordList m_CTexCoordlist;
+	CTexCoordList _CTexCoordlist;
 	//!
-	CTexList m_CTextruelist;
+	CTexList _CTextruelist;
 	//!
-	CTexFrame m_CTexFrame;
+	CTexFrame _CTexFrame;
 
-	CEffectModel* m_pCModel;
-	s_string m_strModelName;
+	CEffectModel* _pCModel;
+	s_string _strModelName;
 
-	int m_nSegments;
-	float m_rHeight;
-	float m_rRadius;
-	float m_rBotRadius;
+	int _nSegments;
+	float _rHeight;
+	float _rRadius;
+	float _rBotRadius;
 
-	s_string m_strEffectName;
+	s_string _strEffectName;
 
-	int m_ilast, m_inext;
-	float m_flerp;
+	int _ilast, _inext;
+	float _flerp;
 
 protected:
 	//!

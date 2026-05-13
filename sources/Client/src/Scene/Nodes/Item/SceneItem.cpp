@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 namespace Corsairs::Common::Localization {}
 using namespace Corsairs::Common::Localization;
 #include "UIText.h"
@@ -132,7 +132,7 @@ HRESULT CSceneItem::LitResetTexture(DWORD item_id, DWORD lit_id) {
 	lwIAnimCtrlObjTexUV* ctrlobj_tc;
 	lwIAnimCtrlTexUV* ctrl_tc;
 	lwIAnimKeySetPRS* aks;
-	lwIResourceMgr* res_mgr;
+	IResourceMgr* res_mgr;
 	MPIPrimitive* pri;
 
 	const ItemLitRecord* lit_info = ItemLitStore::Instance()->Find(
@@ -151,7 +151,7 @@ HRESULT CSceneItem::LitResetTexture(DWORD item_id, DWORD lit_id) {
 	mtltex_agent->SetTranspType(static_cast<DWORD>(lit_info->TranspType));
 
 	if (!lit_info->TexFile.empty()) {
-		lwIPathInfo* path_info = res_mgr->GetSysGraphics()->GetSystem()->GetPathInfo();
+		IPathInfo* path_info = res_mgr->GetSysGraphics()->GetSystem()->GetPathInfo();
 		LW_FAILED_RET(pri->ResetTexture(1, 0, lit_info->TexFile.c_str(), path_info->GetPath(PathInfoType::PATH_TYPE_TEXTURE_ITEM).c_str()));
 	}
 	if (lit_info->AnimType > 0) {
@@ -197,7 +197,7 @@ HRESULT CSceneItem::LitUnresetTexture() {
 	HRESULT ret = LW_RET_FAILED;
 
 	lwIMtlTexAgent* mtltex_agent;
-	lwIResourceMgr* res_mgr;
+	IResourceMgr* res_mgr;
 	MPIPrimitive* pri;
 
 	pri = MPSceneItem::GetObject()->GetPrimitive();

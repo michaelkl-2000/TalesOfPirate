@@ -14,16 +14,16 @@
 #include "lwShaderTypes.h"
 
 namespace Corsairs::Engine::Render {
-	class lwISystem;
-	class lwISysGraphics;
-	class lwIDeviceObject;
-	class lwIHelperObject;
-	class lwIShaderMgr;
+	class ISystem;
+	class ISysGraphics;
+	class IDeviceObject;
+	class IHelperObject;
+	class IShaderMgr;
 	class lwIMeshAgent;
 	class lwIMtlTexAgent;
 	class lwIRenderCtrl;
 	class lwIRenderCtrlAgent;
-	class lwIResourceMgr;
+	class IResourceMgr;
 	class lwIAnimCtrlObj;
 	class lwIAnimCtrlObjMat;
 	class lwIAnimCtrlObjBone;
@@ -32,23 +32,23 @@ namespace Corsairs::Engine::Render {
 	class lwIRenderCtrlVSBone;
 	class lwISceneMgr;
 	class lwIAnimKeySetPRS;
-	class lwILockableStreamVB;
-	class lwILockableStreamIB;
+	class ILockableStreamVB;
+	class ILockableStreamIB;
 	class lwINode;
 	class lwINodePrimitive;
 	class lwINodeBoneCtrl;
 	class lwINodeObject;
-	class lwIPathInfo;
-	class lwIOptionMgr;
-	class lwIThreadPool;
+	class IPathInfo;
+	class IOptionMgr;
+	class IThreadPool;
 	class lwIRenderStateAtomSet;
 	class lwIVertexBuffer;
 	class lwIIndexBuffer;
-	class lwISystemInfo;
+	class ISystemInfo;
 	class lwIMesh;
 	class lwITex;
 	class lwIAnimKeySetFloat;
-	class lwICoordinateSys;
+	class ICoordinateSys;
 	class lwItem;
 
 	// ============= begin base interface method =============
@@ -102,7 +102,7 @@ LW_STD_GETINTERFACE( cls )
 	public:
 	};
 
-	// lwIHelperInfo удалён — конкретный data-класс lwHelperInfo больше не
+	// IHelperInfo удалён — конкретный data-класс HelperInfo больше не
 	// наследуется от интерфейса (вся I/O в Corsairs::Engine::Render::LgoLoader).
 
 	class LW_DECLSPEC_NOVTABLE lwIAnimData : public lwInterface {
@@ -208,7 +208,7 @@ LW_STD_GETINTERFACE( cls )
 		// и т.п., I/O-методы тут больше не нужны.
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIHelperDummyObjInfo : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IHelperDummyObjInfo : public lwInterface {
 	public:
 	};
 
@@ -229,19 +229,19 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT Destroy() PURE_METHOD;
 		virtual LW_RESULT Clone(lwIPrimitive** ret_obj) PURE_METHOD;
 
-		virtual lwIResourceMgr* GetResourceMgr() PURE_METHOD;
+		virtual IResourceMgr* GetResourceMgr() PURE_METHOD;
 		virtual lwIMtlTexAgent* GetMtlTexAgent(DWORD id) PURE_METHOD;
 		virtual lwIMeshAgent* GetMeshAgent() PURE_METHOD;
 		virtual lwIAnimCtrlAgent* GetAnimAgent() PURE_METHOD;
 		virtual lwIRenderCtrlAgent* GetRenderCtrlAgent() PURE_METHOD;
-		virtual lwIHelperObject* GetHelperObject() PURE_METHOD;
+		virtual IHelperObject* GetHelperObject() PURE_METHOD;
 		virtual LW_RESULT GetSubsetNum(DWORD* subset_num) PURE_METHOD;
 
 		virtual void SetMeshAgent(lwIMeshAgent* agent) PURE_METHOD;
 		virtual void SetMtlTexAgent(DWORD subset, lwIMtlTexAgent* agent) PURE_METHOD;
 		virtual void SetAnimCtrlAgent(lwIAnimCtrlAgent* agent) PURE_METHOD;
 		virtual void SetRenderCtrl(lwIRenderCtrlAgent* obj) PURE_METHOD;
-		virtual void SetHelperObject(lwIHelperObject* obj) PURE_METHOD;
+		virtual void SetHelperObject(IHelperObject* obj) PURE_METHOD;
 		virtual void SetMaterial(const lwMaterial* mtl) PURE_METHOD;
 		virtual void SetOpacity(float opacity) PURE_METHOD;
 
@@ -281,16 +281,16 @@ LW_STD_GETINTERFACE( cls )
 	// lwIItem был интерфейсом с единственным реализатором (lwItem). Удалён
 	// 2026-05-12 — класс lwItem теперь standalone, методы non-virtual.
 
-	class LW_DECLSPEC_NOVTABLE lwISysGraphics : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ISysGraphics : public lwInterface {
 	public:
-		virtual lwISystem* GetSystem()PURE_METHOD;
-		virtual lwIDeviceObject* GetDeviceObject() PURE_METHOD;
-		virtual lwIResourceMgr* GetResourceMgr() PURE_METHOD;
+		virtual ISystem* GetSystem()PURE_METHOD;
+		virtual IDeviceObject* GetDeviceObject() PURE_METHOD;
+		virtual IResourceMgr* GetResourceMgr() PURE_METHOD;
 		virtual lwISceneMgr* GetSceneMgr() PURE_METHOD;
-		virtual lwICoordinateSys* GetCoordinateSys() PURE_METHOD;
+		virtual ICoordinateSys* GetCoordinateSys() PURE_METHOD;
 
-		virtual LW_RESULT CreateDeviceObject(lwIDeviceObject** ret_obj) PURE_METHOD;
-		virtual LW_RESULT CreateResourceManager(lwIResourceMgr** ret_obj) PURE_METHOD;
+		virtual LW_RESULT CreateDeviceObject(IDeviceObject** ret_obj) PURE_METHOD;
+		virtual LW_RESULT CreateResourceManager(IResourceMgr** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreateSceneManager(lwISceneMgr** ret_obj) PURE_METHOD;
 
 		virtual LW_RESULT ToggleFullScreen(D3DPRESENT_PARAMETERS* d3dpp, lwWndInfo* wnd_info) PURE_METHOD;
@@ -299,22 +299,22 @@ LW_STD_GETINTERFACE( cls )
 		virtual void SetOutputResetDeviceProc(lwOutputResetDeviceProc proc) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwISystem : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ISystem : public lwInterface {
 	public:
 		virtual LW_RESULT Initialize() PURE_METHOD;
-		virtual LW_RESULT CreateGraphicsSystem(lwISysGraphics** sys) PURE_METHOD;
-		virtual lwIPathInfo* GetPathInfo() PURE_METHOD;
-		virtual lwIOptionMgr* GetOptionMgr() PURE_METHOD;
-		virtual lwISystemInfo* GetSystemInfo() PURE_METHOD;
+		virtual LW_RESULT CreateGraphicsSystem(ISysGraphics** sys) PURE_METHOD;
+		virtual IPathInfo* GetPathInfo() PURE_METHOD;
+		virtual IOptionMgr* GetOptionMgr() PURE_METHOD;
+		virtual ISystemInfo* GetSystemInfo() PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIPathInfo : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IPathInfo : public lwInterface {
 	public:
 		virtual void SetPath(PathInfoType type, std::string_view path) PURE_METHOD;
 		virtual const std::string& GetPath(PathInfoType type) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIOptionMgr : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IOptionMgr : public lwInterface {
 	public:
 		virtual void SetIgnoreModelTexFlag(BYTE flag) PURE_METHOD;
 		virtual BYTE GetIgnoreModelTexFlag() const PURE_METHOD;
@@ -331,7 +331,7 @@ LW_STD_GETINTERFACE( cls )
 		virtual BYTE GetValue(DWORD type) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIStaticStreamMgr : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IStaticStreamMgr : public lwInterface {
 	public:
 		virtual LW_RESULT Destroy() PURE_METHOD;
 		virtual LW_RESULT CreateStreamEntitySeq(DWORD entity_vb_num, DWORD entity_ib_num) PURE_METHOD;
@@ -347,10 +347,10 @@ LW_STD_GETINTERFACE( cls )
 		virtual DWORD GetIndexEntityOffset() PURE_METHOD;
 		virtual LW_RESULT LoseDevice() PURE_METHOD;
 		virtual LW_RESULT ResetDevice() PURE_METHOD;
-		virtual LW_RESULT GetDebugInfo(lwStaticStreamMgrDebugInfo* info) PURE_METHOD;
+		virtual LW_RESULT GetDebugInfo(StaticStreamMgrDebugInfo* info) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIDynamicStreamMgr : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IDynamicStreamMgr : public lwInterface {
 	public:
 		virtual LW_RESULT Create(DWORD vb_size, DWORD ib_size) PURE_METHOD;
 		virtual LW_RESULT DrawPrimitive(D3DPRIMITIVETYPE pt_type, UINT count, const void* vert_data, UINT vert_stride,
@@ -369,7 +369,7 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT ResetDevice() PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwILockableStreamMgr : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ILockableStreamMgr : public lwInterface {
 	public:
 		virtual LW_RESULT RegisterVertexBuffer(LW_HANDLE* handle, void* data, DWORD size, DWORD usage, DWORD fvf)
 		PURE_METHOD;
@@ -381,21 +381,21 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT BindIndexBuffer(LW_HANDLE handle, UINT base_vert_index) PURE_METHOD;
 		virtual LW_RESULT LoseDevice() PURE_METHOD;
 		virtual LW_RESULT ResetDevice() PURE_METHOD;
-		virtual lwILockableStreamVB* GetStreamVB(LW_HANDLE handle) PURE_METHOD;
-		virtual lwILockableStreamIB* GetStreamIB(LW_HANDLE handle) PURE_METHOD;
+		virtual ILockableStreamVB* GetStreamVB(LW_HANDLE handle) PURE_METHOD;
+		virtual ILockableStreamIB* GetStreamIB(LW_HANDLE handle) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwILockableStream : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ILockableStream : public lwInterface {
 	public:
 		virtual LW_RESULT Lock(UINT offset, UINT size, void** data, DWORD flag) PURE_METHOD;
 		virtual LW_RESULT Unlock() PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwILockableStreamVB : public lwILockableStream {
+	class LW_DECLSPEC_NOVTABLE ILockableStreamVB : public ILockableStream {
 	public:
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwILockableStreamIB : public lwILockableStream {
+	class LW_DECLSPEC_NOVTABLE ILockableStreamIB : public ILockableStream {
 	public:
 	};
 
@@ -425,11 +425,11 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT UnregisterSurface(LW_HANDLE handle) PURE_METHOD;
 		virtual LW_RESULT LoseDevice() PURE_METHOD;
 		virtual LW_RESULT ResetDevice() PURE_METHOD;
-		virtual lwIResourceMgr* GetResourceMgr() PURE_METHOD;
+		virtual IResourceMgr* GetResourceMgr() PURE_METHOD;
 		virtual lwISurfaceStream* GetSurfaceStream(LW_HANDLE handle) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIDeviceObject : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IDeviceObject : public lwInterface {
 	public:
 		virtual LW_RESULT CreateDirect3D() PURE_METHOD;
 		virtual LW_RESULT CreateDevice(lwD3DCreateParam* param) PURE_METHOD;
@@ -625,8 +625,8 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT LoseDevice() PURE_METHOD;
 		virtual LW_RESULT ResetDevice() PURE_METHOD;
 
-		virtual lwILockableStreamVB* GetLockableStreamVB() PURE_METHOD;
-		virtual lwILockableStreamIB* GetLockableStreamIB() PURE_METHOD;
+		virtual ILockableStreamVB* GetLockableStreamVB() PURE_METHOD;
+		virtual ILockableStreamIB* GetLockableStreamIB() PURE_METHOD;
 
 		virtual BOOL IsLoadingOK() const PURE_METHOD;
 		virtual void SetMTFlag(DWORD flag) PURE_METHOD;
@@ -726,7 +726,7 @@ LW_STD_GETINTERFACE( cls )
 
 		virtual LW_RESULT UpdateAnimCtrl() PURE_METHOD;
 		virtual LW_RESULT UpdateObject(lwIAnimCtrlObjBone* ctrl_obj, lwIMesh* mesh_obj) PURE_METHOD;
-		virtual LW_RESULT UpdateHelperObject(lwIHelperObject* helper_obj) PURE_METHOD;
+		virtual LW_RESULT UpdateHelperObject(IHelperObject* helper_obj) PURE_METHOD;
 
 		virtual lwMatrix44* GetBoneRTMSeq() PURE_METHOD;
 		virtual lwMatrix44* GetDummyRTM(DWORD id) PURE_METHOD;
@@ -801,16 +801,16 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT ExtractAnimData(lwAnimDataInfo* data_info) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIShaderDeclMgr : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IShaderDeclMgr : public lwInterface {
 	public:
 		virtual LW_RESULT CreateShaderDeclSet(DWORD decl_type, DWORD buf_size) PURE_METHOD;
 		virtual LW_RESULT SetShaderDeclInfo(lwShaderDeclCreateInfo* info) PURE_METHOD;
 		virtual LW_RESULT QueryShaderHandle(DWORD* shader_handle, const lwShaderDeclQueryInfo* info) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIShaderMgr : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IShaderMgr : public lwInterface {
 	public:
-		virtual lwIShaderDeclMgr* GetShaderDeclMgr() PURE_METHOD;
+		virtual IShaderDeclMgr* GetShaderDeclMgr() PURE_METHOD;
 		virtual LW_RESULT Init(DWORD vs_buf_size, DWORD decl_buf_size, DWORD ps_buf_size) PURE_METHOD;
 		virtual LW_RESULT RegisterVertexShader(DWORD type, BYTE* data, DWORD size) PURE_METHOD;
 		virtual LW_RESULT RegisterVertexShader(DWORD type, std::string_view file,
@@ -839,26 +839,26 @@ LW_STD_GETINTERFACE( cls )
 		virtual void SetLimitModelObjInfo(DWORD lmt_size, DWORD lmt_time) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIThreadPoolMgr : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IThreadPoolMgr : public lwInterface {
 	public:
 		virtual LW_RESULT Create() PURE_METHOD;
 		virtual LW_RESULT Destroy() PURE_METHOD;
-		virtual lwIThreadPool* GetThreadPool(ThreadPoolType type) PURE_METHOD;
+		virtual IThreadPool* GetThreadPool(ThreadPoolType type) PURE_METHOD;
 		virtual void LockCriticalSection(DWORD type) PURE_METHOD;
 		virtual void UnlockCriticalSection(DWORD type) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIResourceMgr : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IResourceMgr : public lwInterface {
 	public:
-		virtual lwISysGraphics* GetSysGraphics() PURE_METHOD;
-		virtual lwIDeviceObject* GetDeviceObject() PURE_METHOD;
-		virtual lwIShaderMgr* GetShaderMgr() PURE_METHOD;
-		virtual lwIStaticStreamMgr* GetStaticStreamMgr() PURE_METHOD;
-		virtual lwIDynamicStreamMgr* GetDynamicStreamMgr() PURE_METHOD;
-		virtual lwILockableStreamMgr* GetLockableStreamMgr() PURE_METHOD;
+		virtual ISysGraphics* GetSysGraphics() PURE_METHOD;
+		virtual IDeviceObject* GetDeviceObject() PURE_METHOD;
+		virtual IShaderMgr* GetShaderMgr() PURE_METHOD;
+		virtual IStaticStreamMgr* GetStaticStreamMgr() PURE_METHOD;
+		virtual IDynamicStreamMgr* GetDynamicStreamMgr() PURE_METHOD;
+		virtual ILockableStreamMgr* GetLockableStreamMgr() PURE_METHOD;
 		virtual lwISurfaceStreamMgr* GetSurfaceStreamMgr() PURE_METHOD;
 		virtual lwIResBufMgr* GetResBufMgr() PURE_METHOD;
-		virtual lwIThreadPoolMgr* GetThreadPoolMgr() PURE_METHOD;
+		virtual IThreadPoolMgr* GetThreadPoolMgr() PURE_METHOD;
 		virtual lwIByteSet* GetByteSet() PURE_METHOD;
 
 		virtual LW_RESULT SetAssObjInfo(DWORD mask, const lwAssObjInfo* info) PURE_METHOD;
@@ -874,14 +874,14 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT CreateRenderCtrlAgent(lwIRenderCtrlAgent** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreateRenderCtrlVS(lwIRenderCtrlVS** ret_obj, DWORD type) PURE_METHOD;
 		virtual LW_RESULT CreatePrimitive(lwIPrimitive** ret_obj) PURE_METHOD;
-		virtual LW_RESULT CreateHelperObject(lwIHelperObject** ret_obj) PURE_METHOD;
+		virtual LW_RESULT CreateHelperObject(IHelperObject** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreatePhysique(lwPhysique** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreateModel(lwModel** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreateItem(lwItem** ret_obj) PURE_METHOD;
 		virtual LW_RESULT CreateNode(lwINode** ret_obj, DWORD type) PURE_METHOD;
 		virtual LW_RESULT CreateNodeObject(lwINodeObject** ret_obj) PURE_METHOD;
-		virtual LW_RESULT CreateStaticStreamMgr(lwIStaticStreamMgr** mgr) PURE_METHOD;
-		virtual LW_RESULT CreateDynamicStreamMgr(lwIDynamicStreamMgr** mgr) PURE_METHOD;
+		virtual LW_RESULT CreateStaticStreamMgr(IStaticStreamMgr** mgr) PURE_METHOD;
+		virtual LW_RESULT CreateDynamicStreamMgr(IDynamicStreamMgr** mgr) PURE_METHOD;
 
 		virtual LW_RESULT RegisterMesh(lwIMesh* obj) PURE_METHOD;
 		virtual LW_RESULT RegisterTex(lwITex* obj) PURE_METHOD;
@@ -938,7 +938,7 @@ LW_STD_GETINTERFACE( cls )
 		virtual DWORD GetVertexShader() const PURE_METHOD;
 		virtual DWORD GetVertexDeclaration() const PURE_METHOD;
 
-		virtual lwIResourceMgr* GetResourceMgr() PURE_METHOD;
+		virtual IResourceMgr* GetResourceMgr() PURE_METHOD;
 		virtual lwIMeshAgent* GetMeshAgent() PURE_METHOD;
 		virtual lwIMtlTexAgent* GetMtlTexAgent() PURE_METHOD;
 		virtual lwIAnimCtrlAgent* GetAnimCtrlAgent() PURE_METHOD;
@@ -987,53 +987,53 @@ LW_STD_GETINTERFACE( cls )
 		virtual DWORD GetData() const PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIHelperDummy : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IHelperDummy : public lwInterface {
 	public:
 		virtual LW_RESULT Render() PURE_METHOD;
 		virtual int IsValidObject() const PURE_METHOD;
 		virtual int IsVisible() const PURE_METHOD;
 		virtual void SetVisible(int flag) PURE_METHOD;
 		virtual DWORD GetObjNum() PURE_METHOD;
-		virtual lwHelperDummyInfo* GetDataInfo(DWORD id) PURE_METHOD;
-		virtual lwHelperDummyInfo* GetDataInfoWithID(DWORD obj_id) PURE_METHOD;
+		virtual HelperDummyInfo* GetDataInfo(DWORD id) PURE_METHOD;
+		virtual HelperDummyInfo* GetDataInfoWithID(DWORD obj_id) PURE_METHOD;
 		virtual lwMatrix44* GetMatrixParent() PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIHelperMesh : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IHelperMesh : public lwInterface {
 	public:
 		virtual LW_RESULT Render() PURE_METHOD;
 		virtual int IsValidObject() const PURE_METHOD;
 		virtual int IsVisible() const PURE_METHOD;
 		virtual void SetVisible(int flag) PURE_METHOD;
-		virtual lwHelperMeshInfo* GetDataInfoWithID(DWORD obj_id) PURE_METHOD;
+		virtual HelperMeshInfo* GetDataInfoWithID(DWORD obj_id) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIHelperBox : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IHelperBox : public lwInterface {
 	public:
 		virtual LW_RESULT Render() PURE_METHOD;
 		virtual int IsValidObject() const PURE_METHOD;
 		virtual int IsVisible() const PURE_METHOD;
 		virtual void SetVisible(int flag) PURE_METHOD;
-		virtual lwHelperBoxInfo* GetDataInfoWithID(DWORD obj_id) PURE_METHOD;
+		virtual HelperBoxInfo* GetDataInfoWithID(DWORD obj_id) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIHelperObject : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IHelperObject : public lwInterface {
 	public:
-		virtual LW_RESULT LoadHelperInfo(const lwHelperInfo* info, int create_instance_flag) PURE_METHOD;
-		virtual LW_RESULT Copy(const lwIHelperObject* src) PURE_METHOD;
-		virtual LW_RESULT Clone(lwIHelperObject** ret_obj) PURE_METHOD;
+		virtual LW_RESULT LoadHelperInfo(const HelperInfo* info, int create_instance_flag) PURE_METHOD;
+		virtual LW_RESULT Copy(const IHelperObject* src) PURE_METHOD;
+		virtual LW_RESULT Clone(IHelperObject** ret_obj) PURE_METHOD;
 		virtual LW_RESULT Update() PURE_METHOD;
 		virtual LW_RESULT Render() PURE_METHOD;
 
 		virtual void SetParentMatrix(const lwMatrix44* mat) PURE_METHOD;
 		virtual void SetVisible(int flag) PURE_METHOD;
-		virtual lwIHelperDummy* GetHelperDummy() PURE_METHOD;
-		virtual lwIHelperBox* GetHelperBox() PURE_METHOD;
-		virtual lwIHelperMesh* GetHelperMesh() PURE_METHOD;
+		virtual IHelperDummy* GetHelperDummy() PURE_METHOD;
+		virtual IHelperBox* GetHelperBox() PURE_METHOD;
+		virtual IHelperMesh* GetHelperMesh() PURE_METHOD;
 		virtual lwIBoundingBox* GetBoundingBox() PURE_METHOD;
 		virtual lwIBoundingSphere* GetBoundingSphere() PURE_METHOD;
 
-		virtual LW_RESULT ExtractHelperInfo(lwHelperInfo* out_info) PURE_METHOD;
+		virtual LW_RESULT ExtractHelperInfo(HelperInfo* out_info) PURE_METHOD;
 	};
 
 	class LW_DECLSPEC_NOVTABLE lwIActionBase : public lwInterface {
@@ -1202,16 +1202,16 @@ LW_STD_GETINTERFACE( cls )
 		virtual void SetMtlTexAgent(DWORD subset, lwIMtlTexAgent* agent) PURE_METHOD;
 		virtual void SetAnimCtrlAgent(lwIAnimCtrlAgent* agent) PURE_METHOD;
 		virtual void SetRenderCtrl(lwIRenderCtrlAgent* obj) PURE_METHOD;
-		virtual void SetHelperObject(lwIHelperObject* obj) PURE_METHOD;
+		virtual void SetHelperObject(IHelperObject* obj) PURE_METHOD;
 		virtual void SetMaterial(const lwMaterial* mtl) PURE_METHOD;
 		virtual void SetOpacity(float opacity) PURE_METHOD;
 
-		virtual lwIResourceMgr* GetResourceMgr() PURE_METHOD;
+		virtual IResourceMgr* GetResourceMgr() PURE_METHOD;
 		virtual lwIMtlTexAgent* GetMtlTexAgent(DWORD id) PURE_METHOD;
 		virtual lwIMeshAgent* GetMeshAgent() PURE_METHOD;
 		virtual lwIAnimCtrlAgent* GetAnimCtrlAgent() PURE_METHOD;
 		virtual lwIRenderCtrlAgent* GetRenderCtrlAgent() PURE_METHOD;
-		virtual lwIHelperObject* GetHelperObject() PURE_METHOD;
+		virtual IHelperObject* GetHelperObject() PURE_METHOD;
 		virtual LW_RESULT AllocateMtlTexAgentSeq(DWORD num) PURE_METHOD;
 		virtual DWORD GetMtlTexAgentSeqSize() const PURE_METHOD;
 		virtual LW_RESULT GetSubsetNum(DWORD* subset_num) PURE_METHOD;
@@ -1244,7 +1244,7 @@ LW_STD_GETINTERFACE( cls )
 
 	class LW_DECLSPEC_NOVTABLE lwINodeDummy : public lwINode {
 	public:
-		virtual LW_RESULT Load(lwIHelperDummyObjInfo* data) PURE_METHOD;
+		virtual LW_RESULT Load(IHelperDummyObjInfo* data) PURE_METHOD;
 		virtual void SetAnimCtrlObj(lwIAnimCtrlObjMat* ctrl_obj) PURE_METHOD;
 		virtual lwIAnimCtrlObjMat* GetAnimCtrlObj() PURE_METHOD;
 		virtual LW_RESULT CreateAssistantObject(const lwVector3* size, DWORD color) PURE_METHOD;
@@ -1315,24 +1315,24 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT ResetStateValue(DWORD state, DWORD value, DWORD* old_value) PURE_METHOD;
 		virtual LW_RESULT SetStateValue(DWORD id, DWORD state, DWORD value) PURE_METHOD;
 		virtual LW_RESULT SetStateValue(DWORD id, lwRenderStateAtom* buf, DWORD num) PURE_METHOD;
-		virtual LW_RESULT BeginRenderState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num) PURE_METHOD;
-		virtual LW_RESULT BeginTextureStageState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage)
+		virtual LW_RESULT BeginRenderState(IDeviceObject* dev_obj, DWORD start_id, DWORD num) PURE_METHOD;
+		virtual LW_RESULT BeginTextureStageState(IDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage)
 		PURE_METHOD;
-		virtual LW_RESULT BeginSamplerState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage)
+		virtual LW_RESULT BeginSamplerState(IDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage)
 		PURE_METHOD;
-		virtual LW_RESULT EndRenderState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num) PURE_METHOD;
-		virtual LW_RESULT EndTextureStageState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage)
+		virtual LW_RESULT EndRenderState(IDeviceObject* dev_obj, DWORD start_id, DWORD num) PURE_METHOD;
+		virtual LW_RESULT EndTextureStageState(IDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage)
 		PURE_METHOD;
-		virtual LW_RESULT EndSamplerState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage) PURE_METHOD;
+		virtual LW_RESULT EndSamplerState(IDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage) PURE_METHOD;
 		virtual DWORD GetStateNum() const PURE_METHOD;
 		virtual lwRenderStateAtom* GetStateSeq() PURE_METHOD;
 		virtual LW_RESULT GetStateAtom(lwRenderStateAtom** rsa, DWORD id) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwITimer : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ITimer : public lwInterface {
 	public:
 		virtual LW_RESULT OnTimer() PURE_METHOD;
-		virtual LW_RESULT SetTimer(DWORD id, lwTimerProc proc, DWORD interval, DWORD hit_type, DWORD hit_add_cnt)
+		virtual LW_RESULT SetTimer(DWORD id, TimerProc proc, DWORD interval, DWORD hit_type, DWORD hit_add_cnt)
 		PURE_METHOD;
 		virtual LW_RESULT SetTimerInterval(DWORD id, DWORD interval) PURE_METHOD;
 		virtual DWORD GetLastInvokeTime(DWORD id) PURE_METHOD;
@@ -1344,16 +1344,16 @@ LW_STD_GETINTERFACE( cls )
 		virtual DWORD GetTickCount() PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwITimerThread : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ITimerThread : public lwInterface {
 	public:
 		virtual LW_RESULT AllocateTimerSeq(DWORD size) PURE_METHOD;
-		virtual LW_RESULT SetTimer(DWORD id, lwTimerProc proc, DWORD interval) PURE_METHOD;
+		virtual LW_RESULT SetTimer(DWORD id, TimerProc proc, DWORD interval) PURE_METHOD;
 		virtual LW_RESULT SetTimerInterval(DWORD id, DWORD interval) PURE_METHOD;
 		virtual LW_RESULT Pause(DWORD id, DWORD flag) PURE_METHOD; // id == LW_INVALID_INDEX : all
 		virtual LW_RESULT ClearTimer(DWORD id, DWORD delay) PURE_METHOD; // id == LW_INVALID_INDEX : all
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwITimerPeriod : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ITimerPeriod : public lwInterface {
 	public:
 		virtual LW_RESULT SetEvent(UINT delay, UINT resolution, LPTIMECALLBACK proc, DWORD_PTR param, UINT event)
 		PURE_METHOD;
@@ -1361,7 +1361,7 @@ LW_STD_GETINTERFACE( cls )
 		virtual UINT GetTimerID() PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIDDSFile : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IDDSFile : public lwInterface {
 	public:
 		virtual void SetDevice(IDirect3DDeviceX* dev) PURE_METHOD;
 		virtual LW_RESULT Clear() PURE_METHOD;
@@ -1373,19 +1373,19 @@ LW_STD_GETINTERFACE( cls )
 		// Corsairs::Engine::Render::DdsLoader::Save (см. AssetLoaders.h).
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIDirectoryBrowser : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IDirectoryBrowser : public lwInterface {
 	public:
-		virtual void SetBrowseProc(lwDirectoryBrowserProc proc, void* param) PURE_METHOD;
+		virtual void SetBrowseProc(DirectoryBrowserProc proc, void* param) PURE_METHOD;
 		virtual LW_RESULT Browse(std::string_view file, DWORD flag) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIThreadPool : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IThreadPool : public lwInterface {
 	public:
 		virtual LW_RESULT Create(DWORD thread_seq_size, DWORD task_seq_size, DWORD suspend_flag) PURE_METHOD;
 		virtual LW_RESULT Destroy() PURE_METHOD;
-		virtual LW_RESULT RegisterTask(lwThreadProc proc, void* param) PURE_METHOD;
-		virtual LW_RESULT RemoveTask(lwThreadProc proc, void* param) PURE_METHOD;
-		virtual LW_RESULT FindTask(lwThreadProc proc, void* param) PURE_METHOD;
+		virtual LW_RESULT RegisterTask(ThreadProc proc, void* param) PURE_METHOD;
+		virtual LW_RESULT RemoveTask(ThreadProc proc, void* param) PURE_METHOD;
+		virtual LW_RESULT FindTask(ThreadProc proc, void* param) PURE_METHOD;
 		virtual LW_RESULT SuspendThread() PURE_METHOD;
 		virtual LW_RESULT ResumeThread() PURE_METHOD;
 		virtual LW_RESULT SetPriority(int priority) PURE_METHOD;
@@ -1424,7 +1424,7 @@ LW_STD_GETINTERFACE( cls )
 		virtual IDirect3DIndexBufferX* GetStreamBuffer() PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwISystemInfo : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ISystemInfo : public lwInterface {
 	public:
 		virtual LW_RESULT CheckDirectXVersion() PURE_METHOD;
 		virtual DWORD GetDirectXVersion() PURE_METHOD;
@@ -1486,7 +1486,7 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT DumpData(std::string_view file) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwICoordinateSys : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE ICoordinateSys : public lwInterface {
 	public:
 		virtual LW_RESULT SetActiveCoordSys(DWORD id) PURE_METHOD;
 		virtual LW_RESULT SetCoordSysMatrix(DWORD id, const lwMatrix44* mat) PURE_METHOD;
@@ -1495,7 +1495,7 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT GetActiveCoordSys(DWORD* id) PURE_METHOD;
 	};
 
-	class LW_DECLSPEC_NOVTABLE lwIHeap : public lwInterface {
+	class LW_DECLSPEC_NOVTABLE IHeap : public lwInterface {
 	public:
 		virtual LW_RESULT Reserve(DWORD size) PURE_METHOD;
 		virtual LW_RESULT Clear() PURE_METHOD;
@@ -1506,14 +1506,14 @@ LW_STD_GETINTERFACE( cls )
 		virtual LW_RESULT Find(DWORD* id, const void* t) PURE_METHOD;
 		virtual LW_RESULT Update(DWORD id) PURE_METHOD;
 		virtual LW_RESULT Remove(DWORD id) PURE_METHOD;
-		virtual void SetCompareProc(lwHeapCompProc proc) PURE_METHOD;
-		virtual void SetFilterProc(lwHeapFilterProc proc) PURE_METHOD;
-		virtual lwHeapCompProc GetCompareProc() PURE_METHOD;
-		virtual lwHeapFilterProc GetFilterProc() PURE_METHOD;
+		virtual void SetCompareProc(HeapCompProc proc) PURE_METHOD;
+		virtual void SetFilterProc(HeapFilterProc proc) PURE_METHOD;
+		virtual HeapCompProc GetCompareProc() PURE_METHOD;
+		virtual HeapFilterProc GetFilterProc() PURE_METHOD;
 		virtual DWORD GetHeapNum() PURE_METHOD;
 		virtual DWORD GetHeapCapacity() PURE_METHOD;
 		virtual void* GetBuffer() PURE_METHOD;
-		virtual LW_RESULT Clone(lwIHeap** out_heap) PURE_METHOD;
+		virtual LW_RESULT Clone(IHeap** out_heap) PURE_METHOD;
 	};
 
 } // namespace Corsairs::Engine::Render

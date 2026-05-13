@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 #include "GameApp.h"
 #include "DebugStateSystem.h"
 
@@ -84,7 +84,7 @@ void CGameApp::_FrameMove(DWORD dwTimeParam, bool camMove) //Vim
 		}
 	}
 	if (_bCameraFollow) {
-		D3DXVECTOR3 vecCha = pCam->m_RefPos;
+		D3DXVECTOR3 vecCha = pCam->_RefPos;
 		const auto v = -pCam->m_vDir * pCam->_fdistshow;
 		D3DXVec3Add(&vecCha, &vecCha, &(v));
 		if (pTerr) {
@@ -131,8 +131,8 @@ void CGameApp::_FrameMove(DWORD dwTimeParam, bool camMove) //Vim
 	//	pCamera->UpdateEyePosition();
 
 	//	// Update old camera
-	//	pCam->m_EyePos = pCamera->GetEye();
-	//	pCam->m_RefPos = pCamera->GetTarget();
+	//	pCam->_EyePos = pCamera->GetEye();
+	//	pCam->_RefPos = pCamera->GetTarget();
 	//	pCam->m_fAngle = pCamera->GetSphereCoord().theta;
 
 	//	if( pTerr )

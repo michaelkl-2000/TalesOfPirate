@@ -106,25 +106,25 @@
     <ClInclude Include="Diagnostic\EngineDiag.h">
       <Filter>Diagnostic</Filter>
     </ClInclude>
-    <ClInclude Include="Diagnostic\lwSystemInfo.h">
+    <ClInclude Include="Diagnostic\SystemInfo.h">
       <Filter>Diagnostic</Filter>
     </ClInclude>
-    <ClInclude Include="Diagnostic\lwThreadPool.h">
+    <ClInclude Include="Diagnostic\ThreadPool.h">
       <Filter>Diagnostic</Filter>
     </ClInclude>
-    <ClInclude Include="Diagnostic\lwTimer.h">
+    <ClInclude Include="Diagnostic\Timer.h">
       <Filter>Diagnostic</Filter>
     </ClInclude>
     <ClCompile Include="Diagnostic\EngineDiag.cpp">
       <Filter>Diagnostic</Filter>
     </ClCompile>
-    <ClCompile Include="Diagnostic\lwSystemInfo.cpp">
+    <ClCompile Include="Diagnostic\SystemInfo.cpp">
       <Filter>Diagnostic</Filter>
     </ClCompile>
-    <ClCompile Include="Diagnostic\lwThreadPool.cpp">
+    <ClCompile Include="Diagnostic\ThreadPool.cpp">
       <Filter>Diagnostic</Filter>
     </ClCompile>
-    <ClCompile Include="Diagnostic\lwTimer.cpp">
+    <ClCompile Include="Diagnostic\Timer.cpp">
       <Filter>Diagnostic</Filter>
     </ClCompile>
     <ClInclude Include="Font\FontRender.h">
@@ -261,25 +261,25 @@
     <ClInclude Include="Model\lwCamera.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Util\lwCoordinateSys.h">
+    <ClInclude Include="Util\CoordinateSys.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\lwD3DSettings.h">
+    <ClInclude Include="Platform\D3DSettings.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Asset\lwDDS.h">
+    <ClInclude Include="Asset\DDS.h">
       <Filter>Asset</Filter>
     </ClInclude>
-    <ClInclude Include="Asset\lwDDSFile.h">
+    <ClInclude Include="Asset\DDSFile.h">
       <Filter>Asset</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\lwDeviceObject.h">
+    <ClInclude Include="Platform\DeviceObject.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Asset\lwDirectoryBrowser.h">
+    <ClInclude Include="Asset\DirectoryBrowser.h">
       <Filter>Asset</Filter>
     </ClInclude>
-    <ClInclude Include="Effect\lwEfxTrack.h">
+    <ClInclude Include="Effect\EfxTrack.h">
       <Filter>Effect</Filter>
     </ClInclude>
     <ClInclude Include="Model\lwExpObj.h">
@@ -294,10 +294,10 @@
     <ClInclude Include="Render\lwgraphicsutil.h">
       <Filter>Render</Filter>
     </ClInclude>
-    <ClInclude Include="Util\lwHeap.h">
+    <ClInclude Include="Util\Heap.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="Model\lwHelperGeometry.h">
+    <ClInclude Include="Model\HelperGeometry.h">
       <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="Platform\lwInterfaceExt.h">
@@ -318,10 +318,10 @@
     <ClInclude Include="Model\lwNodeObject.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Util\lwSlotMap.h">
+    <ClInclude Include="Util\SlotMap.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="Asset\lwPathInfo.h">
+    <ClInclude Include="Asset\PathInfo.h">
       <Filter>Asset</Filter>
     </ClInclude>
     <ClInclude Include="Model\lwPhysique.h">
@@ -342,19 +342,19 @@
     <ClInclude Include="Model\lwRenderImp.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\lwResourceMgr.h">
+    <ClInclude Include="Resource\ResourceMgr.h">
       <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="Model\lwSceneMgr.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Shader\lwShaderDeclMgr.h">
+    <ClInclude Include="Shader\ShaderDeclMgr.h">
       <Filter>Shader</Filter>
     </ClInclude>
-    <ClInclude Include="Shader\lwShaderMgr.h">
+    <ClInclude Include="Shader\ShaderMgr.h">
       <Filter>Shader</Filter>
     </ClInclude>
-    <ClInclude Include="Render\lwStreamObj.h">
+    <ClInclude Include="Render\StreamObj.h">
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Util\lwSyncObj.h">
@@ -363,19 +363,19 @@
     <ClInclude Include="Platform\lwSysCharacter.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\lwSysGraphics.h">
+    <ClInclude Include="Platform\SysGraphics.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\lwSystem.h">
+    <ClInclude Include="Platform\System.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Diagnostic\lwSystemInfo.h">
+    <ClInclude Include="Diagnostic\SystemInfo.h">
       <Filter>Diagnostic</Filter>
     </ClInclude>
-    <ClInclude Include="Diagnostic\lwThreadPool.h">
+    <ClInclude Include="Diagnostic\ThreadPool.h">
       <Filter>Diagnostic</Filter>
     </ClInclude>
-    <ClInclude Include="Diagnostic\lwTimer.h">
+    <ClInclude Include="Diagnostic\Timer.h">
       <Filter>Diagnostic</Filter>
     </ClInclude>
     <ClInclude Include="Model\lwTreeNode.h">
@@ -645,22 +645,22 @@
     <ClCompile Include="Model\lwCamera.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="Util\lwCoordinateSys.cpp">
+    <ClCompile Include="Util\CoordinateSys.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\lwD3DSettings.cpp">
+    <ClCompile Include="Platform\D3DSettings.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Asset\lwDDSFile.cpp">
+    <ClCompile Include="Asset\DDSFile.cpp">
       <Filter>Asset</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\lwDeviceObject.cpp">
+    <ClCompile Include="Platform\DeviceObject.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Asset\lwDirectoryBrowser.cpp">
+    <ClCompile Include="Asset\DirectoryBrowser.cpp">
       <Filter>Asset</Filter>
     </ClCompile>
-    <ClCompile Include="Effect\lwEfxTrack.cpp">
+    <ClCompile Include="Effect\EfxTrack.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
     <ClCompile Include="Model\lwExpObj.cpp">
@@ -675,10 +675,10 @@
     <ClCompile Include="src\lwGuidObj.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Util\lwHeap.cpp">
+    <ClCompile Include="Util\Heap.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="Model\lwHelperGeometry.cpp">
+    <ClCompile Include="Model\HelperGeometry.cpp">
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="Util\lwIFunc.cpp">
@@ -708,7 +708,7 @@
     <ClCompile Include="Model\lwObjectMethod.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="Asset\lwPathInfo.cpp">
+    <ClCompile Include="Asset\PathInfo.cpp">
       <Filter>Asset</Filter>
     </ClCompile>
     <ClCompile Include="Model\lwPhysique.cpp">
@@ -729,37 +729,37 @@
     <ClCompile Include="Model\lwRenderImp.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\lwResourceMgr.cpp">
+    <ClCompile Include="Resource\ResourceMgr.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="Model\lwSceneMgr.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="Shader\lwShaderDeclMgr.cpp">
+    <ClCompile Include="Shader\ShaderDeclMgr.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
-    <ClCompile Include="Shader\lwShaderMgr.cpp">
+    <ClCompile Include="Shader\ShaderMgr.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
-    <ClCompile Include="Render\lwStreamObj.cpp">
+    <ClCompile Include="Render\StreamObj.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="Platform\lwSysCharacter.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\lwSysGraphics.cpp">
+    <ClCompile Include="Platform\SysGraphics.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\lwSystem.cpp">
+    <ClCompile Include="Platform\System.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Diagnostic\lwSystemInfo.cpp">
+    <ClCompile Include="Diagnostic\SystemInfo.cpp">
       <Filter>Diagnostic</Filter>
     </ClCompile>
-    <ClCompile Include="Diagnostic\lwThreadPool.cpp">
+    <ClCompile Include="Diagnostic\ThreadPool.cpp">
       <Filter>Diagnostic</Filter>
     </ClCompile>
-    <ClCompile Include="Diagnostic\lwTimer.cpp">
+    <ClCompile Include="Diagnostic\Timer.cpp">
       <Filter>Diagnostic</Filter>
     </ClCompile>
     <ClCompile Include="Model\lwTreeNode.cpp">

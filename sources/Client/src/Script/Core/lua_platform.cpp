@@ -357,14 +357,14 @@ void chaPlayPose(CCharacter* pCha, int nPoseID, int bHold) {
 //-----------------
 
 void camSetCenter(float x, float y) {
-	float ref_x = g_pGameApp->GetMainCam()->m_RefPos.x;
-	float ref_y = g_pGameApp->GetMainCam()->m_RefPos.y;
+	float ref_x = g_pGameApp->GetMainCam()->_RefPos.x;
+	float ref_y = g_pGameApp->GetMainCam()->_RefPos.y;
 	float dis_x = x - ref_x;
 	float dis_y = y - ref_y;
-	g_pGameApp->GetMainCam()->m_RefPos.x = x;
-	g_pGameApp->GetMainCam()->m_RefPos.y = y;
-	g_pGameApp->GetMainCam()->m_EyePos.x += dis_x;
-	g_pGameApp->GetMainCam()->m_EyePos.y += dis_y;
+	g_pGameApp->GetMainCam()->_RefPos.x = x;
+	g_pGameApp->GetMainCam()->_RefPos.y = y;
+	g_pGameApp->GetMainCam()->_EyePos.x += dis_x;
+	g_pGameApp->GetMainCam()->_EyePos.y += dis_y;
 }
 
 void camFollow(int bEnable) {
@@ -380,7 +380,7 @@ void camMoveLeft(float fStep, int bHang) {
 }
 
 void camMoveUp(float fStep) {
-	g_pGameApp->GetMainCam()->m_RefPos.z -= fStep;
+	g_pGameApp->GetMainCam()->_RefPos.z -= fStep;
 }
 
 void camSetAngle(float fAngle) {
@@ -389,8 +389,8 @@ void camSetAngle(float fAngle) {
 
 int camGetCenter(lua_State* L) {
 	auto* cam = g_pGameApp->GetMainCam();
-	lua_pushnumber(L, cam->m_RefPos.x);
-	lua_pushnumber(L, cam->m_RefPos.y);
+	lua_pushnumber(L, cam->_RefPos.x);
+	lua_pushnumber(L, cam->_RefPos.y);
 	return 2;
 }
 

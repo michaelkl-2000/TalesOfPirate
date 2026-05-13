@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "i_effect.h"
 class MPRender;
@@ -67,68 +67,68 @@ public:
 
 public:
 	WORD GetCurFrame(float fDailTime, WORD wTotalFrame) {
-		m_fCurTime += fDailTime;
-		if (m_fCurTime >= m_fFrameTime) {
-			m_wCurFrame++;
-			if (m_wCurFrame >= wTotalFrame) {
-				m_wCurFrame = wTotalFrame;
-				m_bLive = false;
+		_fCurTime += fDailTime;
+		if (_fCurTime >= _fFrameTime) {
+			_wCurFrame++;
+			if (_wCurFrame >= wTotalFrame) {
+				_wCurFrame = wTotalFrame;
+				_bLive = false;
 			}
-			m_fCurTime = 0;
+			_fCurTime = 0;
 		}
-		return m_wCurFrame;
+		return _wCurFrame;
 	}
 
 	WORD GetCurFrame(float fDailTime, WORD wTotalFrame, float frametime) {
-		m_fCurTime += fDailTime;
-		if (m_fCurTime >= frametime) {
-			m_wCurFrame++;
-			if (m_wCurFrame >= wTotalFrame) {
-				m_wCurFrame = wTotalFrame;
-				m_bLive = false;
+		_fCurTime += fDailTime;
+		if (_fCurTime >= frametime) {
+			_wCurFrame++;
+			if (_wCurFrame >= wTotalFrame) {
+				_wCurFrame = wTotalFrame;
+				_bLive = false;
 			}
-			m_fCurTime = 0;
+			_fCurTime = 0;
 		}
-		return m_wCurFrame;
+		return _wCurFrame;
 	}
 
 	float GetLerpValue() {
-		return m_fCurTime / m_fFrameTime;
+		return _fCurTime / _fFrameTime;
 	}
 
 	void Reset(const D3DXVECTOR3& vPos) {
-		m_fCurTime = 0;
-		m_wCurFrame = 0;
-		m_vOldPos = m_vPos = vPos;
-		D3DXMatrixIdentity(&m_SCurMat);
-		D3DXMatrixIdentity(&m_SBoneMat);
+		_fCurTime = 0;
+		_wCurFrame = 0;
+		_vOldPos = _vPos = vPos;
+		D3DXMatrixIdentity(&_SCurMat);
+		D3DXMatrixIdentity(&_SBoneMat);
 
-		m_fFrameTime = 0;
-		m_vCurAngle = D3DXVECTOR3(0, 0, 0);
-		m_fSize = 0;
-		m_SCurColor = D3DXCOLOR(0, 0, 0, 0);
+		_fFrameTime = 0;
+		_vCurAngle = D3DXVECTOR3(0, 0, 0);
+		_fSize = 0;
+		_SCurColor = D3DXCOLOR(0, 0, 0, 0);
 
-		m_fPartTime = 0;
+		_fPartTime = 0;
 	}
 
 public:
-	D3DXVECTOR3 m_vPos;
-	D3DXVECTOR3 m_vOldPos;
-	D3DXVECTOR3 m_vVel;
-	D3DXVECTOR3 m_vAccel;
-	bool m_bLive;
-	float m_fLife;
+	D3DXVECTOR3 _vPos;
+	D3DXVECTOR3 _vOldPos;
+	D3DXVECTOR3 _vVel;
+	D3DXVECTOR3 _vAccel;
+	bool _bLive;
+	float _fLife;
 
-	float m_fCurTime;
-	WORD m_wCurFrame;
-	D3DXCOLOR m_SCurColor;
-	float m_fSize;
-	D3DXVECTOR3 m_vCurAngle;
-	D3DXMATRIX m_SCurMat;
-	float m_fFrameTime;
-	D3DXMATRIX m_SBoneMat;
+	float _fCurTime;
+	WORD _wCurFrame;
+	D3DXCOLOR _SCurColor;
+	float _fSize;
+	D3DXVECTOR3 _vCurAngle;
+	D3DXMATRIX _SCurMat;
+	float _fFrameTime;
+	D3DXMATRIX _SBoneMat;
 
-	float m_fPartTime;
+	float _fPartTime;
 };
 
 #define		PARTTICLE_SNOW			1
@@ -436,8 +436,8 @@ public:
 
 	void SetSrcBlend(D3DBLEND srcblend) {
 		_eSrcBlend = srcblend;
-		if (m_bShade)
-			m_cShade.SetAlphaType(_eSrcBlend, _eDestBlend);
+		if (_bShade)
+			_cShade.SetAlphaType(_eSrcBlend, _eDestBlend);
 	}
 
 	D3DBLEND GetDestBlend() {
@@ -446,8 +446,8 @@ public:
 
 	void SetDestBlend(D3DBLEND destblend) {
 		_eDestBlend = destblend;
-		if (m_bShade)
-			m_cShade.SetAlphaType(_eSrcBlend, _eDestBlend);
+		if (_bShade)
+			_cShade.SetAlphaType(_eSrcBlend, _eDestBlend);
 	}
 
 	D3DTEXTUREFILTERTYPE GetMagFilter() {
@@ -544,11 +544,11 @@ public:
 	float GetPathVel();
 
 	s_string& GetHitEff() {
-		return m_strHitEff;
+		return _strHitEff;
 	}
 
 	void SetHitEff(const s_string& streff) {
-		m_strHitEff = streff;
+		_strHitEff = streff;
 	}
 
 	bool GetDummyPosList() {
@@ -743,8 +743,8 @@ protected:
 	S_BVECTOR<D3DXVECTOR3> _vecBone; //
 
 	DWORD* _pdwVShader;
-	float* _pfDailTime;
-	D3DXMATRIX* _pMatViewProj;
+	float* m_pfDailTime;
+	D3DXMATRIX* m_pMatViewProj;
 
 	bool _bBillBoard;
 	D3DXMATRIX* _SpmatBBoard;
@@ -762,12 +762,12 @@ protected:
 	D3DXVECTOR3 _vSavePos;
 
 	//shade
-	bool m_bShade;
-	CMPShadeCtrl m_cShade;
-	MPMap* m_pMap;
+	bool _bShade;
+	CMPShadeCtrl _cShade;
+	MPMap* _pMap;
 
-	CMPResManger* m_pCResMagr;
-	s_string m_strHitEff;
+	CMPResManger* _pCResMagr;
+	s_string _strHitEff;
 
 	//dummy
 	int _iDummy1, _iDummy2;

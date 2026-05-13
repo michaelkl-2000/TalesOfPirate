@@ -65,10 +65,14 @@ int MPMap::GetValidSectionCnt() {
 }
 
 void MPMap::SetSectionTileData(int nX, int nY, BYTE btTexNo) {
-	if (btTexNo == 0 || !_bEdit) return;
+	if (btTexNo == 0 || !_bEdit) {
+		return;
+	}
 
 	MPActiveMapSection* pSection = GetActiveSection(nX / _nSectionWidth, nY / _nSectionHeight);
-	if (!pSection) return;
+	if (!pSection) {
+		return;
+	}
 
 	SAFE_DELETE(pSection->pTileData);
 	pSection->pTileData = new MPTile[_nSectionWidth * _nSectionHeight];
@@ -90,7 +94,9 @@ void MPMap::SetSectionTileData(int nX, int nY, BYTE btTexNo) {
 //-----------------
 //-----------------
 void MPMap::_SaveSection(MPActiveMapSection* pSection) {
-	if (!_bEdit || !_stream.IsOpen()) return;
+	if (!_bEdit || !_stream.IsOpen()) {
+		return;
+	}
 
 	if (LW_FAILED(Corsairs::Engine::Render::MapLoader::WriteSection(
 			_stream, pSection->nX, pSection->nY, pSection->pTileData))) {
@@ -106,7 +112,9 @@ void MPMap::_SaveSection(MPActiveMapSection* pSection) {
 //-----------------
 void MPMap::_LoadSectionData(MPActiveMapSection* pSection) {
 	pSection->dwDataOffset = _stream.SectionOffset(pSection->nX, pSection->nY);
-	if (pSection->dwDataOffset == 0) return;
+	if (pSection->dwDataOffset == 0) {
+		return;
+	}
 
 	pSection->pTileData = new MPTile[_nSectionWidth * _nSectionHeight];
 	if (LW_FAILED(Corsairs::Engine::Render::MapLoader::ReadSection(
@@ -147,7 +155,9 @@ void MPMap::ClearSectionData(int nSectionX, int nSectionY) {
 }
 
 void MPMap::FullLoading() {
-	if (!_stream.IsOpen()) return;
+	if (!_stream.IsOpen()) {
+		return;
+	}
 
 	// Section
 	for (int i = 0; i < _nSectionCnt; i++) {
@@ -161,7 +171,9 @@ void MPMap::FullLoading() {
 }
 
 void MPMap::DynamicLoading(DWORD dwTimeParam) {
-	if (!_stream.IsOpen()) return;
+	if (!_stream.IsOpen()) {
+		return;
+	}
 
 	int nCenterSectionX = _fShowCenterX / _nSectionWidth;
 	int nCenterSectionY = _fShowCenterY / _nSectionHeight;
@@ -185,7 +197,9 @@ void MPMap::DynamicLoading(DWORD dwTimeParam) {
 	int nShowSectionCntX = nEndSectionX - nCurSectionX;
 	int nShowSectionCntY = nEndSectionY - nCurSectionY;
 
-	if (_nShowWidth % _nSectionWidth != 0) nShowSectionCntX++;
+	if (_nShowWidth % _nSectionWidth != 0) {
+		nShowSectionCntX++;
+	}
 	if (_nShowHeight % _nSectionHeight != 0) nShowSectionCntY++;
 
 	list<MPActiveMapSection*> _NewList;
@@ -193,11 +207,15 @@ void MPMap::DynamicLoading(DWORD dwTimeParam) {
 	for (int y = 0; y < nShowSectionCntY; y++) {
 		int nSectionY = nCurSectionY + y;
 
-		if (nSectionY < 0 || nSectionY >= _nSectionCntY) continue;
+		if (nSectionY < 0 || nSectionY >= _nSectionCntY) {
+			continue;
+		}
 		for (int x = 0; x < nShowSectionCntX; x++) {
 			int nSectionX = nCurSectionX + x;
 
-			if (nSectionX < 0 || nSectionX >= _nSectionCntX) continue;
+			if (nSectionX < 0 || nSectionX >= _nSectionCntX) {
+				continue;
+			}
 
 			MPActiveMapSection* pSection = GetActiveSection(nSectionX, nSectionY);
 			if (!pSection) {
@@ -224,7 +242,9 @@ void MPMap::DynamicLoading(DWORD dwTimeParam) {
 				}
 			}
 		}
-		if (bDelFail) ToLogService("map", "Section, Buffer, n = {}", n);
+		if (bDelFail) {
+			ToLogService("map", "Section, Buffer, n = {}", n);
+		}
 
 		for (int i = 0; i < n; i++) // Section Tile Data
 		{
@@ -233,7 +253,9 @@ void MPMap::DynamicLoading(DWORD dwTimeParam) {
 			if (DelSectionList[i]->dwDataOffset != 0) {
 				_SaveSection(DelSectionList[i]);
 			}
-			if (_pfnProc) _pfnProc(1, DelSectionList[i]->nX, DelSectionList[i]->nY, (DWORD)(DelSectionList[i]), this);
+			if (_pfnProc) {
+				_pfnProc(1, DelSectionList[i]->nX, DelSectionList[i]->nY, (DWORD)(DelSectionList[i]), this);
+			}
 			_ActiveSectionArray[DelSectionList[i]->nY][DelSectionList[i]->nX] = NULL;
 			SAFE_DELETE(DelSectionList[i]->pTileData);
 			SAFE_DELETE(DelSectionList[i]);
@@ -244,7 +266,9 @@ void MPMap::DynamicLoading(DWORD dwTimeParam) {
 	// MapNotice
 	for (list<MPActiveMapSection*>::iterator it = _NewList.begin(); it != _NewList.end(); it++) {
 		MPActiveMapSection* pNewSection = (*it);
-		if (_pfnProc) _pfnProc(0, pNewSection->nX, pNewSection->nY, (DWORD)(pNewSection), this);
+		if (_pfnProc) {
+			_pfnProc(0, pNewSection->nX, pNewSection->nY, (DWORD)(pNewSection), this);
+		}
 		UpdateRender(TRUE);
 	}
 
@@ -262,7 +286,9 @@ void MPMap::DynamicLoading(DWORD dwTimeParam) {
 	if (dwLoadingTime) {
 		m_dwLoadingTime[_dwLoadingCnt] = dwLoadingTime;
 		_dwLoadingCnt++;
-		if (_dwLoadingCnt >= 3) _dwLoadingCnt = 0;
+		if (_dwLoadingCnt >= 3) {
+			_dwLoadingCnt = 0;
+		}
 	}
 
 	_block->GetBlockByRange(_fShowCenterX, _fShowCenterY, _pathFindRange);
@@ -272,10 +298,14 @@ void MPMap::ClearAllSection(BOOL bSaveFlag) {
 	for (list<MPActiveMapSection*>::iterator it = _ActiveSectionList.begin(); it != _ActiveSectionList.end(); it++) {
 		MPActiveMapSection* pSection = (*it);
 		if (pSection->dwDataOffset) {
-			if (bSaveFlag) _SaveSection((*it));
+			if (bSaveFlag) {
+				_SaveSection((*it));
+			}
 		}
 		if (bSaveFlag) {
-			if (_pfnProc) _pfnProc(1, pSection->nX, pSection->nY, (DWORD)(pSection), this);
+			if (_pfnProc) {
+				_pfnProc(1, pSection->nX, pSection->nY, (DWORD)(pSection), this);
+			}
 		}
 		_ActiveSectionArray[pSection->nY][pSection->nX] = NULL;
 		SAFE_DELETE(pSection->pTileData);

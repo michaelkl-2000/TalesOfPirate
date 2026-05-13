@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Scene.h"
 #include "SceneNode.h"
 #include "MPCharacter.h"
@@ -101,7 +101,7 @@ private:
 public:
 	//Bone stuff
 	DWORD _model_type; // lxo: 1, lmo: 2
-	lwIResourceMgr* _res_mgr;
+	IResourceMgr* _res_mgr;
 	lwINodeObject* _model_lxo;
 	lwModel* _model_lmo;
 	lwItem* _arrow;

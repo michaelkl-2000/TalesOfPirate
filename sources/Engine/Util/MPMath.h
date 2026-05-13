@@ -1,4 +1,4 @@
-﻿//#########################
+//#########################
 // Mind Power Math Routines
 // Created By Ryan Wang
 //#########################
@@ -45,7 +45,9 @@ inline float DistanceFrom(const D3DXVECTOR3& v1, const D3DXVECTOR3& v2) {
 
 inline int GetVectorRelativePos(float* pfVector1, float* pfVector2) {
 	float f = pfVector1[0] * pfVector2[1] - pfVector1[1] * pfVector2[0];
-	if (f > 0.0f) return 1;
+	if (f > 0.0f) {
+		return 1;
+	}
 	else return 0;
 }
 

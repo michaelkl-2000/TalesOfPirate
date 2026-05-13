@@ -61,7 +61,7 @@
 // эти лоадеры не нужны, не пуллили цепочку MPModelEff/MPParticleCtrl/I_Effect.
 #include "MPModelEff.h"      // CEffPath — для EffPathLoader-тестов
 #include "MPParticleCtrl.h"
-#include "lwEfxTrack.h"      // Corsairs::Engine::Render::lwEfxTrack — для .let round-trip
+#include "EfxTrack.h"      // Corsairs::Engine::Render::EfxTrack — для .let round-trip
 
 #include "Crypto/Blake2s.h"
 
@@ -595,7 +595,7 @@ struct Blake2sTestVector {
 // внешними редакторами эффектов). Работает в `runs/selftest/`.
 //
 // Покрывает:
-//   1. Save → Load восстанавливает m_iFrameCount и m_vecPath побайтно
+//   1. Save → Load восстанавливает _iFrameCount и _vecPath побайтно
 //      (с обратной инверсией Y/Z, заданной в формате).
 //   2. Save детерминирован: SaveA → Load → SaveB даёт A == B побайтно.
 //   3. EffPathLoader::LoadEx корректно ловит повреждённый magic.
@@ -612,7 +612,7 @@ struct Blake2sTestVector {
     // 1. Тестовый CEffPath с 5 фреймами, ненулевыми X/Y/Z (для проверки
     // round-trip обратной инверсии Y/Z).
     CEffPath src{};
-    src.m_iFrameCount = 5;
+    src._iFrameCount = 5;
     const std::array<D3DXVECTOR3, 5> kPoints = {{
         {0.0f, 0.0f, 0.0f},
         {1.0f, 2.0f, 3.0f},
@@ -621,7 +621,7 @@ struct Blake2sTestVector {
         {7.875f, 8.125f, -9.5f},
     }};
     for (std::size_t i = 0; i < kPoints.size(); ++i) {
-        src.m_vecPath[i] = kPoints[i];
+        src._vecPath[i] = kPoints[i];
     }
 
     // Save → Load (диск) и сверка позиций.
@@ -639,15 +639,15 @@ struct Blake2sTestVector {
                      ".csf self-test: LoadEx(A) failed: {}", diag.detail);
         return false;
     }
-    if (loaded.m_iFrameCount != src.m_iFrameCount) {
+    if (loaded._iFrameCount != src._iFrameCount) {
         ToLogService(kLogChannel, LogLevel::Error,
                      ".csf self-test: frame count mismatch: src={}, loaded={}",
-                     src.m_iFrameCount, loaded.m_iFrameCount);
+                     src._iFrameCount, loaded._iFrameCount);
         return false;
     }
-    for (int i = 0; i < src.m_iFrameCount; ++i) {
-        const auto& a = src.m_vecPath[i];
-        const auto& b = loaded.m_vecPath[i];
+    for (int i = 0; i < src._iFrameCount; ++i) {
+        const auto& a = src._vecPath[i];
+        const auto& b = loaded._vecPath[i];
         if (a.x != b.x || a.y != b.y || a.z != b.z) {
             ToLogService(kLogChannel, LogLevel::Error,
                          ".csf self-test: vecPath[{}] mismatch: src=({},{},{}) loaded=({},{},{})",
@@ -656,7 +656,7 @@ struct Blake2sTestVector {
         }
     }
     if (diag.version != EffPathLoader::kCurrentVersion
-        || diag.frameCount != static_cast<std::uint32_t>(src.m_iFrameCount)) {
+        || diag.frameCount != static_cast<std::uint32_t>(src._iFrameCount)) {
         ToLogService(kLogChannel, LogLevel::Error,
                      ".csf self-test: diag mismatch: version={}, frameCount={}",
                      diag.version, diag.frameCount);
@@ -1060,7 +1060,7 @@ int main(int argc, char** argv) {
                           const std::string& savePath,
                           Corsairs::Engine::Render::LgoLoadDiagnostics& /*diag*/)
                           -> std::optional<LW_RESULT> {
-            Corsairs::Engine::Render::lwEfxTrack track;
+            Corsairs::Engine::Render::EfxTrack track;
             const LW_RESULT loadRet =
                 Corsairs::Engine::Render::EfxTrackLoader::Load(track, srcPath);
             if (LW_FAILED(loadRet)) {

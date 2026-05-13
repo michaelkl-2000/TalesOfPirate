@@ -42,7 +42,7 @@ struct LgoLoadDiagnostics {
 // Все алгоритмы сериализации .lgo и .lmo живут здесь. Никаких свободных функций
 // рядом с классом нет — всё, что использует только сам loader, — приватный
 // статический член. Data-структуры (lwGeomObjInfo, lwMeshInfo, lwAnimDataInfo,
-// lwHelperInfo, lwModelInfo, lwModelNodeInfo, lwHelperDummyObjInfo) обязаны
+// HelperInfo, lwModelInfo, lwModelNodeInfo, HelperDummyObjInfo) обязаны
 // оставаться без I/O-методов; для доступа к приватным полям сами data-классы
 // объявляют LgoLoader другом (см. `friend class Corsairs::Engine::Render::LgoLoader;`
 // в lwExpObj.h).
@@ -82,7 +82,7 @@ public:
 
     static DWORD GetMtlTexInfoSize(const Corsairs::Engine::Render::lwGeomObjInfo* info);
     static DWORD GetMeshInfoSize(const Corsairs::Engine::Render::lwGeomObjInfo* info);
-    static DWORD GetHelperInfoSize(const Corsairs::Engine::Render::lwHelperInfo& info);
+    static DWORD GetHelperInfoSize(const Corsairs::Engine::Render::HelperInfo& info);
     static DWORD GetAnimDataInfoSize(const Corsairs::Engine::Render::lwAnimDataInfo& info);
 
     // -----------------------------------------------------------------------
@@ -90,8 +90,8 @@ public:
     // из .lmo-сериализаторов ниже.
     // -----------------------------------------------------------------------
 
-    static LW_RESULT LoadHelperInfo(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveHelperInfo(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
+    static LW_RESULT LoadHelperInfo(Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveHelperInfo(const Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp);
 
     // -----------------------------------------------------------------------
     // FILE*-сериализация data-классов (раньше жили как невиртуальные методы
@@ -198,24 +198,24 @@ private:
     static LW_RESULT LoadAnimDataInfo(Corsairs::Engine::Render::lwAnimDataInfo& info, std::FILE* fp, DWORD version);
     static LW_RESULT SaveAnimDataInfo(Corsairs::Engine::Render::lwAnimDataInfo& info, std::FILE* fp);
 
-    // 5+5 разделов lwHelperInfo (dummy/box/mesh/bbox/bsphere).
-    static LW_RESULT LoadHelperDummySection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT LoadHelperBoxSection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT LoadHelperMeshSection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT LoadBoundingBoxSection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT LoadBoundingSphereSection(Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp, DWORD version);
+    // 5+5 разделов HelperInfo (dummy/box/mesh/bbox/bsphere).
+    static LW_RESULT LoadHelperDummySection(Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadHelperBoxSection(Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadHelperMeshSection(Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadBoundingBoxSection(Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT LoadBoundingSphereSection(Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp, DWORD version);
 
-    static LW_RESULT SaveHelperDummySection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
-    static LW_RESULT SaveHelperBoxSection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
-    static LW_RESULT SaveHelperMeshSection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
-    static LW_RESULT SaveBoundingBoxSection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
-    static LW_RESULT SaveBoundingSphereSection(const Corsairs::Engine::Render::lwHelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveHelperDummySection(const Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveHelperBoxSection(const Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveHelperMeshSection(const Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveBoundingBoxSection(const Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp);
+    static LW_RESULT SaveBoundingSphereSection(const Corsairs::Engine::Render::HelperInfo& info, std::FILE* fp);
 
     // .lmo tree-узлы и dummy-helper-объект.
     static LW_RESULT LoadModelNode(Corsairs::Engine::Render::lwModelNodeInfo& info, std::FILE* fp, DWORD version);
     static LW_RESULT SaveModelNode(Corsairs::Engine::Render::lwModelNodeInfo& info, std::FILE* fp);
-    static LW_RESULT LoadHelperDummyObj(Corsairs::Engine::Render::lwHelperDummyObjInfo& info, std::FILE* fp, DWORD version);
-    static LW_RESULT SaveHelperDummyObj(Corsairs::Engine::Render::lwHelperDummyObjInfo& info, std::FILE* fp);
+    static LW_RESULT LoadHelperDummyObj(Corsairs::Engine::Render::HelperDummyObjInfo& info, std::FILE* fp, DWORD version);
+    static LW_RESULT SaveHelperDummyObj(Corsairs::Engine::Render::HelperDummyObjInfo& info, std::FILE* fp);
 
     // Утилиты.
     [[nodiscard]] static bool          IsKnownVersion(DWORD v);
@@ -402,7 +402,7 @@ private:
 //     DWORD num, далее num × D3DXVECTOR3 (right-handed, при чтении Y/Z
 //     меняем местами с инверсией Z). Продакшн-формат, читается из
 //     model/effect/*.csf при старте через CMPResManger::LoadTotalPath().
-//   • .let — поверх анимационного matrix-track (EfxTrackLoader → lwEfxTrack).
+//   • .let — поверх анимационного matrix-track (EfxTrackLoader → EfxTrack).
 //     Редакторский путь импорта пути из 3D-сцены; runtime его не зовёт.
 // CEffPath — это keyframed translation для эффекта (до 200 точек): задаёт
 // траекторию движения визуального эффекта/частиц во времени (например,
@@ -414,7 +414,7 @@ enum class EffPathLoadStatus : std::uint32_t {
     FileOpenFailed,        // fopen(file) не удался
     HeaderTruncated,       // < 4 байт magic, либо < 8 байт version+num
     BadMagic,              // первые 3 байта ≠ "csf"
-    FrameCountOutOfRange,  // num == 0 или num > 200 (m_vecPath limit)
+    FrameCountOutOfRange,  // num == 0 или num > 200 (_vecPath limit)
     BodyTruncated          // size файла < 4+8+num*12 — кадры не дочитываются
 };
 
@@ -427,17 +427,17 @@ struct EffPathLoadDiagnostics {
 
 class EffPathLoader {
 public:
-    static constexpr std::uint32_t kMaxFrames = 200;       // CEffPath::m_vecPath[200]
+    static constexpr std::uint32_t kMaxFrames = 200;       // CEffPath::_vecPath[200]
     static constexpr std::uint32_t kCurrentVersion = 1;    // version, которую пишет Save
 
-    // Прочитать .csf в готовый CEffPath. Поля m_vecPath/m_vecDir/m_vecDist/
-    // m_iFrameCount наполняются как раньше делал CEffPath::LoadPathFromFile.
+    // Прочитать .csf в готовый CEffPath. Поля _vecPath/_vecDir/_vecDist/
+    // _iFrameCount наполняются как раньше делал CEffPath::LoadPathFromFile.
     [[nodiscard]] static LW_RESULT Load(::CEffPath& path, std::string_view file);
     [[nodiscard]] static LW_RESULT LoadEx(::CEffPath& path, std::string_view file,
                                           EffPathLoadDiagnostics& diag);
 
     // Прочитать .let-формат через EfxTrackLoader::Load и спроецировать
-    // matrix-кадры в CEffPath::m_vecPath.
+    // matrix-кадры в CEffPath::_vecPath.
     [[nodiscard]] static LW_RESULT LoadLet(::CEffPath& path, std::string_view file);
 
     // Записать CEffPath в .csf (header "csf\0" + version=1 + num + кадры с
@@ -661,18 +661,18 @@ public:
 
 // =============================================================================
 // EfxTrackLoader — бинарный effect-track (lwAnimDataMatrix-payload без version-
-// заголовка; формат у lwEfxTrack тривиален: просто SaveAnimDataMatrix → файл).
+// заголовка; формат у EfxTrack тривиален: просто SaveAnimDataMatrix → файл).
 // =============================================================================
 
 // Forward-decls для классов из Corsairs::Engine::Render — полные определения в
-// lwEfxTrack.h / lwPoseCtrl.h / lwDDSFile.h. Подключение этих заголовков из
-// AssetLoaders.h всё ещё избыточно для тулз (lwDDSFile тянет lwDirectX → DDK),
+// EfxTrack.h / lwPoseCtrl.h / DDSFile.h. Подключение этих заголовков из
+// AssetLoaders.h всё ещё избыточно для тулз (DDSFile тянет lwDirectX → DDK),
 // потому ограничиваемся forward-decl и работаем через ссылки.
 
 class EfxTrackLoader {
 public:
-    [[nodiscard]] static LW_RESULT Load(Corsairs::Engine::Render::lwEfxTrack& track, std::string_view file);
-    [[nodiscard]] static LW_RESULT Save(const Corsairs::Engine::Render::lwEfxTrack& track, std::string_view file);
+    [[nodiscard]] static LW_RESULT Load(Corsairs::Engine::Render::EfxTrack& track, std::string_view file);
+    [[nodiscard]] static LW_RESULT Save(const Corsairs::Engine::Render::EfxTrack& track, std::string_view file);
 };
 
 // =============================================================================
@@ -695,27 +695,27 @@ public:
 };
 
 // =============================================================================
-// DdsLoader — запись .dds файла из lwDDSFile (origin или сжатой текстуры).
-// Чтение .dds живёт отдельно (lwDDSFile::LoadOriginTexture использует
+// DdsLoader — запись .dds файла из DDSFile (origin или сжатой текстуры).
+// Чтение .dds живёт отдельно (DDSFile::LoadOriginTexture использует
 // D3DXCreateTextureFromFileEx, не наш fopen-путь).
 // =============================================================================
 
 class DdsLoader {
 public:
-    [[nodiscard]] static LW_RESULT Save(Corsairs::Engine::Render::lwDDSFile& dds, std::string_view file);
+    [[nodiscard]] static LW_RESULT Save(Corsairs::Engine::Render::DDSFile& dds, std::string_view file);
 
 private:
     // Внутренние шаги — приватные static-методы DdsLoader (не free-функции),
-    // чтобы единого friend-объявления `friend class DdsLoader;` в lwDDSFile
+    // чтобы единого friend-объявления `friend class DdsLoader;` в DDSFile
     // хватало для доступа к приватным полям (_tex_width, _mip_level и т.д.)
     // и приватным IsVolumeMap/IsCubeMap.
-    [[nodiscard]] static long SaveDDSHeader(Corsairs::Engine::Render::lwDDSFile& dds,
+    [[nodiscard]] static long SaveDDSHeader(Corsairs::Engine::Render::DDSFile& dds,
                                              struct IDirect3DBaseTexture9* tex, std::FILE* fp);
-    [[nodiscard]] static long SaveAllMipSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
+    [[nodiscard]] static long SaveAllMipSurfaces(Corsairs::Engine::Render::DDSFile& dds,
                                                   struct IDirect3DBaseTexture9* ptex,
                                                   unsigned int faceType,
                                                   std::FILE* fp);
-    [[nodiscard]] static long SaveAllVolumeSurfaces(Corsairs::Engine::Render::lwDDSFile& dds,
+    [[nodiscard]] static long SaveAllVolumeSurfaces(Corsairs::Engine::Render::DDSFile& dds,
                                                      struct IDirect3DVolumeTexture9* pvoltex,
                                                      std::FILE* fp);
 };

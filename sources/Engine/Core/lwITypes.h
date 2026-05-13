@@ -573,10 +573,10 @@ namespace Corsairs::Engine::Render {
 		RENDERSTATE_TYPE_INVALID = LW_INVALID_INDEX,
 	};
 
-	typedef void (*lwTimerProc)(DWORD time); // 1/1000.0f
+	typedef void (*TimerProc)(DWORD time); // 1/1000.0f
 
 
-	typedef LW_RESULT (*lwDirectoryBrowserProc)(const char* file_path, const WIN32_FIND_DATA* wfd, void* param);
+	typedef LW_RESULT (*DirectoryBrowserProc)(const char* file_path, const WIN32_FIND_DATA* wfd, void* param);
 
 	enum lwDirBrowserType {
 		DIR_BROWSE_FILE = 0x0001,
@@ -585,7 +585,7 @@ namespace Corsairs::Engine::Render {
 		DIR_BROWSE_INVALID = 0,
 	};
 
-	typedef unsigned int (__stdcall *lwThreadProc)(void* param);
+	typedef unsigned int (__stdcall *ThreadProc)(void* param);
 
 	enum class ThreadPoolType : std::uint32_t {
 		THREAD_POOL_LOADRES = 0,
@@ -651,7 +651,7 @@ namespace Corsairs::Engine::Render {
 		DWORD color;
 	};
 
-	struct lwStaticStreamMgrDebugInfo {
+	struct StaticStreamMgrDebugInfo {
 		DWORD vbs_size;
 		DWORD vbs_used_size;
 		DWORD vbs_free_size;
@@ -791,7 +791,7 @@ namespace Corsairs::Engine::Render {
 
 	typedef lwAnimCtrlTypeInfo lwAnimCtrlObjTypeInfo;
 
-	typedef BOOL (*lwHeapCompProc)(const void*& i, const void*& j);
-	typedef void (*lwHeapFilterProc)(const void*& i, DWORD j);
+	typedef BOOL (*HeapCompProc)(const void*& i, const void*& j);
+	typedef void (*HeapFilterProc)(const void*& i, DWORD j);
 
 } // namespace Corsairs::Engine::Render

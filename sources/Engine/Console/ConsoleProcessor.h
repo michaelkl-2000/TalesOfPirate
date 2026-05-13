@@ -12,6 +12,7 @@
 // в ConsoleBridge; здесь опускаем).
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <functional>
 #include <list>
@@ -102,7 +103,7 @@ private:
 	int _maxLine = 0;
 
 	bool _visible = false;
-	std::uint32_t _cursorTick = 0;
+	std::chrono::steady_clock::time_point _cursorTick{};
 	bool _showCursor = false;
 
 	std::uint32_t _backdropColor = 0xE0101018; // ARGB: плотный тёмный

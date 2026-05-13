@@ -73,9 +73,9 @@ namespace Corsairs::Engine::Render {
 
 	// Вспомогательные структуры геометрии.
 	static_assert(sizeof(lwGeomObjInfoHeader) == 116, "lwGeomObjInfoHeader layout changed — breaks .lgo header");
-	static_assert(sizeof(lwHelperDummyInfo) == 140, "lwHelperDummyInfo layout changed — breaks helper block");
-	static_assert(sizeof(lwHelperBoxInfo) == 132, "lwHelperBoxInfo layout changed — breaks helper block");
-	static_assert(sizeof(lwHelperMeshFaceInfo) == 52, "lwHelperMeshFaceInfo layout changed — breaks helper mesh block");
+	static_assert(sizeof(HelperDummyInfo) == 140, "HelperDummyInfo layout changed — breaks helper block");
+	static_assert(sizeof(HelperBoxInfo) == 132, "HelperBoxInfo layout changed — breaks helper block");
+	static_assert(sizeof(HelperMeshFaceInfo) == 52, "HelperMeshFaceInfo layout changed — breaks helper mesh block");
 	static_assert(sizeof(lwBoundingBoxInfo) == 92, "lwBoundingBoxInfo layout changed — breaks helper bbox block");
 	static_assert(sizeof(lwBoundingSphereInfo) == 84,
 				  "lwBoundingSphereInfo layout changed — breaks helper bsphere block");
@@ -745,7 +745,7 @@ namespace Corsairs::Engine::Render {
 		return size;
 	}
 
-	DWORD lwGetHelperMeshInfoSize(const lwHelperMeshInfo* info) {
+	DWORD lwGetHelperMeshInfoSize(const HelperMeshInfo* info) {
 		DWORD size = 0;
 
 		size += sizeof(info->id);
@@ -757,12 +757,12 @@ namespace Corsairs::Engine::Render {
 		size += sizeof(info->box);
 		size += sizeof(info->vertex_num) + sizeof(info->face_num);
 		size += sizeof(lwVector3) * info->vertex_num;
-		size += sizeof(lwHelperMeshFaceInfo) * info->face_num;
+		size += sizeof(HelperMeshFaceInfo) * info->face_num;
 
 		return size;
 	}
 
-	DWORD lwGetHelperBoxInfoSize(const lwHelperBoxInfo* info) {
+	DWORD lwGetHelperBoxInfoSize(const HelperBoxInfo* info) {
 		DWORD size = 0;
 
 		size += sizeof(info->id);
@@ -807,8 +807,8 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwCheckHelperMeshFaceShareSides(int* side1, int* side2, const lwHelperMeshFaceInfo* p1,
-											  const lwHelperMeshFaceInfo* p2) {
+	LW_RESULT lwCheckHelperMeshFaceShareSides(int* side1, int* side2, const HelperMeshFaceInfo* p1,
+											  const HelperMeshFaceInfo* p2) {
 		int r1 = -1;
 		int r2 = -1;
 		int tab[3] = {0, 2, 1};
@@ -841,7 +841,7 @@ namespace Corsairs::Engine::Render {
 	}
 
 
-	LW_RESULT lwCreateHelperMeshInfo(lwHelperMeshInfo* info, const lwMeshInfo* mi) {
+	LW_RESULT lwCreateHelperMeshInfo(HelperMeshInfo* info, const lwMeshInfo* mi) {
 		if (mi->vertex_num == 0)
 			return LW_RET_FAILED;
 
@@ -851,10 +851,10 @@ namespace Corsairs::Engine::Render {
 		memcpy(&info->vertex_seq[0], &mi->vertex_seq[0], sizeof(lwVector3) * info->vertex_num);
 
 		info->face_num = mi->index_num / 3;
-		info->face_seq = LGO_NEW_ARRAY(lwHelperMeshFaceInfo, info->face_num);
+		info->face_seq = LGO_NEW_ARRAY(HelperMeshFaceInfo, info->face_num);
 
 		DWORD i, j;
-		lwHelperMeshFaceInfo *x, *x_i, *x_j;
+		HelperMeshFaceInfo *x, *x_i, *x_j;
 
 		for (i = 0; i < info->face_num; i++) {
 			x = &info->face_seq[i];
@@ -953,8 +953,8 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	// lwHelperMeshInfo
-	LW_RESULT lwHelperMeshInfo::Copy(const lwHelperMeshInfo* src) {
+	// HelperMeshInfo
+	LW_RESULT HelperMeshInfo::Copy(const HelperMeshInfo* src) {
 		id = src->id;
 		type = src->type;
 		sub_type = src->sub_type;
@@ -966,34 +966,34 @@ namespace Corsairs::Engine::Render {
 		_tcscpy(&name[0], &src->name[0]);
 
 		vertex_seq = LGO_NEW_ARRAY(lwVector3, vertex_num);
-		face_seq = LGO_NEW_ARRAY(lwHelperMeshFaceInfo, face_num);
+		face_seq = LGO_NEW_ARRAY(HelperMeshFaceInfo, face_num);
 
 		memcpy(vertex_seq, src->vertex_seq, sizeof(lwVector3) * vertex_num);
-		memcpy(face_seq, src->face_seq, sizeof(lwHelperMeshFaceInfo) * face_num);
+		memcpy(face_seq, src->face_seq, sizeof(HelperMeshFaceInfo) * face_num);
 
 		return LW_RET_OK;
 	}
 
-	// lwHelperInfo
-	// LW_STD_IMPLEMENTATION снято — наследование от lwIHelperInfo удалено.
+	// HelperInfo
+	// LW_STD_IMPLEMENTATION снято — наследование от IHelperInfo удалено.
 
 
-	LW_RESULT lwHelperInfo::Copy(const lwHelperInfo* src) {
+	LW_RESULT HelperInfo::Copy(const HelperInfo* src) {
 		type = src->type;
 
 		if (type & HELPER_TYPE_DUMMY) {
 			dummy_num = src->dummy_num;
-			dummy_seq = LGO_NEW_ARRAY(lwHelperDummyInfo, dummy_num);
-			memcpy(&dummy_seq[0], &src->dummy_seq[0], sizeof(lwHelperDummyInfo) * dummy_num);
+			dummy_seq = LGO_NEW_ARRAY(HelperDummyInfo, dummy_num);
+			memcpy(&dummy_seq[0], &src->dummy_seq[0], sizeof(HelperDummyInfo) * dummy_num);
 		}
 		if (type & HELPER_TYPE_BOX) {
 			box_num = src->box_num;
-			box_seq = LGO_NEW_ARRAY(lwHelperBoxInfo, box_num);
-			memcpy(&box_seq[0], &src->box_seq[0], sizeof(lwHelperBoxInfo) * box_num);
+			box_seq = LGO_NEW_ARRAY(HelperBoxInfo, box_num);
+			memcpy(&box_seq[0], &src->box_seq[0], sizeof(HelperBoxInfo) * box_num);
 		}
 		if (type & HELPER_TYPE_MESH) {
 			mesh_num = src->mesh_num;
-			mesh_seq = LGO_NEW_ARRAY(lwHelperMeshInfo, mesh_num);
+			mesh_seq = LGO_NEW_ARRAY(HelperMeshInfo, mesh_num);
 
 			for (DWORD i = 0; i < mesh_num; i++) {
 				mesh_seq[i].Copy(&src->mesh_seq[i]);
@@ -1049,16 +1049,16 @@ namespace Corsairs::Engine::Render {
 	}
 
 
-	// lwHelperDummyObjInfo
-	LW_STD_IMPLEMENTATION(lwHelperDummyObjInfo)
+	// HelperDummyObjInfo
+	LW_STD_IMPLEMENTATION(HelperDummyObjInfo)
 
-	lwHelperDummyObjInfo::lwHelperDummyObjInfo() {
+	HelperDummyObjInfo::HelperDummyObjInfo() {
 		_id = LW_INVALID_INDEX;
 		lwMatrix44Identity(&_mat);
 		_anim_data = 0;
 	}
 
-	lwHelperDummyObjInfo::~lwHelperDummyObjInfo() {
+	HelperDummyObjInfo::~HelperDummyObjInfo() {
 		LW_IF_RELEASE(_anim_data);
 	}
 
@@ -1077,7 +1077,7 @@ namespace Corsairs::Engine::Render {
 			LW_IF_DELETE(data);
 		}
 		else if (_type == NODE_HELPER) {
-			lwHelperInfo* data = (lwHelperInfo*)_data;
+			HelperInfo* data = (HelperInfo*)_data;
 			LW_IF_DELETE(data);
 		}
 	}

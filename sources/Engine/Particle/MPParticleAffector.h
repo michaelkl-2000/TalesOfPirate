@@ -1,4 +1,4 @@
-﻿#ifndef MPParticleAffector_H
+#ifndef MPParticleAffector_H
 #define MPParticleAffector_H
 
 #include "MindPowerAPI.h"
@@ -24,7 +24,7 @@ ParticleSystemManageraddAffectorFactory,
 */
 class MPParticleAffector {
 public:
-	MPParticleAffector(MPParticleSystem* mParticleSystem) : m_ParticleSystem(mParticleSystem) {
+	MPParticleAffector(MPParticleSystem* mParticleSystem) : _ParticleSystem(mParticleSystem) {
 	}
 
 	virtual ~MPParticleAffector();
@@ -57,7 +57,7 @@ public:
 	
 	*/
 	const String& getType(void) const {
-		return m_Type;
+		return _Type;
 	}
 
 protected:
@@ -76,8 +76,8 @@ protected:
 
 protected:
 	/// , 
-	string m_Type;
+	string _Type;
 
-	MPParticleSystem* m_ParticleSystem;
+	MPParticleSystem* _ParticleSystem;
 };
 #endif

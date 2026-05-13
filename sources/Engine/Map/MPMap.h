@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "AssetLoaders.h"  // Corsairs::Engine::Render::MapStream
 #include "ZRBlock.h"
@@ -284,7 +284,7 @@ protected:
 
 	// Открытое состояние .map: header, offset-таблица и (в non-edit) bulk
 	// body. Все I/O делегируются Corsairs::Engine::Render::MapLoader::*Section.
-	// Раньше тут жили _fp / _pOffsetIdx / m_pMapData / m_dwMapDataSize / m_dwMapPos.
+	// Раньше тут жили _fp / _pOffsetIdx / _pMapData / m_dwMapDataSize / m_dwMapPos.
 	Corsairs::Engine::Render::MapStream _stream;
 	BOOL _bEdit{TRUE}; // ????-
 	BOOL _bSeaVisible{TRUE};

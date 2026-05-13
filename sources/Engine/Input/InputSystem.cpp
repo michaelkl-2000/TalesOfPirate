@@ -109,9 +109,13 @@ namespace Corsairs::Engine::Input {
 		const bool sysL = (::GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
 		const bool sysR = (::GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
 		const bool sysM = (::GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0;
-		if (!sysL) s.mouseDown[0] = false;
+		if (!sysL) {
+			s.mouseDown[0] = false;
+		}
 		if (!sysR) s.mouseDown[1] = false;
-		if (!sysM) s.mouseDown[2] = false;
+		if (!sysM) {
+			s.mouseDown[2] = false;
+		}
 
 		//  Обновляем phase для клавиш на основе (previous, current).
 		for (std::size_t i = 0; i < kKeyCount; ++i) {

@@ -15,7 +15,7 @@ namespace Corsairs::Engine::Render {
 
 	public:
 		MPSceneItem();
-		MPSceneItem(lwISysGraphics* sys_graphics);
+		MPSceneItem(ISysGraphics* sys_graphics);
 		virtual ~MPSceneItem();
 
 		lwItem* GetObject() {

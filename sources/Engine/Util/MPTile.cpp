@@ -1,7 +1,7 @@
 #include "Stdafx.h"
 #include "MPTile.h"
 #include "MPMath.h"
-#include "lwTimer.h"
+#include "Timer.h"
 using namespace Corsairs::Engine::Render;
 
 int MPTile::Offset[4][2] =
@@ -17,11 +17,15 @@ int MPTile::Offset[4][2] =
 // (, )
 //---------------------------
 void MPTile::AddTexLayer(BYTE btTexNo, BYTE btAlphaNo) {
-	if (IsDefault()) return;
+	if (IsDefault()) {
+		return;
+	}
 
 	int i, j;
 	if (btTexNo == 0) {
-		for (i = 0; i < 4; i++) TexLayer[i].btTexNo = 0;
+		for (i = 0; i < 4; i++) {
+			TexLayer[i].btTexNo = 0;
+		}
 		return;
 	}
 
@@ -32,7 +36,9 @@ void MPTile::AddTexLayer(BYTE btTexNo, BYTE btAlphaNo) {
 
 	memcpy(&TempTexLayer, &TexLayer, 8);
 	for (i = 0; i < 4; i++) {
-		if (TexLayer[i].btTexNo) btLayerCnt++;
+		if (TexLayer[i].btTexNo) {
+			btLayerCnt++;
+		}
 		else break;
 	}
 
@@ -135,8 +141,8 @@ void MPTile::RenderSea(int nX, int nY, int nTileSize) {
 
 	// begin by lsh
 #if(defined DRAW_TERRAIN_USE_DYNAMIC_BUFFER)
-	lwInterfaceMgr* imgr = g_Render.GetInterfaceMgr();
-	lwIDynamicStreamMgr* dsm = imgr->res_mgr->GetDynamicStreamMgr();
+	InterfaceMgr* imgr = g_Render.GetInterfaceMgr();
+	IDynamicStreamMgr* dsm = imgr->res_mgr->GetDynamicStreamMgr();
 	dsm->BindDataVB(0, &_SVertex, sizeof(MPSeaTileVertex) * 4, sizeof(MPSeaTileVertex));
 	dsm->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 #else

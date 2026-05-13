@@ -178,7 +178,7 @@ Test framework: xUnit. No C++ test projects.
 - Character system: `Character.cpp` → `CharacterModel.cpp` → `CharacterAction.cpp`
 - Input: `Corsairs::Engine::Input::InputSystem` поверх `WM_KEY*` / `WM_MOUSE*` / `WM_CHAR` (DirectInput 8 снят 2026-04-24)
 - Textures: `TextureLoader` + `TextureCache` (stb_image для BMP/TGA/PNG, ручной `DdsLoader` для DDS)
-- Entity pooling: `GamePool` + `lwSlotMap<T, Capacity>` со стабильными handle'ами `(gen:12|slot:20)` / `(tag:8|serial:24)` — заменили raw-указатели после x86→x64
+- Entity pooling: `GamePool` + `SlotMap<T, Capacity>` со стабильными handle'ами `(gen:12|slot:20)` / `(tag:8|serial:24)` — заменили raw-указатели после x86→x64
 - PCH: все C++ проекты используют `stdafx.h` с `/FI` (ForcedIncludeFiles). **Не добавляйте `#include "stdafx.h"` вручную в `.cpp`.**
 
 ### C++ Server (GameServer — единственный C++ сервер)

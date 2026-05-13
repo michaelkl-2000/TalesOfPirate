@@ -4,7 +4,7 @@
 #include "EffectRenderContext.h"
 
 #include "MPRender.h"
-#include "lwSysGraphics.h"
+#include "SysGraphics.h"
 
 namespace Corsairs::Engine::Render {
 

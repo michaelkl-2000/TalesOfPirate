@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 
 #include "SteadyFrameSync.h"
 #include "MPEditor.h"
@@ -162,7 +162,7 @@ if(_IsSceneOk()) {
 	//	pCam->SetFollowObj(vecCha);
 	//	pCam->FrameMove(0);
 	//	g_Render.SetWorldViewFOV(Angle2Radian(pCam->m_ffov));
-	//	g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+	//	g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 	//	g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 	//}
 }
@@ -245,7 +245,7 @@ if(IsKeyDown(DIK_TAB)&& !GlobalAppConfig.IsEditor())
 			//	pCam->FrameMove(0);
 
 			//	g_Render.SetWorldViewFOV(Angle2Radian(pCam->m_ffov));
-			//	g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+			//	g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 			//	g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 			//	//g_pGameApp->ResetGameCamera( GetCurScene()->GetMainCha()->IsBoat() ? 1 : 0 );
 			//}
@@ -428,7 +428,7 @@ void CGameApp::HandleContinueSuperKey() {
 			}
 		}
 		else {
-			VECTOR3 vecPos = GetMainCam()->m_RefPos;
+			VECTOR3 vecPos = GetMainCam()->_RefPos;
 			GetMainCam()->Turn(0.4f, &vecPos);
 		}
 	}
@@ -445,7 +445,7 @@ void CGameApp::HandleContinueSuperKey() {
 			}
 		}
 		else {
-			VECTOR3 vecPos = GetMainCam()->m_RefPos;
+			VECTOR3 vecPos = GetMainCam()->_RefPos;
 			GetMainCam()->Turn(-0.4f, &vecPos);
 		}
 	}
@@ -491,7 +491,7 @@ BOOL CTestDemo::Init() {
 }
 void CTestDemo::FrameMove() {
 	if (_skybox) {
-		lwMatrix44 mat = lwMatrix44Translate(g_pGameApp->GetMainCam()->m_RefPos);
+		lwMatrix44 mat = lwMatrix44Translate(g_pGameApp->GetMainCam()->_RefPos);
 		_skybox->SetMatrix(&mat);
 		_skybox->Update();
 	}

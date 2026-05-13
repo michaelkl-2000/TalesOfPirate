@@ -2,17 +2,17 @@
 #include "stdafx.h"
 #include "lwGuidObj.h"
 #include "lwIFunc.h"
-#include "lwSystem.h"
-#include "lwSysGraphics.h"
-#include "lwShaderMgr.h"
+#include "System.h"
+#include "SysGraphics.h"
+#include "ShaderMgr.h"
 #include "lwGraphicsUtil.h"
 #include "lwShaderTypes.h"
 #include "lwxRenderCtrlVS.h"
 
 
 namespace Corsairs::Engine::Render {
-	static lwISystem* g_system = 0;
-	static lwISysGraphics* g_sys_graphics = 0;
+	static ISystem* g_system = 0;
+	static ISysGraphics* g_sys_graphics = 0;
 
 	struct lwLoseResetDevInfo {
 		lwOutputLoseDeviceProc lose_proc;
@@ -125,12 +125,12 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	void lwSetActiveIGraphicsSystem(lwISysGraphics* sys_graphics) {
-		lwSysGraphics::SetActiveIGraphicsSystem(sys_graphics);
+	void lwSetActiveIGraphicsSystem(ISysGraphics* sys_graphics) {
+		SysGraphics::SetActiveIGraphicsSystem(sys_graphics);
 	}
 
-	lwISysGraphics* lwGetActiveIGraphicsSystem() {
-		return lwSysGraphics::GetActiveIGraphicsSystem();
+	ISysGraphics* lwGetActiveIGraphicsSystem() {
+		return SysGraphics::GetActiveIGraphicsSystem();
 	}
 
 	LW_RESULT lwAdjustD3DCreateParam(IDirect3DX* d3d, lwD3DCreateParam* param,
@@ -163,13 +163,13 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	LW_RESULT lwInitMeshLibSystem(lwISystem** ret_sys, lwISysGraphics** ret_sys_graphics) {
+	LW_RESULT lwInitMeshLibSystem(ISystem** ret_sys, ISysGraphics** ret_sys_graphics) {
 		LW_RESULT ret = LW_RET_FAILED;
-		lwISystem* sys = 0;
-		lwISysGraphics* sys_graphics = 0;
-		lwIDeviceObject* dev_obj = 0;
+		ISystem* sys = 0;
+		ISysGraphics* sys_graphics = 0;
+		IDeviceObject* dev_obj = 0;
 
-		sys = LW_NEW(lwSystem);
+		sys = LW_NEW(System);
 		if (!sys) {
 			goto __ret;
 		}
@@ -183,7 +183,7 @@ namespace Corsairs::Engine::Render {
 
 		{
 			// begin init path info
-			lwIPathInfo* path_info = 0;
+			IPathInfo* path_info = 0;
 
 			if (LW_RESULT r = sys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
@@ -218,7 +218,7 @@ namespace Corsairs::Engine::Render {
 
 			lwInitUserRenderCtrlVSProc(sys_graphics->GetResourceMgr());
 
-			lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+			IOptionMgr* opt_mgr = sys->GetOptionMgr();
 			opt_mgr->SetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE, 0);
 
 			// begin set default active system
@@ -250,14 +250,14 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwInitMeshLibSystem(lwISystem** ret_sys, lwISysGraphics** ret_sys_graphics, IDirect3DX* d3d,
+	LW_RESULT lwInitMeshLibSystem(ISystem** ret_sys, ISysGraphics** ret_sys_graphics, IDirect3DX* d3d,
 								  IDirect3DDeviceX* dev, HWND hwnd) {
 		LW_RESULT ret = LW_RET_FAILED;
-		lwISystem* sys = 0;
-		lwISysGraphics* sys_graphics = 0;
-		lwIDeviceObject* dev_obj = 0;
+		ISystem* sys = 0;
+		ISysGraphics* sys_graphics = 0;
+		IDeviceObject* dev_obj = 0;
 
-		sys = LW_NEW(lwSystem);
+		sys = LW_NEW(System);
 		if (!sys) {
 			goto __ret;
 		}
@@ -279,7 +279,7 @@ namespace Corsairs::Engine::Render {
 		}
 		{
 			// begin init path info
-			lwIPathInfo* path_info = 0;
+			IPathInfo* path_info = 0;
 
 			if (LW_RESULT r = sys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
@@ -333,13 +333,13 @@ namespace Corsairs::Engine::Render {
 				goto __ret;
 			}
 
-			lwIResourceMgr* res_mgr = sys_graphics->GetResourceMgr();
-			lwIStaticStreamMgr* ssm = res_mgr->GetStaticStreamMgr();
+			IResourceMgr* res_mgr = sys_graphics->GetResourceMgr();
+			IStaticStreamMgr* ssm = res_mgr->GetStaticStreamMgr();
 			ssm->CreateStreamEntitySeq(4096, 4096);
 			ssm->CreateVertexBufferStream(0, 1024 * 1024);
 			ssm->CreateVertexBufferStream(1, 1024 * 1024);
 			ssm->CreateIndexBufferStream(0, 1024 * 1024);
-			lwIDynamicStreamMgr* dsm = res_mgr->GetDynamicStreamMgr();
+			IDynamicStreamMgr* dsm = res_mgr->GetDynamicStreamMgr();
 			dsm->Create(512 * 1024, 1024 * 512);
 
 			// begin set default active system
@@ -347,7 +347,7 @@ namespace Corsairs::Engine::Render {
 			lwSetActiveIGraphicsSystem(sys_graphics);
 			// end
 
-			lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+			IOptionMgr* opt_mgr = sys->GetOptionMgr();
 			opt_mgr->SetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE, 1);
 			opt_mgr->SetByteFlag(OptionByteFlag::OPTION_FLAG_CULLPRIMITIVE_MODEL, 1);
 
@@ -376,14 +376,14 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwInitMeshLibSystem(lwISystem** ret_sys, lwISysGraphics** ret_sys_graphics, lwD3DCreateParam* param,
+	LW_RESULT lwInitMeshLibSystem(ISystem** ret_sys, ISysGraphics** ret_sys_graphics, lwD3DCreateParam* param,
 								  lwD3DCreateParamAdjustInfo* param_info) {
 		LW_RESULT ret = LW_RET_FAILED;
-		lwISystem* sys = 0;
-		lwISysGraphics* sys_graphics = 0;
-		lwIDeviceObject* dev_obj = 0;
+		ISystem* sys = 0;
+		ISysGraphics* sys_graphics = 0;
+		IDeviceObject* dev_obj = 0;
 
-		sys = LW_NEW(lwSystem);
+		sys = LW_NEW(System);
 		if (!sys) {
 			goto __ret;
 		}
@@ -417,7 +417,7 @@ namespace Corsairs::Engine::Render {
 
 		{
 			// begin init path info
-			lwIPathInfo* path_info = 0;
+			IPathInfo* path_info = 0;
 
 			if (LW_RESULT r = sys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
@@ -488,14 +488,14 @@ namespace Corsairs::Engine::Render {
 				goto __ret;
 			}
 
-			lwIResourceMgr* res_mgr = sys_graphics->GetResourceMgr();
-			lwIStaticStreamMgr* ssm = res_mgr->GetStaticStreamMgr();
+			IResourceMgr* res_mgr = sys_graphics->GetResourceMgr();
+			IStaticStreamMgr* ssm = res_mgr->GetStaticStreamMgr();
 			ssm->CreateStreamEntitySeq(4096, 4096);
 			ssm->CreateVertexBufferStream(0, 1024 * 1024);
 			ssm->CreateVertexBufferStream(1, 1024 * 1024);
 			ssm->CreateVertexBufferStream(2, 1024 * 1024);
 			ssm->CreateIndexBufferStream(0, 1024 * 1024);
-			lwIDynamicStreamMgr* dsm = res_mgr->GetDynamicStreamMgr();
+			IDynamicStreamMgr* dsm = res_mgr->GetDynamicStreamMgr();
 			dsm->Create(512 * 1024, 1024 * 512);
 
 			// begin set default active system
@@ -505,7 +505,7 @@ namespace Corsairs::Engine::Render {
 
 			lwInitUserRenderCtrlVSProc(res_mgr);
 
-			lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+			IOptionMgr* opt_mgr = sys->GetOptionMgr();
 			opt_mgr->SetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE, 1);
 			opt_mgr->SetByteFlag(OptionByteFlag::OPTION_FLAG_CULLPRIMITIVE_MODEL, 1);
 
@@ -534,8 +534,8 @@ namespace Corsairs::Engine::Render {
 
 	LW_RESULT lwReleaseMeshLibSystem() {
 		LW_ULONG ref_cnt = 0;
-		lwISystem* sys = 0;
-		lwISysGraphics* sys_graphics = 0;
+		ISystem* sys = 0;
+		ISysGraphics* sys_graphics = 0;
 
 		if ((sys = lwGetActiveISystem()) == 0)
 			goto __ret;
@@ -553,28 +553,28 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_FAILED;
 	}
 
-	void lwSetActiveISystem(lwISystem* sys) {
-		lwSystem::SetActiveISystem(sys);
+	void lwSetActiveISystem(ISystem* sys) {
+		System::SetActiveISystem(sys);
 	}
 
-	lwISystem* lwGetActiveISystem() {
-		return lwSystem::__system;
+	ISystem* lwGetActiveISystem() {
+		return System::__system;
 	}
 
 
-	LW_RESULT lwReleaseD3DObject(lwISystem* sys, lwISysGraphics* sys_graphics) {
+	LW_RESULT lwReleaseD3DObject(ISystem* sys, ISysGraphics* sys_graphics) {
 		sys->Release();
 		sys_graphics->Release();
 
 		return LW_RET_OK;
 	}
 
-	void lwHelperSetForceIgnoreTexFlag(DWORD flag) {
-		lwISystem* sys = lwGetActiveISystem();
+	void HelperSetForceIgnoreTexFlag(DWORD flag) {
+		ISystem* sys = lwGetActiveISystem();
 		if (sys == NULL)
 			return;
 
-		lwIOptionMgr* opt_mgr;
+		IOptionMgr* opt_mgr;
 		sys->GetInterface((LW_VOID**)&opt_mgr, LW_GUID_OPTIONMGR);
 		opt_mgr->SetIgnoreModelTexFlag((BYTE)flag);
 	}
@@ -586,11 +586,11 @@ namespace Corsairs::Engine::Render {
 		scene_mgr->RenderTransparentPrimitive();
 	}
 
-	LW_RESULT LoadResModelBuf(lwIResourceMgr* res_mgr, std::string_view file) {
+	LW_RESULT LoadResModelBuf(IResourceMgr* res_mgr, std::string_view file) {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		lwIResBufMgr* buf_mgr = res_mgr->GetResBufMgr();
-		lwIPathInfo* path_info = 0;
+		IPathInfo* path_info = 0;
 		res_mgr->GetSysGraphics()->GetSystem()->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO);
 
 		FILE* fp = fopen(std::string{file}.c_str(), "rt");

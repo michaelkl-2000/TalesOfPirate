@@ -2,21 +2,21 @@
 #include "stdafx.h"
 
 #include "MPSceneItem.h"
-#include "lwSystem.h"
-#include "lwSysGraphics.h"
+#include "System.h"
+#include "SysGraphics.h"
 #include "lwInterface.h"
 #include "lwGraphicsUtil.h"
 
 
 namespace Corsairs::Engine::Render {
-	MPSceneItem::MPSceneItem(lwISysGraphics* sys_graphics) {
+	MPSceneItem::MPSceneItem(ISysGraphics* sys_graphics) {
 		sys_graphics->GetResourceMgr()->CreateItem(&_obj);
 
 		BindMatrix(_obj->GetMatrix());
 	}
 
 	MPSceneItem::MPSceneItem() {
-		lwSysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr()->CreateItem(&_obj);
+		SysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr()->CreateItem(&_obj);
 
 		BindMatrix(_obj->GetMatrix());
 	}

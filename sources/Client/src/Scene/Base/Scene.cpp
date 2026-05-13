@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Scene.h"
 #include "DebugStateSystem.h"
 #include "EngineDiag.h"
@@ -906,15 +906,15 @@ int CGameScene::HitTestSceneObjChair(D3DXMATRIX* t_mat, int* h, const D3DXVECTOR
 			if (p == 0)
 				continue;
 
-			lwIHelperObject* ho = p->GetHelperObject();
+			IHelperObject* ho = p->GetHelperObject();
 			if (ho == 0)
 				continue;
 
-			lwIHelperBox* hb = ho->GetHelperBox();
+			IHelperBox* hb = ho->GetHelperBox();
 			if (hb == 0)
 				continue;
 
-			lwHelperBoxInfo* hbi = hb->GetDataInfoWithID(0);
+			HelperBoxInfo* hbi = hb->GetDataInfoWithID(0);
 
 			if (_tcscmp(hbi->name, "chair") == 0) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &u, (MPVector3*)nOrg, (MPVector3*)nRay ))) {
@@ -929,8 +929,8 @@ int CGameScene::HitTestSceneObjChair(D3DXMATRIX* t_mat, int* h, const D3DXVECTOR
 			//{
 			//    MPIPrimitive* p = pObj->GetPrimitive( u.data );
 
-			//    lwIHelperBox* hb = p->GetHelperObject()->GetHelperBox();
-			//    lwHelperBoxInfo* hbi = hb->GetDataInfoWithID( u.obj_id );
+			//    IHelperBox* hb = p->GetHelperObject()->GetHelperBox();
+			//    HelperBoxInfo* hbi = hb->GetDataInfoWithID( u.obj_id );
 
 			//    MPMatrix44Multiply( (MPMatrix44*)t_mat, &hbi->mat, p->GetMatrixGlobal() );
 
@@ -968,10 +968,10 @@ int CGameScene::HitTestSceneObjWall(D3DXMATRIX* t_mat, const D3DXVECTOR3* nOrg, 
 			if (p == 0)
 				continue;
 
-			lwIHelperMesh* hm = p->GetHelperObject()->GetHelperMesh();
+			IHelperMesh* hm = p->GetHelperObject()->GetHelperMesh();
 
 			if (hm) {
-				lwHelperMeshInfo* hmi = hm->GetDataInfoWithID(0);
+				HelperMeshInfo* hmi = hm->GetDataInfoWithID(0);
 
 				if (_tcscmp(hmi->name, "wall") == 0) {
 					if (SUCCEEDED(pObj->HitTestPrimitive( &u, (MPVector3*)nOrg, (MPVector3*)nRay ))) {
@@ -986,8 +986,8 @@ int CGameScene::HitTestSceneObjWall(D3DXMATRIX* t_mat, const D3DXVECTOR3* nOrg, 
 			//{
 			//    MPIPrimitive* p = pObj->GetPrimitive( u.data );
 
-			//    lwIHelperMesh* hb = p->GetHelperObject()->GetHelperMesh();
-			//    lwHelperMeshInfo* hbi = hb->GetDataInfoWithID( u.obj_id );
+			//    IHelperMesh* hb = p->GetHelperObject()->GetHelperMesh();
+			//    HelperMeshInfo* hbi = hb->GetDataInfoWithID( u.obj_id );
 
 			//    MPMatrix44Multiply( (MPMatrix44*)t_mat, &hbi->mat, p->GetMatrixGlobal() );
 			//    return 1;
@@ -1039,7 +1039,7 @@ int CGameScene::GetMainChaPickRay(MPVector3* org, MPVector3* ray) {
 
 #if(defined USE_CAMERA_TARGET)
 	MPVector3 target = (MPVector3&)GetMainCha()->GetPos();
-	*(D3DXVECTOR3*)(org) = g_pGameApp->GetMainCam()->m_EyePos;
+	*(D3DXVECTOR3*)(org) = g_pGameApp->GetMainCam()->_EyePos;
 #endif
 
 #if(defined USE_MAINCHARACTER_POS)
@@ -1730,7 +1730,7 @@ void CGameScene::SetMainCha(int nChaID) {
 	////g_pGameApp->ResetGameCamera( pCha->IsBoat() ? 3 : 0 );
 
 	//pCam->SetViewTransform();
-	//   //g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+	//   //g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 	//   //g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 }
 
@@ -1879,8 +1879,8 @@ int CGameScene::EndUpdateSceneObjLight(const CSceneObj* obj) {
 void CGameScene::PlayEnvSound(const char* szFile, int nX, int nY) {
 	if (!CGameApp::IsMusicSystemValid() || !_IsUseSound) return;
 
-	static float& x = g_pGameApp->GetMainCam()->m_RefPos.x;
-	static float& y = g_pGameApp->GetMainCam()->m_RefPos.y;
+	static float& x = g_pGameApp->GetMainCam()->_RefPos.x;
+	static float& y = g_pGameApp->GetMainCam()->_RefPos.y;
 	static int dis = 0;
 	dis = GetDistance(nX, nY, (int)(x * 100.0f), (int)(y * 100.0f));
 	if (dis <= VOICE_DIS) {
@@ -2180,7 +2180,7 @@ void CGameScene::PlayEnvSound(int nSoundNo, int nX, int nY) {
 	}
 
 	CMusicInfo* pInfo = GetMusicInfo(nSoundNo);
-	if (!pInfo || pInfo->nType != 1) {
+	if (!pInfo || pInfo->Type != 1) {
 		return;
 	}
 

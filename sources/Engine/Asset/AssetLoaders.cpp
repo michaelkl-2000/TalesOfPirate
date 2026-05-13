@@ -735,7 +735,7 @@ DWORD LgoLoader::GetMeshInfoSize(const lwGeomObjInfo* info) {
 // helper
 // =============================================================================
 
-LW_RESULT LgoLoader::LoadHelperInfo(lwHelperInfo& info, std::FILE* fp, DWORD version) {
+LW_RESULT LgoLoader::LoadHelperInfo(HelperInfo& info, std::FILE* fp, DWORD version) {
     if (version == EXP_OBJ_VERSION_0_0_0_0) {
         DWORD old_version = 0;
         if (std::fread(&old_version, sizeof(old_version), 1, fp) != 1) {
@@ -782,7 +782,7 @@ LW_RESULT LgoLoader::LoadHelperInfo(lwHelperInfo& info, std::FILE* fp, DWORD ver
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::SaveHelperInfo(const lwHelperInfo& info, std::FILE* fp) {
+LW_RESULT LgoLoader::SaveHelperInfo(const HelperInfo& info, std::FILE* fp) {
     fwrite(&info.type, sizeof(info.type), 1, fp);
 
     if (info.type & HELPER_TYPE_DUMMY) {
@@ -804,12 +804,12 @@ LW_RESULT LgoLoader::SaveHelperInfo(const lwHelperInfo& info, std::FILE* fp) {
     return LW_RET_OK;
 }
 
-DWORD LgoLoader::GetHelperInfoSize(const lwHelperInfo& info) {
+DWORD LgoLoader::GetHelperInfoSize(const HelperInfo& info) {
     DWORD size = 0;
 
     if (info.type & HELPER_TYPE_DUMMY) {
         size += sizeof(info.dummy_num);
-        size += sizeof(lwHelperDummyInfo) * info.dummy_num;
+        size += sizeof(HelperDummyInfo) * info.dummy_num;
     }
 
     if (info.type & HELPER_TYPE_BOX) {
@@ -843,18 +843,18 @@ DWORD LgoLoader::GetHelperInfoSize(const lwHelperInfo& info) {
     return size;
 }
 
-LW_RESULT LgoLoader::LoadHelperDummySection(lwHelperInfo& info, std::FILE* fp, DWORD version) {
+LW_RESULT LgoLoader::LoadHelperDummySection(HelperInfo& info, std::FILE* fp, DWORD version) {
     if (version >= EXP_OBJ_VERSION_1_0_0_1) {
         LGO_FREAD_OR_RET(fp, &info.dummy_num, sizeof(info.dummy_num), 1, "info.dummy_num");
-        info.dummy_seq = LGO_NEW_ARRAY(lwHelperDummyInfo, info.dummy_num);
-        LGO_FREAD_OR_RET(fp, &info.dummy_seq[0], sizeof(lwHelperDummyInfo), info.dummy_num, "info.dummy_seq[0]");
+        info.dummy_seq = LGO_NEW_ARRAY(HelperDummyInfo, info.dummy_num);
+        LGO_FREAD_OR_RET(fp, &info.dummy_seq[0], sizeof(HelperDummyInfo), info.dummy_num, "info.dummy_seq[0]");
     }
     else if (version <= EXP_OBJ_VERSION_1_0_0_0) {
         LGO_FREAD_OR_RET(fp, &info.dummy_num, sizeof(info.dummy_num), 1, "info.dummy_num");
-        lwHelperDummyInfo_1000* old_s = LGO_NEW_ARRAY(lwHelperDummyInfo_1000, info.dummy_num);
-        LGO_FREAD_OR_RET(fp, &old_s[0], sizeof(lwHelperDummyInfo_1000), info.dummy_num, "old_s[0]");
+        HelperDummyInfo_1000* old_s = LGO_NEW_ARRAY(HelperDummyInfo_1000, info.dummy_num);
+        LGO_FREAD_OR_RET(fp, &old_s[0], sizeof(HelperDummyInfo_1000), info.dummy_num, "old_s[0]");
 
-        info.dummy_seq = LGO_NEW_ARRAY(lwHelperDummyInfo, info.dummy_num);
+        info.dummy_seq = LGO_NEW_ARRAY(HelperDummyInfo, info.dummy_num);
         for (DWORD i = 0; i < info.dummy_num; i++) {
             info.dummy_seq[i].id = old_s[i].id;
             info.dummy_seq[i].mat = old_s[i].mat;
@@ -867,11 +867,11 @@ LW_RESULT LgoLoader::LoadHelperDummySection(lwHelperInfo& info, std::FILE* fp, D
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::LoadHelperBoxSection(lwHelperInfo& info, std::FILE* fp, DWORD version) {
+LW_RESULT LgoLoader::LoadHelperBoxSection(HelperInfo& info, std::FILE* fp, DWORD version) {
     LGO_FREAD_OR_RET(fp, &info.box_num, sizeof(info.box_num), 1, "info.box_num");
 
-    info.box_seq = LGO_NEW_ARRAY(lwHelperBoxInfo, info.box_num);
-    LGO_FREAD_OR_RET(fp, &info.box_seq[0], sizeof(lwHelperBoxInfo), info.box_num, "info.box_seq[0]");
+    info.box_seq = LGO_NEW_ARRAY(HelperBoxInfo, info.box_num);
+    LGO_FREAD_OR_RET(fp, &info.box_seq[0], sizeof(HelperBoxInfo), info.box_num, "info.box_seq[0]");
 
     if (version <= EXP_OBJ_VERSION_1_0_0_1) {
         // Старый формат хранил box как (point, size); конвертируем в (center, radius).
@@ -892,13 +892,13 @@ LW_RESULT LgoLoader::LoadHelperBoxSection(lwHelperInfo& info, std::FILE* fp, DWO
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::LoadHelperMeshSection(lwHelperInfo& info, std::FILE* fp, DWORD version) {
+LW_RESULT LgoLoader::LoadHelperMeshSection(HelperInfo& info, std::FILE* fp, DWORD version) {
     LGO_FREAD_OR_RET(fp, &info.mesh_num, sizeof(info.mesh_num), 1, "info.mesh_num");
 
-    info.mesh_seq = LGO_NEW_ARRAY(lwHelperMeshInfo, info.mesh_num);
+    info.mesh_seq = LGO_NEW_ARRAY(HelperMeshInfo, info.mesh_num);
 
     for (DWORD i = 0; i < info.mesh_num; i++) {
-        lwHelperMeshInfo* mi = &info.mesh_seq[i];
+        HelperMeshInfo* mi = &info.mesh_seq[i];
 
         LGO_FREAD_OR_RET(fp, &mi->id, sizeof(mi->id), 1, "mi->id");
         LGO_FREAD_OR_RET(fp, &mi->type, sizeof(mi->type), 1, "mi->type");
@@ -911,10 +911,10 @@ LW_RESULT LgoLoader::LoadHelperMeshSection(lwHelperInfo& info, std::FILE* fp, DW
         LGO_FREAD_OR_RET(fp, &mi->face_num, sizeof(mi->face_num), 1, "mi->face_num");
 
         mi->vertex_seq = LGO_NEW_ARRAY(lwVector3, mi->vertex_num);
-        mi->face_seq = LGO_NEW_ARRAY(lwHelperMeshFaceInfo, mi->face_num);
+        mi->face_seq = LGO_NEW_ARRAY(HelperMeshFaceInfo, mi->face_num);
 
         LGO_FREAD_OR_RET(fp, &mi->vertex_seq[0], sizeof(lwVector3), mi->vertex_num, "mi->vertex_seq[0]");
-        LGO_FREAD_OR_RET(fp, &mi->face_seq[0], sizeof(lwHelperMeshFaceInfo), mi->face_num, "mi->face_seq[0]");
+        LGO_FREAD_OR_RET(fp, &mi->face_seq[0], sizeof(HelperMeshFaceInfo), mi->face_num, "mi->face_seq[0]");
     }
 
     if (version <= EXP_OBJ_VERSION_1_0_0_1) {
@@ -932,7 +932,7 @@ LW_RESULT LgoLoader::LoadHelperMeshSection(lwHelperInfo& info, std::FILE* fp, DW
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::LoadBoundingBoxSection(lwHelperInfo& info, std::FILE* fp, DWORD version) {
+LW_RESULT LgoLoader::LoadBoundingBoxSection(HelperInfo& info, std::FILE* fp, DWORD version) {
     LGO_FREAD_OR_RET(fp, &info.bbox_num, sizeof(DWORD), 1, "info.bbox_num");
 
     info.bbox_seq = LGO_NEW_ARRAY(lwBoundingBoxInfo, info.bbox_num);
@@ -953,7 +953,7 @@ LW_RESULT LgoLoader::LoadBoundingBoxSection(lwHelperInfo& info, std::FILE* fp, D
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::LoadBoundingSphereSection(lwHelperInfo& info, std::FILE* fp, DWORD /*version*/) {
+LW_RESULT LgoLoader::LoadBoundingSphereSection(HelperInfo& info, std::FILE* fp, DWORD /*version*/) {
     LGO_FREAD_OR_RET(fp, &info.bsphere_num, sizeof(DWORD), 1, "info.bsphere_num");
 
     info.bsphere_seq = LGO_NEW_ARRAY(lwBoundingSphereInfo, info.bsphere_num);
@@ -962,23 +962,23 @@ LW_RESULT LgoLoader::LoadBoundingSphereSection(lwHelperInfo& info, std::FILE* fp
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::SaveHelperDummySection(const lwHelperInfo& info, std::FILE* fp) {
+LW_RESULT LgoLoader::SaveHelperDummySection(const HelperInfo& info, std::FILE* fp) {
     fwrite(&info.dummy_num, sizeof(info.dummy_num), 1, fp);
-    fwrite(&info.dummy_seq[0], sizeof(lwHelperDummyInfo), info.dummy_num, fp);
+    fwrite(&info.dummy_seq[0], sizeof(HelperDummyInfo), info.dummy_num, fp);
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::SaveHelperBoxSection(const lwHelperInfo& info, std::FILE* fp) {
+LW_RESULT LgoLoader::SaveHelperBoxSection(const HelperInfo& info, std::FILE* fp) {
     fwrite(&info.box_num, sizeof(info.box_num), 1, fp);
-    fwrite(&info.box_seq[0], sizeof(lwHelperBoxInfo), info.box_num, fp);
+    fwrite(&info.box_seq[0], sizeof(HelperBoxInfo), info.box_num, fp);
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::SaveHelperMeshSection(const lwHelperInfo& info, std::FILE* fp) {
+LW_RESULT LgoLoader::SaveHelperMeshSection(const HelperInfo& info, std::FILE* fp) {
     fwrite(&info.mesh_num, sizeof(info.mesh_num), 1, fp);
 
     for (DWORD i = 0; i < info.mesh_num; i++) {
-        const lwHelperMeshInfo* mi = &info.mesh_seq[i];
+        const HelperMeshInfo* mi = &info.mesh_seq[i];
 
         fwrite(&mi->id, sizeof(mi->id), 1, fp);
         fwrite(&mi->type, sizeof(mi->type), 1, fp);
@@ -991,19 +991,19 @@ LW_RESULT LgoLoader::SaveHelperMeshSection(const lwHelperInfo& info, std::FILE* 
         fwrite(&mi->face_num, sizeof(mi->face_num), 1, fp);
 
         fwrite(&mi->vertex_seq[0], sizeof(lwVector3), mi->vertex_num, fp);
-        fwrite(&mi->face_seq[0], sizeof(lwHelperMeshFaceInfo), mi->face_num, fp);
+        fwrite(&mi->face_seq[0], sizeof(HelperMeshFaceInfo), mi->face_num, fp);
     }
 
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::SaveBoundingBoxSection(const lwHelperInfo& info, std::FILE* fp) {
+LW_RESULT LgoLoader::SaveBoundingBoxSection(const HelperInfo& info, std::FILE* fp) {
     fwrite(&info.bbox_num, sizeof(DWORD), 1, fp);
     fwrite(&info.bbox_seq[0], sizeof(lwBoundingBoxInfo), info.bbox_num, fp);
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::SaveBoundingSphereSection(const lwHelperInfo& info, std::FILE* fp) {
+LW_RESULT LgoLoader::SaveBoundingSphereSection(const HelperInfo& info, std::FILE* fp) {
     fwrite(&info.bsphere_num, sizeof(DWORD), 1, fp);
     fwrite(&info.bsphere_seq[0], sizeof(lwBoundingSphereInfo), info.bsphere_num, fp);
     return LW_RET_OK;
@@ -1404,10 +1404,10 @@ LW_RESULT LgoLoader::GetModelObjHeader(lwModelObjInfo::lwModelObjInfoHeader* out
 }
 
 // =============================================================================
-// lwHelperDummyObjInfo (вызывается из LoadModelNode/SaveModelNode для NODE_DUMMY)
+// HelperDummyObjInfo (вызывается из LoadModelNode/SaveModelNode для NODE_DUMMY)
 // =============================================================================
 
-LW_RESULT LgoLoader::LoadHelperDummyObj(lwHelperDummyObjInfo& info, std::FILE* fp, DWORD /*version*/) {
+LW_RESULT LgoLoader::LoadHelperDummyObj(HelperDummyObjInfo& info, std::FILE* fp, DWORD /*version*/) {
     LGO_FREAD_OR_RET(fp, &info._id, sizeof(info._id), 1, "info._id");
     LGO_FREAD_OR_RET(fp, &info._mat, sizeof(info._mat), 1, "info._mat");
 
@@ -1431,7 +1431,7 @@ LW_RESULT LgoLoader::LoadHelperDummyObj(lwHelperDummyObjInfo& info, std::FILE* f
     return LW_RET_OK;
 }
 
-LW_RESULT LgoLoader::SaveHelperDummyObj(lwHelperDummyObjInfo& info, std::FILE* fp) {
+LW_RESULT LgoLoader::SaveHelperDummyObj(HelperDummyObjInfo& info, std::FILE* fp) {
     fwrite(&info._id, sizeof(info._id), 1, fp);
     fwrite(&info._mat, sizeof(info._mat), 1, fp);
 
@@ -1481,8 +1481,8 @@ LW_RESULT LgoLoader::LoadModelNode(lwModelNodeInfo& info, std::FILE* fp, DWORD v
         }
     }
     else if (info._type == NODE_DUMMY) {
-        info._data = LW_NEW(lwHelperDummyObjInfo);
-        if (LW_RESULT r = LoadHelperDummyObj(*(lwHelperDummyObjInfo*)info._data, fp, version); LW_FAILED(r)) {
+        info._data = LW_NEW(HelperDummyObjInfo);
+        if (LW_RESULT r = LoadHelperDummyObj(*(HelperDummyObjInfo*)info._data, fp, version); LW_FAILED(r)) {
             ToLogService("errors", LogLevel::Error,
                          "[{}] LgoLoader::LoadHelperDummyObj failed: version={}, ret={}",
                          __FUNCTION__, static_cast<long long>(version),
@@ -1491,8 +1491,8 @@ LW_RESULT LgoLoader::LoadModelNode(lwModelNodeInfo& info, std::FILE* fp, DWORD v
         }
     }
     else if (info._type == NODE_HELPER) {
-        info._data = LW_NEW(lwHelperInfo);
-        if (LW_RESULT r = LoadHelperInfo(*(lwHelperInfo*)info._data, fp, version); LW_FAILED(r)) {
+        info._data = LW_NEW(HelperInfo);
+        if (LW_RESULT r = LoadHelperInfo(*(HelperInfo*)info._data, fp, version); LW_FAILED(r)) {
             ToLogService("errors", LogLevel::Error,
                          "[{}] LgoLoader::LoadHelperInfo failed: version={}, ret={}",
                          __FUNCTION__, static_cast<long long>(version),
@@ -1527,7 +1527,7 @@ LW_RESULT LgoLoader::SaveModelNode(lwModelNodeInfo& info, std::FILE* fp) {
         }
     }
     else if (info._type == NODE_DUMMY) {
-        if (LW_RESULT r = SaveHelperDummyObj(*(lwHelperDummyObjInfo*)info._data, fp); LW_FAILED(r)) {
+        if (LW_RESULT r = SaveHelperDummyObj(*(HelperDummyObjInfo*)info._data, fp); LW_FAILED(r)) {
             ToLogService("errors", LogLevel::Error,
                          "[{}] LgoLoader::SaveHelperDummyObj failed: ret={}",
                          __FUNCTION__, static_cast<long long>(r));
@@ -1535,7 +1535,7 @@ LW_RESULT LgoLoader::SaveModelNode(lwModelNodeInfo& info, std::FILE* fp) {
         }
     }
     else if (info._type == NODE_HELPER) {
-        if (LW_RESULT r = SaveHelperInfo(*(lwHelperInfo*)info._data, fp); LW_FAILED(r)) {
+        if (LW_RESULT r = SaveHelperInfo(*(HelperInfo*)info._data, fp); LW_FAILED(r)) {
             ToLogService("errors", LogLevel::Error,
                          "[{}] LgoLoader::SaveHelperInfo failed: ret={}",
                          __FUNCTION__, static_cast<long long>(r));
@@ -2369,12 +2369,12 @@ LW_RESULT LgoLoader::LoadModelEx(lwModelInfo& info, std::string_view file,
 
 } // namespace Corsairs::Engine::Render
 
-#include "lwEfxTrack.h"
+#include "EfxTrack.h"
 #include "lwPoseCtrl.h"
 
 namespace Corsairs::Engine::Render {
 
-LW_RESULT EfxTrackLoader::Load(Corsairs::Engine::Render::lwEfxTrack& track, std::string_view file) {
+LW_RESULT EfxTrackLoader::Load(Corsairs::Engine::Render::EfxTrack& track, std::string_view file) {
     UniqueFile fp{std::fopen(std::string{file}.c_str(), "rb")};
     if (!fp) {
         ToLogService("errors", LogLevel::Error,
@@ -2392,7 +2392,7 @@ LW_RESULT EfxTrackLoader::Load(Corsairs::Engine::Render::lwEfxTrack& track, std:
     return LW_RET_OK;
 }
 
-LW_RESULT EfxTrackLoader::Save(const Corsairs::Engine::Render::lwEfxTrack& track, std::string_view file) {
+LW_RESULT EfxTrackLoader::Save(const Corsairs::Engine::Render::EfxTrack& track, std::string_view file) {
     UniqueFile fp{std::fopen(std::string{file}.c_str(), "wb")};
     if (!fp) {
         ToLogService("errors", LogLevel::Error,

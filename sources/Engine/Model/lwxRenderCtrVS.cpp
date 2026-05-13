@@ -12,7 +12,7 @@ namespace Corsairs::Engine::Render {
 		return LW_NEW(lwxRenderCtrlVSVertexBlend);
 	}
 
-	LW_RESULT lwInitUserRenderCtrlVSProc(lwIResourceMgr* mgr) {
+	LW_RESULT lwInitUserRenderCtrlVSProc(IResourceMgr* mgr) {
 		mgr->RegisterRenderCtrlProc(RENDERCTRL_VS_VERTEXBLEND, __RenderCtrlVSProcVSVertexBlend_dx8);
 		mgr->RegisterRenderCtrlProc(RENDERCTRL_VS_VERTEXBLEND_DX9, __RenderCtrlVSProcVSVertexBlend_dx9);
 		return LW_RET_OK;
@@ -42,8 +42,8 @@ namespace Corsairs::Engine::Render {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		// ===== declaraes antecipadas (evita warnings com goto) =====
-		lwIResourceMgr* res_mgr = 0;
-		lwIDeviceObject* dev_obj = 0;
+		IResourceMgr* res_mgr = 0;
+		IDeviceObject* dev_obj = 0;
 		lwMatrix44* mat_global = 0;
 		const lwMatrix44* pViewProj = 0;
 		lwMatrix44 mat;
@@ -158,7 +158,7 @@ namespace Corsairs::Engine::Render {
 
 		// ===== vertex shader =====
 		{
-			lwIShaderMgr* shader_mgr = res_mgr->GetShaderMgr();
+			IShaderMgr* shader_mgr = res_mgr->GetShaderMgr();
 			if (!shader_mgr)
 				goto __ret;
 
@@ -191,8 +191,8 @@ namespace Corsairs::Engine::Render {
 	}
 
 	LW_RESULT lwxRenderCtrlVSVertexBlend_dx8::EndSet(lwIRenderCtrlAgent* agent) {
-		lwIResourceMgr* res_mgr = agent->GetResourceMgr();
-		lwIDeviceObject* dev_obj = res_mgr->GetDeviceObject();
+		IResourceMgr* res_mgr = agent->GetResourceMgr();
+		IDeviceObject* dev_obj = res_mgr->GetDeviceObject();
 
 		if (_rs_fog) {
 			dev_obj->SetRenderState(D3DRS_FOGENABLE, TRUE);
@@ -205,8 +205,8 @@ namespace Corsairs::Engine::Render {
 	}
 
 	LW_RESULT lwxRenderCtrlVSVertexBlend_dx8::BeginSetSubset(DWORD subset, lwIRenderCtrlAgent* agent) {
-		lwIResourceMgr* res_mgr = agent->GetResourceMgr();
-		lwIDeviceObject* dev_obj = res_mgr->GetDeviceObject();
+		IResourceMgr* res_mgr = agent->GetResourceMgr();
+		IDeviceObject* dev_obj = res_mgr->GetDeviceObject();
 		lwIMtlTexAgent* mtltex_agent = agent->GetMtlTexAgent();
 
 		lwMaterial* mtl = mtltex_agent->GetMaterial();
@@ -294,8 +294,8 @@ namespace Corsairs::Engine::Render {
 	LW_RESULT lwxRenderCtrlVSVertexBlend::Initialize(lwIRenderCtrlAgent* agent) {
 		LW_RESULT ret = LW_RET_FAILED;
 
-		lwIResourceMgr* res_mgr = agent->GetResourceMgr();
-		lwIShaderMgr* shader_mgr = res_mgr->GetShaderMgr();
+		IResourceMgr* res_mgr = agent->GetResourceMgr();
+		IShaderMgr* shader_mgr = res_mgr->GetShaderMgr();
 
 		lwVertexShaderInfo* vs_info = shader_mgr->GetVertexShaderInfo(agent->GetVertexShader());
 		if (HRESULT hr = D3DXGetShaderConstantTable((DWORD*)vs_info->data, &_const_tab); FAILED(hr)) {
@@ -314,8 +314,8 @@ namespace Corsairs::Engine::Render {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		// --- declaraes antecipadas (evita warnings com goto) ---
-		lwIResourceMgr* res_mgr = 0;
-		lwIDeviceObject* dev_obj = 0;
+		IResourceMgr* res_mgr = 0;
+		IDeviceObject* dev_obj = 0;
 		IDirect3DDeviceX* dev = 0;
 		lwIMeshAgent* mesh_agent = 0;
 		lwIMesh* mesh = 0;
@@ -461,7 +461,7 @@ namespace Corsairs::Engine::Render {
 
 		// --- vertex shader + decl (mantido) ---
 		{
-			lwIShaderMgr* shader_mgr = res_mgr->GetShaderMgr();
+			IShaderMgr* shader_mgr = res_mgr->GetShaderMgr();
 			if (!shader_mgr)
 				goto __ret;
 
@@ -497,8 +497,8 @@ namespace Corsairs::Engine::Render {
 	}
 
 	LW_RESULT lwxRenderCtrlVSVertexBlend::EndSet(lwIRenderCtrlAgent* agent) {
-		lwIResourceMgr* res_mgr = agent->GetResourceMgr();
-		lwIDeviceObject* dev_obj = res_mgr->GetDeviceObject();
+		IResourceMgr* res_mgr = agent->GetResourceMgr();
+		IDeviceObject* dev_obj = res_mgr->GetDeviceObject();
 
 		if (_rs_fog) {
 			dev_obj->SetRenderState(D3DRS_FOGENABLE, TRUE);
@@ -513,8 +513,8 @@ namespace Corsairs::Engine::Render {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		// --- declaraes antecipadas (evita warnings com goto) ---
-		lwIResourceMgr* res_mgr = 0;
-		lwIDeviceObject* dev_obj = 0;
+		IResourceMgr* res_mgr = 0;
+		IDeviceObject* dev_obj = 0;
 		lwIMtlTexAgent* mtltex_agent = 0;
 		IDirect3DDeviceX* dev = 0;
 		lwMaterial* mtl = 0;

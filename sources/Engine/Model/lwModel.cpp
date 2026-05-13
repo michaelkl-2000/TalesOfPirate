@@ -3,18 +3,18 @@
 
 #include "lwModel.h"
 #include "lwItem.h"
-#include "lwSystem.h"
-#include "lwSysGraphics.h"
-#include "lwResourceMgr.h"
+#include "System.h"
+#include "SysGraphics.h"
+#include "ResourceMgr.h"
 #include "lwAnimCtrl.h"
 #include "lwRenderImp.h"
-#include "lwPathInfo.h"
+#include "PathInfo.h"
 #include <fstream>
 #include <iostream>
 namespace Corsairs::Engine::Render {
 	//lwModel
 
-	lwModel::lwModel(lwIResourceMgr* res_mgr)
+	lwModel::lwModel(IResourceMgr* res_mgr)
 		: _id(LW_INVALID_INDEX), _res_mgr(res_mgr), _scene_mgr(0), _helper_object(0) {
 		_model_id = LW_INVALID_INDEX;
 		_opacity = 1.0f;
@@ -35,32 +35,32 @@ namespace Corsairs::Engine::Render {
 			goto __ret;
 
 		{
-			lwModelObjInfo* m_info = (lwModelObjInfo*)info;
+			lwModelObjInfo* _info = (lwModelObjInfo*)info;
 
-			lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
-			lwISystem* sys = sys_graphics->GetSystem();
-			lwIPathInfo* path_info = sys->GetPathInfo();
-			lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+			ISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
+			ISystem* sys = sys_graphics->GetSystem();
+			IPathInfo* path_info = sys->GetPathInfo();
+			IOptionMgr* opt_mgr = sys->GetOptionMgr();
 			BYTE create_helper_primitive = opt_mgr->GetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE);
 
-			for (DWORD i = 0; i < m_info->geom_obj_num; i++) {
+			for (DWORD i = 0; i < _info->geom_obj_num; i++) {
 				lwIPrimitive* imp;
 				_res_mgr->CreatePrimitive(&imp);
 
-				imp->Load((lwGeomObjInfo*)m_info->geom_obj_seq[i], path_info->GetPath(PathInfoType::PATH_TYPE_TEXTURE_SCENE).c_str(), NULL);
+				imp->Load((lwGeomObjInfo*)_info->geom_obj_seq[i], path_info->GetPath(PathInfoType::PATH_TYPE_TEXTURE_SCENE).c_str(), NULL);
 
 				_obj_seq[_obj_num] = imp;
 				_obj_num += 1;
 			}
 
-			if (m_info->helper_data.type != HELPER_TYPE_INVALID) {
+			if (_info->helper_data.type != HELPER_TYPE_INVALID) {
 				if (_helper_object == 0) {
-					_helper_object = LW_NEW(lwHelperObject((lwResourceMgr*)_res_mgr));
-					if (LW_RESULT r = _helper_object->LoadHelperInfo(&m_info->helper_data, create_helper_primitive);
+					_helper_object = LW_NEW(HelperObject((ResourceMgr*)_res_mgr));
+					if (LW_RESULT r = _helper_object->LoadHelperInfo(&_info->helper_data, create_helper_primitive);
 						LW_FAILED(r)) {
 						ToLogService("errors", LogLevel::Error,
 									 "[{}] LoadHelperInfo failed (info overload): helper_type={}, ret={}",
-									 __FUNCTION__, static_cast<int>(m_info->helper_data.type),
+									 __FUNCTION__, static_cast<int>(_info->helper_data.type),
 									 static_cast<long long>(r));
 						goto __ret;
 					}
@@ -88,10 +88,10 @@ namespace Corsairs::Engine::Render {
 		}
 
 
-		lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
-		lwISystem* sys = sys_graphics->GetSystem();
-		lwIPathInfo* path_info = sys->GetPathInfo();
-		lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+		ISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
+		ISystem* sys = sys_graphics->GetSystem();
+		IPathInfo* path_info = sys->GetPathInfo();
+		IOptionMgr* opt_mgr = sys->GetOptionMgr();
 		BYTE create_helper_primitive = opt_mgr->GetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE);
 
 		// query model pool
@@ -171,7 +171,7 @@ namespace Corsairs::Engine::Render {
 
 			if (model_info_ptr->helper_data.type != HELPER_TYPE_INVALID) {
 				if (_helper_object == 0) {
-					_helper_object = LW_NEW(lwHelperObject((lwResourceMgr*)_res_mgr));
+					_helper_object = LW_NEW(HelperObject((ResourceMgr*)_res_mgr));
 					if (LW_RESULT r = _helper_object->LoadHelperInfo(&model_info_ptr->helper_data,
 																	 create_helper_primitive); LW_FAILED(r)) {
 						ToLogService("errors", LogLevel::Error,
@@ -294,7 +294,7 @@ namespace Corsairs::Engine::Render {
 		if (_state_ctrl.GetState(STATE_VISIBLE) == 0)
 			return LW_RET_OK;
 
-		lwISysGraphics* sys_grh = _res_mgr->GetSysGraphics();
+		ISysGraphics* sys_grh = _res_mgr->GetSysGraphics();
 		lwISceneMgr* scn_mgr = sys_grh->GetSceneMgr();
 
 		lwIPrimitive* p;
@@ -406,10 +406,10 @@ namespace Corsairs::Engine::Render {
 		lwPickInfo u, v;
 		v.obj_id = LW_INVALID_INDEX;
 
-		lwHelperMesh* obj;
+		HelperMesh* obj;
 
 		for (DWORD i = 0; i < _obj_num; i++) {
-			obj = (lwHelperMesh*)_obj_seq[i]->GetHelperObject()->GetHelperMesh();
+			obj = (HelperMesh*)_obj_seq[i]->GetHelperObject()->GetHelperMesh();
 
 			if (obj == 0 || obj->IsValidObject() == 0)
 				continue;
@@ -436,10 +436,10 @@ namespace Corsairs::Engine::Render {
 		lwPickInfo u, v;
 		v.obj_id = LW_INVALID_INDEX;
 
-		lwHelperBox* obj;
+		HelperBox* obj;
 
 		for (DWORD i = 0; i < _obj_num; i++) {
-			obj = (lwHelperBox*)_obj_seq[i]->GetHelperObject()->GetHelperBox();
+			obj = (HelperBox*)_obj_seq[i]->GetHelperObject()->GetHelperBox();
 
 			if (obj == 0 || obj->IsValidObject() == 0)
 				continue;
@@ -506,7 +506,7 @@ namespace Corsairs::Engine::Render {
 		}
 
 		{
-			lwHelperMesh* obj = (lwHelperMesh*)_helper_object->GetHelperMesh();
+			HelperMesh* obj = (HelperMesh*)_helper_object->GetHelperMesh();
 
 			if (obj == 0 || obj->IsValidObject() == 0) {
 				ret = LW_RET_FAILED_2;
@@ -532,7 +532,7 @@ namespace Corsairs::Engine::Render {
 		if (_helper_object == 0)
 			return LW_RET_FAILED_2;
 
-		lwHelperBox* obj = (lwHelperBox*)_helper_object->GetHelperBox();
+		HelperBox* obj = (HelperBox*)_helper_object->GetHelperBox();
 
 		if (obj->IsValidObject() == 0)
 			return LW_RET_FAILED_2;
@@ -552,7 +552,7 @@ namespace Corsairs::Engine::Render {
 			_helper_object->SetVisible(show);
 		}
 
-		lwIHelperObject* helper_obj;
+		IHelperObject* helper_obj;
 
 		for (DWORD i = 0; i < _obj_num; i++) {
 			if ((helper_obj = _obj_seq[i]->GetHelperObject()) != 0) {
@@ -562,7 +562,7 @@ namespace Corsairs::Engine::Render {
 	}
 
 	void lwModel::ShowHelperMesh(int show) {
-		lwIHelperMesh* h;
+		IHelperMesh* h;
 
 		if (_helper_object) {
 			if (h = _helper_object->GetHelperMesh()) {
@@ -633,11 +633,11 @@ namespace Corsairs::Engine::Render {
 		if (_helper_object == NULL)
 			goto __ret;
 		{
-			lwIHelperDummy* d = _helper_object->GetHelperDummy();
+			IHelperDummy* d = _helper_object->GetHelperDummy();
 			if (d == NULL)
 				goto __ret;
 
-			lwHelperDummyInfo* hdi = d->GetDataInfoWithID(link_id);
+			HelperDummyInfo* hdi = d->GetDataInfoWithID(link_id);
 			if (hdi == NULL)
 				goto __ret;
 			{
@@ -657,12 +657,12 @@ namespace Corsairs::Engine::Render {
 		if (_helper_object == NULL)
 			goto __ret;
 		{
-			lwIHelperDummy* d = _helper_object->GetHelperDummy();
+			IHelperDummy* d = _helper_object->GetHelperDummy();
 			if (d == NULL)
 				goto __ret;
 
 			{
-				lwHelperDummyInfo* hdi = d->GetDataInfoWithID(info->link_parent_id);
+				HelperDummyInfo* hdi = d->GetDataInfoWithID(info->link_parent_id);
 				if (hdi == NULL)
 					goto __ret;
 
@@ -688,9 +688,9 @@ namespace Corsairs::Engine::Render {
 	LW_RESULT lwModel::CullPrimitive() {
 		LW_RESULT ret = LW_RET_FAILED;
 
-		lwISysGraphics* sys_grh = _res_mgr->GetSysGraphics();
+		ISysGraphics* sys_grh = _res_mgr->GetSysGraphics();
 		lwISceneMgr* scn_mgr = sys_grh->GetSceneMgr();
-		lwIOptionMgr* opt_mgr = sys_grh->GetSystem()->GetOptionMgr();
+		IOptionMgr* opt_mgr = sys_grh->GetSystem()->GetOptionMgr();
 		BOOL cull_flag = opt_mgr->GetByteFlag(OptionByteFlag::OPTION_FLAG_CULLPRIMITIVE_MODEL);
 
 		if (cull_flag == 0)

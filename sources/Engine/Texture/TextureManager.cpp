@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "TextureManager.h"
 #include "MPRender.h"
-#include "lwSysGraphics.h"
+#include "SysGraphics.h"
 #include <logutil.h>
 
 #include <sys/stat.h>
@@ -27,11 +27,15 @@ TextureManager::~TextureManager() {
 int TextureManager::GetOrCreateID(std::string_view path,
                                    D3DFORMAT forceFormat,
                                    bool pinned) {
-	if (path.empty()) return 0;
+	if (path.empty()) {
+		return 0;
+	}
 
 	// Нормализация: lowercase
 	std::string key(path);
-	for (auto& c : key) c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
+	for (auto& c : key) {
+		c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
+	}
 
 	auto it = _nameIndex.find(key);
 	if (it != _nameIndex.end())
@@ -83,11 +87,17 @@ TextureManager::Entry* TextureManager::GetInfo(int id) {
 }
 
 TextureManager::Entry* TextureManager::GetInfo(const char* name) {
-	if (!name) return nullptr;
+	if (!name) {
+		return nullptr;
+	}
 	std::string key(name);
-	for (auto& c : key) c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
+	for (auto& c : key) {
+		c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
+	}
 	auto it = _nameIndex.find(key);
-	if (it == _nameIndex.end()) return nullptr;
+	if (it == _nameIndex.end()) {
+		return nullptr;
+	}
 	return &_entries[it->second];
 }
 
@@ -140,7 +150,9 @@ bool TextureManager::IsMemoryFull() {
 
 void TextureManager::ReloadAll() {
 	for (auto& entry : _entries) {
-		if (!entry.pTex) continue;
+		if (!entry.pTex) {
+			continue;
+		}
 		ReleaseTexture(entry);
 		entry.pTex = LoadTexture(entry);
 		if (entry.pTex) {
@@ -162,13 +174,17 @@ void TextureManager::SetLevel(int level) {
 // ============================================================================
 
 void TextureManager::ReleaseTexture(Entry& entry) {
-	if (!entry.pTex) return;
+	if (!entry.pTex) {
+		return;
+	}
 
 	ToLogService("common", "Release Texture [{}], size = {} {}", entry.path, entry.sWidth, entry.sHeight);
 
 	if (entry.path.ends_with(".wsd")) {
 		auto p = reinterpret_cast<char*>(entry.pTex->GetUserData());
-		if (p) delete[] p;
+		if (p) {
+			delete[] p;
+		}
 	}
 
 	entry.pTex->Release();
@@ -210,7 +226,7 @@ std::string TextureManager::ResolveTexturePath(const char* filename) {
 // ============================================================================
 
 lwITex* TextureManager::LoadTexture(Entry& entry) {
-	lwIResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
+	IResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
 
 	lwITex* tex = nullptr;
 	res_mgr->CreateTex(&tex);

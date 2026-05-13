@@ -8,7 +8,7 @@
 #include "lwInterface.h"
 
 namespace Corsairs::Engine::Render {
-	LW_RESULT lwInitInternalRenderCtrlVSProc(lwIResourceMgr* mgr);
+	LW_RESULT lwInitInternalRenderCtrlVSProc(IResourceMgr* mgr);
 
 	class lwRenderCtrlVSFixedFunction : public lwIRenderCtrlVS {
 		typedef lwRenderCtrlVSFixedFunction this_type;

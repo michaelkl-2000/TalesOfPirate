@@ -3,18 +3,18 @@
 
 
 #include "lwItem.h"
-#include "lwSystem.h"
-#include "lwSysGraphics.h"
-#include "lwResourceMgr.h"
+#include "System.h"
+#include "SysGraphics.h"
+#include "ResourceMgr.h"
 #include "lwAnimCtrl.h"
 #include "lwRenderImp.h"
-#include "lwPathInfo.h"
+#include "PathInfo.h"
 #include "lwExpObj.h"
 #include "AssetLoaders.h"
 #include "GeomObjCache.h"
 
 namespace Corsairs::Engine::Render {
-	lwItem::lwItem(lwIResourceMgr* res_mgr)
+	lwItem::lwItem(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr),
 		  _scene_mgr(nullptr),
 		  _link_ctrl(nullptr),
@@ -34,9 +34,9 @@ namespace Corsairs::Engine::Render {
 			return LW_RET_FAILED;
 		}
 
-		lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
-		lwISystem* sys = sys_graphics->GetSystem();
-		lwIPathInfo* path_info = nullptr;
+		ISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
+		ISystem* sys = sys_graphics->GetSystem();
+		IPathInfo* path_info = nullptr;
 		sys->GetInterface(reinterpret_cast<LW_VOID**>(&path_info), LW_GUID_PATHINFO);
 
 		const std::string path = std::format("{}{}", path_info->GetPath(PathInfoType::PATH_TYPE_MODEL_ITEM), file);
@@ -187,15 +187,15 @@ namespace Corsairs::Engine::Render {
 		if (_obj == nullptr) {
 			return nullptr;
 		}
-		lwIHelperObject* h = _obj->GetHelperObject();
+		IHelperObject* h = _obj->GetHelperObject();
 		if (h == nullptr) {
 			return nullptr;
 		}
-		lwIHelperDummy* hd = h->GetHelperDummy();
+		IHelperDummy* hd = h->GetHelperDummy();
 		if (hd == nullptr) {
 			return nullptr;
 		}
-		lwHelperDummyInfo* info = hd->GetDataInfoWithID(id);
+		HelperDummyInfo* info = hd->GetDataInfoWithID(id);
 		if (info == nullptr) {
 			return nullptr;
 		}

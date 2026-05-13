@@ -120,7 +120,7 @@ public:
 		return s_resourcePreload;
 	}
 
-	bool LoadTotalVShader(lwISysGraphics* sys_graphics);
+	bool LoadTotalVShader(ISysGraphics* sys_graphics);
 
 	bool InitRes(MPRender* pDev, D3DXMATRIX* pmat, D3DXMATRIX* pMatviewproj);
 
@@ -195,7 +195,7 @@ public:
 	int& GetFontBkHeight();
 
 	D3DCAPSX* GetDevCap() {
-		return &m_caps;
+		return &_caps;
 	}
 
 	void BeginEffect(int iIdx);
@@ -214,11 +214,11 @@ public:
 
 
 	bool IsCanFrame() {
-		return m_bCanFrame;
+		return _bCanFrame;
 	}
 
 	int GetCanFrame() {
-		return m_iCurFrame;
+		return _iCurFrame;
 	}
 
 
@@ -242,17 +242,17 @@ public:
 	//!3D
 	MPRender* _dev;
 
-	D3DCAPSX m_caps;
+	D3DCAPSX _caps;
 
-	bool m_bUseSoft;
-	bool m_bUseSoftOrg;
+	bool _bUseSoft;
+	bool _bUseSoftOrg;
 
-	bool m_bCanFrame;
-	int m_iCurFrame;
+	bool _bCanFrame;
+	int _iCurFrame;
 
 
-	lwISystem* m_pSys;
-	lwISysGraphics* m_pSysGraphics;
+	ISystem* _pSys;
+	ISysGraphics* _pSysGraphics;
 
 protected:
 	CMPResManger();

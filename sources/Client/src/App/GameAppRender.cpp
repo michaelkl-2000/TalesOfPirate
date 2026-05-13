@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 #include "GameApp.h"
 #include "DebugStateSystem.h"
 #include "UIText.h"
@@ -43,7 +43,7 @@ BOOL RenderHintFrame(const RECT* rc, DWORD color) {
 	vert[0].dif = vert[1].dif = vert[2].dif = vert[3].dif = vert[4].dif = color;
 	MPIResourceMgr* res_mgr = g_Render.GetInterfaceMgr()->res_mgr;
 	MPIDeviceObject* dev_obj = g_Render.GetInterfaceMgr()->dev_obj;
-	lwIDynamicStreamMgr* dns_mgr = res_mgr->GetDynamicStreamMgr();
+	IDynamicStreamMgr* dns_mgr = res_mgr->GetDynamicStreamMgr();
 	dev_obj->GetRenderState(D3DRS_LIGHTING, &rs_lgt);
 	dev_obj->GetRenderState(D3DRS_COLORVERTEX, &rs_vc);
 	dev_obj->SetRenderStateForced(D3DRS_LIGHTING, 0);
@@ -111,7 +111,7 @@ void CGameApp::_Render() {
 	if (CGameScene::_bShowMinimap && CGameScene::_pSmallMap) {
 		if (pMainCha) {
 			auto v = -GetMainCam()->m_vDir;
-			CGameScene::_pSmallMap->MoveTo(GetMainCam()->m_RefPos, v, GetMainCam()->m_fAngle, GetMainCam()->m_fxy / 7,
+			CGameScene::_pSmallMap->MoveTo(GetMainCam()->_RefPos, v, GetMainCam()->m_fAngle, GetMainCam()->m_fxy / 7,
 										   pMainCha->getYaw());
 			CGameScene::_pSmallMap->Render();
 		}

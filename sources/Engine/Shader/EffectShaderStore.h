@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace Corsairs::Engine::Render {
-class lwISysGraphics;
+class ISysGraphics;
 } // namespace Corsairs::Engine::Render
 
 namespace Corsairs::Engine::Render {
@@ -24,7 +24,7 @@ namespace Corsairs::Engine::Render {
 //   shadeMapVS, minimapVS — отдельные shader'ы (E6).
 //
 // Soft-fallback: если устройство не тянет VS1.1/PS1.4, Get*ByID возвращают
-// нулевой shader (эффект effect1 как baseline). m_bUseSoft определяется в
+// нулевой shader (эффект effect1 как baseline). _bUseSoft определяется в
 // CMPResManger::InitRes через GetDeviceCaps, но LoadAll вызывается раньше
 // (из MPRender::Init), поэтому грузим всегда полный набор; fallback
 // инжектится через SetSoftFallback(bool) уже после.
@@ -34,8 +34,8 @@ public:
 
     void SetSoftFallback(bool useSoft) noexcept;
 
-    bool LoadAll(Corsairs::Engine::Render::lwISysGraphics* sysGraphics);
-    bool Restore(Corsairs::Engine::Render::lwISysGraphics* sysGraphics);
+    bool LoadAll(Corsairs::Engine::Render::ISysGraphics* sysGraphics);
+    bool Restore(Corsairs::Engine::Render::ISysGraphics* sysGraphics);
     void Clear();
 
     [[nodiscard]] IDirect3DVertexShaderX*      GetVShaderByID(int id) const;

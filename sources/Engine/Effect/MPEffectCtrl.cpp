@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 #include "GlobalInc.h"
 #include "MPModelEff.h"
 
@@ -151,7 +151,7 @@ bool CMagicCtrl::Create(int iID, CMPResManger* pCResMagr) {
 	_idx = iID;
 	_fStartDist = 0;
 
-	_fVel = (float)pParam->nVel;
+	m_fVel = (float)pParam->nVel;
 	_iPartNum = pParam->nParNum;
 	if (_iPartNum <= 0)
 		return true;
@@ -171,7 +171,7 @@ bool CMagicCtrl::Create(int iID, CMPResManger* pCResMagr) {
 		_vecPartCtrl[n].BindingRes(pCResMagr);
 		if (_iModelNum > 0)
 			if (_CpModel[0]->m_vecEffect[0]->IsItem()) {
-				_vecPartCtrl[0].SetStripItem((MPSceneItem*)_CpModel[0]->m_vecEffect[0]->m_pCModel, true);
+				_vecPartCtrl[0].SetStripItem((MPSceneItem*)_CpModel[0]->m_vecEffect[0]->_pCModel, true);
 			}
 		_vecDummy.push_back(pParam->nDummy[n]);
 	}
@@ -193,7 +193,7 @@ void CMagicCtrl::Reset() {
 	}
 	_iCurSNum = 1;
 	_fCurTime = 0;
-	_fCurDist = 0;
+	m_fCurDist = 0;
 	_fStartDist = 0;
 
 	_fDailTime = 0;
@@ -238,7 +238,7 @@ void CMagicCtrl::Emission(D3DXVECTOR3* vStart, D3DXVECTOR3* vTarget) {
 		return;
 	CalculateEmission(vStart, vTarget);
 	MoveTo(&_vPos);
-	_fCurDist = 0;
+	m_fCurDist = 0;
 
 	_vTarget = *vTarget;
 	if (_iRnederIdx == 5) {

@@ -5,7 +5,7 @@
 #include "NetProtocol.h"
 
 #include <time.h>
-#include "Discord/discord_rpc.h"
+#include "discord_rpc.h"
 #include "GameConfig.h"
 
 static const char* APPLICATION_ID = "1441442327930470523";

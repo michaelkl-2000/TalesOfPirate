@@ -18,7 +18,7 @@ namespace Corsairs::Engine::Diagnostic {
 		EngineDiag(const EngineDiag&) = delete;
 		EngineDiag& operator=(const EngineDiag&) = delete;
 
-		//  [Logging] streampool — диагностика lwDynamicStreamVB/IB
+		//  [Logging] streampool — диагностика DynamicStreamVB/IB
 		//  (канал "vbstream"): события Create + параметры кольцевого буфера
 		//  на каждом wrap-around (total/free_addr/free_size, branch=A|B).
 		void SetStreamPoolEnabled(bool enabled) {

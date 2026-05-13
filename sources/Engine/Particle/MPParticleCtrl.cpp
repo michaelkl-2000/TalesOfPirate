@@ -43,128 +43,128 @@ using namespace std;
 /* class CMPPartCtrl*/
 /************************************************************************/
 CMPPartCtrl::CMPPartCtrl(void) {
-	m_strName = "";
-	m_iPartNum = 0;
+	_strName = "";
+	_iPartNum = 0;
 #ifndef USE_GAME
-	//m_vecPartSys.resize(MAX_PART_SYS);//6
+	//_vecPartSys.resize(MAX_PART_SYS);//6
 #endif
-	m_fLength = 0; //0
-	m_fCurTime = 0;
+	_fLength = 0; //0
+	_fCurTime = 0;
 
-	m_iStripNum = 0;
-	m_pcStrip = NULL;
+	_iStripNum = 0;
+	_pcStrip = NULL;
 
-	m_iModelNum = 0;
+	_iModelNum = 0;
 }
 
 CMPPartCtrl::~CMPPartCtrl(void) {
-	SAFE_DELETE_ARRAY(m_pcStrip);
-	for (int n = 0; n < m_iModelNum; n++) {
-		SAFE_DELETE(m_vecModel[n]);
+	SAFE_DELETE_ARRAY(_pcStrip);
+	for (int n = 0; n < _iModelNum; n++) {
+		SAFE_DELETE(_vecModel[n]);
 	}
-	m_vecModel.clear();
+	_vecModel.clear();
 }
 
 void CMPPartCtrl::SetStripCharacter(MPCharacter* pCha) {
-	for (int n = 0; n < m_iStripNum; ++n) {
-		m_pcStrip[n].AttachCharacter(pCha);
+	for (int n = 0; n < _iStripNum; ++n) {
+		_pcStrip[n].AttachCharacter(pCha);
 	}
 }
 
 void CMPPartCtrl::SetStripItem(MPSceneItem* pItem, bool bloop) {
-	for (int n = 0; n < m_iStripNum; ++n) {
-		m_pcStrip[n].AttachItem(pItem);
-		m_pcStrip[n].SetLoop(bloop);
+	for (int n = 0; n < _iStripNum; ++n) {
+		_pcStrip[n].AttachItem(pItem);
+		_pcStrip[n].SetLoop(bloop);
 	}
 }
 
 void CMPPartCtrl::SetItemDummy(MPSceneItem* pItem, int dummy1, int dummy2) {
-	for (int n = 0; n < m_iPartNum; ++n) {
-		m_vecPartSys[n]->SetItemDummy(pItem, dummy1, dummy2);
+	for (int n = 0; n < _iPartNum; ++n) {
+		_vecPartSys[n]->SetItemDummy(pItem, dummy1, dummy2);
 	}
 }
 
 
 CChaModel* CMPPartCtrl::NewModel(const s_string& strID, CMPResManger* pResMagr) {
-	m_iModelNum++;
-	if (m_iModelNum > 1) {
-		m_iModelNum = 1;
+	_iModelNum++;
+	if (_iModelNum > 1) {
+		_iModelNum = 1;
 		return NULL;
 	}
-	m_vecModel.resize(m_iModelNum);
+	_vecModel.resize(_iModelNum);
 
-	m_vecModel[m_iModelNum - 1] = new CChaModel;
-	m_vecModel[m_iModelNum - 1]->_dev = pResMagr->_dev;
+	_vecModel[_iModelNum - 1] = new CChaModel;
+	_vecModel[_iModelNum - 1]->_dev = pResMagr->_dev;
 
-	m_vecModel[m_iModelNum - 1]->LoadScript(strID);
-	m_vecModel[m_iModelNum - 1]->SetVel(120);
-	m_vecModel[m_iModelNum - 1]->SetPlayType(PLAY_LOOP);
-	m_vecModel[m_iModelNum - 1]->SetCurPose(1);
-	m_vecModel[m_iModelNum - 1]->PlayPose(0, PLAY_PAUSE);
+	_vecModel[_iModelNum - 1]->LoadScript(strID);
+	_vecModel[_iModelNum - 1]->SetVel(120);
+	_vecModel[_iModelNum - 1]->SetPlayType(PLAY_LOOP);
+	_vecModel[_iModelNum - 1]->SetCurPose(1);
+	_vecModel[_iModelNum - 1]->PlayPose(0, PLAY_PAUSE);
 
-	return m_vecModel[m_iModelNum - 1];
+	return _vecModel[_iModelNum - 1];
 }
 
 CChaModel* CMPPartCtrl::GetModel(int iIdx) {
-	return m_vecModel[iIdx];
+	return _vecModel[iIdx];
 }
 
 CMPStrip* CMPPartCtrl::NewStrip(const s_string& strTex, CMPResManger* pResMagr) {
-	SAFE_DELETE_ARRAY(m_pcStrip);
+	SAFE_DELETE_ARRAY(_pcStrip);
 
-	m_iStripNum = 1;
-	m_pcStrip = new CMPStrip[m_iStripNum];
-	m_pcStrip[0].CreateStrip(pResMagr->_dev, strTex, pResMagr);
-	return &m_pcStrip[0];
+	_iStripNum = 1;
+	_pcStrip = new CMPStrip[_iStripNum];
+	_pcStrip[0].CreateStrip(pResMagr->_dev, strTex, pResMagr);
+	return &_pcStrip[0];
 }
 
 CMPStrip* CMPPartCtrl::GetStrip(int iIdx) {
-	return &m_pcStrip[iIdx];
+	return &_pcStrip[iIdx];
 }
 
 void CMPPartCtrl::SetPlayType(int nType) {
 	if (nType == 0) //
 	{
-		for (int n = 0; n < m_iPartNum; ++n) {
-			m_vecPartSys[n]->SetPlayTime(0);
-			m_vecPartSys[n]->SetLoop(true);
+		for (int n = 0; n < _iPartNum; ++n) {
+			_vecPartSys[n]->SetPlayTime(0);
+			_vecPartSys[n]->SetLoop(true);
 		}
-		for (int n = 0; n < m_iModelNum; n++) {
-			m_vecModel[n]->SetPlayType(PLAY_LOOP);
-			m_vecModel[n]->Play();
+		for (int n = 0; n < _iModelNum; n++) {
+			_vecModel[n]->SetPlayType(PLAY_LOOP);
+			_vecModel[n]->Play();
 		}
 	}
 }
 
 
 void CMPPartCtrl::Play(int iTime) {
-	for (int n = 0; n < m_iPartNum; ++n) {
-		m_vecPartSys[n]->Play(iTime);
+	for (int n = 0; n < _iPartNum; ++n) {
+		_vecPartSys[n]->Play(iTime);
 	}
-	for (int n = 0; n < m_iStripNum; ++n) {
-		m_pcStrip[n].Play();
+	for (int n = 0; n < _iStripNum; ++n) {
+		_pcStrip[n].Play();
 	}
-	for (int n = 0; n < m_iModelNum; n++) {
-		m_vecModel[n]->Play();
+	for (int n = 0; n < _iModelNum; n++) {
+		_vecModel[n]->Play();
 	}
 }
 
 bool CMPPartCtrl::IsPlaying() {
-	if (m_iPartNum > 0) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]->IsPlaying())
+	if (_iPartNum > 0) {
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]->IsPlaying())
 				return true;
 		}
 	}
-	else if (m_iStripNum > 0) {
-		for (int n = 0; n < m_iStripNum; ++n) {
-			if (m_pcStrip[n].IsPlaying())
+	else if (_iStripNum > 0) {
+		for (int n = 0; n < _iStripNum; ++n) {
+			if (_pcStrip[n].IsPlaying())
 				return true;
 		}
 	}
 	else {
-		for (int n = 0; n < m_iModelNum; n++) {
-			if (m_vecModel[n]->IsPlaying())
+		for (int n = 0; n < _iModelNum; n++) {
+			if (_vecModel[n]->IsPlaying())
 				return true;
 		}
 	}
@@ -172,124 +172,124 @@ bool CMPPartCtrl::IsPlaying() {
 }
 
 void CMPPartCtrl::CopyPartCtrl(CMPPartCtrl* pPart) {
-	m_strName = pPart->m_strName;
+	_strName = pPart->_strName;
 
-	m_vecPartSys.resize(pPart->m_iPartNum);
+	_vecPartSys.resize(pPart->_iPartNum);
 
-	for (int n = 0; n < pPart->m_iPartNum; ++n) {
-		AddPartSys(pPart->m_vecPartSys[n]);
+	for (int n = 0; n < pPart->_iPartNum; ++n) {
+		AddPartSys(pPart->_vecPartSys[n]);
 	}
-	SAFE_DELETE_ARRAY(m_pcStrip);
-	m_iStripNum = pPart->m_iStripNum;
-	if (m_iStripNum) {
-		m_pcStrip = new CMPStrip[m_iStripNum];
-		for (int n = 0; n < m_iStripNum; ++n) {
-			m_pcStrip[n].CopyStrip(&pPart->m_pcStrip[n]);
+	SAFE_DELETE_ARRAY(_pcStrip);
+	_iStripNum = pPart->_iStripNum;
+	if (_iStripNum) {
+		_pcStrip = new CMPStrip[_iStripNum];
+		for (int n = 0; n < _iStripNum; ++n) {
+			_pcStrip[n].CopyStrip(&pPart->_pcStrip[n]);
 		}
 	}
-	for (int n = 0; n < m_iModelNum; n++) {
-		SAFE_DELETE(m_vecModel[n]);
+	for (int n = 0; n < _iModelNum; n++) {
+		SAFE_DELETE(_vecModel[n]);
 	}
-	m_iModelNum = pPart->m_iModelNum;
+	_iModelNum = pPart->_iModelNum;
 	CChaModel* pModel;
-	m_vecModel.resize(m_iModelNum);
-	for (int n = 0; n < m_iModelNum; n++) {
-		pModel = pPart->m_vecModel[n];
-		m_vecModel[n] = new CChaModel;
+	_vecModel.resize(_iModelNum);
+	for (int n = 0; n < _iModelNum; n++) {
+		pModel = pPart->_vecModel[n];
+		_vecModel[n] = new CChaModel;
 		const std::string psID = std::format("{}", pModel->GetID());
-		if (!m_vecModel[n]->LoadScript(psID)) {
+		if (!_vecModel[n]->LoadScript(psID)) {
 			ToLogService("errors", LogLevel::Error, "LoadScript {}", psID);
 		}
-		m_vecModel[n]->SetVel(pModel->GetVel());
-		m_vecModel[n]->SetPlayType(pModel->GetPlayType());
-		m_vecModel[n]->SetCurPose(pModel->GetCurPose());
-		m_vecModel[n]->SetCurColor(pModel->GetCurColor());
-		m_vecModel[n]->SetSrcBlend(pModel->GetSrcBlend());
-		m_vecModel[n]->SetDestBlend(pModel->GetDestBlend());
-		m_vecModel[n]->PlayPose(0, PLAY_PAUSE);
+		_vecModel[n]->SetVel(pModel->GetVel());
+		_vecModel[n]->SetPlayType(pModel->GetPlayType());
+		_vecModel[n]->SetCurPose(pModel->GetCurPose());
+		_vecModel[n]->SetCurColor(pModel->GetCurColor());
+		_vecModel[n]->SetSrcBlend(pModel->GetSrcBlend());
+		_vecModel[n]->SetDestBlend(pModel->GetDestBlend());
+		_vecModel[n]->PlayPose(0, PLAY_PAUSE);
 	}
 }
 
 void CMPPartCtrl::BindingRes(CMPResManger* pResMagr) {
 	m_pfDailTime = pResMagr->GetDailTime();
-	for (int n = 0; n < m_iPartNum; ++n) {
-		m_vecPartSys[n]->BindingRes(pResMagr);
+	for (int n = 0; n < _iPartNum; ++n) {
+		_vecPartSys[n]->BindingRes(pResMagr);
 	}
-	for (int n = 0; n < m_iStripNum; ++n) {
-		m_pcStrip[n].BindingRes(pResMagr);
+	for (int n = 0; n < _iStripNum; ++n) {
+		_pcStrip[n].BindingRes(pResMagr);
 	}
-	for (int n = 0; n < m_iModelNum; n++) {
-		m_vecModel[n]->_dev = pResMagr->_dev;
+	for (int n = 0; n < _iModelNum; n++) {
+		_vecModel[n]->_dev = pResMagr->_dev;
 	}
 }
 
 CMPPartSys* CMPPartCtrl::AddPartSys(CMPPartSys* part) {
-	m_iPartNum++;
-	if (m_iPartNum > MAX_PART_SYS) {
-		m_iPartNum = MAX_PART_SYS;
+	_iPartNum++;
+	if (_iPartNum > MAX_PART_SYS) {
+		_iPartNum = MAX_PART_SYS;
 		return NULL;
 	}
-	m_vecPartSys.setsize(m_iPartNum);
-	CopyPartSys(m_vecPartSys[m_iPartNum - 1], part);
+	_vecPartSys.setsize(_iPartNum);
+	CopyPartSys(_vecPartSys[_iPartNum - 1], part);
 
-	return m_vecPartSys[m_iPartNum - 1];
+	return _vecPartSys[_iPartNum - 1];
 }
 
 CMPPartSys* CMPPartCtrl::NewPartSys() {
-	m_iPartNum++;
-	if (m_iPartNum > MAX_PART_SYS) {
-		m_iPartNum = MAX_PART_SYS;
+	_iPartNum++;
+	if (_iPartNum > MAX_PART_SYS) {
+		_iPartNum = MAX_PART_SYS;
 		return NULL;
 	}
-	m_vecPartSys.setsize(m_iPartNum);
-	return m_vecPartSys[m_iPartNum - 1];
+	_vecPartSys.setsize(_iPartNum);
+	return _vecPartSys[_iPartNum - 1];
 }
 
 void CMPPartCtrl::DeletePartSys(int iID) {
-	if (m_iPartNum == 0)
+	if (_iPartNum == 0)
 		return;
-	m_iPartNum--;
-	m_vecPartSys.remove(iID);
+	_iPartNum--;
+	_vecPartSys.remove(iID);
 }
 
 void CMPPartCtrl::Clear() {
-	m_iPartNum = 0;
-	m_vecPartSys.clear();
+	_iPartNum = 0;
+	_vecPartSys.clear();
 }
 
 void CMPPartCtrl::UpdateStrip() {
-	for (int n = 0; n < m_iStripNum; ++n) {
-		m_pcStrip[n].UpdateFrame();
+	for (int n = 0; n < _iStripNum; ++n) {
+		_pcStrip[n].UpdateFrame();
 	}
 }
 
 void CMPPartCtrl::FrameMove(DWORD dwDailTime) {
-	for (int n = 0; n < m_iPartNum; ++n) {
-		m_vecPartSys[n]->FrameMove(dwDailTime);
+	for (int n = 0; n < _iPartNum; ++n) {
+		_vecPartSys[n]->FrameMove(dwDailTime);
 	}
-	for (int n = 0; n < m_iStripNum; ++n) {
-		m_pcStrip[n].FrameMove();
+	for (int n = 0; n < _iStripNum; ++n) {
+		_pcStrip[n].FrameMove();
 	}
-	for (int n = 0; n < m_iModelNum; n++) {
-		if (m_vecModel[n]->IsPlaying()) {
-			m_vecModel[n]->UpdateMatrix();
-			m_vecModel[n]->FrameMove();
+	for (int n = 0; n < _iModelNum; n++) {
+		if (_vecModel[n]->IsPlaying()) {
+			_vecModel[n]->UpdateMatrix();
+			_vecModel[n]->FrameMove();
 		}
 	}
 }
 
 void CMPPartCtrl::Render() {
-	for (int n = 0; n < m_iPartNum; ++n) {
-		m_vecPartSys[n]->Render();
+	for (int n = 0; n < _iPartNum; ++n) {
+		_vecPartSys[n]->Render();
 	}
-	for (int n = 0; n < m_iStripNum; ++n) {
-		m_pcStrip[n].Render();
+	for (int n = 0; n < _iStripNum; ++n) {
+		_pcStrip[n].Render();
 	}
-	for (int n = 0; n < m_iModelNum; n++) {
-		if (m_vecModel[n]->IsPlaying()) {
-			m_vecModel[n]->Begin();
-			m_vecModel[n]->Render();
-			m_vecModel[n]->End();
+	for (int n = 0; n < _iModelNum; n++) {
+		if (_vecModel[n]->IsPlaying()) {
+			_vecModel[n]->Begin();
+			_vecModel[n]->Render();
+			_vecModel[n]->End();
 		}
 	}
 }
@@ -303,9 +303,9 @@ void CMPPartCtrl::GetRes(CMPResManger* pResMagr, std::vector<INT>& vecTex, std::
 	int n;
 	int idtex, idmodel, ideff;
 	s_string strName;
-	if (m_iStripNum > 0) {
-		for (n = 0; n < m_iStripNum; ++n) {
-			strName = m_pcStrip[n].GetTexName();
+	if (_iStripNum > 0) {
+		for (n = 0; n < _iStripNum; ++n) {
+			strName = _pcStrip[n].GetTexName();
 			id = pResMagr->GetTextureID(strName);
 			if (id >= 0) {
 				it = std::find(vecTex.begin(), vecTex.end(), id);
@@ -319,9 +319,9 @@ void CMPPartCtrl::GetRes(CMPResManger* pResMagr, std::vector<INT>& vecTex, std::
 			}
 		}
 	}
-	else if (m_iPartNum > 0) {
-		for (n = 0; n < m_iPartNum; ++n) {
-			m_vecPartSys[n]->GetRes(idtex, idmodel, ideff);
+	else if (_iPartNum > 0) {
+		for (n = 0; n < _iPartNum; ++n) {
+			_vecPartSys[n]->GetRes(idtex, idmodel, ideff);
 			if (idtex >= 0) {
 				it = std::find(vecTex.begin(), vecTex.end(), idtex);
 				if (it == vecTex.end()) {
@@ -345,14 +345,14 @@ void CMPPartCtrl::GetRes(CMPResManger* pResMagr, std::vector<INT>& vecTex, std::
 }
 
 void CMPPartCtrl::GetHitRes(CMPResManger* pResMagr, std::vector<s_string>& vecPar) {
-	if (m_iStripNum > 0) {
+	if (_iStripNum > 0) {
 		return;
 	}
-	else if (m_iPartNum > 0) {
+	else if (_iPartNum > 0) {
 		s_string strname;
 		int id, n;
-		for (n = 0; n < m_iPartNum; ++n) {
-			strname = m_vecPartSys[n]->GetHitEff();
+		for (n = 0; n < _iPartNum; ++n) {
+			strname = _vecPartSys[n]->GetHitEff();
 
 			id = pResMagr->GetPartCtrlID(strname);
 			if (id >= 0) {
@@ -461,7 +461,7 @@ bool CChaModel::LoadPose(const SChaAction& SCharAct) {
 }
 
 void CChaModel::PlayPose(DWORD id, DWORD type) {
-	MPCharacter::PlayPose(id, type, 0.0f, _fVel);
+	MPCharacter::PlayPose(id, type, 0.0f, m_fVel);
 }
 
 void CChaModel::Begin() {
@@ -474,10 +474,10 @@ void CChaModel::Begin() {
 	_dev->GetDevice()->SetRenderState(D3DRS_SRCBLEND, _eSrcBlend);
 	_dev->GetDevice()->SetRenderState(D3DRS_DESTBLEND, _eDestBlend);
 	D3DMATERIALX mtl;
-	mtl.Ambient = (D3DCOLORVALUE)_dwCurColor;
-	mtl.Diffuse = (D3DCOLORVALUE)_dwCurColor;
+	mtl.Ambient = (D3DCOLORVALUE)m_dwCurColor;
+	mtl.Diffuse = (D3DCOLORVALUE)m_dwCurColor;
 	SetMaterial(&mtl);
-	SetOpacity(_dwCurColor.a);
+	SetOpacity(m_dwCurColor.a);
 }
 
 void CChaModel::End() {
@@ -516,8 +516,8 @@ bool CMPLink::Create(MPCharacter* pChaMain, int iDummy1, MPCharacter* pChaTag, i
 
 	_pFrame = new MPFrame[LINK_FACE];
 	for (n = 0; n < LINK_FACE; n++) {
-		_pFrame[n].vPos1.m_dwDiffuse = 0xffffffff;
-		_pFrame[n].vPos2.m_dwDiffuse = 0xffffffff;
+		_pFrame[n].vPos1._dwDiffuse = 0xffffffff;
+		_pFrame[n].vPos2._dwDiffuse = 0xffffffff;
 	}
 
 	_pChaMain = pChaMain;
@@ -572,32 +572,32 @@ void CMPLink::ColArc(float fradius) {
 		ft = ft / _fdist;
 
 
-		_pFrame[n].vPos1.m_SPos = vTemp + (-vcross * 1.0f);
-		_pFrame[n].vPos2.m_SPos = vTemp + (vcross * 1.0f);
+		_pFrame[n].vPos1._SPos = vTemp + (-vcross * 1.0f);
+		_pFrame[n].vPos2._SPos = vTemp + (vcross * 1.0f);
 
 		if (n == 0) {
-			_pFrame[n].vPos1.m_SUV.x = 0;
-			_pFrame[n].vPos1.m_SUV.y = 1;
+			_pFrame[n].vPos1._SUV.x = 0;
+			_pFrame[n].vPos1._SUV.y = 1;
 
-			_pFrame[n].vPos2.m_SUV.x = 0;
-			_pFrame[n].vPos2.m_SUV.y = 0;
+			_pFrame[n].vPos2._SUV.x = 0;
+			_pFrame[n].vPos2._SUV.y = 0;
 		}
 		else {
-			_pFrame[n].vPos1.m_SUV.x = ft;
-			_pFrame[n].vPos1.m_SUV.y = 1;
+			_pFrame[n].vPos1._SUV.x = ft;
+			_pFrame[n].vPos1._SUV.y = 1;
 
-			_pFrame[n].vPos2.m_SUV.x = ft;
-			_pFrame[n].vPos2.m_SUV.y = 0;
+			_pFrame[n].vPos2._SUV.x = ft;
+			_pFrame[n].vPos2._SUV.y = 0;
 		}
 	}
-	_pFrame[num].vPos1.m_SPos = _vEnd + (-vcross * 1.0f);
-	_pFrame[num].vPos2.m_SPos = _vEnd + (vcross * 1.0f);
+	_pFrame[num].vPos1._SPos = _vEnd + (-vcross * 1.0f);
+	_pFrame[num].vPos2._SPos = _vEnd + (vcross * 1.0f);
 
-	_pFrame[num].vPos1.m_SUV.x = 1;
-	_pFrame[num].vPos1.m_SUV.y = 1;
+	_pFrame[num].vPos1._SUV.x = 1;
+	_pFrame[num].vPos1._SUV.y = 1;
 
-	_pFrame[num].vPos2.m_SUV.x = 1;
-	_pFrame[num].vPos2.m_SUV.y = 0;
+	_pFrame[num].vPos2._SUV.x = 1;
+	_pFrame[num].vPos2._SUV.y = 0;
 }
 
 void CMPLink::GetPhysique() {
@@ -655,72 +655,72 @@ void CMPLink::Render() {
 }
 
 void CMPPartCtrl::SetSkillCtrl(SkillCtrl* pCtrl) {
-	for (int n = 0; n < m_iPartNum; ++n) {
-		if (m_vecPartSys[n]) {
-			m_vecPartSys[n]->SetSkillCtrl(pCtrl);
+	for (int n = 0; n < _iPartNum; ++n) {
+		if (_vecPartSys[n]) {
+			_vecPartSys[n]->SetSkillCtrl(pCtrl);
 		}
 	}
 }
 
 void CMPPartCtrl::SetAlpha(float falpha) {
-	for (int n = 0; n < m_iPartNum; ++n) {
-		if (m_vecPartSys[n]) {
-			m_vecPartSys[n]->SetAlpha(falpha);
+	for (int n = 0; n < _iPartNum; ++n) {
+		if (_vecPartSys[n]) {
+			_vecPartSys[n]->SetAlpha(falpha);
 		}
 	}
 }
 
 void CMPPartCtrl::Reset() {
-	m_fCurTime = 0;
+	_fCurTime = 0;
 	const auto v = D3DXVECTOR3(0, 0, 0);
 	MoveTo(&v);
-	for (int n = 0; n < m_iPartNum; ++n) {
-		if (m_vecPartSys[n]) {
-			m_vecPartSys[n]->Reset(false);
-			m_vecPartSys[n]->unFontEffCom();
+	for (int n = 0; n < _iPartNum; ++n) {
+		if (_vecPartSys[n]) {
+			_vecPartSys[n]->Reset(false);
+			_vecPartSys[n]->unFontEffCom();
 		}
 	}
 }
 
 void CMPPartCtrl::Stop() {
 	Reset();
-	for (int n = 0; n < m_iPartNum; ++n) {
-		if (m_vecPartSys[n]) {
-			m_vecPartSys[n]->Stop();
+	for (int n = 0; n < _iPartNum; ++n) {
+		if (_vecPartSys[n]) {
+			_vecPartSys[n]->Stop();
 		}
 	}
 }
 
 void CMPPartCtrl::End() {
-	for (int n = 0; n < m_iPartNum; ++n) {
-		if (m_vecPartSys[n]) {
-			m_vecPartSys[n]->End();
+	for (int n = 0; n < _iPartNum; ++n) {
+		if (_vecPartSys[n]) {
+			_vecPartSys[n]->End();
 		}
 	}
 }
 
 void CMPPartCtrl::MoveTo(const D3DXVECTOR3* vPos, MPMap* pmap) {
-	for (auto n = 0; n < m_iPartNum; ++n) {
-		if (m_vecPartSys[n]) {
-			m_vecPartSys[n]->MoveTo(vPos, pmap);
+	for (auto n = 0; n < _iPartNum; ++n) {
+		if (_vecPartSys[n]) {
+			_vecPartSys[n]->MoveTo(vPos, pmap);
 		}
 	}
-	for (auto n = 0; n < m_iModelNum; n++) {
-		if (m_vecModel[n]->IsPlaying()) {
-			m_vecModel[n]->MoveTo(vPos);
+	for (auto n = 0; n < _iModelNum; n++) {
+		if (_vecModel[n]->IsPlaying()) {
+			_vecModel[n]->MoveTo(vPos);
 		}
 	}
 }
 
 void CMPPartCtrl::BindingBone(D3DXMATRIX* pMatBone) {
-	for (auto n = 0; n < m_iPartNum; ++n) {
-		if (m_vecPartSys[n]) {
-			m_vecPartSys[n]->BindingBone(pMatBone);
+	for (auto n = 0; n < _iPartNum; ++n) {
+		if (_vecPartSys[n]) {
+			_vecPartSys[n]->BindingBone(pMatBone);
 		}
 	}
-	for (auto n = 0; n < m_iModelNum; n++) {
-		if (m_vecModel[n]->IsPlaying()) {
-			m_vecModel[n]->BindingBone(pMatBone);
+	for (auto n = 0; n < _iModelNum; n++) {
+		if (_vecModel[n]->IsPlaying()) {
+			_vecModel[n]->BindingBone(pMatBone);
 		}
 	}
 }

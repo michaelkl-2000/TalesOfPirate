@@ -8,11 +8,11 @@
 #include "lwInterfaceExt.h"
 
 namespace Corsairs::Engine::Render {
-	LW_RESULT lwRenderStateAtomBeginSetRS(lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num);
-	LW_RESULT lwRenderStateAtomEndSetRS(lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num);
-	LW_RESULT lwRenderStateAtomBeginSetTSS(DWORD stage, lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq,
+	LW_RESULT lwRenderStateAtomBeginSetRS(IDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num);
+	LW_RESULT lwRenderStateAtomEndSetRS(IDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num);
+	LW_RESULT lwRenderStateAtomBeginSetTSS(DWORD stage, IDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq,
 										   DWORD num);
-	LW_RESULT lwRenderStateAtomEndSetTSS(DWORD stage, lwIDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num);
+	LW_RESULT lwRenderStateAtomEndSetTSS(DWORD stage, IDeviceObject* dev_obj, lwRenderStateAtom* rsa_seq, DWORD num);
 
 	template <DWORD seq_size>
 	struct lwRenderStateAtomSeq {
@@ -64,12 +64,12 @@ namespace Corsairs::Engine::Render {
 		LW_INLINE LW_RESULT SetValue(DWORD id, DWORD value);
 		LW_INLINE LW_RESULT SetStateValue(DWORD id, DWORD state, DWORD value);
 		LW_INLINE LW_RESULT SetStateValue(DWORD id, lwRenderStateAtom* buf, DWORD num);
-		LW_INLINE LW_RESULT BeginRenderState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num);
-		LW_INLINE LW_RESULT BeginTextureStageState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage);
-		LW_INLINE LW_RESULT BeginSamplerState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage);
-		LW_INLINE LW_RESULT EndRenderState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num);
-		LW_INLINE LW_RESULT EndTextureStageState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage);
-		LW_INLINE LW_RESULT EndSamplerState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage);
+		LW_INLINE LW_RESULT BeginRenderState(IDeviceObject* dev_obj, DWORD start_id, DWORD num);
+		LW_INLINE LW_RESULT BeginTextureStageState(IDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage);
+		LW_INLINE LW_RESULT BeginSamplerState(IDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage);
+		LW_INLINE LW_RESULT EndRenderState(IDeviceObject* dev_obj, DWORD start_id, DWORD num);
+		LW_INLINE LW_RESULT EndTextureStageState(IDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage);
+		LW_INLINE LW_RESULT EndSamplerState(IDeviceObject* dev_obj, DWORD start_id, DWORD num, DWORD stage);
 
 		DWORD GetStateNum() const {
 			return _rsa_num;
@@ -112,36 +112,36 @@ namespace Corsairs::Engine::Render {
 		return LW_RET_OK;
 	}
 
-	LW_INLINE LW_RESULT lwRenderStateAtomSet::BeginRenderState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num) {
+	LW_INLINE LW_RESULT lwRenderStateAtomSet::BeginRenderState(IDeviceObject* dev_obj, DWORD start_id, DWORD num) {
 		DWORD n = (num == LW_INVALID_INDEX) ? (_rsa_num - start_id) : num;
 		return lwRenderStateAtomBeginSetRS(dev_obj, &_rsa_seq[start_id], n);
 	}
 
-	LW_INLINE LW_RESULT lwRenderStateAtomSet::BeginTextureStageState(lwIDeviceObject* dev_obj, DWORD start_id,
+	LW_INLINE LW_RESULT lwRenderStateAtomSet::BeginTextureStageState(IDeviceObject* dev_obj, DWORD start_id,
 																	 DWORD num, DWORD stage) {
 		DWORD n = (num == LW_INVALID_INDEX) ? (_rsa_num - start_id) : num;
 		return lwRenderStateAtomBeginSetTSS(stage, dev_obj, &_rsa_seq[start_id], n);
 	}
 
-	LW_INLINE LW_RESULT lwRenderStateAtomSet::BeginSamplerState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num,
+	LW_INLINE LW_RESULT lwRenderStateAtomSet::BeginSamplerState(IDeviceObject* dev_obj, DWORD start_id, DWORD num,
 																DWORD stage) {
 		DWORD n = (num == LW_INVALID_INDEX) ? (_rsa_num - start_id) : num;
 		//return lwRenderStateAtomBeginSetSS(stage, dev_obj, &_rsa_seq[start_id], n);
 		return -1L;
 	}
 
-	LW_INLINE LW_RESULT lwRenderStateAtomSet::EndRenderState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num) {
+	LW_INLINE LW_RESULT lwRenderStateAtomSet::EndRenderState(IDeviceObject* dev_obj, DWORD start_id, DWORD num) {
 		DWORD n = (num == LW_INVALID_INDEX) ? (_rsa_num - start_id) : num;
 		return lwRenderStateAtomEndSetRS(dev_obj, &_rsa_seq[start_id], n);
 	}
 
-	LW_INLINE LW_RESULT lwRenderStateAtomSet::EndTextureStageState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num,
+	LW_INLINE LW_RESULT lwRenderStateAtomSet::EndTextureStageState(IDeviceObject* dev_obj, DWORD start_id, DWORD num,
 																   DWORD stage) {
 		DWORD n = (num == LW_INVALID_INDEX) ? (_rsa_num - start_id) : num;
 		return lwRenderStateAtomEndSetTSS(stage, dev_obj, &_rsa_seq[start_id], n);
 	}
 
-	LW_INLINE LW_RESULT lwRenderStateAtomSet::EndSamplerState(lwIDeviceObject* dev_obj, DWORD start_id, DWORD num,
+	LW_INLINE LW_RESULT lwRenderStateAtomSet::EndSamplerState(IDeviceObject* dev_obj, DWORD start_id, DWORD num,
 															  DWORD stage) {
 		DWORD n = (num == LW_INVALID_INDEX) ? (_rsa_num - start_id) : num;
 		//return lwRenderStateAtomEndSetSS(stage, dev_obj, &_rsa_seq[start_id], n);

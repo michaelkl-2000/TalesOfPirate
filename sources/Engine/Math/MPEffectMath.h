@@ -1,4 +1,4 @@
-﻿#ifndef MPEffectMath_H
+#ifndef MPEffectMath_H
 #define MPEffectMath_H
 
 #include "MindPowerAPI.h"
@@ -13,21 +13,21 @@ class MPDegree;
 
 */
 class MPRadian {
-	float m_fRad;
+	float _fRad;
 
 public:
-	explicit MPRadian(float r = 0) : m_fRad(r) {
+	explicit MPRadian(float r = 0) : _fRad(r) {
 	}
 
 	MPRadian(const MPDegree& d);
 
 	const MPRadian& operator =(const float& f) {
-		m_fRad = f;
+		_fRad = f;
 		return *this;
 	}
 
 	const MPRadian& operator =(const MPRadian& r) {
-		m_fRad = r.m_fRad;
+		_fRad = r._fRad;
 		return *this;
 	}
 
@@ -36,85 +36,85 @@ public:
 	float valueDegrees() const;
 
 	float valueRadians() const {
-		return m_fRad;
+		return _fRad;
 	}
 
 	float valueAngleUnits() const;
 
 	MPRadian operator +(const MPRadian& r) const {
-		return MPRadian(m_fRad + r.m_fRad);
+		return MPRadian(_fRad + r._fRad);
 	}
 
 	MPRadian operator +(const MPDegree& d) const;
 
 	MPRadian& operator +=(const MPRadian& r) {
-		m_fRad += r.m_fRad;
+		_fRad += r._fRad;
 		return *this;
 	}
 
 	MPRadian& operator +=(const MPDegree& d);
 
 	MPRadian operator -() {
-		return MPRadian(-m_fRad);
+		return MPRadian(-_fRad);
 	}
 
 	MPRadian operator -(const MPRadian& r) const {
-		return MPRadian(m_fRad - r.m_fRad);
+		return MPRadian(_fRad - r._fRad);
 	}
 
 	MPRadian operator -(const MPDegree& d) const;
 
 	MPRadian& operator -=(const MPRadian& r) {
-		m_fRad -= r.m_fRad;
+		_fRad -= r._fRad;
 		return *this;
 	}
 
 	MPRadian& operator -=(const MPDegree& d);
 
 	MPRadian operator *(float f) const {
-		return MPRadian(m_fRad * f);
+		return MPRadian(_fRad * f);
 	}
 
 	MPRadian operator *(const MPRadian& f) const {
-		return MPRadian(m_fRad * f.m_fRad);
+		return MPRadian(_fRad * f._fRad);
 	}
 
 	MPRadian& operator *=(float f) {
-		m_fRad *= f;
+		_fRad *= f;
 		return *this;
 	}
 
 	MPRadian operator /(float f) const {
-		return MPRadian(m_fRad / f);
+		return MPRadian(_fRad / f);
 	}
 
 	MPRadian& operator /=(float f) {
-		m_fRad /= f;
+		_fRad /= f;
 		return *this;
 	}
 
 	bool operator <(const MPRadian& r) const {
-		return m_fRad < r.m_fRad;
+		return _fRad < r._fRad;
 	}
 
 	bool operator <=(const MPRadian& r) const {
-		return m_fRad <= r.m_fRad;
+		return _fRad <= r._fRad;
 	}
 
 	bool operator ==(const MPRadian& r) const {
-		return m_fRad == r.m_fRad;
+		return _fRad == r._fRad;
 	}
 
 	bool operator !=(const MPRadian& r) const {
-		return m_fRad != r.m_fRad;
+		return _fRad != r._fRad;
 	}
 
 	bool operator >=(const MPRadian& r) const {
-		return m_fRad >= r.m_fRad;
+		return _fRad >= r._fRad;
 	}
 
 	bool operator >(const MPRadian& r) const {
-		return m_fRad > r.m_fRad;
+		return _fRad > r._fRad;
 	}
 };
 
@@ -123,148 +123,148 @@ public:
 
 */
 class MPDegree {
-	float m_fDeg; // if you get an error here - make sure to define/typedef 'Real' first
+	float _fDeg; // if you get an error here - make sure to define/typedef 'Real' first
 
 public:
-	explicit MPDegree(float d = 0) : m_fDeg(d) {
+	explicit MPDegree(float d = 0) : _fDeg(d) {
 	}
 
-	MPDegree(const MPRadian& r) : m_fDeg(r.valueDegrees()) {
+	MPDegree(const MPRadian& r) : _fDeg(r.valueDegrees()) {
 	}
 
 	const MPDegree& operator =(const float& f) {
-		m_fDeg = f;
+		_fDeg = f;
 		return *this;
 	}
 
 	const MPDegree& operator =(const MPDegree& d) {
-		m_fDeg = d.m_fDeg;
+		_fDeg = d._fDeg;
 		return *this;
 	}
 
 	const MPDegree& operator =(const MPRadian& r) {
-		m_fDeg = r.valueDegrees();
+		_fDeg = r.valueDegrees();
 		return *this;
 	}
 
 	float valueDegrees() const {
-		return m_fDeg;
+		return _fDeg;
 	}
 
 	float valueRadians() const;
 	float valueAngleUnits() const;
 
 	MPDegree operator +(const MPDegree& d) const {
-		return MPDegree(m_fDeg + d.m_fDeg);
+		return MPDegree(_fDeg + d._fDeg);
 	}
 
 	MPDegree operator +(const MPRadian& r) const {
-		return MPDegree(m_fDeg + r.valueDegrees());
+		return MPDegree(_fDeg + r.valueDegrees());
 	}
 
 	MPDegree& operator +=(const MPDegree& d) {
-		m_fDeg += d.m_fDeg;
+		_fDeg += d._fDeg;
 		return *this;
 	}
 
 	MPDegree& operator +=(const MPRadian& r) {
-		m_fDeg += r.valueDegrees();
+		_fDeg += r.valueDegrees();
 		return *this;
 	}
 
 	MPDegree operator -() {
-		return MPDegree(-m_fDeg);
+		return MPDegree(-_fDeg);
 	}
 
 	MPDegree operator -(const MPDegree& d) const {
-		return MPDegree(m_fDeg - d.m_fDeg);
+		return MPDegree(_fDeg - d._fDeg);
 	}
 
 	MPDegree operator -(const MPRadian& r) const {
-		return MPDegree(m_fDeg - r.valueDegrees());
+		return MPDegree(_fDeg - r.valueDegrees());
 	}
 
 	MPDegree& operator -=(const MPDegree& d) {
-		m_fDeg -= d.m_fDeg;
+		_fDeg -= d._fDeg;
 		return *this;
 	}
 
 	MPDegree& operator -=(const MPRadian& r) {
-		m_fDeg -= r.valueDegrees();
+		_fDeg -= r.valueDegrees();
 		return *this;
 	}
 
 	MPDegree operator *(float f) const {
-		return MPDegree(m_fDeg * f);
+		return MPDegree(_fDeg * f);
 	}
 
 	MPDegree operator *(const MPDegree& f) const {
-		return MPDegree(m_fDeg * f.m_fDeg);
+		return MPDegree(_fDeg * f._fDeg);
 	}
 
 	MPDegree& operator *=(float f) {
-		m_fDeg *= f;
+		_fDeg *= f;
 		return *this;
 	}
 
 	MPDegree operator /(float f) const {
-		return MPDegree(m_fDeg / f);
+		return MPDegree(_fDeg / f);
 	}
 
 	MPDegree& operator /=(float f) {
-		m_fDeg /= f;
+		_fDeg /= f;
 		return *this;
 	}
 
 	bool operator <(const MPDegree& d) const {
-		return m_fDeg < d.m_fDeg;
+		return _fDeg < d._fDeg;
 	}
 
 	bool operator <=(const MPDegree& d) const {
-		return m_fDeg <= d.m_fDeg;
+		return _fDeg <= d._fDeg;
 	}
 
 	bool operator ==(const MPDegree& d) const {
-		return m_fDeg == d.m_fDeg;
+		return _fDeg == d._fDeg;
 	}
 
 	bool operator !=(const MPDegree& d) const {
-		return m_fDeg != d.m_fDeg;
+		return _fDeg != d._fDeg;
 	}
 
 	bool operator >=(const MPDegree& d) const {
-		return m_fDeg >= d.m_fDeg;
+		return _fDeg >= d._fDeg;
 	}
 
 	bool operator >(const MPDegree& d) const {
-		return m_fDeg > d.m_fDeg;
+		return _fDeg > d._fDeg;
 	}
 };
 
 // MPRadianMPDegree
-inline MPRadian::MPRadian(const MPDegree& d) : m_fRad(d.valueRadians()) {
+inline MPRadian::MPRadian(const MPDegree& d) : _fRad(d.valueRadians()) {
 }
 
 inline const MPRadian& MPRadian::operator =(const MPDegree& d) {
-	m_fRad = d.valueRadians();
+	_fRad = d.valueRadians();
 	return *this;
 }
 
 inline MPRadian MPRadian::operator +(const MPDegree& d) const {
-	return MPRadian(m_fRad + d.valueRadians());
+	return MPRadian(_fRad + d.valueRadians());
 }
 
 inline MPRadian& MPRadian::operator +=(const MPDegree& d) {
-	m_fRad += d.valueRadians();
+	_fRad += d.valueRadians();
 	return *this;
 }
 
 inline MPRadian MPRadian::operator -(const MPDegree& d) const {
-	return MPRadian(m_fRad - d.valueRadians());
+	return MPRadian(_fRad - d.valueRadians());
 }
 
 inline MPRadian& MPRadian::operator -=(const MPDegree& d) {
-	m_fRad -= d.valueRadians();
+	_fRad -= d.valueRadians();
 	return *this;
 }
 
@@ -289,15 +289,15 @@ public:
 
 protected:
 	// API
-	static AngleUnit m_sAngleUnit;
+	static AngleUnit _sAngleUnit;
 
 	/// .
-	static int m_TrigTableSize;
+	static int _TrigTableSize;
 
-	///  ->  ( m_TrigTableSize / 2 * PI )
-	static float m_TrigTableFactor;
-	static float* m_SinTable;
-	static float* m_TanTable;
+	///  ->  ( _TrigTableSize / 2 * PI )
+	static float _TrigTableFactor;
+	static float* _SinTable;
+	static float* _TanTable;
 
 	/**  */
 	void buildTrigTables();

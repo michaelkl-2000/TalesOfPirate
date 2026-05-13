@@ -9,7 +9,7 @@
 #include "EffectShaderStore.h"
 #include "MPRender.h"
 #include "lwIUtil.h"
-#include "lwSysGraphics.h"
+#include "SysGraphics.h"
 
 using namespace Corsairs::Engine::Render;namespace Corsairs::Engine::Render {
 
@@ -18,7 +18,7 @@ EffectDeviceCallbacks& EffectDeviceCallbacks::Instance() {
     return instance;
 }
 
-void EffectDeviceCallbacks::Install(MPRender* dev, lwISysGraphics* sysGraphics) {
+void EffectDeviceCallbacks::Install(MPRender* dev, ISysGraphics* sysGraphics) {
     _dev         = dev;
     _sysGraphics = sysGraphics;
     lwRegisterOutputLoseDeviceProc(&EffectDeviceCallbacks::TrampolineOnLost);

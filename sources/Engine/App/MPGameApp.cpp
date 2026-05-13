@@ -36,7 +36,6 @@ using namespace Corsairs::Engine::Render;MPGameApp::MPGameApp()
 
 	_bLastDBClick = false;
 	_bCanDB = false;
-	_nDBTime = 0;
 
 	_bEnSpScreen = FALSE;
 	_bEnSpAvi = FALSE;
@@ -170,7 +169,9 @@ void MPGameApp::Render() {
 	lwISceneMgr* sm = g_Render.GetInterfaceMgr()->sys_graphics->GetSceneMgr();
 
 
-	if (!g_Render.BeginRender(true)) return;
+	if (!g_Render.BeginRender(true)) {
+		return;
+	}
 
 
 	sm->BeginRender();
@@ -284,8 +285,8 @@ BOOL MPGameApp::_InitInput() {
 		return FALSE;
 	}
 
-	_nDBClickTime = ::GetDoubleClickTime();
-	_nLastClickTime = timeGetTime();
+	_dbClickTime = std::chrono::milliseconds(::GetDoubleClickTime());
+	_lastClickTime = std::chrono::steady_clock::now();
 
 	return TRUE;
 }
@@ -338,7 +339,7 @@ void MPGameApp::_ReadKeyboardInput() {
 	if (nScroll) {
 		MouseScroll(nScroll);
 	}
-	UINT time = timeGetTime();
+	const auto time = std::chrono::steady_clock::now();
 
 	for (int i = 0; i < 3; i++) {
 		if (_btButtonState[i] && !_btLastButtonState[i]) {
@@ -351,15 +352,15 @@ void MPGameApp::_ReadKeyboardInput() {
 				_dwMouseKey |= M_MDown;
 
 
-			if ((time - _nLastClickTime < _nDBClickTime)) {
+			if ((time - _lastClickTime < _dbClickTime)) {
 				if (!nOffsetX && !nOffsetY && _bCanDB) {
 					if (_bLastDBClick) {
-						if (time - _nDBTime > _nDBClickTime)
+						if (time - _dbTime > _dbClickTime)
 							_bLastDBClick = false;
 					}
 					if (!_bLastDBClick) {
 						_bLastDBClick = true;
-						_nDBTime = time;
+						_dbTime = time;
 
 						if (i == 0)
 							_dwMouseKey |= M_LDB;
@@ -373,7 +374,7 @@ void MPGameApp::_ReadKeyboardInput() {
 			else {
 				_bLastDBClick = false;
 			}
-			_nLastClickTime = time;
+			_lastClickTime = time;
 			_bCanDB = true;
 		}
 
@@ -423,7 +424,9 @@ void MPGameApp::_ReadKeyboardInput() {
 }
 
 void MPGameApp::SetCaption(const char* pszCaption) {
-	if (_hWnd == 0) return;
+	if (_hWnd == 0) {
+		return;
+	}
 	SetWindowText(_hWnd, pszCaption);
 }
 

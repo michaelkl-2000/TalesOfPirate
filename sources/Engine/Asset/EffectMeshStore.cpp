@@ -6,7 +6,7 @@
 #include "I_Effect.h"
 #include "MPRender.h"
 #include "lwIUtil.h"
-#include "lwSysGraphics.h"
+#include "SysGraphics.h"
 
 #include <algorithm>
 #include <cctype>
@@ -42,7 +42,7 @@ void EffectMeshStore::SetDevice(MPRender* dev) noexcept {
     _dev = dev;
 }
 
-void EffectMeshStore::SetSystem(lwISystem* sys, lwISysGraphics* sysGraphics) noexcept {
+void EffectMeshStore::SetSystem(ISystem* sys, ISysGraphics* sysGraphics) noexcept {
     _sys         = sys;
     _sysGraphics = sysGraphics;
 }
@@ -59,7 +59,7 @@ void EffectMeshStore::CreateBuiltins() {
     _names.clear();
     _index.clear();
 
-    lwIResourceMgr* res = _sysGraphics ? _sysGraphics->GetResourceMgr() : nullptr;
+    IResourceMgr* res = _sysGraphics ? _sysGraphics->GetResourceMgr() : nullptr;
 
     auto registerPrimitive = [&](const char* name) -> CEffectModel* {
         const int id = static_cast<int>(_names.size());
@@ -98,7 +98,7 @@ bool EffectMeshStore::LoadLgoFrom(std::string_view directory) {
         return true;
     }
 
-    lwIPathInfo* pathInfo = nullptr;
+    IPathInfo* pathInfo = nullptr;
     std::string oldPath;
     if (_sys) {
         _sys->GetInterface(reinterpret_cast<LW_VOID**>(&pathInfo), LW_GUID_PATHINFO);
@@ -152,13 +152,21 @@ void EffectMeshStore::RecreateBuiltins() {
     if (_meshes.size() < 7) {
         return;
     }
-    if (_meshes[0]) _meshes[0]->CreateTriangle();
+    if (_meshes[0]) {
+    	_meshes[0]->CreateTriangle();
+    }
     if (_meshes[1]) _meshes[1]->CreateRect();
-    if (_meshes[2]) _meshes[2]->CreatePlaneRect();
+    if (_meshes[2]) {
+    	_meshes[2]->CreatePlaneRect();
+    }
     if (_meshes[3]) _meshes[3]->CreatePlaneTriangle();
-    if (_meshes[4]) _meshes[4]->CreateRectZ();
+    if (_meshes[4]) {
+    	_meshes[4]->CreateRectZ();
+    }
     if (_meshes[5]) _meshes[5]->CreateCone(8, 3, 2);
-    if (_meshes[6]) _meshes[6]->CreateCylinder(8, 3, 1, 3);
+    if (_meshes[6]) {
+    	_meshes[6]->CreateCylinder(8, 3, 1, 3);
+    }
 }
 
 void EffectMeshStore::Clear() {
@@ -191,7 +199,7 @@ CEffectModel* EffectMeshStore::GetByID(int id) {
             _meshes[id] = new CEffectModel;
             _meshes[id]->InitDevice(_dev);
 
-            lwIPathInfo* pathInfo = nullptr;
+            IPathInfo* pathInfo = nullptr;
             std::string oldPath;
             if (_sys) {
                 _sys->GetInterface(reinterpret_cast<LW_VOID**>(&pathInfo), LW_GUID_PATHINFO);
@@ -229,7 +237,7 @@ CEffectModel* EffectMeshStore::GetByID(int id) {
                 if (!_meshes[n]) {
                     _meshes[n] = new CEffectModel;
                 }
-                if (_meshes[n]->m_iID != id) {
+                if (_meshes[n]->_iID != id) {
                     if (!_meshes[n]->Copy(*_meshes[id])) {
                         SAFE_DELETE(_meshes[n]);
                         ToLogService("errors", LogLevel::Error,
@@ -255,7 +263,7 @@ CEffectModel* EffectMeshStore::GetByID(int id) {
     if (!result) {
         return nullptr;
     }
-    result->m_iID = id;
+    result->_iID = id;
     result->SetUsing(true);
     return result;
 }
@@ -273,7 +281,7 @@ CEffectModel* EffectMeshStore::GetShadeMesh() const noexcept {
 }
 
 void EffectMeshStore::DeleteMesh(CEffectModel& model) {
-    if (model.m_iID >= 7) {
+    if (model._iID >= 7) {
         model.SetUsing(false);
     }
 }

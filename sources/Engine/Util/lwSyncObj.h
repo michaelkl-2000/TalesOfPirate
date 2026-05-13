@@ -11,25 +11,25 @@ namespace Corsairs::Engine::Render {
 	// Тонкая обёртка над std::mutex для совместимости со старым API
 	// Create()/Destroy()/Lock()/Unlock(). Внутри — std::mutex.
 	//
-	// Используется в lwResourceMgr (_lock_sysmemtex). После полной миграции
+	// Используется в ResourceMgr (_lock_sysmemtex). После полной миграции
 	// callsite на std::mutex напрямую — класс можно удалить.
 	//
 	// lwEvent/lwSemaphore (WinAPI HANDLE-обёртки) были удалены при миграции
-	// lwThreadPool на std::thread + condition_variable.
-	class lwCriticalSection {
+	// ThreadPool на std::thread + condition_variable.
+	class CriticalSection {
 	private:
 		std::mutex _mutex;
 		bool _created = false;
 
 	public:
-		lwCriticalSection() = default;
+		CriticalSection() = default;
 
-		~lwCriticalSection() {
+		~CriticalSection() {
 			Destroy();
 		}
 
-		lwCriticalSection(const lwCriticalSection&) = delete;
-		lwCriticalSection& operator=(const lwCriticalSection&) = delete;
+		CriticalSection(const CriticalSection&) = delete;
+		CriticalSection& operator=(const CriticalSection&) = delete;
 
 		LW_RESULT Create() {
 			_created = true;

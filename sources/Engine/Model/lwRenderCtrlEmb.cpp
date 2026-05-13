@@ -9,7 +9,7 @@ namespace Corsairs::Engine::Render {
 		return LW_NEW(lwRenderCtrlVSFixedFunction);
 	}
 
-	LW_RESULT lwInitInternalRenderCtrlVSProc(lwIResourceMgr* mgr) {
+	LW_RESULT lwInitInternalRenderCtrlVSProc(IResourceMgr* mgr) {
 		mgr->RegisterRenderCtrlProc(RENDERCTRL_VS_FIXEDFUNCTION, __RenderCtrlVSProcFixedFuntion);
 
 		return LW_RET_OK;
@@ -32,8 +32,8 @@ namespace Corsairs::Engine::Render {
 	}
 
 	LW_RESULT lwRenderCtrlVSFixedFunction::BeginSet(lwIRenderCtrlAgent* agent) {
-		lwIResourceMgr* res_mgr = agent->GetResourceMgr();
-		lwIDeviceObject* dev_obj = res_mgr->GetDeviceObject();
+		IResourceMgr* res_mgr = agent->GetResourceMgr();
+		IDeviceObject* dev_obj = res_mgr->GetDeviceObject();
 		dev_obj->SetTransformWorld(agent->GetGlobalMatrix());
 
 		return LW_RET_OK;
@@ -44,8 +44,8 @@ namespace Corsairs::Engine::Render {
 	}
 
 	LW_RESULT lwRenderCtrlVSFixedFunction::BeginSetSubset(DWORD subset, lwIRenderCtrlAgent* agent) {
-		lwIResourceMgr* res_mgr = agent->GetResourceMgr();
-		lwIDeviceObject* dev_obj = res_mgr->GetDeviceObject();
+		IResourceMgr* res_mgr = agent->GetResourceMgr();
+		IDeviceObject* dev_obj = res_mgr->GetDeviceObject();
 
 		lwIAnimCtrlAgent* anim_agent = agent->GetAnimCtrlAgent();
 
@@ -85,8 +85,8 @@ namespace Corsairs::Engine::Render {
 	}
 
 	LW_RESULT lwRenderCtrlVSFixedFunction::EndSetSubset(DWORD subset, lwIRenderCtrlAgent* agent) {
-		lwIResourceMgr* res_mgr = agent->GetResourceMgr();
-		lwIDeviceObject* dev_obj = res_mgr->GetDeviceObject();
+		IResourceMgr* res_mgr = agent->GetResourceMgr();
+		IDeviceObject* dev_obj = res_mgr->GetDeviceObject();
 
 		lwIAnimCtrlAgent* anim_agent = agent->GetAnimCtrlAgent();
 

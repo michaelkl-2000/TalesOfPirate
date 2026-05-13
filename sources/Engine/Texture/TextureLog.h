@@ -1,7 +1,7 @@
 #pragma once
 
 //  Лог загрузки/выгрузки текстур в видеопамяти. Раньше был встроен в
-//  lwResourceMgr (lwTexLogMgr/lwTexLogFilterInfo) и писал в собственный
+//  ResourceMgr (lwTexLogMgr/lwTexLogFilterInfo) и писал в собственный
 //  файл .\log\game\tex.log через FILE*+sprintf. Теперь — синглтон с
 //  выходом через ToLogService("textures", ...) и runtime-тоглом из INI.
 
@@ -32,7 +32,7 @@ namespace Corsairs::Engine::Render {
 	//  компромисс, исторически унаследованный от lwTexLogMgr).
 	//  По умолчанию выключен. Включается из клиента после GlobalAppConfig.Load()
 	//  если в [TextureLog] enabled = 1. Когда выключен — Log() это no-op,
-	//  так что 5 колсайтов в lwResourceMgr работают и в проде без накладных.
+	//  так что 5 колсайтов в ResourceMgr работают и в проде без накладных.
 	class TextureLog {
 	public:
 		static TextureLog& Instance();

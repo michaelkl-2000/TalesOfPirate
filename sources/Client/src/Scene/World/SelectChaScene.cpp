@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 
 #include "UIText.h"
 #include "SelectChaScene.h"
@@ -217,19 +217,19 @@ bool CSelectChaScene::_Init() {
 	CCameraCtrl* pCam = g_pGameApp->GetMainCam();
 	if (pCam) {
 		g_pGameApp->EnableCameraFollow(TRUE);
-		pCam->m_EyePos.x = 23.749f;
-		pCam->m_EyePos.y = 20.923f;
-		pCam->m_EyePos.z = 1.982f;
+		pCam->_EyePos.x = 23.749f;
+		pCam->_EyePos.y = 20.923f;
+		pCam->_EyePos.z = 1.982f;
 
-		pCam->m_RefPos.x = 20.034f;
-		pCam->m_RefPos.y = -194.137f;
-		pCam->m_RefPos.z = 0.868f;
+		pCam->_RefPos.x = 20.034f;
+		pCam->_RefPos.y = -194.137f;
+		pCam->_RefPos.z = 0.868f;
 	}
 	g_Render.SetWorldViewFOV(Angle2Radian(70.0f));
 	g_Render.SetWorldViewAspect(1.33f);
 	g_Render.SetClip(1.0f, 2000.0f);
 
-	g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+	g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 	g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 	MPIDeviceObject* dev_obj = g_Render.GetInterfaceMgr()->dev_obj;
 

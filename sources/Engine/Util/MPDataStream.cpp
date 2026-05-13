@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "MPDataStream.h"
 
 #include "MPStringUtil.h"
@@ -16,8 +16,8 @@ String MPDataStream::getLine(bool trimAfter) {
 	MPStringUtil::StrStreamType str;
 	size_t c = MP_STREAM_TEMP_SIZE - 1;
 	while (c == MP_STREAM_TEMP_SIZE - 1) {
-		c = readLine(m_TmpArea, MP_STREAM_TEMP_SIZE - 1);
-		str << m_TmpArea;
+		c = readLine(_TmpArea, MP_STREAM_TEMP_SIZE - 1);
+		str << _TmpArea;
 	}
 
 	String retString(str.str());
@@ -30,11 +30,11 @@ String MPDataStream::getLine(bool trimAfter) {
 
 //-----------------------------------------------------------------------------
 String MPDataStream::getAsString(void) {
-	char* pBuf = new char[m_Size + 1];
-	read(pBuf, m_Size);
-	pBuf[m_Size] = '\0';
+	char* pBuf = new char[_Size + 1];
+	read(pBuf, _Size);
+	pBuf[_Size] = '\0';
 	String str;
-	str.insert(0, pBuf, m_Size);
+	str.insert(0, pBuf, _Size);
 	delete [] pBuf;
 	return str;
 }
@@ -44,84 +44,84 @@ String MPDataStream::getAsString(void) {
 //=============================================================================
 MPMemoryDataStream::MPMemoryDataStream(void* pMem, size_t size, bool freeOnClose)
 	: MPDataStream() {
-	m_Data = m_Pos = static_cast<uchar*>(pMem);
-	m_Size = size;
-	m_End = m_Data + m_Size;
-	m_FreeOnClose = freeOnClose;
+	_Data = _Pos = static_cast<uchar*>(pMem);
+	_Size = size;
+	_End = _Data + _Size;
+	_FreeOnClose = freeOnClose;
 }
 
 //-----------------------------------------------------------------------------
 MPMemoryDataStream::MPMemoryDataStream(const String& name, void* pMem, size_t size,
 									   bool freeOnClose)
 	: MPDataStream(name) {
-	m_Data = m_Pos = static_cast<uchar*>(pMem);
-	m_Size = size;
-	m_End = m_Data + m_Size;
-	m_FreeOnClose = freeOnClose;
+	_Data = _Pos = static_cast<uchar*>(pMem);
+	_Size = size;
+	_End = _Data + _Size;
+	_FreeOnClose = freeOnClose;
 }
 
 //-----------------------------------------------------------------------------
 MPMemoryDataStream::MPMemoryDataStream(MPDataStream& sourceStream, bool freeOnClose)
 	: MPDataStream() {
-	m_Size = sourceStream.size();
-	m_Data = new uchar[m_Size];
-	sourceStream.read(m_Data, m_Size);
-	m_Pos = m_Data;
-	m_End = m_Data + m_Size;
-	m_FreeOnClose = freeOnClose;
+	_Size = sourceStream.size();
+	_Data = new uchar[_Size];
+	sourceStream.read(_Data, _Size);
+	_Pos = _Data;
+	_End = _Data + _Size;
+	_FreeOnClose = freeOnClose;
 }
 
 //-----------------------------------------------------------------------------
 MPMemoryDataStream::MPMemoryDataStream(MPDataStreamPtr& sourceStream, bool freeOnClose)
 	: MPDataStream() {
-	m_Size = sourceStream->size();
-	m_Data = new uchar[m_Size];
-	sourceStream->read(m_Data, m_Size);
-	m_Pos = m_Data;
-	m_End = m_Data + m_Size;
-	m_FreeOnClose = freeOnClose;
+	_Size = sourceStream->size();
+	_Data = new uchar[_Size];
+	sourceStream->read(_Data, _Size);
+	_Pos = _Data;
+	_End = _Data + _Size;
+	_FreeOnClose = freeOnClose;
 }
 
 //-----------------------------------------------------------------------------
 MPMemoryDataStream::MPMemoryDataStream(const String& name, MPDataStream& sourceStream, bool freeOnClose)
 	: MPDataStream(name) {
-	m_Size = sourceStream.size();
-	m_Data = new uchar[m_Size];
-	sourceStream.read(m_Data, m_Size);
-	m_Pos = m_Data;
-	m_End = m_Data + m_Size;
-	m_FreeOnClose = freeOnClose;
+	_Size = sourceStream.size();
+	_Data = new uchar[_Size];
+	sourceStream.read(_Data, _Size);
+	_Pos = _Data;
+	_End = _Data + _Size;
+	_FreeOnClose = freeOnClose;
 }
 
 //-----------------------------------------------------------------------------
 MPMemoryDataStream::MPMemoryDataStream(const String& name, const MPDataStreamPtr& sourceStream, bool freeOnClose)
 	: MPDataStream(name) {
-	m_Size = sourceStream->size();
-	m_Data = new uchar[m_Size];
-	sourceStream->read(m_Data, m_Size);
-	m_Pos = m_Data;
-	m_End = m_Data + m_Size;
-	m_FreeOnClose = freeOnClose;
+	_Size = sourceStream->size();
+	_Data = new uchar[_Size];
+	sourceStream->read(_Data, _Size);
+	_Pos = _Data;
+	_End = _Data + _Size;
+	_FreeOnClose = freeOnClose;
 }
 
 //-----------------------------------------------------------------------------
 MPMemoryDataStream::MPMemoryDataStream(size_t size, bool freeOnClose)
 	: MPDataStream() {
-	m_Size = size;
-	m_Data = new uchar[m_Size];
-	m_Pos = m_Data;
-	m_End = m_Data + m_Size;
-	m_FreeOnClose = freeOnClose;
+	_Size = size;
+	_Data = new uchar[_Size];
+	_Pos = _Data;
+	_End = _Data + _Size;
+	_FreeOnClose = freeOnClose;
 }
 
 //-----------------------------------------------------------------------------
 MPMemoryDataStream::MPMemoryDataStream(const String& name, size_t size, bool freeOnClose)
 	: MPDataStream(name) {
-	m_Size = size;
-	m_Data = new uchar[m_Size];
-	m_Pos = m_Data;
-	m_End = m_Data + m_Size;
-	m_FreeOnClose = freeOnClose;
+	_Size = size;
+	_Data = new uchar[_Size];
+	_Pos = _Data;
+	_End = _Data + _Size;
+	_FreeOnClose = freeOnClose;
 }
 
 //-----------------------------------------------------------------------------
@@ -133,13 +133,13 @@ MPMemoryDataStream::~MPMemoryDataStream() {
 size_t MPMemoryDataStream::read(void* buf, size_t count) {
 	size_t cnt = count;
 
-	if (m_Pos + cnt > m_End)
-		cnt = m_End - m_Pos;
+	if (_Pos + cnt > _End)
+		cnt = _End - _Pos;
 	if (cnt == 0)
 		return 0;
 
-	memcpy(buf, m_Pos, cnt);
-	m_Pos += cnt;
+	memcpy(buf, _Pos, cnt);
+	_Pos += cnt;
 	return cnt;
 }
 
@@ -153,18 +153,20 @@ size_t MPMemoryDataStream::readLine(char* buf, size_t maxCount, const String& de
 	}
 
 	// ("\n")
-	size_t pos = strcspn((const char*)m_Pos, delim.c_str());
+	size_t pos = strcspn((const char*)_Pos, delim.c_str());
 	if (pos > maxCount)
 		pos = maxCount;
 
 	// poseof
-	if (m_Pos + pos > m_End) pos = m_End - m_Pos;
-
-	if (pos > 0) {
-		memcpy(buf, (const void*)m_Pos, pos);
+	if (_Pos + pos > _End) {
+		pos = _End - _Pos;
 	}
 
-	m_Pos += pos + 1;
+	if (pos > 0) {
+		memcpy(buf, (const void*)_Pos, pos);
+	}
+
+	_Pos += pos + 1;
 
 	// CR LF
 	if (trimCR && buf[pos - 1] == '\r') {
@@ -179,45 +181,47 @@ size_t MPMemoryDataStream::readLine(char* buf, size_t maxCount, const String& de
 //-----------------------------------------------------------------------------
 size_t MPMemoryDataStream::skipLine(const String& delim) {
 	// ("\n")
-	size_t pos = strcspn((const char*)m_Pos, delim.c_str());
+	size_t pos = strcspn((const char*)_Pos, delim.c_str());
 
 	// poseof
-	if (m_Pos + pos > m_End) pos = m_End - m_Pos;
+	if (_Pos + pos > _End) {
+		pos = _End - _Pos;
+	}
 
-	m_Pos += pos + 1;
+	_Pos += pos + 1;
 
 	return pos;
 }
 
 //-----------------------------------------------------------------------------
 void MPMemoryDataStream::skip(long count) {
-	size_t newpos = (size_t)((m_Pos - m_Data) + count);
-	assert(m_Data + newpos <= m_End);
+	size_t newpos = (size_t)((_Pos - _Data) + count);
+	assert(_Data + newpos <= _End);
 
-	m_Pos = m_Data + newpos;
+	_Pos = _Data + newpos;
 }
 
 //-----------------------------------------------------------------------------
 void MPMemoryDataStream::seek(size_t pos) {
-	assert(m_Data + pos <= m_End);
-	m_Pos = m_Data + pos;
+	assert(_Data + pos <= _End);
+	_Pos = _Data + pos;
 }
 
 //-----------------------------------------------------------------------------
 size_t MPMemoryDataStream::tell(void) const {
-	return m_Pos - m_Data;
+	return _Pos - _Data;
 }
 
 //-----------------------------------------------------------------------------
 bool MPMemoryDataStream::eof(void) const {
-	return m_Pos >= m_End;
+	return _Pos >= _End;
 }
 
 //-----------------------------------------------------------------------------
 void MPMemoryDataStream::close(void) {
-	if (m_FreeOnClose && m_Data) {
-		delete [] m_Data;
-		m_Data = 0;
+	if (_FreeOnClose && _Data) {
+		delete [] _Data;
+		_Data = 0;
 	}
 }
 
@@ -226,23 +230,23 @@ void MPMemoryDataStream::close(void) {
 //=============================================================================
 MPFileStreamDataStream::MPFileStreamDataStream(std::ifstream* s, bool freeOnClose)
 	: MPDataStream() {
-	m_pStream->seekg(0, std::ios_base::end);
-	m_Size = m_pStream->tellg();
-	m_pStream->seekg(0, std::ios_base::beg);
+	_pStream->seekg(0, std::ios_base::end);
+	_Size = _pStream->tellg();
+	_pStream->seekg(0, std::ios_base::beg);
 }
 
 //-----------------------------------------------------------------------------
 MPFileStreamDataStream::MPFileStreamDataStream(const String& name, std::ifstream* s, bool freeOnClose)
 	: MPDataStream(name) {
-	m_pStream->seekg(0, std::ios_base::end);
-	m_Size = m_pStream->tellg();
-	m_pStream->seekg(0, std::ios_base::beg);
+	_pStream->seekg(0, std::ios_base::end);
+	_Size = _pStream->tellg();
+	_pStream->seekg(0, std::ios_base::beg);
 }
 
 //-----------------------------------------------------------------------------
 MPFileStreamDataStream::MPFileStreamDataStream(const String& name, std::ifstream* s, size_t size, bool freeOnClose)
 	: MPDataStream(name) {
-	m_Size = size;
+	_Size = size;
 }
 
 //-----------------------------------------------------------------------------
@@ -252,8 +256,8 @@ MPFileStreamDataStream::~MPFileStreamDataStream() {
 
 //-----------------------------------------------------------------------------
 size_t MPFileStreamDataStream::read(void* buf, size_t count) {
-	m_pStream->read(static_cast<char*>(buf), count);
-	return m_pStream->gcount();
+	_pStream->read(static_cast<char*>(buf), count);
+	return _pStream->gcount();
 }
 
 //-----------------------------------------------------------------------------
@@ -271,8 +275,8 @@ size_t MPFileStreamDataStream::readLine(char* buf, size_t maxCount, const String
 		trimCR = true;
 	}
 	// maxCount + 1
-	m_pStream->getline(buf, maxCount + 1, delim.at(0));
-	size_t ret = m_pStream->gcount();
+	_pStream->getline(buf, maxCount + 1, delim.at(0));
+	size_t ret = _pStream->gcount();
 	// 3
 	// 1) eof
 	// 2) 
@@ -280,14 +284,14 @@ size_t MPFileStreamDataStream::readLine(char* buf, size_t maxCount, const String
 	//    ret-1,ret-2
 	// null
 
-	if (m_pStream->eof()) {
+	if (_pStream->eof()) {
 	}
-	else if (m_pStream->fail()) {
+	else if (_pStream->fail()) {
 		// Did we fail because of maxCount hit? No - no terminating character
 		// in included in the count in this case
 		if (ret == maxCount) {
 			// clear failbit for next time 
-			m_pStream->clear();
+			_pStream->clear();
 		}
 		else {
 			ToLogService("common", "FileStreamDataStream::readLine");
@@ -311,7 +315,7 @@ size_t MPFileStreamDataStream::skipLine(const String& delim) {
 	size_t c = MP_STREAM_TEMP_SIZE - 1;
 	size_t total = 0;
 	while (c == MP_STREAM_TEMP_SIZE - 1) {
-		c = readLine(m_TmpArea, MP_STREAM_TEMP_SIZE - 1);
+		c = readLine(_TmpArea, MP_STREAM_TEMP_SIZE - 1);
 		total += c;
 	}
 	return total;
@@ -319,34 +323,34 @@ size_t MPFileStreamDataStream::skipLine(const String& delim) {
 
 //-----------------------------------------------------------------------------
 void MPFileStreamDataStream::skip(long count) {
-	m_pStream->clear(); //eof
-	m_pStream->seekg(static_cast<std::ifstream::pos_type>(count), std::ios::cur);
+	_pStream->clear(); //eof
+	_pStream->seekg(static_cast<std::ifstream::pos_type>(count), std::ios::cur);
 }
 
 //-----------------------------------------------------------------------------
 void MPFileStreamDataStream::seek(size_t pos) {
-	m_pStream->clear(); //eof
-	m_pStream->seekg(static_cast<std::ifstream::pos_type>(pos), std::ios::beg);
+	_pStream->clear(); //eof
+	_pStream->seekg(static_cast<std::ifstream::pos_type>(pos), std::ios::beg);
 }
 
 //-----------------------------------------------------------------------------
 size_t MPFileStreamDataStream::tell(void) const {
-	m_pStream->clear(); //eof
-	return m_pStream->tellg();
+	_pStream->clear(); //eof
+	return _pStream->tellg();
 }
 
 //-----------------------------------------------------------------------------
 bool MPFileStreamDataStream::eof(void) const {
-	return m_pStream->eof();
+	return _pStream->eof();
 }
 
 //-----------------------------------------------------------------------------
 void MPFileStreamDataStream::close(void) {
-	if (m_pStream) {
-		m_pStream->close();
-		if (m_FreeOnClose) {
-			delete m_pStream;
-			m_pStream = 0;
+	if (_pStream) {
+		_pStream->close();
+		if (_FreeOnClose) {
+			delete _pStream;
+			_pStream = 0;
 		}
 	}
 }
@@ -355,18 +359,18 @@ void MPFileStreamDataStream::close(void) {
 // MPFileHandleDataStream
 //=============================================================================
 MPFileHandleDataStream::MPFileHandleDataStream(FILE* handle)
-	: MPDataStream(), m_FileHandle(handle) {
-	fseek(m_FileHandle, 0, SEEK_END);
-	m_Size = ftell(m_FileHandle);
-	fseek(m_FileHandle, 0, SEEK_SET);
+	: MPDataStream(), _FileHandle(handle) {
+	fseek(_FileHandle, 0, SEEK_END);
+	_Size = ftell(_FileHandle);
+	fseek(_FileHandle, 0, SEEK_SET);
 }
 
 //-----------------------------------------------------------------------------
 MPFileHandleDataStream::MPFileHandleDataStream(const String& name, FILE* handle)
-	: MPDataStream(name), m_FileHandle(handle) {
-	fseek(m_FileHandle, 0, SEEK_END);
-	m_Size = ftell(m_FileHandle);
-	fseek(m_FileHandle, 0, SEEK_SET);
+	: MPDataStream(name), _FileHandle(handle) {
+	fseek(_FileHandle, 0, SEEK_END);
+	_Size = ftell(_FileHandle);
+	fseek(_FileHandle, 0, SEEK_SET);
 }
 
 //-----------------------------------------------------------------------------
@@ -376,7 +380,7 @@ MPFileHandleDataStream::~MPFileHandleDataStream() {
 
 //-----------------------------------------------------------------------------
 size_t MPFileHandleDataStream::read(void* buf, size_t count) {
-	return fread(buf, count, 1, m_FileHandle);
+	return fread(buf, count, 1, _FileHandle);
 }
 
 //-----------------------------------------------------------------------------
@@ -390,22 +394,22 @@ size_t MPFileHandleDataStream::readLine(char* buf, size_t maxCount, const String
 	size_t chunkSize = std::min(maxCount, static_cast<size_t>(MP_STREAM_TEMP_SIZE - 1));
 	size_t totalCount = 0;
 	size_t readCount;
-	while (chunkSize && (readCount = fread(m_TmpArea, chunkSize, 1, m_FileHandle))) {
-		m_TmpArea[readCount] = '\0';
-		size_t pos = strcspn(m_TmpArea, delim.c_str());
+	while (chunkSize && (readCount = fread(_TmpArea, chunkSize, 1, _FileHandle))) {
+		_TmpArea[readCount] = '\0';
+		size_t pos = strcspn(_TmpArea, delim.c_str());
 
 		if (pos < readCount) {
-			fseek(m_FileHandle, pos - readCount + 1, SEEK_CUR);
+			fseek(_FileHandle, pos - readCount + 1, SEEK_CUR);
 		}
 
 		if (pos > 0) {
 			// CR
-			if (trimCR && m_TmpArea[pos - 1] == '\r') {
+			if (trimCR && _TmpArea[pos - 1] == '\r') {
 				--pos;
 			}
 
 			if (buf) {
-				memcpy(buf, (const void*)m_TmpArea, pos);
+				memcpy(buf, (const void*)_TmpArea, pos);
 				buf[pos] = '\0';
 			}
 			totalCount += pos;
@@ -428,26 +432,26 @@ size_t MPFileHandleDataStream::skipLine(const String& delim) {
 
 //-----------------------------------------------------------------------------
 void MPFileHandleDataStream::skip(long count) {
-	fseek(m_FileHandle, count, SEEK_CUR);
+	fseek(_FileHandle, count, SEEK_CUR);
 }
 
 //-----------------------------------------------------------------------------
 void MPFileHandleDataStream::seek(size_t pos) {
-	fseek(m_FileHandle, pos, SEEK_SET);
+	fseek(_FileHandle, pos, SEEK_SET);
 }
 
 //-----------------------------------------------------------------------------
 size_t MPFileHandleDataStream::tell(void) const {
-	return ftell(m_FileHandle);
+	return ftell(_FileHandle);
 }
 
 //-----------------------------------------------------------------------------
 bool MPFileHandleDataStream::eof(void) const {
-	return feof(m_FileHandle) != 0;
+	return feof(_FileHandle) != 0;
 }
 
 //-----------------------------------------------------------------------------
 void MPFileHandleDataStream::close(void) {
-	fclose(m_FileHandle);
-	m_FileHandle = 0;
+	fclose(_FileHandle);
+	_FileHandle = 0;
 }

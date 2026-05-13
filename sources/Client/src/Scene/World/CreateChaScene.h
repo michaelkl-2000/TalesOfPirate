@@ -46,7 +46,7 @@ class CSelectChaScene;
 class LoginScene_CreateCha {
 public:
 	DWORD _model_type; // lxo: 1, lmo: 2
-	lwIResourceMgr* _res_mgr;
+	IResourceMgr* _res_mgr;
 	lwINodeObject* _model_lxo;
 	lwModel* _model_lmo;
 	lwItem* _arrow;
@@ -78,7 +78,7 @@ public:
 		Destroy();
 	}
 
-	void Init(lwIResourceMgr* res_mgr) {
+	void Init(IResourceMgr* res_mgr) {
 		_res_mgr = res_mgr;
 	}
 

@@ -36,7 +36,7 @@ namespace {
 
 constexpr y::EnumName kEffectTypeNames[] = {
     {0, "NONE"},          // unused / empty effect slot
-    {1, "FRAMETEX"},      // sprite-sheet frame textures (m_CTexFrame)
+    {1, "FRAMETEX"},      // sprite-sheet frame textures (_CTexFrame)
     {2, "MODELUV"},       // animated UV on a static model
     {3, "MODELTEXTURE"},  // frame-texture cycling on a model
     {4, "MODEL"},         // static / moving model with no UV/tex anim
@@ -72,14 +72,14 @@ LW_RESULT EffectLoader::ExportToYaml(const ::EffectFileInfo& info,
     out << "version: " << info.version << '\n';
 
     out << "param:\n";
-    out << "  idxTech: "   << info.param.m_iIdxTech << '\n';
-    out << "  usePath: "   << y::FmtBool(info.param.m_bUsePath) << '\n';
-    out << "  pathName: "  << y::QuoteString(info.param.m_szPathName) << '\n';
-    out << "  useSound: "  << y::FmtBool(info.param.m_bUseSound) << '\n';
-    out << "  soundName: " << y::QuoteString(info.param.m_szSoundName) << '\n';
-    out << "  rotating: "  << y::FmtBool(info.param.m_bRotating) << '\n';
-    out << "  verRota: "   << y::FmtVec3(info.param.m_SVerRota) << '\n';
-    out << "  rotaVel: "   << y::FmtFloat(info.param.m_fRotaVel) << '\n';
+    out << "  idxTech: "   << info.param._idxTech << '\n';
+    out << "  usePath: "   << y::FmtBool(info.param._usePath) << '\n';
+    out << "  pathName: "  << y::QuoteString(info.param._pathName) << '\n';
+    out << "  useSound: "  << y::FmtBool(info.param._useSound) << '\n';
+    out << "  soundName: " << y::QuoteString(info.param._soundName) << '\n';
+    out << "  rotating: "  << y::FmtBool(info.param._rotating) << '\n';
+    out << "  verRota: "   << y::FmtVec3(info.param._verRota) << '\n';
+    out << "  rotaVel: "   << y::FmtFloat(info.param._rotaVel) << '\n';
 
     out << "effects:";
     if (info.effects.empty()) {
@@ -90,7 +90,7 @@ LW_RESULT EffectLoader::ExportToYaml(const ::EffectFileInfo& info,
         for (const ::I_Effect& e : info.effects) {
             const WORD fc = e._wFrameCount;
 
-            out << "  - name: "      << y::QuoteString(e.m_strEffectName) << '\n';
+            out << "  - name: "      << y::QuoteString(e._strEffectName) << '\n';
             out << "    type: "      << EffectTypeToYaml(e._eEffectType)
                                      << "  " << EffectTypeChoicesComment() << '\n';
             out << "    srcBlend: "  << y::BlendToYaml(e._eSrcBlend)
@@ -132,64 +132,64 @@ LW_RESULT EffectLoader::ExportToYaml(const ::EffectFileInfo& info,
             }
 
             out << "    texCoord:\n";
-            out << "      verCount: "   << e.m_CTexCoordlist.m_wVerCount << '\n';
-            out << "      coordCount: " << e.m_CTexCoordlist.m_wCoordCount << '\n';
-            out << "      frameTime: "  << y::FmtFloat(e.m_CTexCoordlist.m_fFrameTime) << '\n';
+            out << "      verCount: "   << e._CTexCoordlist._wVerCount << '\n';
+            out << "      coordCount: " << e._CTexCoordlist._wCoordCount << '\n';
+            out << "      frameTime: "  << y::FmtFloat(e._CTexCoordlist._fFrameTime) << '\n';
             out << "      coords:";
-            if (e.m_CTexCoordlist.m_wCoordCount == 0) {
+            if (e._CTexCoordlist._wCoordCount == 0) {
                 out << " []\n";
             }
             else {
                 out << '\n';
-                for (WORD n = 0; n < e.m_CTexCoordlist.m_wCoordCount; ++n) {
+                for (WORD n = 0; n < e._CTexCoordlist._wCoordCount; ++n) {
                     out << "        - [";
-                    for (WORD k = 0; k < e.m_CTexCoordlist.m_wVerCount; ++k) {
+                    for (WORD k = 0; k < e._CTexCoordlist._wVerCount; ++k) {
                         if (k) { out << ", "; }
-                        out << y::FmtVec2(e.m_CTexCoordlist.m_vecCoordList[n][k]);
+                        out << y::FmtVec2(e._CTexCoordlist._vecCoordList[n][k]);
                     }
                     out << "]\n";
                 }
             }
 
             out << "    texList:\n";
-            out << "      texCount: "  << e.m_CTextruelist.m_wTexCount << '\n';
-            out << "      frameTime: " << y::FmtFloat(e.m_CTextruelist.m_fFrameTime) << '\n';
-            out << "      texName: "   << y::QuoteString(e.m_CTextruelist.m_vecTexName) << '\n';
+            out << "      texCount: "  << e._CTextruelist._wTexCount << '\n';
+            out << "      frameTime: " << y::FmtFloat(e._CTextruelist._fFrameTime) << '\n';
+            out << "      texName: "   << y::QuoteString(e._CTextruelist._vecTexName) << '\n';
             out << "      texs:";
-            if (e.m_CTextruelist.m_wTexCount == 0) {
+            if (e._CTextruelist._wTexCount == 0) {
                 out << " []\n";
             }
             else {
                 out << '\n';
-                for (WORD n = 0; n < e.m_CTextruelist.m_wTexCount; ++n) {
+                for (WORD n = 0; n < e._CTextruelist._wTexCount; ++n) {
                     out << "        - [";
-                    for (WORD k = 0; k < e.m_CTexCoordlist.m_wVerCount; ++k) {
+                    for (WORD k = 0; k < e._CTexCoordlist._wVerCount; ++k) {
                         if (k) { out << ", "; }
-                        out << y::FmtVec2(e.m_CTextruelist.m_vecTexList[n][k]);
+                        out << y::FmtVec2(e._CTextruelist._vecTexList[n][k]);
                     }
                     out << "]\n";
                 }
             }
 
-            out << "    modelName: "  << y::QuoteString(e.m_strModelName) << '\n';
+            out << "    modelName: "  << y::QuoteString(e._strModelName) << '\n';
             out << "    billBoard: "  << y::FmtBool(e._bBillBoard) << '\n';
             out << "    vsIndex: "    << e._iVSIndex << '\n';
-            out << "    nSegments: "  << e.m_nSegments << '\n';
-            out << "    rHeight: "    << y::FmtFloat(e.m_rHeight) << '\n';
-            out << "    rRadius: "    << y::FmtFloat(e.m_rRadius) << '\n';
-            out << "    rBotRadius: " << y::FmtFloat(e.m_rBotRadius) << '\n';
+            out << "    nSegments: "  << e._nSegments << '\n';
+            out << "    rHeight: "    << y::FmtFloat(e._rHeight) << '\n';
+            out << "    rRadius: "    << y::FmtFloat(e._rRadius) << '\n';
+            out << "    rBotRadius: " << y::FmtFloat(e._rBotRadius) << '\n';
 
             out << "    texFrame:\n";
-            out << "      texCount: "  << e.m_CTexFrame.m_wTexCount << '\n';
-            out << "      frameTime: " << y::FmtFloat(e.m_CTexFrame.m_fFrameTime) << '\n';
+            out << "      texCount: "  << e._CTexFrame._wTexCount << '\n';
+            out << "      frameTime: " << y::FmtFloat(e._CTexFrame._fFrameTime) << '\n';
             out << "      texNames:";
-            if (e.m_CTexFrame.m_wTexCount == 0) {
+            if (e._CTexFrame._wTexCount == 0) {
                 out << " []\n";
             }
             else {
                 out << '\n';
-                for (WORD n = 0; n < e.m_CTexFrame.m_wTexCount; ++n) {
-                    out << "        - " << y::QuoteString(e.m_CTexFrame.m_vecTexName[n]) << '\n';
+                for (WORD n = 0; n < e._CTexFrame._wTexCount; ++n) {
+                    out << "        - " << y::QuoteString(e._CTexFrame._vecTexName[n]) << '\n';
                 }
             }
 
@@ -263,14 +263,22 @@ LW_RESULT EffectLoader::ImportFromYaml(::EffectFileInfo& info,
     }
 
     if (auto* p = root.Find("param"); p && p->kind == y::YamlNode::Mapping) {
-        if (auto* x = p->Find("idxTech"))   info.param.m_iIdxTech    = y::ParseInt(*x);
-        if (auto* x = p->Find("usePath"))   info.param.m_bUsePath    = y::ParseBool(*x);
-        if (auto* x = p->Find("pathName"))  info.param.m_szPathName  = y::ParseString(*x);
-        if (auto* x = p->Find("useSound"))  info.param.m_bUseSound   = y::ParseBool(*x);
-        if (auto* x = p->Find("soundName")) info.param.m_szSoundName = y::ParseString(*x);
-        if (auto* x = p->Find("rotating"))  info.param.m_bRotating   = y::ParseBool(*x);
-        if (auto* x = p->Find("verRota"))   info.param.m_SVerRota    = y::ParseVec3(*x);
-        if (auto* x = p->Find("rotaVel"))   info.param.m_fRotaVel    = y::ParseFloat(*x);
+        if (auto* x = p->Find("idxTech")) {
+        	info.param._idxTech    = y::ParseInt(*x);
+        }
+        if (auto* x = p->Find("usePath"))   info.param._usePath    = y::ParseBool(*x);
+        if (auto* x = p->Find("pathName")) {
+        	info.param._pathName  = y::ParseString(*x);
+        }
+        if (auto* x = p->Find("useSound"))  info.param._useSound   = y::ParseBool(*x);
+        if (auto* x = p->Find("soundName")) {
+        	info.param._soundName = y::ParseString(*x);
+        }
+        if (auto* x = p->Find("rotating"))  info.param._rotating   = y::ParseBool(*x);
+        if (auto* x = p->Find("verRota")) {
+        	info.param._verRota    = y::ParseVec3(*x);
+        }
+        if (auto* x = p->Find("rotaVel"))   info.param._rotaVel    = y::ParseFloat(*x);
     }
 
     auto* arr = root.Find("effects");
@@ -284,11 +292,17 @@ LW_RESULT EffectLoader::ImportFromYaml(::EffectFileInfo& info,
         if (en.kind != y::YamlNode::Mapping) { continue; }
         ::I_Effect& e = info.effects[i];
 
-        if (auto* x = en.Find("name"))       e.m_strEffectName = y::ParseString(*x);
+        if (auto* x = en.Find("name")) {
+        	e._strEffectName = y::ParseString(*x);
+        }
         if (auto* x = en.Find("type"))       e._eEffectType    = EffectTypeFromYaml(*x);
-        if (auto* x = en.Find("srcBlend"))   e._eSrcBlend      = y::BlendFromYaml(*x);
+        if (auto* x = en.Find("srcBlend")) {
+        	e._eSrcBlend      = y::BlendFromYaml(*x);
+        }
         if (auto* x = en.Find("destBlend"))  e._eDestBlend     = y::BlendFromYaml(*x);
-        if (auto* x = en.Find("length"))     e._fLength        = y::ParseFloat(*x);
+        if (auto* x = en.Find("length")) {
+        	e._fLength        = y::ParseFloat(*x);
+        }
         if (auto* x = en.Find("frameCount")) e._wFrameCount    = static_cast<WORD>(y::ParseInt(*x));
 
         const WORD fc = e._wFrameCount;
@@ -319,20 +333,24 @@ LW_RESULT EffectLoader::ImportFromYaml(::EffectFileInfo& info,
         }
 
         if (auto* tc = en.Find("texCoord"); tc && tc->kind == y::YamlNode::Mapping) {
-            if (auto* x = tc->Find("verCount"))   e.m_CTexCoordlist.m_wVerCount   = static_cast<WORD>(y::ParseInt(*x));
-            if (auto* x = tc->Find("coordCount")) e.m_CTexCoordlist.m_wCoordCount = static_cast<WORD>(y::ParseInt(*x));
-            if (auto* x = tc->Find("frameTime"))  e.m_CTexCoordlist.m_fFrameTime  = y::ParseFloat(*x);
-            const WORD vc = e.m_CTexCoordlist.m_wVerCount;
-            e.m_CTexCoordlist.m_vecCoordList.assign(e.m_CTexCoordlist.m_wCoordCount, TEXCOORD{});
+            if (auto* x = tc->Find("verCount")) {
+            	e._CTexCoordlist._wVerCount   = static_cast<WORD>(y::ParseInt(*x));
+            }
+            if (auto* x = tc->Find("coordCount")) e._CTexCoordlist._wCoordCount = static_cast<WORD>(y::ParseInt(*x));
+            if (auto* x = tc->Find("frameTime")) {
+            	e._CTexCoordlist._fFrameTime  = y::ParseFloat(*x);
+            }
+            const WORD vc = e._CTexCoordlist._wVerCount;
+            e._CTexCoordlist._vecCoordList.assign(e._CTexCoordlist._wCoordCount, TEXCOORD{});
             if (auto* x = tc->Find("coords"); x && x->kind == y::YamlNode::Sequence) {
                 for (std::size_t n = 0;
-                     n < e.m_CTexCoordlist.m_wCoordCount && n < x->sequence.size();
+                     n < e._CTexCoordlist._wCoordCount && n < x->sequence.size();
                      ++n) {
                     const y::YamlNode& row = x->sequence[n];
-                    e.m_CTexCoordlist.m_vecCoordList[n].assign(vc, D3DXVECTOR2{});
+                    e._CTexCoordlist._vecCoordList[n].assign(vc, D3DXVECTOR2{});
                     if (row.kind == y::YamlNode::Sequence) {
                         for (std::size_t k = 0; k < vc && k < row.sequence.size(); ++k) {
-                            e.m_CTexCoordlist.m_vecCoordList[n][k] = y::ParseVec2(row.sequence[k]);
+                            e._CTexCoordlist._vecCoordList[n][k] = y::ParseVec2(row.sequence[k]);
                         }
                     }
                 }
@@ -340,66 +358,90 @@ LW_RESULT EffectLoader::ImportFromYaml(::EffectFileInfo& info,
         }
 
         if (auto* tl = en.Find("texList"); tl && tl->kind == y::YamlNode::Mapping) {
-            if (auto* x = tl->Find("texCount"))  e.m_CTextruelist.m_wTexCount   = static_cast<WORD>(y::ParseInt(*x));
-            if (auto* x = tl->Find("frameTime")) e.m_CTextruelist.m_fFrameTime  = y::ParseFloat(*x);
-            if (auto* x = tl->Find("texName"))   e.m_CTextruelist.m_vecTexName  = y::ParseString(*x);
-            const WORD vc = e.m_CTexCoordlist.m_wVerCount;
-            e.m_CTextruelist.m_vecTexList.assign(e.m_CTextruelist.m_wTexCount, TEXCOORD{});
+            if (auto* x = tl->Find("texCount")) {
+            	e._CTextruelist._wTexCount   = static_cast<WORD>(y::ParseInt(*x));
+            }
+            if (auto* x = tl->Find("frameTime")) e._CTextruelist._fFrameTime  = y::ParseFloat(*x);
+            if (auto* x = tl->Find("texName")) {
+            	e._CTextruelist._vecTexName  = y::ParseString(*x);
+            }
+            const WORD vc = e._CTexCoordlist._wVerCount;
+            e._CTextruelist._vecTexList.assign(e._CTextruelist._wTexCount, TEXCOORD{});
             if (auto* x = tl->Find("texs"); x && x->kind == y::YamlNode::Sequence) {
                 for (std::size_t n = 0;
-                     n < e.m_CTextruelist.m_wTexCount && n < x->sequence.size();
+                     n < e._CTextruelist._wTexCount && n < x->sequence.size();
                      ++n) {
                     const y::YamlNode& row = x->sequence[n];
-                    e.m_CTextruelist.m_vecTexList[n].assign(vc, D3DXVECTOR2{});
+                    e._CTextruelist._vecTexList[n].assign(vc, D3DXVECTOR2{});
                     if (row.kind == y::YamlNode::Sequence) {
                         for (std::size_t k = 0; k < vc && k < row.sequence.size(); ++k) {
-                            e.m_CTextruelist.m_vecTexList[n][k] = y::ParseVec2(row.sequence[k]);
+                            e._CTextruelist._vecTexList[n][k] = y::ParseVec2(row.sequence[k]);
                         }
                     }
                 }
             }
         }
 
-        if (auto* x = en.Find("modelName"))  e.m_strModelName = y::ParseString(*x);
+        if (auto* x = en.Find("modelName")) {
+        	e._strModelName = y::ParseString(*x);
+        }
         if (auto* x = en.Find("billBoard"))  e._bBillBoard    = y::ParseBool(*x);
-        if (auto* x = en.Find("vsIndex"))    e._iVSIndex      = y::ParseInt(*x);
-        if (auto* x = en.Find("nSegments"))  e.m_nSegments    = y::ParseInt(*x);
-        if (auto* x = en.Find("rHeight"))    e.m_rHeight      = y::ParseFloat(*x);
-        if (auto* x = en.Find("rRadius"))    e.m_rRadius      = y::ParseFloat(*x);
-        if (auto* x = en.Find("rBotRadius")) e.m_rBotRadius   = y::ParseFloat(*x);
+        if (auto* x = en.Find("vsIndex")) {
+        	e._iVSIndex      = y::ParseInt(*x);
+        }
+        if (auto* x = en.Find("nSegments"))  e._nSegments    = y::ParseInt(*x);
+        if (auto* x = en.Find("rHeight")) {
+        	e._rHeight      = y::ParseFloat(*x);
+        }
+        if (auto* x = en.Find("rRadius"))    e._rRadius      = y::ParseFloat(*x);
+        if (auto* x = en.Find("rBotRadius")) {
+        	e._rBotRadius   = y::ParseFloat(*x);
+        }
 
         if (auto* tf = en.Find("texFrame"); tf && tf->kind == y::YamlNode::Mapping) {
-            if (auto* x = tf->Find("texCount"))  e.m_CTexFrame.m_wTexCount  = static_cast<WORD>(y::ParseInt(*x));
-            if (auto* x = tf->Find("frameTime")) e.m_CTexFrame.m_fFrameTime = y::ParseFloat(*x);
-            e.m_CTexFrame.m_vecTexName.assign(e.m_CTexFrame.m_wTexCount, std::string{});
-            e.m_CTexFrame.m_vecTexs.assign(e.m_CTexFrame.m_wTexCount, nullptr);
+            if (auto* x = tf->Find("texCount")) {
+            	e._CTexFrame._wTexCount  = static_cast<WORD>(y::ParseInt(*x));
+            }
+            if (auto* x = tf->Find("frameTime")) e._CTexFrame._fFrameTime = y::ParseFloat(*x);
+            e._CTexFrame._vecTexName.assign(e._CTexFrame._wTexCount, std::string{});
+            e._CTexFrame._vecTexs.assign(e._CTexFrame._wTexCount, nullptr);
             if (auto* x = tf->Find("texNames"); x && x->kind == y::YamlNode::Sequence) {
                 for (std::size_t n = 0;
-                     n < e.m_CTexFrame.m_wTexCount && n < x->sequence.size();
+                     n < e._CTexFrame._wTexCount && n < x->sequence.size();
                      ++n) {
-                    e.m_CTexFrame.m_vecTexName[n] = y::ParseString(x->sequence[n]);
+                    e._CTexFrame._vecTexName[n] = y::ParseString(x->sequence[n]);
                 }
             }
         }
 
-        if (auto* x = en.Find("useParam")) e._iUseParam = y::ParseInt(*x);
+        if (auto* x = en.Find("useParam")) {
+        	e._iUseParam = y::ParseInt(*x);
+        }
         e._CylinderParam.assign(fc, ModelParam{});
         if (e._iUseParam > 0) {
             if (auto* x = en.Find("cylinderParams"); x && x->kind == y::YamlNode::Sequence) {
                 for (std::size_t n = 0; n < fc && n < x->sequence.size(); ++n) {
                     const y::YamlNode& cp = x->sequence[n];
                     if (cp.kind != y::YamlNode::Mapping) { continue; }
-                    if (auto* z = cp.Find("segments"))  e._CylinderParam[n].iSegments     = y::ParseInt(*z);
+                    if (auto* z = cp.Find("segments")) {
+                    	e._CylinderParam[n].iSegments     = y::ParseInt(*z);
+                    }
                     if (auto* z = cp.Find("hei"))       e._CylinderParam[n].fHei          = y::ParseFloat(*z);
-                    if (auto* z = cp.Find("topRadius")) e._CylinderParam[n].fTopRadius    = y::ParseFloat(*z);
+                    if (auto* z = cp.Find("topRadius")) {
+                    	e._CylinderParam[n].fTopRadius    = y::ParseFloat(*z);
+                    }
                     if (auto* z = cp.Find("botRadius")) e._CylinderParam[n].fBottomRadius = y::ParseFloat(*z);
                 }
             }
         }
 
-        if (auto* x = en.Find("rotaLoop"))  e._bRotaLoop  = y::ParseBool(*x);
+        if (auto* x = en.Find("rotaLoop")) {
+        	e._bRotaLoop  = y::ParseBool(*x);
+        }
         if (auto* x = en.Find("vRotaLoop")) e._vRotaLoop  = y::ParseVec4(*x);
-        if (auto* x = en.Find("alpha"))     e._bAlpha     = y::ParseBool(*x);
+        if (auto* x = en.Find("alpha")) {
+        	e._bAlpha     = y::ParseBool(*x);
+        }
         if (auto* x = en.Find("rotaBoard")) e._bRotaBoard = y::ParseBool(*x);
     }
 

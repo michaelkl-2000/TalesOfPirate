@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "MPCamera.h"
 
@@ -31,9 +31,9 @@ class CMPModelEff;
 class CMPLink {
 public:
 	struct LinkVer {
-		D3DXVECTOR3 m_SPos;
-		DWORD m_dwDiffuse;
-		D3DXVECTOR2 m_SUV;
+		D3DXVECTOR3 _SPos;
+		DWORD _dwDiffuse;
+		D3DXVECTOR2 _SUV;
 	};
 
 	struct MPFrame {
@@ -110,14 +110,14 @@ class CChaModel : public MPCharacter {
 public:
 	CChaModel() {
 		_iID = 0;
-		_fVel = 0.3f;
+		m_fVel = 0.3f;
 		_iPlayType = PLAY_ONCE;
 		_iCurPose = 0;
 		_bPlaying = false;
 		_wFrameCount = 0;
 		_eSrcBlend = D3DBLEND_SRCALPHA;
 		_eDestBlend = D3DBLEND_INVSRCALPHA;
-		_dwCurColor = 0xffffffff;
+		m_dwCurColor = 0xffffffff;
 		D3DXMatrixIdentity(&_matBone);
 		D3DXMatrixIdentity(&_matWorld);
 	}
@@ -133,11 +133,11 @@ public:
 	void PlayPose(DWORD id, DWORD type);
 
 	void SetVel(int iVel) {
-		_fVel = (float)iVel / 1000;
+		m_fVel = (float)iVel / 1000;
 	}
 
 	int GetVel() {
-		return (int)(_fVel * 1000);
+		return (int)(m_fVel * 1000);
 	}
 
 	void SetPlayType(int iType) {
@@ -177,11 +177,11 @@ public:
 	void End();
 
 	void SetCurColor(DWORD dwcolor) {
-		_dwCurColor = dwcolor;
+		m_dwCurColor = dwcolor;
 	}
 
 	D3DXCOLOR GetCurColor() {
-		return _dwCurColor;
+		return m_dwCurColor;
 	}
 
 	D3DBLEND GetSrcBlend() {
@@ -232,11 +232,11 @@ protected:
 
 	D3DBLEND _eSrcBlend;
 	D3DBLEND _eDestBlend;
-	D3DXCOLOR _dwCurColor;
+	D3DXCOLOR m_dwCurColor;
 
 private:
 	int _iID;
-	float _fVel;
+	float m_fVel;
 	int _iPlayType;
 	int _iCurPose;
 	bool _bPlaying;
@@ -290,34 +290,42 @@ public:
 
 
 	void setYaw(float fYaw) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) m_vecPartSys[n]->setYaw(fYaw);
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) {
+				_vecPartSys[n]->setYaw(fYaw);
+			}
 		}
 	}
 
 	void setPitch(float fPitch) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) m_vecPartSys[n]->setPitch(fPitch);
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) {
+				_vecPartSys[n]->setPitch(fPitch);
+			}
 		}
 	}
 
 	void setRoll(float fRoll) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) m_vecPartSys[n]->setRoll(fRoll);
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) {
+				_vecPartSys[n]->setRoll(fRoll);
+			}
 		}
 	}
 
 	void setScale(float fx, float fy, float fz) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) m_vecPartSys[n]->setScale(fx, fy, fz);
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) {
+				_vecPartSys[n]->setScale(fx, fy, fz);
+			}
 		}
 	}
 
 	void setFontEffect(const char* pszText, CMPFont* pfont) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) {
-				m_vecPartSys[n]->setFontEffect(pfont);
-				m_vecPartSys[n]->setFontEffText(pszText);
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) {
+				_vecPartSys[n]->setFontEffect(pfont);
+				_vecPartSys[n]->setFontEffText(pszText);
 			}
 		}
 	}
@@ -325,27 +333,33 @@ public:
 	void setFontEffectCom(VEC_string& vecText, int num,
 						  CMPResManger* pCResMagr, D3DXVECTOR3* pvDir, int iTexID, D3DXCOLOR dwColor, bool bUseBack,
 						  bool bmain = false) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) m_vecPartSys[n]->setFontEffectCom(vecText, num, pCResMagr, pvDir, iTexID, dwColor,
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) _vecPartSys[n]->setFontEffectCom(vecText, num, pCResMagr, pvDir, iTexID, dwColor,
 																   bUseBack, bmain);
 		}
 	}
 
 	void setRenderIdx(int idx) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) m_vecPartSys[n]->setRenderIdx(idx);
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) {
+				_vecPartSys[n]->setRenderIdx(idx);
+			}
 		}
 	}
 
 	void setUseZBuff(bool bUseZ) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) m_vecPartSys[n]->setUseZBuff(bUseZ);
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) {
+				_vecPartSys[n]->setUseZBuff(bUseZ);
+			}
 		}
 	}
 
 	void setDir(D3DXVECTOR3* pvPos) {
-		for (int n = 0; n < m_iPartNum; ++n) {
-			if (m_vecPartSys[n]) m_vecPartSys[n]->setDir(pvPos->x, pvPos->y, pvPos->z);
+		for (int n = 0; n < _iPartNum; ++n) {
+			if (_vecPartSys[n]) {
+				_vecPartSys[n]->setDir(pvPos->x, pvPos->y, pvPos->z);
+			}
 		}
 	}
 
@@ -359,7 +373,7 @@ public:
 	void Clear();
 
 	void SetLength(float fLength) {
-		m_fLength = fLength;
+		_fLength = fLength;
 	}
 
 
@@ -367,14 +381,14 @@ public:
 	CMPStrip* GetStrip(int iIdx);
 
 	int GetStripNum() {
-		return m_iStripNum;
+		return _iStripNum;
 	}
 
 	CChaModel* NewModel(const s_string& strID, CMPResManger* pResMagr);
 	CChaModel* GetModel(int iIdx);
 
 	int GetModelNum() {
-		return m_iModelNum;
+		return _iModelNum;
 	}
 
 	void GetRes(CMPResManger* pResMagr, std::vector<INT>& vecTex, std::vector<INT>& vecModel,
@@ -382,17 +396,17 @@ public:
 	void GetHitRes(CMPResManger* pResMagr, std::vector<s_string>& vecPar);
 
 public:
-	s_string m_strName;
-	int m_iPartNum;
-	S_BVECTOR<CMPPartSys> m_vecPartSys;
+	s_string _strName;
+	int _iPartNum;
+	S_BVECTOR<CMPPartSys> _vecPartSys;
 
 	float* m_pfDailTime;
-	float m_fLength;
-	float m_fCurTime;
+	float _fLength;
+	float _fCurTime;
 
-	int m_iStripNum;
-	CMPStrip* m_pcStrip;
+	int _iStripNum;
+	CMPStrip* _pcStrip;
 
-	int m_iModelNum;
-	std::vector<CChaModel*> m_vecModel;
+	int _iModelNum;
+	std::vector<CChaModel*> _vecModel;
 };

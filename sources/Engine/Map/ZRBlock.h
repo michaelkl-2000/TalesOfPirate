@@ -25,7 +25,9 @@ public:
 	}
 
 	BYTE IsBlock(BYTE no) const {
-		if (btBlock[no] & 128) return 1;
+		if (btBlock[no] & 128) {
+			return 1;
+		}
 		return 0;
 	}
 
@@ -117,7 +119,9 @@ inline BYTE ZRBlock::IsGridBlock(int x, int y) const //
 	int offx = x - _lastGridStartX;
 	int offy = y - _lastGridStartY;
 
-	if (offx < 0 || offx >= _gridShowWidth) return 1;
+	if (offx < 0 || offx >= _gridShowWidth) {
+		return 1;
+	}
 	if (offy < 0 || offy >= _gridShowHeight) return 1;
 
 	return _blockBuffer[offy][offx];
@@ -128,7 +132,9 @@ inline short ZRBlock::GetTileRegionAttr(int x, int y) const //
 	int offx = x - _lastGridStartX / 2;
 	int offy = y - _lastGridStartY / 2;
 
-	if (offx < 0 || offx >= _gridShowWidth) return 0;
+	if (offx < 0 || offx >= _gridShowWidth) {
+		return 0;
+	}
 	if (offy < 0 || offy >= _gridShowHeight) return 0;
 
 	return _tileRegionAttr[offy][offx];

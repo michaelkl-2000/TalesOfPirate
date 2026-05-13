@@ -11,7 +11,7 @@
 namespace Corsairs::Engine::Render {
 	class lwAnimCtrl {
 	protected:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		LW_DWORD _reg_id;
 		LW_DWORD _ctrl_type;
 		lwResFileAnimData _res_file;
@@ -19,7 +19,7 @@ namespace Corsairs::Engine::Render {
 
 	public:
 	protected:
-		lwAnimCtrl(lwIResourceMgr* res_mgr)
+		lwAnimCtrl(IResourceMgr* res_mgr)
 			: _res_mgr(res_mgr), _ctrl_type(ANIM_CTRL_TYPE_INVALID), _reg_id(LW_INVALID_INDEX) {
 		}
 
@@ -80,7 +80,7 @@ namespace Corsairs::Engine::Render {
 		LW_RESULT _BlendBoneData(lwMatrix44* dst_mat_ptr, lwMatrix44* src_mat_ptr0, lwMatrix44* src_mat_ptr1, float t);
 
 	public:
-		lwAnimCtrlBone(lwIResourceMgr* res_mgr);
+		lwAnimCtrlBone(IResourceMgr* res_mgr);
 		~lwAnimCtrlBone();
 
 		// == base method
@@ -156,7 +156,7 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 _rtmat_seq[1];
 
 	public:
-		lwAnimCtrlMatrix(lwIResourceMgr* res_mgr);
+		lwAnimCtrlMatrix(IResourceMgr* res_mgr);
 		~lwAnimCtrlMatrix();
 
 		// == base method
@@ -210,7 +210,7 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 _rtmat_seq[1];
 
 	public:
-		lwAnimCtrlTexUV(lwIResourceMgr* res_mgr);
+		lwAnimCtrlTexUV(IResourceMgr* res_mgr);
 		~lwAnimCtrlTexUV();
 
 		// == base method
@@ -264,7 +264,7 @@ namespace Corsairs::Engine::Render {
 		DWORD _rttex;
 
 	public:
-		lwAnimCtrlTexImg(lwIResourceMgr* res_mgr);
+		lwAnimCtrlTexImg(IResourceMgr* res_mgr);
 		~lwAnimCtrlTexImg();
 
 		// == base method
@@ -312,7 +312,7 @@ namespace Corsairs::Engine::Render {
 		float _rt_opacity;
 
 	public:
-		lwAnimCtrlMtlOpacity(lwIResourceMgr* res_mgr);
+		lwAnimCtrlMtlOpacity(IResourceMgr* res_mgr);
 		~lwAnimCtrlMtlOpacity();
 
 		// == base method

@@ -13,7 +13,7 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION();
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIAnimCtrlMatrix* _anim_ctrl;
 		lwPlayPoseInfo _ppi;
 		lwAnimCtrlObjTypeInfo _type_info;
@@ -21,7 +21,7 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 _rtm;
 
 	public:
-		lwAnimCtrlObjMat(lwIResourceMgr* res_mgr);
+		lwAnimCtrlObjMat(IResourceMgr* res_mgr);
 		~lwAnimCtrlObjMat();
 
 		LW_RESULT Clone(lwIAnimCtrlObjMat** ret_obj);
@@ -56,7 +56,7 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION();
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIAnimCtrlBone* _anim_ctrl;
 		lwPlayPoseInfo _ppi;
 		lwAnimCtrlObjTypeInfo _type_info;
@@ -67,7 +67,7 @@ namespace Corsairs::Engine::Render {
 		DWORD _bone_rtm_num;
 
 	public:
-		lwAnimCtrlObjBone(lwIResourceMgr* res_mgr);
+		lwAnimCtrlObjBone(IResourceMgr* res_mgr);
 		~lwAnimCtrlObjBone();
 
 		// base method
@@ -97,7 +97,7 @@ namespace Corsairs::Engine::Render {
 
 		LW_RESULT UpdateAnimCtrl();
 		LW_RESULT UpdateObject(lwIAnimCtrlObjBone* ctrl_obj, lwIMesh* mesh_obj);
-		LW_RESULT UpdateHelperObject(lwIHelperObject* helper_obj);
+		LW_RESULT UpdateHelperObject(IHelperObject* helper_obj);
 
 		lwMatrix44* GetBoneRTMSeq() {
 			return _bone_rtm_seq;
@@ -125,7 +125,7 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION();
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIAnimCtrlTexUV* _anim_ctrl;
 		lwPlayPoseInfo _ppi;
 		lwAnimCtrlObjTypeInfo _type_info;
@@ -133,7 +133,7 @@ namespace Corsairs::Engine::Render {
 		lwMatrix44 _rtm;
 
 	public:
-		lwAnimCtrlObjTexUV(lwIResourceMgr* res_mgr);
+		lwAnimCtrlObjTexUV(IResourceMgr* res_mgr);
 		~lwAnimCtrlObjTexUV();
 
 		LW_RESULT Clone(lwIAnimCtrlObjTexUV** ret_obj);
@@ -168,7 +168,7 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION();
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIAnimCtrlTexImg* _anim_ctrl;
 		lwPlayPoseInfo _ppi;
 		lwAnimCtrlObjTypeInfo _type_info;
@@ -176,7 +176,7 @@ namespace Corsairs::Engine::Render {
 		lwITex* _rt_tex;
 
 	public:
-		lwAnimCtrlObjTexImg(lwIResourceMgr* res_mgr);
+		lwAnimCtrlObjTexImg(IResourceMgr* res_mgr);
 		~lwAnimCtrlObjTexImg();
 
 		LW_RESULT Clone(lwIAnimCtrlObjTexImg** ret_obj);
@@ -211,7 +211,7 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION();
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIAnimCtrlMtlOpacity* _anim_ctrl;
 		lwPlayPoseInfo _ppi;
 		lwAnimCtrlObjTypeInfo _type_info;
@@ -219,7 +219,7 @@ namespace Corsairs::Engine::Render {
 		float _rt_opacity;
 
 	public:
-		lwAnimCtrlObjMtlOpacity(lwIResourceMgr* res_mgr);
+		lwAnimCtrlObjMtlOpacity(IResourceMgr* res_mgr);
 		~lwAnimCtrlObjMtlOpacity();
 
 		LW_RESULT Clone(lwIAnimCtrlObjMtlOpacity** ret_obj);
@@ -253,13 +253,13 @@ namespace Corsairs::Engine::Render {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIAnimCtrlObj** _obj_seq;
 		DWORD _obj_num;
 
 	private:
 	public:
-		lwAnimCtrlAgent(lwIResourceMgr* res_mgr);
+		lwAnimCtrlAgent(IResourceMgr* res_mgr);
 		~lwAnimCtrlAgent();
 
 		LW_RESULT AddAnimCtrlObj(lwIAnimCtrlObj* obj);

@@ -5,7 +5,7 @@
 // Header-only.     WriteInt64/WriteString/ReadInt64/ReadString.
 
 #include "Packet.h"
-#include "../../common/include/Network/NetCommand.h"
+#include "../../common/src/Network/NetCommand.h"
 #include <string>
 #include <vector>
 #include <optional>

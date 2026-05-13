@@ -12,23 +12,23 @@ namespace Corsairs::Engine::Render {
 	class lwAnimCtrlBone;
 	class lwAnimCtrlMatrix;
 
-	class lwSystem;
-	class lwSysGraphics;
+	class System;
+	class SysGraphics;
 
-	class lwPathInfo;
+	class PathInfo;
 	class lwPoseCtrl;
-	class lwEfxTrack;
-	class lwDDSFile;
+	class EfxTrack;
+	class DDSFile;
 
 	class lwWeaponMesh;
 
 	struct lwMaterial;
-	class lwDeviceObject;
+	class DeviceObject;
 	class lwModel;
 
 	class lwMesh;
 	class lwTex;
-	class lwResourceMgr;
+	class ResourceMgr;
 
 	class lwMtlTexAgent;
 	class lwPrimitive;
@@ -54,10 +54,10 @@ namespace Corsairs::Engine::Render {
 	struct lwColorValue4f;
 
 	struct lwGeomObjInfo;
-	struct lwHelperDummyInfo;
-	struct lwHelperBoxInfo;
-	struct lwHelperMeshInfo;
-	struct lwHelperInfo;
+	struct HelperDummyInfo;
+	struct HelperBoxInfo;
+	struct HelperMeshInfo;
+	struct HelperInfo;
 
 	class lwAnimDataInfo;
 	class lwAnimDataTexImg;

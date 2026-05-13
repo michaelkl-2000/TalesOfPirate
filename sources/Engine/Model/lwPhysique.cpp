@@ -3,12 +3,12 @@
 
 
 #include "lwPhysique.h"
-#include "lwSystem.h"
-#include "lwSysGraphics.h"
-#include "lwPathInfo.h"
+#include "System.h"
+#include "SysGraphics.h"
+#include "PathInfo.h"
 #include "lwAnimCtrl.h"
 #include "lwRenderImp.h"
-#include "lwResourceMgr.h"
+#include "ResourceMgr.h"
 #include "lwD3D.h"
 #include "lwItem.h"
 #include "lwExpObj.h"
@@ -24,7 +24,7 @@ namespace Corsairs::Engine::Render {
 	// lwPhysique
 
 	// begin construct
-	lwPhysique::lwPhysique(lwIResourceMgr* res_mgr)
+	lwPhysique::lwPhysique(IResourceMgr* res_mgr)
 		: _res_mgr(res_mgr), _scene_mgr(0), _anim_agent(0) {
 		_file_name[0] = '\0';
 		lwMatrix44Identity(&_mat_base);
@@ -38,7 +38,7 @@ namespace Corsairs::Engine::Render {
 
 	lwPhysique::lwPhysique()
 		: _anim_agent(0) {
-		_res_mgr = lwSysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr();
+		_res_mgr = SysGraphics::GetActiveIGraphicsSystem()->GetResourceMgr();
 
 		_file_name[0] = '\0';
 		lwMatrix44Identity(&_mat_base);
@@ -150,9 +150,9 @@ namespace Corsairs::Engine::Render {
 			return LW_RET_FAILED;
 		}
 
-		lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
-		lwISystem* sys = sys_graphics->GetSystem();
-		lwIPathInfo* path_info = nullptr;
+		ISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
+		ISystem* sys = sys_graphics->GetSystem();
+		IPathInfo* path_info = nullptr;
 		sys->GetInterface(reinterpret_cast<LW_VOID**>(&path_info), LW_GUID_PATHINFO);
 		const std::string path = std::format("{}{}", path_info->GetPath(PathInfoType::PATH_TYPE_ANIMATION), file);
 
@@ -219,10 +219,10 @@ namespace Corsairs::Engine::Render {
 			return ERR_INVALID_PARAM;
 
 
-		lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
-		lwISystem* sys = sys_graphics->GetSystem();
-		lwIPathInfo* path_info = sys->GetPathInfo();
-		lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+		ISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
+		ISystem* sys = sys_graphics->GetSystem();
+		IPathInfo* path_info = sys->GetPathInfo();
+		IOptionMgr* opt_mgr = sys->GetOptionMgr();
 		BYTE create_helper_primitive = opt_mgr->GetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE);
 
 		const std::string& tex_path = path_info->GetPath(PathInfoType::PATH_TYPE_TEXTURE_CHARACTER);
@@ -299,7 +299,7 @@ namespace Corsairs::Engine::Render {
 		imp->SetMatrixLocal(&info->mat_local);
 
 		if (info->helper_size > 0) {
-			lwIHelperObject* h;
+			IHelperObject* h;
 			_res_mgr->CreateHelperObject(&h);
 			if (LW_RESULT r = h->LoadHelperInfo(&info->helper_data, create_helper_primitive); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
@@ -330,10 +330,10 @@ namespace Corsairs::Engine::Render {
 			return ERR_INVALID_PARAM;
 
 
-		lwISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
-		lwISystem* sys = sys_graphics->GetSystem();
-		lwIPathInfo* path_info = sys->GetPathInfo();
-		lwIOptionMgr* opt_mgr = sys->GetOptionMgr();
+		ISysGraphics* sys_graphics = _res_mgr->GetSysGraphics();
+		ISystem* sys = sys_graphics->GetSystem();
+		IPathInfo* path_info = sys->GetPathInfo();
+		IOptionMgr* opt_mgr = sys->GetOptionMgr();
 		BYTE create_helper_primitive = opt_mgr->GetByteFlag(OptionByteFlag::OPTION_FLAG_CREATEHELPERPRIMITIVE);
 
 		const std::string& tex_path = path_info->GetPath(PathInfoType::PATH_TYPE_TEXTURE_CHARACTER);
@@ -470,7 +470,7 @@ namespace Corsairs::Engine::Render {
 		imp->SetMatrixLocal(&pInfo->mat_local);
 
 		if (pInfo->helper_size > 0) {
-			lwIHelperObject* h;
+			IHelperObject* h;
 			_res_mgr->CreateHelperObject(&h);
 			if (LW_RESULT r = h->LoadHelperInfo(&pInfo->helper_data, create_helper_primitive); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
@@ -671,7 +671,7 @@ namespace Corsairs::Engine::Render {
 	}
 
 	void lwPhysique::ShowHelperObject(int show) {
-		lwIHelperObject* helper_obj;
+		IHelperObject* helper_obj;
 
 		for (DWORD i = 0; i < LW_MAX_SUBSKIN_NUM; i++) {
 			if (_obj_seq[i] == 0)

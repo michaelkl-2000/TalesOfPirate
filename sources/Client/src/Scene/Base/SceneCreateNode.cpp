@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 #include "Scene.h"
 #include "GameApp.h"
 #include "CharacterPoseSet.h"
@@ -324,7 +324,7 @@ CEffectObj* CGameScene::AddSceneEffect(int nEffectTypeID) {
 		if (!pEff->Create(nEffectTypeID)) {
 			return NULL;
 		}
-		//pEff->Emission(0,&g_pGameApp->GetMainCam()->m_RefPos,NULL);
+		//pEff->Emission(0,&g_pGameApp->GetMainCam()->_RefPos,NULL);
 		auto v = D3DXVECTOR3(0, 0, 0);
 		pEff->Emission(0, &v, nullptr);
 		pEff->SetValid(TRUE);

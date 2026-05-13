@@ -84,10 +84,10 @@ namespace Corsairs::Engine::Render {
 	}
 
 	void lwCamera::SetTransform() {
-		D3DXMATRIX m_view;
+		D3DXMATRIX _view;
 
 
-		//D3DXMatrixLookAtLH( &m_view, 
+		//D3DXMatrixLookAtLH( &_view, 
 		//	(D3DXVECTOR3*)(&_m.m[3][0]), //Camera Position
 		//	(D3DXVECTOR3*)(&_m.m[2][0]), //Look At Position
 		//	(D3DXVECTOR3*)(&_m.m[1][0]));  //Up Direction
@@ -99,26 +99,26 @@ namespace Corsairs::Engine::Render {
 		//	-dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye)  1
 
 
-		m_view.m[0][0] = _m.m[0][0];
-		m_view.m[1][0] = _m.m[0][1];
-		m_view.m[2][0] = _m.m[0][2];
+		_view.m[0][0] = _m.m[0][0];
+		_view.m[1][0] = _m.m[0][1];
+		_view.m[2][0] = _m.m[0][2];
 
-		m_view.m[0][1] = _m.m[1][0];
-		m_view.m[1][1] = _m.m[1][1];
-		m_view.m[2][1] = _m.m[1][2];
+		_view.m[0][1] = _m.m[1][0];
+		_view.m[1][1] = _m.m[1][1];
+		_view.m[2][1] = _m.m[1][2];
 
-		m_view.m[0][2] = _m.m[2][0];
-		m_view.m[1][2] = _m.m[2][1];
-		m_view.m[2][2] = _m.m[2][2];
+		_view.m[0][2] = _m.m[2][0];
+		_view.m[1][2] = _m.m[2][1];
+		_view.m[2][2] = _m.m[2][2];
 
-		m_view.m[3][0] = -lwVector3Dot((const lwVector3*)&_m.m[0][0], (const lwVector3*)&_m.m[3][0]);
-		m_view.m[3][1] = -lwVector3Dot((const lwVector3*)&_m.m[1][0], (const lwVector3*)&_m.m[3][0]);
-		m_view.m[3][2] = -lwVector3Dot((const lwVector3*)&_m.m[2][0], (const lwVector3*)&_m.m[3][0]);
+		_view.m[3][0] = -lwVector3Dot((const lwVector3*)&_m.m[0][0], (const lwVector3*)&_m.m[3][0]);
+		_view.m[3][1] = -lwVector3Dot((const lwVector3*)&_m.m[1][0], (const lwVector3*)&_m.m[3][0]);
+		_view.m[3][2] = -lwVector3Dot((const lwVector3*)&_m.m[2][0], (const lwVector3*)&_m.m[3][0]);
 
-		m_view.m[0][3] = 0.0f;
-		m_view.m[1][3] = 0.0f;
-		m_view.m[2][3] = 0.0f;
-		m_view.m[3][3] = 1.0f;
+		_view.m[0][3] = 0.0f;
+		_view.m[1][3] = 0.0f;
+		_view.m[2][3] = 0.0f;
+		_view.m[3][3] = 1.0f;
 	}
 
 

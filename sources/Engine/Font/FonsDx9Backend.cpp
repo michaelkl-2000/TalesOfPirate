@@ -41,7 +41,7 @@ namespace fons {
 			info.height = height;
 
 			lwITex* tex = nullptr;
-			lwIResourceMgr* resMgr = dev->GetInterfaceMgr()->res_mgr;
+			IResourceMgr* resMgr = dev->GetInterfaceMgr()->res_mgr;
 			if (LW_RESULT r = lwLoadTex(&tex, resMgr, &info); LW_FAILED(r)) {
 				ToLogService("errors", LogLevel::Error,
 							 "[{}] lwLoadTex failed: width={}, height={}, ret={}",
@@ -197,7 +197,7 @@ namespace fons {
 			}
 			// Намеренно НЕ освобождаем Atlas. renderDelete вызывается только из
 			// fonsDeleteInternal, а тот — только в деструкторе FontManager на shutdown.
-			// К этому моменту D3D-девайс и lwIResourceMgr могут быть уже уничтожены
+			// К этому моменту D3D-девайс и IResourceMgr могут быть уже уничтожены
 			// (порядок статической деструкции недетерминирован) — Release в этих
 			// условиях падает access violation'ом. Один leak на exit безвреден,
 			// ОС очистит адресное пространство. Для live-сценариев (ресайз атласа)

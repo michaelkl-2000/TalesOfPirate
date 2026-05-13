@@ -16,7 +16,7 @@ namespace Corsairs::Engine::Render {
 	// GetLinkCtrlMatrix.
 	class lwModel : public lwLinkCtrl {
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwISceneMgr* _scene_mgr;
 
 		lwStateCtrl _state_ctrl;
@@ -27,11 +27,11 @@ namespace Corsairs::Engine::Render {
 		DWORD _id;
 		DWORD _model_id;
 
-		lwIHelperObject* _helper_object;
+		IHelperObject* _helper_object;
 		float _opacity;
 
 	public:
-		lwModel(lwIResourceMgr* res_mgr);
+		lwModel(IResourceMgr* res_mgr);
 		~lwModel();
 
 		// Был частью lwInterface — оставлен ради legacy-вызовов obj->Release().
@@ -94,7 +94,7 @@ namespace Corsairs::Engine::Render {
 		void ShowHelperBox(int show);
 		void ShowBoundingObject(int show);
 
-		lwIHelperObject* GetHelperObject() {
+		IHelperObject* GetHelperObject() {
 			return _helper_object;
 		}
 

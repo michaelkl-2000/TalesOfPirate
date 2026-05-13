@@ -41,5 +41,5 @@ enum UserShaderType {
 	VSTU_MINIMAP_E6,
 };
 
-LW_RESULT LoadShader0(Corsairs::Engine::Render::lwISysGraphics* sys_graphics);
-LW_RESULT LoadShader1(Corsairs::Engine::Render::lwISysGraphics* sys_graphics);
+LW_RESULT LoadShader0(Corsairs::Engine::Render::ISysGraphics* sys_graphics);
+LW_RESULT LoadShader1(Corsairs::Engine::Render::ISysGraphics* sys_graphics);

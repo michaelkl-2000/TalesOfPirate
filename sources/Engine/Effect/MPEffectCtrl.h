@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 /************************************************************************/
 /* class CMPEffectCtrl*/
@@ -174,7 +174,7 @@ public:
 	void ResetDir(D3DXVECTOR3* vTarget);
 
 	void SetVel(float fvel) {
-		_fVel = fvel;
+		m_fVel = fvel;
 	}
 
 	void SetTargetDist(float fDist) {
@@ -260,12 +260,12 @@ protected:
 	int _iTargetID;
 	D3DXVECTOR3 _vPos;
 	D3DXVECTOR3 _vDir;
-	float _fVel;
+	float m_fVel;
 	D3DXVECTOR3 _vTarget; //
 	float _fDirXZ[2]; //XZ
 
 	float _fStartDist;
-	float _fCurDist;
+	float m_fCurDist;
 
 	float _fTargDist;
 	D3DXVECTOR3 _vTargDir;

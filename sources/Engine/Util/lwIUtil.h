@@ -8,7 +8,7 @@
 #include "lwClassDecl.h"
 
 namespace Corsairs::Engine::Render {
-	LW_RESULT lwResetDevice(lwISysGraphics* sys_graphics, const D3DPRESENT_PARAMETERS* d3dpp);
+	LW_RESULT lwResetDevice(ISysGraphics* sys_graphics, const D3DPRESENT_PARAMETERS* d3dpp);
 	void lwPhysiqueSetMaterial(lwPhysique* phy, const lwMaterial* mtl);
 	lwPlayPoseInfo* lwItemGetPlayPoseInfo(lwItem* item, DWORD ctrl_type);
 	lwIAnimCtrl* lwItemGetAnimCtrl(lwItem* item, DWORD ctrl_type);
@@ -24,10 +24,10 @@ namespace Corsairs::Engine::Render {
 	LW_RESULT lwPrimitiveTexLitA(lwIPrimitive* p, const char* tex_file, std::string_view tex_path, DWORD anim_type);
 	LW_RESULT lwPrimitiveTexUnLitA(lwIPrimitive* p);
 
-	LW_RESULT lwLoadTex(lwITex** out, lwIResourceMgr* res_mgr, std::string_view file, std::string_view tex_path, D3DFORMAT fmt);
-	LW_RESULT lwLoadTex(lwITex** out, lwIResourceMgr* res_mgr, const lwTexInfo* info);
+	LW_RESULT lwLoadTex(lwITex** out, IResourceMgr* res_mgr, std::string_view file, std::string_view tex_path, D3DFORMAT fmt);
+	LW_RESULT lwLoadTex(lwITex** out, IResourceMgr* res_mgr, const lwTexInfo* info);
 	// Для TEX_TYPE_DATA: пользовательский указатель пробрасывается параметром,
-	LW_RESULT lwLoadTex(lwITex** out, lwIResourceMgr* res_mgr, const lwTexInfo* info, void* user_data);
+	LW_RESULT lwLoadTex(lwITex** out, IResourceMgr* res_mgr, const lwTexInfo* info, void* user_data);
 
 	lwPoseInfo* lwAnimCtrlAgentGetPoseInfo(lwIAnimCtrlAgent* agent, DWORD subset, DWORD stage, DWORD type, DWORD id);
 

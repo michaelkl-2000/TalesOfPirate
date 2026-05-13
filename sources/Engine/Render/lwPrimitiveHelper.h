@@ -9,13 +9,13 @@
 #include "lwInterfaceExt.h"
 
 namespace Corsairs::Engine::Render {
-	class lwHelperBase {
+	class HelperBase {
 	protected:
 		int _visible_flag;
 		lwMatrix44 _mat_parent;
 
 	public:
-		lwHelperBase()
+		HelperBase()
 			: _visible_flag(0) {
 		}
 
@@ -24,11 +24,11 @@ namespace Corsairs::Engine::Render {
 		}
 	};
 
-	class lwBoundingBox : public lwHelperBase, public lwIBoundingBox {
+	class lwBoundingBox : public HelperBase, public lwIBoundingBox {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIPrimitive* _obj;
 		lwBoundingBoxInfo* _obj_seq;
 		DWORD _obj_num;
@@ -38,7 +38,7 @@ namespace Corsairs::Engine::Render {
 		lwBoundingBox();
 		~lwBoundingBox();
 
-		void SetResourceMgr(lwIResourceMgr* mgr) {
+		void SetResourceMgr(IResourceMgr* mgr) {
 			_res_mgr = mgr;
 		}
 
@@ -86,11 +86,11 @@ namespace Corsairs::Engine::Render {
 		}
 	};
 
-	class lwBoundingSphere : public lwHelperBase, public lwIBoundingSphere {
+	class lwBoundingSphere : public HelperBase, public lwIBoundingSphere {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIPrimitive* _obj;
 
 		lwBoundingSphereInfo* _obj_seq;
@@ -102,7 +102,7 @@ namespace Corsairs::Engine::Render {
 		lwBoundingSphere();
 		~lwBoundingSphere();
 
-		void SetResourceMgr(lwIResourceMgr* mgr) {
+		void SetResourceMgr(IResourceMgr* mgr) {
 			_res_mgr = mgr;
 		}
 
@@ -150,29 +150,29 @@ namespace Corsairs::Engine::Render {
 	};
 
 
-	class lwHelperDummy : public lwHelperBase, public lwIHelperDummy {
+	class HelperDummy : public HelperBase, public IHelperDummy {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIPrimitive* _obj;
 
-		lwHelperDummyInfo* _obj_seq;
+		HelperDummyInfo* _obj_seq;
 		DWORD _obj_num;
 
 	public:
-		lwHelperDummy();
-		~lwHelperDummy();
+		HelperDummy();
+		~HelperDummy();
 
-		LW_RESULT SetDataInfo(const lwHelperDummyInfo* obj_seq, DWORD obj_num);
+		LW_RESULT SetDataInfo(const HelperDummyInfo* obj_seq, DWORD obj_num);
 
-		LW_RESULT Clone(const lwHelperDummy* src);
+		LW_RESULT Clone(const HelperDummy* src);
 
 		LW_RESULT CreateInstance();
 		LW_RESULT Render();
 
 
-		void SetResourceMgr(lwIResourceMgr* mgr) {
+		void SetResourceMgr(IResourceMgr* mgr) {
 			_res_mgr = mgr;
 		}
 
@@ -196,35 +196,35 @@ namespace Corsairs::Engine::Render {
 			return _obj_num;
 		}
 
-		lwHelperDummyInfo* GetDataInfo(DWORD id) {
+		HelperDummyInfo* GetDataInfo(DWORD id) {
 			return &_obj_seq[id];
 		}
 
-		lwHelperDummyInfo* GetDataInfoWithID(DWORD obj_id);
+		HelperDummyInfo* GetDataInfoWithID(DWORD obj_id);
 	};
 
-	class lwHelperMesh : public lwHelperBase, public lwIHelperMesh {
+	class HelperMesh : public HelperBase, public IHelperMesh {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIPrimitive* _obj;
 
-		lwHelperMeshInfo* _obj_seq;
+		HelperMeshInfo* _obj_seq;
 		DWORD _obj_num;
 
 	public:
-		lwHelperMesh();
-		~lwHelperMesh();
+		HelperMesh();
+		~HelperMesh();
 
-		void SetResourceMgr(lwIResourceMgr* mgr) {
+		void SetResourceMgr(IResourceMgr* mgr) {
 			_res_mgr = mgr;
 		}
 
-		void SetDataInfo(const lwHelperMeshInfo* obj_seq, DWORD obj_num);
-		virtual lwHelperMeshInfo* GetDataInfoWithID(DWORD obj_id);
+		void SetDataInfo(const HelperMeshInfo* obj_seq, DWORD obj_num);
+		virtual HelperMeshInfo* GetDataInfoWithID(DWORD obj_id);
 
-		lwHelperMeshInfo* GetDataInfo(DWORD id) {
+		HelperMeshInfo* GetDataInfo(DWORD id) {
 			return &_obj_seq[id];
 		}
 
@@ -232,7 +232,7 @@ namespace Corsairs::Engine::Render {
 			return _obj_num;
 		}
 
-		LW_RESULT Clone(const lwHelperMesh* src);
+		LW_RESULT Clone(const HelperMesh* src);
 
 		LW_RESULT CreateInstance();
 		LW_RESULT HitTest(lwPickInfo* info, const lwVector3* org, const lwVector3* ray, const lwMatrix44* mat_parent,
@@ -252,28 +252,28 @@ namespace Corsairs::Engine::Render {
 		}
 	};
 
-	class lwHelperBox : public lwHelperBase, public lwIHelperBox {
+	class HelperBox : public HelperBase, public IHelperBox {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIPrimitive* _obj;
 
-		lwHelperBoxInfo* _obj_seq;
+		HelperBoxInfo* _obj_seq;
 		DWORD _obj_num;
 
 	public:
-		lwHelperBox();
-		~lwHelperBox();
+		HelperBox();
+		~HelperBox();
 
-		void SetResourceMgr(lwIResourceMgr* mgr) {
+		void SetResourceMgr(IResourceMgr* mgr) {
 			_res_mgr = mgr;
 		}
 
-		LW_RESULT SetDataInfo(const lwHelperBoxInfo* obj_seq, DWORD obj_num);
-		virtual lwHelperBoxInfo* GetDataInfoWithID(DWORD obj_id);
+		LW_RESULT SetDataInfo(const HelperBoxInfo* obj_seq, DWORD obj_num);
+		virtual HelperBoxInfo* GetDataInfoWithID(DWORD obj_id);
 
-		lwHelperBoxInfo* GetDataInfo(DWORD id) {
+		HelperBoxInfo* GetDataInfo(DWORD id) {
 			return &_obj_seq[id];
 		}
 
@@ -281,7 +281,7 @@ namespace Corsairs::Engine::Render {
 			return _obj_num;
 		}
 
-		LW_RESULT Clone(const lwHelperBox* src);
+		LW_RESULT Clone(const HelperBox* src);
 
 		LW_RESULT CreateInstance();
 		LW_RESULT HitTest(lwPickInfo* info, const lwVector3* org, const lwVector3* ray, const lwMatrix44* mat_parent,
@@ -302,26 +302,26 @@ namespace Corsairs::Engine::Render {
 	};
 
 
-	class lwHelperObject : public lwIHelperObject {
+	class HelperObject : public IHelperObject {
 		LW_STD_DECLARATION()
 
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 
-		lwHelperDummy* _obj_dummy;
-		lwHelperBox* _obj_box;
-		lwHelperMesh* _obj_mesh;
+		HelperDummy* _obj_dummy;
+		HelperBox* _obj_box;
+		HelperMesh* _obj_mesh;
 
 		lwBoundingBox* _obj_boundingbox;
 		lwBoundingSphere* _obj_boundingsphere;
 
 	public:
-		lwHelperObject(lwIResourceMgr* mgr);
-		~lwHelperObject();
+		HelperObject(IResourceMgr* mgr);
+		~HelperObject();
 
-		LW_RESULT LoadHelperInfo(const lwHelperInfo* info, int create_instance_flag);
-		LW_RESULT Copy(const lwIHelperObject* src);
-		LW_RESULT Clone(lwIHelperObject** ret_obj);
+		LW_RESULT LoadHelperInfo(const HelperInfo* info, int create_instance_flag);
+		LW_RESULT Copy(const IHelperObject* src);
+		LW_RESULT Clone(IHelperObject** ret_obj);
 
 		void SetParentMatrix(const lwMatrix44* mat);
 		LW_RESULT Update();
@@ -329,15 +329,15 @@ namespace Corsairs::Engine::Render {
 
 		void SetVisible(int flag);
 
-		lwIHelperDummy* GetHelperDummy() {
+		IHelperDummy* GetHelperDummy() {
 			return _obj_dummy;
 		}
 
-		lwIHelperBox* GetHelperBox() {
+		IHelperBox* GetHelperBox() {
 			return _obj_box;
 		}
 
-		lwIHelperMesh* GetHelperMesh() {
+		IHelperMesh* GetHelperMesh() {
 			return _obj_mesh;
 		}
 
@@ -349,7 +349,7 @@ namespace Corsairs::Engine::Render {
 			return _obj_boundingsphere;
 		}
 
-		LW_RESULT ExtractHelperInfo(lwHelperInfo* out_info);
+		LW_RESULT ExtractHelperInfo(HelperInfo* out_info);
 	};
 
 } // namespace Corsairs::Engine::Render

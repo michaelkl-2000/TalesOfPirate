@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 
 #include "Character.h"
@@ -12,7 +12,7 @@
 
 class CTestDemo {
 private:
-	lwIResourceMgr* _res_mgr;
+	IResourceMgr* _res_mgr;
 	lwModel* _skybox;
 
 public:

@@ -54,7 +54,7 @@
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <ClCompile>
             <Optimization>Disabled</Optimization>
-            <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)Input;$(ProjectDir)Console;$(ProjectDir)Diagnostic;$(ProjectDir)Font;$(ProjectDir)Texture;$(ProjectDir)Shader;$(ProjectDir)Animation;$(ProjectDir)Asset;$(ProjectDir)Math;$(ProjectDir)Particle;$(ProjectDir)Map;$(ProjectDir)Util;$(ProjectDir)Platform;$(ProjectDir)Render;$(ProjectDir)Effect;$(ProjectDir)Model;$(ProjectDir)Resource;$(ProjectDir)Core;$(ProjectDir)App;$(ProjectDir)..\Libraries\Common\include;$(ProjectDir)..\Libraries\Util\include;$(ProjectDir)..\Libraries\DirectX\DX9\Include;$(ProjectDir)..\Libraries\CryptoPP\;$(ProjectDir)..\Libraries\FreeType\include;$(ProjectDir)..\Libraries\fontstash;$(ProjectDir)..\Libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+            <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)Input;$(ProjectDir)Console;$(ProjectDir)Diagnostic;$(ProjectDir)Font;$(ProjectDir)Texture;$(ProjectDir)Shader;$(ProjectDir)Animation;$(ProjectDir)Asset;$(ProjectDir)Math;$(ProjectDir)Particle;$(ProjectDir)Map;$(ProjectDir)Util;$(ProjectDir)Platform;$(ProjectDir)Render;$(ProjectDir)Effect;$(ProjectDir)Model;$(ProjectDir)Resource;$(ProjectDir)Core;$(ProjectDir)App;$(ProjectDir)..\Libraries\Common\src;$(ProjectDir)..\Libraries\Util\include;$(ProjectDir)..\Libraries\DirectX\DX9\Include;$(ProjectDir)..\Libraries\CryptoPP\;$(ProjectDir)..\Libraries\FreeType\include;$(ProjectDir)..\Libraries\fontstash;$(ProjectDir)..\Libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
             <PreprocessorDefinitions>WIN64;NDEBUG;_WINDOWS;DIRECT3D_VERSION=0x0900;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
             <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -80,7 +80,7 @@
         <ClCompile>
             <ExceptionHandling>Async</ExceptionHandling>
             <Optimization>MaxSpeed</Optimization>
-            <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)Input;$(ProjectDir)Console;$(ProjectDir)Diagnostic;$(ProjectDir)Font;$(ProjectDir)Texture;$(ProjectDir)Shader;$(ProjectDir)Animation;$(ProjectDir)Asset;$(ProjectDir)Math;$(ProjectDir)Particle;$(ProjectDir)Map;$(ProjectDir)Util;$(ProjectDir)Platform;$(ProjectDir)Render;$(ProjectDir)Effect;$(ProjectDir)Model;$(ProjectDir)Resource;$(ProjectDir)Core;$(ProjectDir)App;$(ProjectDir)..\Libraries\Common\include;$(ProjectDir)..\Libraries\Util\include;$(ProjectDir)..\Libraries\DirectX\DX9\Include;$(ProjectDir)..\Libraries\CryptoPP\;$(ProjectDir)..\Libraries\FreeType\include;$(ProjectDir)..\Libraries\fontstash;$(ProjectDir)..\Libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+            <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)Input;$(ProjectDir)Console;$(ProjectDir)Diagnostic;$(ProjectDir)Font;$(ProjectDir)Texture;$(ProjectDir)Shader;$(ProjectDir)Animation;$(ProjectDir)Asset;$(ProjectDir)Math;$(ProjectDir)Particle;$(ProjectDir)Map;$(ProjectDir)Util;$(ProjectDir)Platform;$(ProjectDir)Render;$(ProjectDir)Effect;$(ProjectDir)Model;$(ProjectDir)Resource;$(ProjectDir)Core;$(ProjectDir)App;$(ProjectDir)..\Libraries\Common\src;$(ProjectDir)..\Libraries\Util\include;$(ProjectDir)..\Libraries\DirectX\DX9\Include;$(ProjectDir)..\Libraries\CryptoPP\;$(ProjectDir)..\Libraries\FreeType\include;$(ProjectDir)..\Libraries\fontstash;$(ProjectDir)..\Libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
             <PreprocessorDefinitions>WIN64;NDEBUG;_WINDOWS;DIRECT3D_VERSION=0x0900;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
             <PrecompiledHeader>Use</PrecompiledHeader>
@@ -189,45 +189,45 @@
         <ClInclude Include="Animation\lwAnimCtrlObj.h"/>
         <ClInclude Include="Animation\lwAnimKeySetPRS.h"/>
         <ClInclude Include="Model\lwCamera.h"/>
-        <ClInclude Include="Util\lwCoordinateSys.h"/>
-        <ClInclude Include="Platform\lwD3DSettings.h"/>
-        <ClInclude Include="Asset\lwDDS.h"/>
-        <ClInclude Include="Asset\lwDDSFile.h"/>
-        <ClInclude Include="Platform\lwDeviceObject.h"/>
-        <ClInclude Include="Asset\lwDirectoryBrowser.h"/>
-        <ClInclude Include="Effect\lwEfxTrack.h"/>
+        <ClInclude Include="Util\CoordinateSys.h"/>
+        <ClInclude Include="Platform\D3DSettings.h"/>
+        <ClInclude Include="Asset\DDS.h"/>
+        <ClInclude Include="Asset\DDSFile.h"/>
+        <ClInclude Include="Platform\DeviceObject.h"/>
+        <ClInclude Include="Asset\DirectoryBrowser.h"/>
+        <ClInclude Include="Effect\EfxTrack.h"/>
         <ClInclude Include="Model\lwExpObj.h"/>
         <ClInclude Include="Asset\lwFileutil.h"/>
         <ClInclude Include="Render\lwgraphics.h"/>
         <ClInclude Include="Render\lwgraphicsutil.h"/>
-        <ClInclude Include="Util\lwHeap.h"/>
-        <ClInclude Include="Model\lwHelperGeometry.h"/>
+        <ClInclude Include="Util\Heap.h"/>
+        <ClInclude Include="Model\HelperGeometry.h"/>
         <ClInclude Include="Platform\lwInterfaceExt.h"/>
         <ClInclude Include="Model\lwItem.h"/>
         <ClInclude Include="Model\lwLinkCtrl.h"/>
         <ClInclude Include="Util\lwMisc.h"/>
         <ClInclude Include="Model\lwModel.h"/>
         <ClInclude Include="Model\lwNodeObject.h"/>
-        <ClInclude Include="Util\lwSlotMap.h"/>
-        <ClInclude Include="Asset\lwPathInfo.h"/>
+        <ClInclude Include="Util\SlotMap.h"/>
+        <ClInclude Include="Asset\PathInfo.h"/>
         <ClInclude Include="Model\lwPhysique.h"/>
         <ClInclude Include="Model\lwPoseCtrl.h"/>
         <ClInclude Include="Model\lwPrimitive.h"/>
         <ClInclude Include="Render\lwPrimitiveHelper.h"/>
         <ClInclude Include="Model\lwRenderCtrlEmb.h"/>
         <ClInclude Include="Model\lwRenderImp.h"/>
-        <ClInclude Include="Resource\lwResourceMgr.h"/>
+        <ClInclude Include="Resource\ResourceMgr.h"/>
         <ClInclude Include="Model\lwSceneMgr.h"/>
-        <ClInclude Include="Shader\lwShaderDeclMgr.h"/>
-        <ClInclude Include="Shader\lwShaderMgr.h"/>
-        <ClInclude Include="Render\lwStreamObj.h"/>
+        <ClInclude Include="Shader\ShaderDeclMgr.h"/>
+        <ClInclude Include="Shader\ShaderMgr.h"/>
+        <ClInclude Include="Render\StreamObj.h"/>
         <ClInclude Include="Util\lwSyncObj.h"/>
         <ClInclude Include="Platform\lwSysCharacter.h"/>
-        <ClInclude Include="Platform\lwSysGraphics.h"/>
-        <ClInclude Include="Platform\lwSystem.h"/>
-        <ClInclude Include="Diagnostic\lwSystemInfo.h"/>
-        <ClInclude Include="Diagnostic\lwThreadPool.h"/>
-        <ClInclude Include="Diagnostic\lwTimer.h"/>
+        <ClInclude Include="Platform\SysGraphics.h"/>
+        <ClInclude Include="Platform\System.h"/>
+        <ClInclude Include="Diagnostic\SystemInfo.h"/>
+        <ClInclude Include="Diagnostic\ThreadPool.h"/>
+        <ClInclude Include="Diagnostic\Timer.h"/>
         <ClInclude Include="Model\lwTreeNode.h"/>
         <ClInclude Include="Render\lwViewFrustum.h"/>
         <ClInclude Include="Model\lwxRenderCtrlVS.h"/>
@@ -249,7 +249,7 @@
             <WarningLevel>TurnOffAllWarnings</WarningLevel>
         </ClCompile>
         <ClCompile Include="Model\lwCamera.cpp"/>
-        <ClCompile Include="Util\lwCoordinateSys.cpp"/>
+        <ClCompile Include="Util\CoordinateSys.cpp"/>
         <ClCompile Include="Asset\AssetLoaders.cpp"/>
         <ClCompile Include="Effect\EffectLoaders.cpp"/>
         <ClCompile Include="Effect\EffPathStore.cpp"/>
@@ -269,16 +269,16 @@
         <ClCompile Include="Texture\ImageLoaders.cpp"/>
         <ClCompile Include="Effect\EffectYaml.cpp"/>
         <ClCompile Include="Particle\PartCtrlYaml.cpp"/>
-        <ClCompile Include="Platform\lwD3DSettings.cpp"/>
-        <ClCompile Include="Asset\lwDDSFile.cpp"/>
-        <ClCompile Include="Platform\lwDeviceObject.cpp"/>
-        <ClCompile Include="Asset\lwDirectoryBrowser.cpp"/>
-        <ClCompile Include="Effect\lwEfxTrack.cpp"/>
+        <ClCompile Include="Platform\D3DSettings.cpp"/>
+        <ClCompile Include="Asset\DDSFile.cpp"/>
+        <ClCompile Include="Platform\DeviceObject.cpp"/>
+        <ClCompile Include="Asset\DirectoryBrowser.cpp"/>
+        <ClCompile Include="Effect\EfxTrack.cpp"/>
         <ClCompile Include="Model\lwExpObj.cpp"/>
         <ClCompile Include="Asset\lwFileutil.cpp"/>
         <ClCompile Include="Render\lwgraphicsutil.cpp"/>
-        <ClCompile Include="Util\lwHeap.cpp"/>
-        <ClCompile Include="Model\lwHelperGeometry.cpp"/>
+        <ClCompile Include="Util\Heap.cpp"/>
+        <ClCompile Include="Model\HelperGeometry.cpp"/>
         <ClCompile Include="Util\lwIFunc.cpp"/>
         <ClCompile Include="Core\lwInterface.cpp"/>
         <ClCompile Include="Model\lwItem.cpp"/>
@@ -288,24 +288,24 @@
         <ClCompile Include="Model\lwModel.cpp"/>
         <ClCompile Include="Model\lwNodeObject.cpp"/>
         <ClCompile Include="Model\lwObjectMethod.cpp"/>
-        <ClCompile Include="Asset\lwPathInfo.cpp"/>
+        <ClCompile Include="Asset\PathInfo.cpp"/>
         <ClCompile Include="Model\lwPhysique.cpp"/>
         <ClCompile Include="Model\lwPoseCtrl.cpp"/>
         <ClCompile Include="Model\lwPrimitive.cpp"/>
         <ClCompile Include="Render\lwPrimitiveHelper.cpp"/>
         <ClCompile Include="Model\lwRenderCtrlEmb.cpp"/>
         <ClCompile Include="Model\lwRenderImp.cpp"/>
-        <ClCompile Include="Resource\lwResourceMgr.cpp"/>
+        <ClCompile Include="Resource\ResourceMgr.cpp"/>
         <ClCompile Include="Model\lwSceneMgr.cpp"/>
-        <ClCompile Include="Shader\lwShaderDeclMgr.cpp"/>
-        <ClCompile Include="Shader\lwShaderMgr.cpp"/>
-        <ClCompile Include="Render\lwStreamObj.cpp"/>
+        <ClCompile Include="Shader\ShaderDeclMgr.cpp"/>
+        <ClCompile Include="Shader\ShaderMgr.cpp"/>
+        <ClCompile Include="Render\StreamObj.cpp"/>
         <ClCompile Include="Platform\lwSysCharacter.cpp"/>
-        <ClCompile Include="Platform\lwSysGraphics.cpp"/>
-        <ClCompile Include="Platform\lwSystem.cpp"/>
-        <ClCompile Include="Diagnostic\lwSystemInfo.cpp"/>
-        <ClCompile Include="Diagnostic\lwThreadPool.cpp"/>
-        <ClCompile Include="Diagnostic\lwTimer.cpp"/>
+        <ClCompile Include="Platform\SysGraphics.cpp"/>
+        <ClCompile Include="Platform\System.cpp"/>
+        <ClCompile Include="Diagnostic\SystemInfo.cpp"/>
+        <ClCompile Include="Diagnostic\ThreadPool.cpp"/>
+        <ClCompile Include="Diagnostic\Timer.cpp"/>
         <ClCompile Include="Model\lwTreeNode.cpp"/>
         <ClCompile Include="Render\lwViewFrustum.cpp"/>
         <ClCompile Include="Model\lwxRenderCtrVS.cpp"/>

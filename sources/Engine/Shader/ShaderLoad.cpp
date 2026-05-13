@@ -1,4 +1,4 @@
-﻿//
+//
 #include "stdafx.h"
 
 #include "ShaderLoad.h"
@@ -8,15 +8,15 @@ using namespace Corsairs::Engine::Render;
 
 #define USER_SHADER_NUM             8
 
-LW_RESULT LoadShader0(lwISysGraphics* sys_graphics) {
+LW_RESULT LoadShader0(ISysGraphics* sys_graphics) {
 	LW_RESULT ret = LW_RET_FAILED;
 
 	// --- declara??es antecipadas (evita warnings com goto) ---
-	lwISystem* sys = 0;
-	lwIPathInfo* path_info = 0;
-	lwIResourceMgr* res_mgr = 0;
-	lwIShaderMgr* shader_mgr = 0;
-	lwIShaderDeclMgr* decl_mgr = 0;
+	ISystem* sys = 0;
+	IPathInfo* path_info = 0;
+	IResourceMgr* res_mgr = 0;
+	IShaderMgr* shader_mgr = 0;
+	IShaderDeclMgr* decl_mgr = 0;
 
 	if (!sys_graphics)
 		goto __ret;
@@ -209,16 +209,16 @@ __ret:
 }
 
 
-LW_RESULT LoadShader1(lwISysGraphics* sys_graphics) {
+LW_RESULT LoadShader1(ISysGraphics* sys_graphics) {
 	LW_RESULT ret = LW_RET_FAILED;
 
-	lwISystem* sys = sys_graphics->GetSystem();
+	ISystem* sys = sys_graphics->GetSystem();
 
-	lwIPathInfo* path_info = 0;
+	IPathInfo* path_info = 0;
 	sys->GetInterface((LW_VOID**)&path_info, LW_GUID_PATHINFO);
 
-	lwIResourceMgr* res_mgr;
-	lwIShaderMgr* shader_mgr;
+	IResourceMgr* res_mgr;
+	IShaderMgr* shader_mgr;
 
 	sys_graphics->GetInterface((LW_VOID**)&res_mgr, LW_GUID_RESOURCEMGR);
 	shader_mgr = res_mgr->GetShaderMgr();

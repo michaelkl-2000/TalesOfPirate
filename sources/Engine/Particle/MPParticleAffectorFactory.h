@@ -1,11 +1,11 @@
-﻿#ifndef MPParticleAffectorFactory_H
+#ifndef MPParticleAffectorFactory_H
 #define MPParticleAffectorFactory_H
 
 #include "MPEffPrerequisites.h"
 
 class MPParticleAffectorFactory {
 protected:
-	std::vector<MPParticleAffector*> m_Affectors;
+	std::vector<MPParticleAffector*> _Affectors;
 
 public:
 	MPParticleAffectorFactory() {

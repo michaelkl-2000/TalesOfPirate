@@ -2,9 +2,9 @@
 
 #include "AssetLoaders.h"
 #include "SceneFileLoaders.h"
-#include "lwEfxTrack.h"      // EfxTrackLoader::Load/Save — для .let
+#include "EfxTrack.h"      // EfxTrackLoader::Load/Save — для .let
 #include "lwExpObj.h"
-#include "lwDDSFile.h"       // ResaveDds — нужен полный тип для NULLREF-pipeline
+#include "DDSFile.h"       // ResaveDds — нужен полный тип для NULLREF-pipeline
 #include "MPModelEff.h"      // EffectFileInfo, CEffPath
 #include "MPParticleCtrl.h"  // CMPPartCtrl
 #include "logutil.h"
@@ -198,7 +198,7 @@ ResaveResult ResaveRbo(const fs::path& path) {
 }
 
 // Минимальный D3D9 NULLREF-девайс — нужен только для D3DXCreateTextureFromFileEx
-// внутри lwDDSFile::LoadOriginTexture. Окно — desktop-handle, реальный
+// внутри DDSFile::LoadOriginTexture. Окно — desktop-handle, реальный
 // рендеринг не происходит. RAII-обёртка чтобы освободить и device, и
 // IDirect3D9 в правильном порядке.
 class NullRefDevice {
@@ -238,7 +238,7 @@ private:
 };
 
 // .dds re-save: load → save через DdsLoader. Требует D3D9-устройство для
-// D3DXCreateTextureFromFileEx внутри lwDDSFile::LoadOriginTexture; используем
+// D3DXCreateTextureFromFileEx внутри DDSFile::LoadOriginTexture; используем
 // NULLREF-девайс, никакого реального рендеринга.
 ResaveResult ResaveDds(const fs::path& path) {
     using DdsLoader = Corsairs::Engine::Render::DdsLoader;
@@ -247,7 +247,7 @@ ResaveResult ResaveDds(const fs::path& path) {
     if (!d3d.IsValid()) {
         return {false, "Direct3D9 NULLREF device creation failed"};
     }
-    Corsairs::Engine::Render::lwDDSFile dds;
+    Corsairs::Engine::Render::DDSFile dds;
     dds.SetDevice(d3d.Device());
 
     auto load = [&](const std::string& f) {
@@ -322,7 +322,7 @@ ResaveResult ResaveCsf(const fs::path& path) {
 
 ResaveResult ResaveLet(const fs::path& path) {
     using EfxTrackLoader = Corsairs::Engine::Render::EfxTrackLoader;
-    Corsairs::Engine::Render::lwEfxTrack track;
+    Corsairs::Engine::Render::EfxTrack track;
 
     auto load = [&](const std::string& f) {
         return !LW_FAILED(EfxTrackLoader::Load(track, f));

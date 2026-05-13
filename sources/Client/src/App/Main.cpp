@@ -46,7 +46,7 @@ using namespace Corsairs::Common::Localization;
 #include "Localization/LitEntryStore.h"
 #include "Item/ItemLitStore.h"
 #include "FontManager.h"
-#include "lwSystemInfo.h"
+#include "SystemInfo.h"
 #include "EngineDiag.h"
 #include "GameDiagnostic.h"
 
@@ -77,7 +77,7 @@ void CenterWindow(HWND hWnd); // Center window on screen
 BOOL CheckDxVersion(DWORD& ver) //
 {
 	BOOL ret = 1;
-	MPISystemInfo* sys_info = LW_NEW(lwSystemInfo);
+	MPISystemInfo* sys_info = LW_NEW(SystemInfo);
 	if (SUCCEEDED(sys_info->CheckDirectXVersion())) //
 	{
 		ver = sys_info->GetDirectXVersion();

@@ -1,4 +1,4 @@
-﻿// D3D Render D3D
+// D3D Render D3D
 //  :  View Type
 //                   WorldViewRegion
 // 					 BeginRender, EndRender()
@@ -278,7 +278,7 @@ public:
 
 	void AddLine(const VECTOR3& v1, const VECTOR3& v2, DWORD dwColor = 0xFFFFFFFF);
 
-	lwInterfaceMgr* GetInterfaceMgr() {
+	InterfaceMgr* GetInterfaceMgr() {
 		return &_IMgr;
 	}
 
@@ -361,7 +361,7 @@ protected:
 	BOOL _bEnableCaptureAVI;
 	BOOL _bCaptureScreen;
 	D3DCAPSX _d3dCaps;
-	lwInterfaceMgr _IMgr;
+	InterfaceMgr _IMgr;
 	lwD3DCreateParamAdjustInfo _d3dCPAdjustInfo;
 	D3DFORMAT _TexSetFmt[2];
 
@@ -486,7 +486,9 @@ inline void MPRender::EnableZBuffer(BOOL bEnable) {
 inline void MPRender::SetWorldView(int nX, int nY, int nW, int nH) {
 	_nWorldViewStartX = nX;
 	_nWorldViewStartY = nY;
-	if (nW > 0) _nWorldViewWidth = nW;
+	if (nW > 0) {
+		_nWorldViewWidth = nW;
+	}
 	if (nH > 0) _nWorldViewHeight = nH;
 }
 

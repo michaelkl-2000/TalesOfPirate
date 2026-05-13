@@ -8,12 +8,12 @@
 #include "lwPhysique.h"
 
 namespace Corsairs::Engine::Render {
-	LW_RESULT lwResetDevice(lwISysGraphics* sys_graphics, const D3DPRESENT_PARAMETERS* d3dpp) {
+	LW_RESULT lwResetDevice(ISysGraphics* sys_graphics, const D3DPRESENT_PARAMETERS* d3dpp) {
 		return 0;
 	}
 
 
-	LW_RESULT lwLoadTex(lwITex** out, lwIResourceMgr* res_mgr, std::string_view file, std::string_view tex_path, D3DFORMAT fmt) {
+	LW_RESULT lwLoadTex(lwITex** out, IResourceMgr* res_mgr, std::string_view file, std::string_view tex_path, D3DFORMAT fmt) {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		lwITex* tex;
@@ -57,11 +57,11 @@ namespace Corsairs::Engine::Render {
 		return ret;
 	}
 
-	LW_RESULT lwLoadTex(lwITex** out, lwIResourceMgr* res_mgr, const lwTexInfo* info) {
+	LW_RESULT lwLoadTex(lwITex** out, IResourceMgr* res_mgr, const lwTexInfo* info) {
 		return lwLoadTex(out, res_mgr, info, nullptr);
 	}
 
-	LW_RESULT lwLoadTex(lwITex** out, lwIResourceMgr* res_mgr, const lwTexInfo* info, void* user_data) {
+	LW_RESULT lwLoadTex(lwITex** out, IResourceMgr* res_mgr, const lwTexInfo* info, void* user_data) {
 		LW_RESULT ret = LW_RET_FAILED;
 
 		lwITex* tex;
@@ -211,7 +211,7 @@ namespace Corsairs::Engine::Render {
 	LW_RESULT lwPrimitiveGetObjHeight(lwIPrimitive* p, float* out_height) {
 		LW_RESULT ret = LW_RET_FAILED;
 
-		lwIHelperObject* h_obj = p->GetHelperObject();
+		IHelperObject* h_obj = p->GetHelperObject();
 		if (h_obj == 0)
 			goto __ret;
 
@@ -392,7 +392,7 @@ namespace Corsairs::Engine::Render {
 								DWORD anim_type) {
 		// ----begin----
 		lwITex* tex;
-		lwIResourceMgr* res_mgr = p->GetResourceMgr();
+		IResourceMgr* res_mgr = p->GetResourceMgr();
 		res_mgr->CreateTex(&tex);
 		lwTexInfo tex_info;
 		lwTexInfo_Construct(&tex_info);
@@ -468,7 +468,7 @@ namespace Corsairs::Engine::Render {
 	LW_RESULT lwPrimitiveTexLitC(lwIPrimitive* p, std::string_view file, std::string_view tex_path, DWORD anim_type) {
 		// ----begin----
 		lwITex* tex;
-		lwIResourceMgr* res_mgr = p->GetResourceMgr();
+		IResourceMgr* res_mgr = p->GetResourceMgr();
 		res_mgr->CreateTex(&tex);
 		lwTexInfo tex_info;
 		lwTexInfo_Construct(&tex_info);
@@ -561,7 +561,7 @@ namespace Corsairs::Engine::Render {
 		lwITex* tex;
 		lwITex* ret_tex = 0;
 		lwIMtlTexAgent* mtltex_agent = 0;
-		lwIResourceMgr* res_mgr = p->GetResourceMgr();
+		IResourceMgr* res_mgr = p->GetResourceMgr();
 		lwTexInfo tex_info;
 
 		lwTexInfo_Construct(&tex_info);
@@ -693,7 +693,7 @@ namespace Corsairs::Engine::Render {
 		lwITex* tex;
 		lwITex* ret_tex = 0;
 		lwIMtlTexAgent* mtltex_agent = 0;
-		lwIResourceMgr* res_mgr = p->GetResourceMgr();
+		IResourceMgr* res_mgr = p->GetResourceMgr();
 		lwTexInfo tex_info;
 
 		lwTexInfo_Construct(&tex_info);

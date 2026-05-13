@@ -1,11 +1,11 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 #include "MPRender.h"
 #include "AssetLoaders.h"  // ScreenshotSaver
 #include "MPMath.h"
 #include "MPTextureSet.h"
 #include "lwIFunc.h"
 #include "ShaderLoad.h"
-#include "lwD3DSettings.h"
+#include "D3DSettings.h"
 #include "d3dutil.h"
 #include "MPGameApp.h"
 
@@ -126,8 +126,8 @@ BOOL MPRender::Init(HWND hWnd, int nScrWidth, int nScrHeight, int nColorBit, BOO
 
 	// Init Mesh Lib
 	LW_RESULT ret;
-	lwISystem* sys;
-	lwISysGraphics* sys_graphics;
+	ISystem* sys;
+	ISysGraphics* sys_graphics;
 	ret = lwInitMeshLibSystem(&sys, &sys_graphics, &d3dcp, &_d3dCPAdjustInfo);
 	if (LW_FAILED(ret)) {
 		ToLogService("errors", LogLevel::Error,
@@ -154,7 +154,7 @@ BOOL MPRender::Init(HWND hWnd, int nScrWidth, int nScrHeight, int nColorBit, BOO
 	}
 
 
-	lwIDeviceObject* dev_obj = sys_graphics->GetDeviceObject();
+	IDeviceObject* dev_obj = sys_graphics->GetDeviceObject();
 	_pD3D = dev_obj->GetDirect3D();
 	_pD3DDevice = dev_obj->GetDevice();
 	_IMgr.sys = sys;
@@ -176,8 +176,8 @@ BOOL MPRender::Init(HWND hWnd, int nScrWidth, int nScrHeight, int nColorBit, BOO
 
 	ToggleFullScreen();
 
-	CMPResManger::Instance().m_pSys = sys;
-	CMPResManger::Instance().m_pSysGraphics = sys_graphics;
+	CMPResManger::Instance()._pSys = sys;
+	CMPResManger::Instance()._pSysGraphics = sys_graphics;
 	CMPResManger::Instance().LoadTotalVShader(sys_graphics);
 
 	D3DXCreateSprite(_pD3DDevice, &_p2DSprite);
@@ -237,8 +237,8 @@ BOOL MPRender::InitRes3() {
 
 
 int MPRender::ToggleFullScreen(int width, int height, D3DFORMAT depth_fmt, BOOL be_windowed) {
-	lwIResourceMgr* res_mgr = _IMgr.res_mgr;
-	lwIDeviceObject* dev_obj = _IMgr.dev_obj;
+	IResourceMgr* res_mgr = _IMgr.res_mgr;
+	IDeviceObject* dev_obj = _IMgr.dev_obj;
 	IDirect3DX* dev = dev_obj->GetDirect3D();
 
 	HWND hwnd = _hWnd;
@@ -404,7 +404,9 @@ BOOL MPRender::IsLineInWorldView(float fX1, float fY1, float fX2, float fY2) {
 			break;
 		}
 		}
-		if (Get2DLineIntersection(v1, v2, v3, v4, v0, FALSE)) return TRUE;
+		if (Get2DLineIntersection(v1, v2, v3, v4, v0, FALSE)) {
+			return TRUE;
+		}
 	}
 	return FALSE;
 }
@@ -450,7 +452,9 @@ BOOL MPRender::IsRectIntersectWorldView(int* pnPosX, int* pnPosY) {
 }
 
 void MPRender::SetCurrentView(int nType, BOOL bReset) {
-	if (nType == _nCurViewType && !bReset) return;
+	if (nType == _nCurViewType && !bReset) {
+		return;
+	}
 
 
 	switch (nType) {
@@ -562,9 +566,13 @@ BOOL MPRender::BeginRender(bool clear) //vim
 	}
 
 	_dwClearFlag = 0;
-	if (_bClearTarget) _dwClearFlag |= D3DCLEAR_TARGET;
+	if (_bClearTarget) {
+		_dwClearFlag |= D3DCLEAR_TARGET;
+	}
 	if (_bClearZBuffer) _dwClearFlag |= D3DCLEAR_ZBUFFER;
-	if (_bClearStencil) _dwClearFlag |= D3DCLEAR_STENCIL;
+	if (_bClearStencil) {
+		_dwClearFlag |= D3DCLEAR_STENCIL;
+	}
 
 
 	if (clear) //vim
@@ -681,11 +689,15 @@ void MPRender::EnableMipmap(BOOL bEnable) {
 void MPRender::RenderTextureRect(int nX, int nY, MPTexRect* pRect) {
 	VECTOR3 vecDest((float)nX, (float)nY, 0.0f);
 	LPTEXTURE pTexture = GetTextureByID(pRect->nTextureNo);
-	if (!pTexture) return;
+	if (!pTexture) {
+		return;
+	}
 
 	RECT* pTexRect = NULL;
 	RECT TexRect = {pRect->nTexSX, pRect->nTexSY, pRect->nTexSX + pRect->nTexW, pRect->nTexSY + pRect->nTexH};
-	if (pRect->nTexW != 0) pTexRect = &TexRect;
+	if (pRect->nTexW != 0) {
+		pTexRect = &TexRect;
+	}
 	_p2DSprite->Begin(D3DXSPRITE_ALPHABLEND);
 	D3DXMATRIX scaleMat;
 	D3DXMatrixIdentity(&scaleMat);
@@ -776,7 +788,7 @@ void MPRender::CaptureScreen(const char* szFilename) const {
 }
 
 void MPRender::IgnoreModelTexture(BOOL bIgnore) {
-	lwHelperSetForceIgnoreTexFlag(bIgnore);
+	HelperSetForceIgnoreTexFlag(bIgnore);
 }
 
 BOOL MPRender::WorldToScreen(float fX, float fY, float fZ, int* pnX, int* pnY) {

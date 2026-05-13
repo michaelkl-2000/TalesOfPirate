@@ -5,7 +5,7 @@
 
 #include "I_Effect.h"
 #include "MPRender.h"
-#include "lwSysGraphics.h"
+#include "SysGraphics.h"
 
 using namespace Corsairs::Engine::Render;namespace Corsairs::Engine::Render {
 
@@ -22,7 +22,7 @@ void TobMeshStore::SetDevice(MPRender* dev) noexcept {
     _dev = dev;
 }
 
-void TobMeshStore::SetSysGraphics(lwISysGraphics* sysGraphics) noexcept {
+void TobMeshStore::SetSysGraphics(ISysGraphics* sysGraphics) noexcept {
     _sysGraphics = sysGraphics;
 }
 

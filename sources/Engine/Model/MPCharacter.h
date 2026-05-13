@@ -61,7 +61,7 @@ namespace Corsairs::Engine::Render {
 
 	public:
 		MPCharacter();
-		MPCharacter(lwISysGraphics* sys_graphics);
+		MPCharacter(ISysGraphics* sys_graphics);
 		virtual ~MPCharacter();
 
 		void StartLoad();

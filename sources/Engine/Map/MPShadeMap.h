@@ -85,7 +85,7 @@ public:
 	}
 
 	void SetRenderIndex(int idx) {
-		_iIdxTech = idx;
+		_idxTech = idx;
 	}
 
 	void SetUpSea(bool bUp) {
@@ -131,11 +131,11 @@ protected:
 	int _iGridNum;
 	float _fGridMax;
 
-	float* _pfDailTime;
-	int _iIdxTech;
+	float* m_pfDailTime;
+	int _idxTech;
 	CMPEffectFile* _pCEffectFile;
 
-	D3DXMATRIX* _pMatViewProj;
+	D3DXMATRIX* m_pMatViewProj;
 
 	D3DBLEND _eSrcBlend;
 	D3DBLEND _eDestBlend;
@@ -217,7 +217,7 @@ protected:
 	float _fFrameTime;
 	std::vector<D3DXCOLOR> _vecFrameColor;
 	float _fCurTime;
-	float _fLerp;
+	float m_fLerp;
 
 	float _fTexFrameTime;
 	float _fTexCurTime;

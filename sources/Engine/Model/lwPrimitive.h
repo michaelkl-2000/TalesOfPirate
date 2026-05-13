@@ -3,12 +3,12 @@
 
 #include "lwHeader.h"
 #include "lwDirectX.h"
-#include "lwStreamObj.h"
+#include "StreamObj.h"
 #include "lwExpObj.h"
 #include "lwITypes.h"
 #include "lwInterfaceExt.h"
-#include "lwDeviceObject.h"
-#include "lwResourceMgr.h"
+#include "DeviceObject.h"
+#include "ResourceMgr.h"
 #include "lwPrimitiveHelper.h"
 
 namespace Corsairs::Engine::Render {
@@ -20,18 +20,18 @@ namespace Corsairs::Engine::Render {
 		DWORD _parent_id;
 		lwStateCtrl _state_ctrl;
 
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwIMeshAgent* _mesh_agent;
 		lwIMtlTexAgent* _mtltex_agent_seq[LW_MAX_SUBSET_NUM];
 		lwIAnimCtrlAgent* _anim_agent;
 		lwIRenderCtrlAgent* _render_agent;
-		lwIHelperObject* _helper_object;
+		IHelperObject* _helper_object;
 
 	private:
 		LW_RESULT _UpdateTransparentState();
 
 	public:
-		lwPrimitive(lwIResourceMgr* mgr);
+		lwPrimitive(IResourceMgr* mgr);
 		virtual ~lwPrimitive();
 
 
@@ -81,7 +81,7 @@ namespace Corsairs::Engine::Render {
 
 		LW_RESULT Clone(lwIPrimitive** ret_obj);
 
-		lwIResourceMgr* GetResourceMgr() {
+		IResourceMgr* GetResourceMgr() {
 			return _res_mgr;
 		}
 
@@ -101,7 +101,7 @@ namespace Corsairs::Engine::Render {
 			return _render_agent;
 		}
 
-		lwIHelperObject* GetHelperObject() {
+		IHelperObject* GetHelperObject() {
 			return _helper_object;
 		}
 
@@ -124,7 +124,7 @@ namespace Corsairs::Engine::Render {
 			_render_agent = obj;
 		}
 
-		void SetHelperObject(lwIHelperObject* obj) {
+		void SetHelperObject(IHelperObject* obj) {
 			_helper_object = obj;
 		}
 

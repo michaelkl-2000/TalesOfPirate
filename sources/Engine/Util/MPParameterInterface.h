@@ -1,4 +1,4 @@
-﻿#ifndef MPParameterInterface_H
+#ifndef MPParameterInterface_H
 #define MPParameterInterface_H
 
 #include "MPEffPrerequisites.h"
@@ -50,15 +50,15 @@ class MPParamDictionary {
 	friend class MPParameterInterface;
 
 protected:
-	MPParameterList m_ParamDefs;
+	MPParameterList _ParamDefs;
 
 	/// get/set
-	ParamCommandMap m_ParamCommands;
+	ParamCommandMap _ParamCommands;
 
 	/** . */
 	MPParamCommand* getParamCommand(const String& name) {
-		ParamCommandMap::iterator i = m_ParamCommands.find(name);
-		if (i != m_ParamCommands.end()) {
+		ParamCommandMap::iterator i = _ParamCommands.find(name);
+		if (i != _ParamCommands.end()) {
 			return i->second;
 		}
 		else {
@@ -67,8 +67,8 @@ protected:
 	}
 
 	const MPParamCommand* getParamCommand(const String& name) const {
-		ParamCommandMap::const_iterator i = m_ParamCommands.find(name);
-		if (i != m_ParamCommands.end()) {
+		ParamCommandMap::const_iterator i = _ParamCommands.find(name);
+		if (i != _ParamCommands.end()) {
 			return i->second;
 		}
 		else {
@@ -87,12 +87,12 @@ public:
 
 	*/
 	void addParameter(const MPParameterDef& paramDef, MPParamCommand* paramCmd) {
-		m_ParamDefs.push_back(paramDef);
-		m_ParamCommands[paramDef.name] = paramCmd;
+		_ParamDefs.push_back(paramDef);
+		_ParamCommands[paramDef.name] = paramCmd;
 	}
 
 	const MPParameterList& getParameters(void) const {
-		return m_ParamDefs;
+		return _ParamDefs;
 	}
 };
 
@@ -111,8 +111,8 @@ public:
 	}
 
 	MPParamDictionary* getParamDictionary(void) {
-		MPParamDictionaryMap::iterator i = m_sDictionary.find(m_ParamDictName);
-		if (i != m_sDictionary.end()) {
+		MPParamDictionaryMap::iterator i = _sDictionary.find(_ParamDictName);
+		if (i != _sDictionary.end()) {
 			return &(i->second);
 		}
 		else {
@@ -121,8 +121,8 @@ public:
 	}
 
 	const MPParamDictionary* getParamDictionary(void) const {
-		MPParamDictionaryMap::const_iterator i = m_sDictionary.find(m_ParamDictName);
-		if (i != m_sDictionary.end()) {
+		MPParamDictionaryMap::const_iterator i = _sDictionary.find(_ParamDictName);
+		if (i != _sDictionary.end()) {
 			return &(i->second);
 		}
 		else {
@@ -176,18 +176,18 @@ protected:
 		true , false 
 	*/
 	bool createParamDictionary(const String& className) {
-		m_ParamDictName = className;
-		if (m_sDictionary.find(className) == m_sDictionary.end()) {
-			m_sDictionary[className] = ParamDictionary();
+		_ParamDictName = className;
+		if (_sDictionary.find(className) == _sDictionary.end()) {
+			_sDictionary[className] = ParamDictionary();
 			return true;
 		}
 		return false;
 	}
 
 protected:
-	static MPParamDictionaryMap m_sDictionary;
+	static MPParamDictionaryMap _sDictionary;
 	///  ()
-	String m_ParamDictName;
+	String _ParamDictName;
 };
 
 #endif

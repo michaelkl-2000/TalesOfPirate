@@ -212,13 +212,17 @@ void FontRender::_DrawWide(const std::wstring& wtext, int x, int y,
 }
 
 void FontRender::Draw(std::string_view szText, int x, int y, D3DXCOLOR color) {
-	if (szText.empty()) return;
+	if (szText.empty()) {
+		return;
+	}
 	_DrawWide(_ToWide(szText), x, y, color, 1.0f, nullptr);
 }
 
 bool FontRender::DrawText(std::string_view szText, int x, int y, D3DXCOLOR color,
 						  float fScale, DWORD* /*dwTime*/) {
-	if (szText.empty()) return false;
+	if (szText.empty()) {
+		return false;
+	}
 	_DrawWide(_ToWide(szText), x, y, color, fScale, nullptr);
 	return true;
 }
@@ -229,7 +233,9 @@ bool FontRender::DrawText(int iNumber, int x, int y, D3DXCOLOR color, float fSca
 
 bool FontRender::DrawTextShadow(std::string_view szText, int x1, int y1, int x2, int y2,
 								D3DXCOLOR color1, D3DXCOLOR color2) {
-	if (szText.empty()) return false;
+	if (szText.empty()) {
+		return false;
+	}
 	const std::wstring w = _ToWide(szText);
 	if (s_shadowEnabled) {
 		_DrawWide(w, x1, y1, color1, 1.0f, nullptr);
@@ -246,12 +252,16 @@ bool FontRender::Draw3DText(std::string_view /*szText*/, D3DXVECTOR3& /*vPos*/,
 
 void FontRender::DrawTextClipOnce(std::string_view szText, int /*nLen*/,
 								  LPRECT psrc, LPRECT pclip, D3DXCOLOR color) {
-	if (szText.empty() || !psrc) return;
+	if (szText.empty() || !psrc) {
+		return;
+	}
 	_DrawWide(_ToWide(szText), psrc->left, psrc->top, color, 1.0f, pclip);
 }
 
 SIZE* FontRender::GetTextSize(std::string_view szText, SIZE* pSize, float fScale) {
-	if (!pSize) return nullptr;
+	if (!pSize) {
+		return nullptr;
+	}
 	pSize->cx = 0;
 	pSize->cy = static_cast<long>(_lineHeight * fScale);
 

@@ -18,7 +18,7 @@ namespace Corsairs::Engine::Render {
 
 	public:
 		MPSceneObject();
-		MPSceneObject(lwISysGraphics* sys_graphics);
+		MPSceneObject(ISysGraphics* sys_graphics);
 		virtual ~MPSceneObject();
 
 		LW_RESULT Load(std::string_view file, DWORD model_id = LW_INVALID_INDEX);
@@ -61,7 +61,7 @@ namespace Corsairs::Engine::Render {
 			return _model;
 		}
 
-		lwIHelperObject* GetHelperObject() {
+		IHelperObject* GetHelperObject() {
 			return _model->GetHelperObject();
 		}
 

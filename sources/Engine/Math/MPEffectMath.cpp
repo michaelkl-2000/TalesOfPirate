@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "MPEffectMath.h"
 
 #include <math.h>
@@ -9,24 +9,24 @@
 // MPRadian
 //-----------------------------------------------------------------------------
 float MPRadian::valueDegrees() const {
-	return MPEffectMath::RadiansToDegrees(m_fRad);
+	return MPEffectMath::RadiansToDegrees(_fRad);
 }
 
 //-------------------------------------------------------------------------
 float MPRadian::valueAngleUnits() const {
-	return MPEffectMath::RadiansToAngleUnits(m_fRad);
+	return MPEffectMath::RadiansToAngleUnits(_fRad);
 }
 
 //=============================================================================
 // MPDegree
 //-----------------------------------------------------------------------------
 float MPDegree::valueRadians() const {
-	return MPEffectMath::DegreesToRadians(m_fDeg);
+	return MPEffectMath::DegreesToRadians(_fDeg);
 }
 
 //-------------------------------------------------------------------------
 float MPDegree::valueAngleUnits() const {
-	return MPEffectMath::DegreesToAngleUnits(m_fDeg);
+	return MPEffectMath::DegreesToAngleUnits(_fDeg);
 }
 
 //=============================================================================
@@ -43,39 +43,39 @@ const float MPEffectMath::fRad2Deg = float(180.0) / PI;
 const std::string MPEffectMath::BLANK = std::string("");
 
 
-int MPEffectMath::m_TrigTableSize;
-MPEffectMath::AngleUnit MPEffectMath::m_sAngleUnit;
+int MPEffectMath::_TrigTableSize;
+MPEffectMath::AngleUnit MPEffectMath::_sAngleUnit;
 
-float MPEffectMath::m_TrigTableFactor;
-float* MPEffectMath::m_SinTable = 0;
-float* MPEffectMath::m_TanTable = 0;
+float MPEffectMath::_TrigTableFactor;
+float* MPEffectMath::_SinTable = 0;
+float* MPEffectMath::_TanTable = 0;
 
 //-----------------------------------------------------------------------------
 MPEffectMath::MPEffectMath(unsigned int trigTableSize) {
-	m_sAngleUnit = AU_DEGREE;
+	_sAngleUnit = AU_DEGREE;
 
-	m_TrigTableSize = trigTableSize;
-	m_TrigTableFactor = m_TrigTableSize / MPEffectMath::TWO_PI;
+	_TrigTableSize = trigTableSize;
+	_TrigTableFactor = _TrigTableSize / MPEffectMath::TWO_PI;
 
-	m_SinTable = new float[m_TrigTableSize];
-	m_TanTable = new float[m_TrigTableSize];
+	_SinTable = new float[_TrigTableSize];
+	_TanTable = new float[_TrigTableSize];
 
 	buildTrigTables();
 }
 
 //-----------------------------------------------------------------------------
 MPEffectMath::~MPEffectMath() {
-	delete[] m_SinTable;
-	delete[] m_TanTable;
+	delete[] _SinTable;
+	delete[] _TanTable;
 }
 
 //-----------------------------------------------------------------------------
 void MPEffectMath::buildTrigTables(void) {
 	float angle;
-	for (int i = 0; i < m_TrigTableSize; ++i) {
-		angle = MPEffectMath::TWO_PI * i / m_TrigTableSize;
-		m_SinTable[i] = sin(angle);
-		m_TanTable[i] = tan(angle);
+	for (int i = 0; i < _TrigTableSize; ++i) {
+		angle = MPEffectMath::TWO_PI * i / _TrigTableSize;
+		_SinTable[i] = sin(angle);
+		_TanTable[i] = tan(angle);
 	}
 }
 
@@ -84,34 +84,34 @@ float MPEffectMath::SinTable(float fValue) {
 	// Convert range to index values, wrap if required
 	int idx;
 	if (fValue >= 0) {
-		idx = int(fValue * m_TrigTableFactor) % m_TrigTableSize;
+		idx = int(fValue * _TrigTableFactor) % _TrigTableSize;
 	}
 	else {
-		idx = m_TrigTableSize - (int(-fValue * m_TrigTableFactor) % m_TrigTableSize) - 1;
+		idx = _TrigTableSize - (int(-fValue * _TrigTableFactor) % _TrigTableSize) - 1;
 	}
 
-	return m_SinTable[idx];
+	return _SinTable[idx];
 }
 
 //-----------------------------------------------------------------------------
 float MPEffectMath::TanTable(float fValue) {
-	int idx = int(fValue * m_TrigTableFactor) % m_TrigTableSize;
-	return m_TanTable[idx];
+	int idx = int(fValue * _TrigTableFactor) % _TrigTableSize;
+	return _TanTable[idx];
 }
 
 //-----------------------------------------------------------------------------
 void MPEffectMath::setAngleUnit(AngleUnit unit) {
-	m_sAngleUnit = unit;
+	_sAngleUnit = unit;
 }
 
 //-----------------------------------------------------------------------------
 MPEffectMath::AngleUnit MPEffectMath::getAngleUnit(void) {
-	return m_sAngleUnit;
+	return _sAngleUnit;
 }
 
 //-----------------------------------------------------------------------------
 float MPEffectMath::AngleUnitsToRadians(float units) {
-	if (m_sAngleUnit == AU_DEGREE)
+	if (_sAngleUnit == AU_DEGREE)
 		return DegreesToRadians(units);
 	else
 		return units;
@@ -119,7 +119,7 @@ float MPEffectMath::AngleUnitsToRadians(float units) {
 
 //-----------------------------------------------------------------------------
 float MPEffectMath::RadiansToAngleUnits(float radians) {
-	if (m_sAngleUnit == AU_DEGREE)
+	if (_sAngleUnit == AU_DEGREE)
 		return RadiansToDegrees(radians);
 	else
 		return radians;
@@ -127,7 +127,7 @@ float MPEffectMath::RadiansToAngleUnits(float radians) {
 
 //-----------------------------------------------------------------------------
 float MPEffectMath::AngleUnitsToDegrees(float units) {
-	if (m_sAngleUnit == AU_DEGREE)
+	if (_sAngleUnit == AU_DEGREE)
 		return units;
 	else
 		return RadiansToDegrees(units);
@@ -135,7 +135,7 @@ float MPEffectMath::AngleUnitsToDegrees(float units) {
 
 //-----------------------------------------------------------------------------
 float MPEffectMath::DegreesToAngleUnits(float degrees) {
-	if (m_sAngleUnit == AU_DEGREE)
+	if (_sAngleUnit == AU_DEGREE)
 		return degrees;
 	else
 		return DegreesToRadians(degrees);

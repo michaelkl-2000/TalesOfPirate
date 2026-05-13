@@ -53,21 +53,21 @@ void GetDirRotation(D3DXVECTOR2* pOut, D3DXVECTOR3* pDir) {
 /*                                                                      */
 /************************************************************************/
 CMPParticle::CMPParticle(void) {
-	m_vPos = D3DXVECTOR3(0, 0, 0);
-	m_vOldPos = D3DXVECTOR3(0, 0, 0);
-	m_vVel = D3DXVECTOR3(0, 0, 0);
-	m_vAccel = D3DXVECTOR3(0, 0, 0);
-	m_bLive = false;
-	m_fLife = 0;
-	m_fCurTime = 0;
-	m_wCurFrame = 0;
-	m_fFrameTime = 0;
+	_vPos = D3DXVECTOR3(0, 0, 0);
+	_vOldPos = D3DXVECTOR3(0, 0, 0);
+	_vVel = D3DXVECTOR3(0, 0, 0);
+	_vAccel = D3DXVECTOR3(0, 0, 0);
+	_bLive = false;
+	_fLife = 0;
+	_fCurTime = 0;
+	_wCurFrame = 0;
+	_fFrameTime = 0;
 
-	m_SCurColor = 0xffffffff;
-	m_fSize = 1.0f;
-	m_vCurAngle = D3DXVECTOR3(0, 0, 0);
+	_SCurColor = 0xffffffff;
+	_fSize = 1.0f;
+	_vCurAngle = D3DXVECTOR3(0, 0, 0);
 
-	m_fPartTime = 0;
+	_fPartTime = 0;
 }
 
 CMPParticle::~CMPParticle(void) {
@@ -111,10 +111,10 @@ CMPPartSys::CMPPartSys() {
 
 	_iRenderIdx = 3;
 	_bUseZ = true;
-	m_bShade = false;
+	_bShade = false;
 
-	m_pMap = NULL;
-	m_pCResMagr = NULL;
+	_pMap = NULL;
+	_pCResMagr = NULL;
 
 	_pTex = NULL;
 	_iDummy1 = -1;
@@ -193,7 +193,7 @@ bool CMPPartSys::UpdateDelay() {
 			if (_fCurPlayTime >= _fDelayTime) {
 				return true;
 			}
-			_fCurPlayTime += *_pfDailTime;
+			_fCurPlayTime += *m_pfDailTime;
 			return false;
 		}
 		return true;
@@ -204,7 +204,7 @@ bool CMPPartSys::UpdateDelay() {
 				Stop();
 				return _bPlay;
 			}
-			_fCurPlayTime += *_pfDailTime;
+			_fCurPlayTime += *m_pfDailTime;
 			return true;
 		}
 		else {
@@ -226,10 +226,10 @@ bool CMPPartSys::UpdateDelay() {
 					Stop();
 					return _bPlay;
 				}
-				_fCurPlayTime += *_pfDailTime;
+				_fCurPlayTime += *m_pfDailTime;
 				return true;
 			}
-			_fCurPlayTime += *_pfDailTime;
+			_fCurPlayTime += *m_pfDailTime;
 			return false;
 		}
 	}
@@ -242,7 +242,7 @@ bool CMPPartSys::IsCreatePart() {
 	case PARTTICLE_BLAST:
 	case PARTTICLE_BLAST2:
 	case PARTTICLE_BLAST3:
-		if (_vecParticle[0]->m_bLive)
+		if (_vecParticle[0]->_bLive)
 			return true;
 	}
 	return false;
@@ -309,8 +309,8 @@ bool CMPPartSys::Create(int iType, const s_string& strPartName, int iNumPart,
 	_wFrameCount = wFrameCount;
 
 	_pdwVShader = 0L;
-	_pfDailTime = pCResMagr->GetDailTime();
-	_pMatViewProj = pCResMagr->GetViewProjMat();
+	m_pfDailTime = pCResMagr->GetDailTime();
+	m_pMatViewProj = pCResMagr->GetViewProjMat();
 
 	if (_pCModel) {
 		_bBillBoard = bBillBoard;
@@ -330,7 +330,7 @@ bool CMPPartSys::Create(int iType, const s_string& strPartName, int iNumPart,
 
 //-----------------------------------------------------------------------------
 void CMPPartSys::SetOpertion() {
-	m_bShade = false;
+	_bShade = false;
 
 	switch (_iType) {
 	case PARTTICLE_SNOW:
@@ -371,7 +371,7 @@ void CMPPartSys::SetOpertion() {
 		break;
 	case PARTTICLE_SHADE:
 		FrameUpdate = _FrameMoveShade;
-		m_bShade = true;
+		_bShade = true;
 		break;
 	case PARTTICLE_RANGE:
 		FrameUpdate = _FrameMoveRange;
@@ -407,8 +407,8 @@ void CMPPartSys::SetSkillCtrl(SkillCtrl* pCtrl) {
 			*_vecFrameSize[n] *= pCtrl->fSize;
 		}
 
-		if (m_bShade)
-			m_cShade.Create(_strTexName, m_pCResMagr, *_vecFrameSize[0]);
+		if (_bShade)
+			_cShade.Create(_strTexName, _pCResMagr, *_vecFrameSize[0]);
 	}
 }
 
@@ -418,8 +418,8 @@ void CMPPartSys::SetType(int iType, CMPResManger* pCResMagr) {
 	_iType = iType;
 	SetOpertion();
 
-	if (m_bShade) {
-		m_cShade.Create(_strTexName, pCResMagr, *_vecFrameSize[0]);
+	if (_bShade) {
+		_cShade.Create(_strTexName, pCResMagr, *_vecFrameSize[0]);
 	}
 }
 
@@ -453,13 +453,13 @@ void CMPPartSys::GetRes(int& idtex, int& idmodel, int& ideff) {
 	idtex = -1;
 	idmodel = -1;
 	ideff = -1;
-	if (m_bShade) {
-		idtex = m_pCResMagr->GetTextureID(_strTexName);
+	if (_bShade) {
+		idtex = _pCResMagr->GetTextureID(_strTexName);
 		return;
 	}
-	int id = m_pCResMagr->GetMeshID(_strModelName);
+	int id = _pCResMagr->GetMeshID(_strModelName);
 	if (id < 0) {
-		id = m_pCResMagr->GetEffectID(_strModelName);
+		id = _pCResMagr->GetEffectID(_strModelName);
 		if (id < 0) {
 		}
 		else {
@@ -472,7 +472,7 @@ void CMPPartSys::GetRes(int& idtex, int& idmodel, int& ideff) {
 	}
 
 	if (id >= 0) {
-		id = m_pCResMagr->GetTextureID(_strTexName);
+		id = _pCResMagr->GetTextureID(_strTexName);
 		idtex = id;
 	}
 }
@@ -484,34 +484,34 @@ void CMPPartSys::SetMediayEff(bool bMediay) {
 		if (_iType == PARTTICLE_SNOW || _iType == PARTTICLE_FIRE ||
 			_iType == PARTTICLE_SHRINK) {
 			_bMediay = bMediay;
-			BindingRes(m_pCResMagr);
+			BindingRes(_pCResMagr);
 		}
 	}
 	else {
 		_bMediay = bMediay;
-		BindingRes(m_pCResMagr);
+		BindingRes(_pCResMagr);
 	}
 }
 
 //-----------------------------------------------------------------------------
 void CMPPartSys::BindingRes(CMPResManger* pCResMagr) {
-	m_pCResMagr = pCResMagr;
+	_pCResMagr = pCResMagr;
 
 	{
 		SAFE_DELETE_ARRAY(_CPPart);
 	}
 
 	_pdwVShader = 0L;
-	_pfDailTime = pCResMagr->GetDailTime();
-	_pMatViewProj = pCResMagr->GetViewProjMat();
+	m_pfDailTime = pCResMagr->GetDailTime();
+	m_pMatViewProj = pCResMagr->GetViewProjMat();
 	_pCEffectFile = pCResMagr->GetEffectFile();
 
 	SetOpertion();
 
-	if (m_bShade) {
-		m_cShade.Create(_strTexName, pCResMagr, *_vecFrameSize[0]);
+	if (_bShade) {
+		_cShade.Create(_strTexName, pCResMagr, *_vecFrameSize[0]);
 
-		m_cShade.SetAlphaType(_eSrcBlend, _eDestBlend);
+		_cShade.SetAlphaType(_eSrcBlend, _eDestBlend);
 		return;
 	}
 
@@ -587,8 +587,8 @@ void CMPPartSys::SetTextureName(const s_string& strTexName, CMPResManger* pCResM
 
 	_lpCurTex = _pTex->GetTex();
 
-	if (m_bShade)
-		m_cShade.setFrameTexture(_strTexName, pCResMagr);
+	if (_bShade)
+		_cShade.setFrameTexture(_strTexName, pCResMagr);
 }
 
 void CMPPartSys::SetModelName(const s_string& strModelName, CMPResManger* pCResMagr) {
@@ -639,10 +639,10 @@ void CMPPartSys::SetEmissionPath(CEffPath* pcPath) {
 	}
 	else {
 		_bModelRange = true;
-		_wVecNum = pcPath->m_iFrameCount;
+		_wVecNum = pcPath->_iFrameCount;
 		_vecPointRange.resize(_wVecNum);
 		for (WORD n = 0; n < _wVecNum; ++n) {
-			_vecPointRange[n] = pcPath->m_vecPath[n];
+			_vecPointRange[n] = pcPath->_vecPath[n];
 		}
 	}
 }
@@ -886,7 +886,7 @@ void CMPPartSys::Play(int iTime) {
 		}
 		_wDeath = 0;
 		_fCurTime = 0;
-		_vecParticle[0]->m_fLife = 0;
+		_vecParticle[0]->_fLife = 0;
 		return;
 	}
 	case PARTTICLE_LINE_SINGLE: {
@@ -932,7 +932,7 @@ void CMPPartSys::Stop() {
 		_wDeath = 0;
 		for (WORD n = 0; n < _iParNum; ++n) {
 			pParticle = _vecParticle[n];
-			if (!pParticle->m_bLive)
+			if (!pParticle->_bLive)
 				_wDeath++;
 		}
 		_bStop = true;
@@ -996,7 +996,7 @@ void CMPPartSys::MoveTo(const D3DXVECTOR3* vPos, MPMap* pmap) {
 	_vPos += _vOffset;
 
 	_vSavePos = _vPos;
-	m_pMap = pmap;
+	_pMap = pmap;
 }
 
 //-----------------------------------------------------------------------------
@@ -1037,7 +1037,7 @@ void CMPPartSys::FrameMove(DWORD dwDailTime) {
 		return;
 
 	if (_pcPath) {
-		_pcPath->FrameMove(*_pfDailTime);
+		_pcPath->FrameMove(*m_pfDailTime);
 		_vPos = _vSavePos + *_pcPath->GetCurPos();
 	}
 
@@ -1059,12 +1059,12 @@ void CMPPartSys::RenderVS() {
 //-----------------------------------------------------------------------------
 void CMPPartSys::RenderSoft() {
 	//	return;
-	if (m_bShade) {
+	if (_bShade) {
 		CMPParticle* pParticle;
 		pParticle = _vecParticle[0];
 
-		m_cShade.setColor(pParticle->m_SCurColor);
-		m_cShade.Render();
+		_cShade.setColor(pParticle->_SCurColor);
+		_cShade.Render();
 		return;
 	}
 
@@ -1090,12 +1090,12 @@ void CMPPartSys::RenderSoft() {
 
 		{
 			for (WORD n = 0; n < (WORD)_vecText.size(); ++n) {
-				if (_vecParticle[n]->m_bLive) {
+				if (_vecParticle[n]->_bLive) {
 					_pCEffectFile->GetDev()->SetRenderState(D3DRS_TEXTUREFACTOR,
-															_vecParticle[n]->m_SCurColor);
+															_vecParticle[n]->_SCurColor);
 					_pCEffectFile->GetDev()->SetTextureStageStateForced(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
 					_pCEffectFile->GetDev()->SetTextureStageStateForced(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
-					_pcEffFont[n].RenderEffectFont(&_vecParticle[n]->m_SCurMat);
+					_pcEffFont[n].RenderEffectFont(&_vecParticle[n]->_SCurMat);
 					_pCEffectFile->GetDev()->SetTextureStageStateForced(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
 					_pCEffectFile->GetDev()->SetTextureStageStateForced(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 				}
@@ -1137,13 +1137,13 @@ void CMPPartSys::RenderSoft() {
 
 		{
 			for (WORD n = 0; n < _iParNum; ++n) {
-				if (_vecParticle[n]->m_bLive) {
+				if (_vecParticle[n]->_bLive) {
 					_pCModel->GetDev()->SetRenderState(D3DRS_TEXTUREFACTOR,
-													   _vecParticle[n]->m_SCurColor);
+													   _vecParticle[n]->_SCurColor);
 					_pCModel->GetDev()->SetTextureStageStateForced(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
 					_pCModel->GetDev()->SetTextureStageStateForced(0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 					if (_pCModel->IsItem()) {
-						_pCModel->SetMatrix((lwMatrix44*)&_vecParticle[n]->m_SCurMat);
+						_pCModel->SetMatrix((lwMatrix44*)&_vecParticle[n]->_SCurMat);
 
 						lwITex* tex;
 						lwITex* tex2;
@@ -1157,7 +1157,7 @@ void CMPPartSys::RenderSoft() {
 					}
 					else
 						_pCModel->GetDev()->SetTransformWorld(
-							&_vecParticle[n]->m_SCurMat);
+							&_vecParticle[n]->_SCurMat);
 
 
 					_pCModel->RenderModel();
@@ -1176,13 +1176,13 @@ void CMPPartSys::RenderSoft() {
 
 		if (_iType == PARTTICLE_ARRAW) {
 			pParticle = _vecParticle[0];
-			_CPPart->Scaling(pParticle->m_fSize * _vScale.x, pParticle->m_fSize * _vScale.y,
-							 pParticle->m_fSize * _vScale.z);
+			_CPPart->Scaling(pParticle->_fSize * _vScale.x, pParticle->_fSize * _vScale.y,
+							 pParticle->_fSize * _vScale.z);
 
-			_CPPart->MoveTo(pParticle->m_vPos.x, pParticle->m_vPos.y,
-							pParticle->m_vPos.z);
-			if (pParticle->m_SCurColor.a < 1.0f)
-				_CPPart->SetAlpha(pParticle->m_SCurColor.a);
+			_CPPart->MoveTo(pParticle->_vPos.x, pParticle->_vPos.y,
+							pParticle->_vPos.z);
+			if (pParticle->_SCurColor.a < 1.0f)
+				_CPPart->SetAlpha(pParticle->_SCurColor.a);
 			_CPPart->Render();
 
 			return;
@@ -1191,29 +1191,29 @@ void CMPPartSys::RenderSoft() {
 			for (WORD n = 0; n < _iParNum; ++n) {
 				pParticle = _vecParticle[n];
 
-				if (pParticle->m_bLive) {
+				if (pParticle->_bLive) {
 					if (_bMediay) {
-						_CPPart[n].Scaling(pParticle->m_fSize * _vScale.x, pParticle->m_fSize * _vScale.y,
-										   pParticle->m_fSize * _vScale.z);
-						_CPPart[n].MoveTo(pParticle->m_vPos.x, pParticle->m_vPos.y,
-										  pParticle->m_vPos.z);
+						_CPPart[n].Scaling(pParticle->_fSize * _vScale.x, pParticle->_fSize * _vScale.y,
+										   pParticle->_fSize * _vScale.z);
+						_CPPart[n].MoveTo(pParticle->_vPos.x, pParticle->_vPos.y,
+										  pParticle->_vPos.z);
 
-						_CPPart[n].RotatingXZ(pParticle->m_vCurAngle.x, pParticle->m_vCurAngle.y);
-						if (pParticle->m_SCurColor.a < 1.0f)
-							_CPPart[n].SetAlpha(pParticle->m_SCurColor.a);
+						_CPPart[n].RotatingXZ(pParticle->_vCurAngle.x, pParticle->_vCurAngle.y);
+						if (pParticle->_SCurColor.a < 1.0f)
+							_CPPart[n].SetAlpha(pParticle->_SCurColor.a);
 						_CPPart[n].Render();
 					}
 					else {
-						_CPPart->Scaling(pParticle->m_fSize * _vScale.x, pParticle->m_fSize * _vScale.y,
-										 pParticle->m_fSize * _vScale.z);
+						_CPPart->Scaling(pParticle->_fSize * _vScale.x, pParticle->_fSize * _vScale.y,
+										 pParticle->_fSize * _vScale.z);
 						{
-							_CPPart->MoveTo(pParticle->m_vPos.x, pParticle->m_vPos.y,
-											pParticle->m_vPos.z);
+							_CPPart->MoveTo(pParticle->_vPos.x, pParticle->_vPos.y,
+											pParticle->_vPos.z);
 
-							_CPPart->RotatingXZ(pParticle->m_vCurAngle.x, pParticle->m_vCurAngle.y);
+							_CPPart->RotatingXZ(pParticle->_vCurAngle.x, pParticle->_vCurAngle.y);
 						}
-						if (pParticle->m_SCurColor.a < 1.0f)
-							_CPPart->SetAlpha(pParticle->m_SCurColor.a);
+						if (pParticle->_SCurColor.a < 1.0f)
+							_CPPart->SetAlpha(pParticle->_SCurColor.a);
 						_CPPart->Render();
 					}
 				}
@@ -1230,33 +1230,33 @@ void CMPPartSys::RenderSoft() {
 			else
 				pPart = _CPPart;
 
-			if (pParticle->m_bLive) {
-				pPart->Scaling(pParticle->m_fSize * _vScale.x, pParticle->m_fSize * _vScale.y,
-							   pParticle->m_fSize * _vScale.z);
+			if (pParticle->_bLive) {
+				pPart->Scaling(pParticle->_fSize * _vScale.x, pParticle->_fSize * _vScale.y,
+							   pParticle->_fSize * _vScale.z);
 
 				if (_bUseBone) {
-					pPart->BindingBone(pParticle->m_SCurMat, true);
+					pPart->BindingBone(pParticle->_SCurMat, true);
 				}
 				else if (_bBillBoard) {
 					D3DXMATRIX tm = *_SpmatBBoard;
-					tm._41 = pParticle->m_vPos.x;
-					tm._42 = pParticle->m_vPos.y;
-					tm._43 = pParticle->m_vPos.z;
+					tm._41 = pParticle->_vPos.x;
+					tm._42 = pParticle->_vPos.y;
+					tm._43 = pParticle->_vPos.z;
 
 					pPart->BindingBone(tm, true);
 				}
 				else {
-					pPart->MoveTo(pParticle->m_vPos.x, pParticle->m_vPos.y,
-								  pParticle->m_vPos.z);
+					pPart->MoveTo(pParticle->_vPos.x, pParticle->_vPos.y,
+								  pParticle->_vPos.z);
 					if (_bModelDir) {
-						D3DXMatrixIdentity(&pPart->m_SMatTempRota);
+						D3DXMatrixIdentity(&pPart->_matTempRota);
 					}
-					if (pParticle->m_vCurAngle.x != 0)
-						pPart->RotatingPitchPart(pParticle->m_vCurAngle.x);
-					if (pParticle->m_vCurAngle.y != 0)
-						pPart->RotatingRollPart(pParticle->m_vCurAngle.y);
-					if (pParticle->m_vCurAngle.z != 0)
-						pPart->RotatingYawPart(pParticle->m_vCurAngle.z);
+					if (pParticle->_vCurAngle.x != 0)
+						pPart->RotatingPitchPart(pParticle->_vCurAngle.x);
+					if (pParticle->_vCurAngle.y != 0)
+						pPart->RotatingRollPart(pParticle->_vCurAngle.y);
+					if (pParticle->_vCurAngle.z != 0)
+						pPart->RotatingYawPart(pParticle->_vCurAngle.z);
 
 					if (_bModelDir) {
 						D3DXMATRIX mat;
@@ -1264,15 +1264,15 @@ void CMPPartSys::RenderSoft() {
 							RotatingXZ(&mat, _vTemDir.x, _vTemDir.y);
 						}
 						else {
-							RotatingXZ(&mat, pParticle->m_vOldPos.x, pParticle->m_vOldPos.y);
+							RotatingXZ(&mat, pParticle->_vOldPos.x, pParticle->_vOldPos.y);
 						}
-						pPart->m_SMatTempRota *= mat;
+						pPart->_matTempRota *= mat;
 					}
 					D3DXMATRIX tm; // = *_SpmatBBoard;
 					pPart->BindingBone(tm, false);
 				}
-				if (pParticle->m_SCurColor.a < 1.0f)
-					pPart->SetAlpha(pParticle->m_SCurColor.a);
+				if (pParticle->_SCurColor.a < 1.0f)
+					pPart->SetAlpha(pParticle->_SCurColor.a);
 				pPart->Render();
 			}
 		}
@@ -1369,7 +1369,7 @@ void CMPPartSys::Reset(bool bLife) {
 	const auto v = D3DXVECTOR3(0, 0, 0);
 	MoveTo(&v);
 	for (WORD n = 0; n < _iParNum; ++n) {
-		_vecParticle[n]->m_bLive = bLife;
+		_vecParticle[n]->_bLive = bLife;
 		_vecParticle[n]->Reset(v);
 	}
 	if (_CPPart) {
@@ -1391,23 +1391,23 @@ void CMPPartSys::Reset(bool bLife) {
 
 //-----------------------------------------------------------------------------
 bool _CreateDummy(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
 
-		D3DXVec3Normalize(&pCtrl->m_vOldPos, &pPart->_vDir);
+		D3DXVec3Normalize(&pCtrl->_vOldPos, &pPart->_vDir);
 
 		float dist = Randf(pPart->_fDummyDist, pPart->_iParNum);
-		pCtrl->m_vPos = pPart->_vDummyPos + pPart->_vDummyDir * dist;
+		pCtrl->_vPos = pPart->_vDummyPos + pPart->_vDummyDir * dist;
 
-		pCtrl->m_bLive = true;
-		pCtrl->m_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
+		pCtrl->_bLive = true;
+		pCtrl->_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
 
-		pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
+		pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
 
-		pCtrl->m_fCurTime = 0;
-		pCtrl->m_wCurFrame = 0;
+		pCtrl->_fCurTime = 0;
+		pCtrl->_wCurFrame = 0;
 
 
 		return true;
@@ -1431,8 +1431,8 @@ void _FrameMoveDummy(CMPPartSys* pPart, DWORD dwDailTime) {
 
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				continue;
 			}
@@ -1443,46 +1443,46 @@ void _FrameMoveDummy(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
 
-			pParticle->m_vVel = pParticle->m_vOldPos * (pPart->_fVecl * *pPart->_pfDailTime);
+			pParticle->_vVel = pParticle->_vOldPos * (pPart->_fVecl * *pPart->m_pfDailTime);
 			if (rand() % 2)
-				pParticle->m_vAccel = (pPart->_vAccel * *pPart->_pfDailTime);
+				pParticle->_vAccel = (pPart->_vAccel * *pPart->m_pfDailTime);
 			else
-				pParticle->m_vAccel = -(pPart->_vAccel * *pPart->_pfDailTime);
+				pParticle->_vAccel = -(pPart->_vAccel * *pPart->m_pfDailTime);
 
-			pParticle->m_vVel += pParticle->m_vAccel;
+			pParticle->_vVel += pParticle->_vAccel;
 
-			pParticle->m_vPos += pParticle->m_vVel;
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			pParticle->_vPos += pParticle->_vVel;
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y,
-												   pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y,
+												   pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 			}
 		}
@@ -1494,23 +1494,23 @@ void _FrameMoveDummy(CMPPartSys* pPart, DWORD dwDailTime) {
 
 //-----------------------------------------------------------------------------
 bool _CreateLineSingle(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (!pPart->GetDummyPosList())
 		pPart->_bPlay = false;
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
 
-		D3DXVec3Normalize(&pCtrl->m_vOldPos, &pPart->_vDir);
+		D3DXVec3Normalize(&pCtrl->_vOldPos, &pPart->_vDir);
 
-		pCtrl->m_vPos = pPart->_vDummyPos;
+		pCtrl->_vPos = pPart->_vDummyPos;
 
-		pCtrl->m_bLive = true;
-		pCtrl->m_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
-		pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
-		pCtrl->m_fCurTime = 0;
-		pCtrl->m_wCurFrame = 0;
-		pCtrl->m_vVel = (pPart->_fDummyDist / pCtrl->m_fLife) * pPart->_vDummyDir;
+		pCtrl->_bLive = true;
+		pCtrl->_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
+		pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
+		pCtrl->_fCurTime = 0;
+		pCtrl->_wCurFrame = 0;
+		pCtrl->_vVel = (pPart->_fDummyDist / pCtrl->_fLife) * pPart->_vDummyDir;
 
 		if (pPart->_CPPart) {
 			if (pPart->_bMediay) {
@@ -1519,7 +1519,7 @@ bool _CreateLineSingle(CMPPartSys* pPart, CMPParticle* pCtrl) {
 			}
 		}
 
-		pCtrl->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pCtrl->_fPartTime = ((float)Rand(100)) / 1000.0f;
 
 		return true;
 	}
@@ -1543,8 +1543,8 @@ void _FrameMoveLineSingle(CMPPartSys* pPart, DWORD dwDailTime) {
 	CMPParticle* pParticle(0);
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				continue;
 			}
@@ -1555,40 +1555,40 @@ void _FrameMoveLineSingle(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
 
-			float fDailTime = *(pPart->_pfDailTime);
-			pParticle->m_vPos += pParticle->m_vVel * fDailTime + 0.5 * pParticle->m_vAccel * fDailTime * fDailTime;
+			float fDailTime = *(pPart->m_pfDailTime);
+			pParticle->_vPos += pParticle->_vVel * fDailTime + 0.5 * pParticle->_vAccel * fDailTime * fDailTime;
 
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y,
-												   pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y,
+												   pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 			}
 		}
@@ -1600,23 +1600,23 @@ void _FrameMoveLineSingle(CMPPartSys* pPart, DWORD dwDailTime) {
 
 //-----------------------------------------------------------------------------
 bool _CreateLineRound(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (!pPart->GetDummyPosList())
 		pPart->_bPlay = false;
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
 
-		D3DXVec3Normalize(&pCtrl->m_vOldPos, &pPart->_vDir);
+		D3DXVec3Normalize(&pCtrl->_vOldPos, &pPart->_vDir);
 
-		pCtrl->m_vPos = pPart->_vDummyPos;
+		pCtrl->_vPos = pPart->_vDummyPos;
 
-		pCtrl->m_bLive = true;
-		pCtrl->m_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
-		pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
-		pCtrl->m_fCurTime = 0;
-		pCtrl->m_wCurFrame = 0;
-		pCtrl->m_vVel = (pPart->_fDummyDist / pCtrl->m_fLife * 2) * pPart->_vDummyDir;
+		pCtrl->_bLive = true;
+		pCtrl->_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
+		pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
+		pCtrl->_fCurTime = 0;
+		pCtrl->_wCurFrame = 0;
+		pCtrl->_vVel = (pPart->_fDummyDist / pCtrl->_fLife * 2) * pPart->_vDummyDir;
 
 		if (pPart->_CPPart) {
 			if (pPart->_bMediay) {
@@ -1625,7 +1625,7 @@ bool _CreateLineRound(CMPPartSys* pPart, CMPParticle* pCtrl) {
 			}
 		}
 
-		pCtrl->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pCtrl->_fPartTime = ((float)Rand(100)) / 1000.0f;
 
 		return true;
 	}
@@ -1649,8 +1649,8 @@ void _FrameMoveLineRound(CMPPartSys* pPart, DWORD dwDailTime) {
 	CMPParticle* pParticle(0);
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				continue;
 			}
@@ -1661,44 +1661,44 @@ void _FrameMoveLineRound(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
 
-			float fDailTime = *(pPart->_pfDailTime);
-			if (pParticle->m_fCurTime > pParticle->m_fLife / 2
-				&& pParticle->m_fCurTime - fDailTime < pParticle->m_fLife / 2)
-				pParticle->m_vVel = -pParticle->m_vVel;
+			float fDailTime = *(pPart->m_pfDailTime);
+			if (pParticle->_fCurTime > pParticle->_fLife / 2
+				&& pParticle->_fCurTime - fDailTime < pParticle->_fLife / 2)
+				pParticle->_vVel = -pParticle->_vVel;
 
-			pParticle->m_vPos += pParticle->m_vVel * fDailTime/* + 0.5 * pParticle->m_vAccel * fDailTime *fDailTime*/;
+			pParticle->_vPos += pParticle->_vVel * fDailTime/* + 0.5 * pParticle->_vAccel * fDailTime *fDailTime*/;
 
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y,
-												   pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y,
+												   pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 			}
 		}
@@ -1711,42 +1711,42 @@ void _FrameMoveLineRound(CMPPartSys* pPart, DWORD dwDailTime) {
 //-----------------------------------------------------------------------------
 
 bool _CreateRange2(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
 
-		D3DXVec3Normalize(&pCtrl->m_vOldPos, &pPart->_vDir);
+		D3DXVec3Normalize(&pCtrl->_vOldPos, &pPart->_vDir);
 
-		pCtrl->m_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
+		pCtrl->_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
 												   Randf(pPart->_fRange[1]), pPart->_fRange[2]);
 
-		pCtrl->m_bLive = true;
-		pCtrl->m_SCurColor = D3DXCOLOR(1, 1, 1, 1);
+		pCtrl->_bLive = true;
+		pCtrl->_SCurColor = D3DXCOLOR(1, 1, 1, 1);
 
 
 		if (pPart->_CPPart) {
 			float dirxz[2];
 
-			float fdist = D3DXVec3Length(&pCtrl->m_vOldPos);
+			float fdist = D3DXVec3Length(&pCtrl->_vOldPos);
 
-			if (pCtrl->m_vOldPos.z == 0) {
+			if (pCtrl->_vOldPos.z == 0) {
 				dirxz[0] = 0;
 			}
 			else {
 				const auto v = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-				dirxz[0] = asinf(D3DXVec3Dot(&pCtrl->m_vOldPos, &v) / fdist);
+				dirxz[0] = asinf(D3DXVec3Dot(&pCtrl->_vOldPos, &v) / fdist);
 			}
-			if (pCtrl->m_vOldPos.x == 0 && pCtrl->m_vOldPos.y == 0) {
+			if (pCtrl->_vOldPos.x == 0 && pCtrl->_vOldPos.y == 0) {
 				dirxz[1] = 0;
 			}
 			else {
 				const D3DXVECTOR3 v[] = {
-					D3DXVECTOR3(pCtrl->m_vOldPos.x, pCtrl->m_vOldPos.y, 0.0f), D3DXVECTOR3(0.0f, 1.0f, 0.0f)
+					D3DXVECTOR3(pCtrl->_vOldPos.x, pCtrl->_vOldPos.y, 0.0f), D3DXVECTOR3(0.0f, 1.0f, 0.0f)
 				};
 				fdist = D3DXVec3Length(&v[0]);
 				dirxz[1] = acosf(D3DXVec3Dot(&v[0], &v[1]) / fdist);
-				if (pCtrl->m_vOldPos.x >= 0.0f) {
+				if (pCtrl->_vOldPos.x >= 0.0f) {
 					dirxz[1] = -dirxz[1];
 				}
 			}
@@ -1763,8 +1763,8 @@ void _FrameMoveRange2(CMPPartSys* pPart, DWORD dwDailTime) {
 
 
 	pParticle = pPart->_vecParticle[0];
-	pParticle->m_fLife += *pPart->_pfDailTime;
-	if (pParticle->m_fLife > pPart->_fLife)
+	pParticle->_fLife += *pPart->m_pfDailTime;
+	if (pParticle->_fLife > pPart->_fLife)
 		pPart->_bStop = true;
 
 	bool bcon = false;
@@ -1774,35 +1774,35 @@ void _FrameMoveRange2(CMPPartSys* pPart, DWORD dwDailTime) {
 	}
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
+		if (pParticle->_bLive) {
 			bcon = true;
-			pParticle->m_vVel = pParticle->m_vOldPos * (pPart->_fVecl * *pPart->_pfDailTime);
+			pParticle->_vVel = pParticle->_vOldPos * (pPart->_fVecl * *pPart->m_pfDailTime);
 
-			pParticle->m_vPos += pParticle->m_vVel;
+			pParticle->_vPos += pParticle->_vVel;
 
-			if (pPart->m_pMap) {
-				float fei = pPart->m_pMap->GetGridHeight((int)pParticle->m_vPos.x * 2, (int)pParticle->m_vPos.y * 2);
-				if (pParticle->m_vPos.z < fei || pParticle->m_vPos.z > 50.0f) {
-					pParticle->m_bLive = false;
-					pParticle->m_vPos.z = fei;
-					pPart->m_pCResMagr->SendResMessage(pPart->m_strHitEff, pParticle->m_vPos, pPart->m_pMap);
+			if (pPart->_pMap) {
+				float fei = pPart->_pMap->GetGridHeight((int)pParticle->_vPos.x * 2, (int)pParticle->_vPos.y * 2);
+				if (pParticle->_vPos.z < fei || pParticle->_vPos.z > 50.0f) {
+					pParticle->_bLive = false;
+					pParticle->_vPos.z = fei;
+					pPart->_pCResMagr->SendResMessage(pPart->_strHitEff, pParticle->_vPos, pPart->_pMap);
 					continue;
 				}
 			}
 			else {
-				if (pParticle->m_vPos.z < 0 || pParticle->m_vPos.z > 50.0f) {
-					pParticle->m_bLive = false;
-					pPart->m_pCResMagr->SendResMessage(pPart->m_strHitEff, pParticle->m_vPos, pPart->m_pMap);
+				if (pParticle->_vPos.z < 0 || pParticle->_vPos.z > 50.0f) {
+					pParticle->_bLive = false;
+					pPart->_pCResMagr->SendResMessage(pPart->_strHitEff, pParticle->_vPos, pPart->_pMap);
 					continue;
 				}
 			}
 
-			pParticle->m_fSize = *pPart->_vecFrameSize[0];
+			pParticle->_fSize = *pPart->_vecFrameSize[0];
 
 			if (!pPart->_CPPart) {
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 			}
 		}
 		else {
@@ -1827,16 +1827,16 @@ bool _CreateRange(CMPPartSys* pPart, CMPParticle* pCtrl) {
 		pos = D3DXVECTOR3(Randf(pPart->_fRange[0]),
 						  Randf(pPart->_fRange[1]), Randf(pPart->_fRange[2]));
 
-		pParticle->m_vOldPos.x = pos.x;
-		pParticle->m_vOldPos.y = pos.y;
-		pParticle->m_vOldPos.z = pos.z;
+		pParticle->_vOldPos.x = pos.x;
+		pParticle->_vOldPos.y = pos.y;
+		pParticle->_vOldPos.z = pos.z;
 
-		pParticle->m_vPos = pPart->_vPos;
+		pParticle->_vPos = pPart->_vPos;
 
-		pParticle->m_bLive = true;
-		pParticle->m_SCurColor = D3DXCOLOR(1, 1, 1, 1);
-		D3DXMatrixIdentity(&pParticle->m_SCurMat);
-		pParticle->m_vCurAngle = D3DXVECTOR3(0, 0, 0);
+		pParticle->_bLive = true;
+		pParticle->_SCurColor = D3DXCOLOR(1, 1, 1, 1);
+		D3DXMatrixIdentity(&pParticle->_SCurMat);
+		pParticle->_vCurAngle = D3DXVECTOR3(0, 0, 0);
 	}
 	return true;
 }
@@ -1890,15 +1890,15 @@ void _FrameMoveRange(CMPPartSys* pPart, DWORD dwDailTime) {
 	}
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			pParticle->m_vPos = pParticle->m_vOldPos + pPart->_vPos;
+		if (pParticle->_bLive) {
+			pParticle->_vPos = pParticle->_vOldPos + pPart->_vPos;
 
-			pParticle->m_fSize = *pPart->_vecFrameSize[0];
+			pParticle->_fSize = *pPart->_vecFrameSize[0];
 
 			if (!pPart->_CPPart) {
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 			}
 		}
 	}
@@ -1906,12 +1906,12 @@ void _FrameMoveRange(CMPPartSys* pPart, DWORD dwDailTime) {
 
 bool _CreateShade(CMPPartSys* pPart, CMPParticle* pCtrl) {
 	pPart->_iParNum = 1;
-	pCtrl->m_bLive = true;
+	pCtrl->_bLive = true;
 
-	pCtrl->m_fFrameTime = pPart->_fLife;
+	pCtrl->_fFrameTime = pPart->_fLife;
 
-	pCtrl->m_fCurTime = 0;
-	pCtrl->m_wCurFrame = 0;
+	pCtrl->_fCurTime = 0;
+	pCtrl->_wCurFrame = 0;
 
 	return true;
 }
@@ -1923,12 +1923,12 @@ void _FrameMoveShade(CMPPartSys* pPart, DWORD dwDailTime) {
 	CMPParticle* pParticle;
 
 	pParticle = pPart->_vecParticle[0];
-	pParticle->m_vPos = pPart->_vPos;
+	pParticle->_vPos = pPart->_vPos;
 
-	pPart->m_cShade.MoveTo(pParticle->m_vPos, pPart->m_pMap);
-	pPart->m_cShade.FrameMove(0);
+	pPart->_cShade.MoveTo(pParticle->_vPos, pPart->_pMap);
+	pPart->_cShade.FrameMove(0);
 
-	wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+	wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 	if (wCurFrame == pPart->_wFrameCount) {
 		pPart->_bPlay = false;
 		return;
@@ -1940,13 +1940,13 @@ void _FrameMoveShade(CMPPartSys* pPart, DWORD dwDailTime) {
 			wNextFrame = wCurFrame + 1;
 	}
 	fLerp = pParticle->GetLerpValue();
-	D3DXColorLerp(&pParticle->m_SCurColor,
+	D3DXColorLerp(&pParticle->_SCurColor,
 				  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 }
 
 
 bool _CreateShrink(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
@@ -1954,20 +1954,20 @@ bool _CreateShrink(CMPPartSys* pPart, CMPParticle* pCtrl) {
 
 		D3DXVECTOR3 vpos = pPart->_vPos + D3DXVECTOR3(pPart->_fRange[0] / 2, pPart->_fRange[1] / 2,
 													  pPart->_fRange[2] / 2);
-		pCtrl->m_vOldPos = vpos;
+		pCtrl->_vOldPos = vpos;
 
-		pCtrl->m_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
+		pCtrl->_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
 												   Randf(pPart->_fRange[1]), Randf(pPart->_fRange[2]));
 
-		pCtrl->m_vAccel = vpos - pCtrl->m_vPos;
-		D3DXVec3Normalize(&pCtrl->m_vAccel, &pCtrl->m_vAccel);
+		pCtrl->_vAccel = vpos - pCtrl->_vPos;
+		D3DXVec3Normalize(&pCtrl->_vAccel, &pCtrl->_vAccel);
 
 		if (pPart->_CPPart) {
 			D3DXVECTOR2 vangle;
-			GetDirRotation(&vangle, &pCtrl->m_vAccel);
+			GetDirRotation(&vangle, &pCtrl->_vAccel);
 
-			pCtrl->m_vCurAngle.x = vangle.x;
-			pCtrl->m_vCurAngle.y = vangle.y;
+			pCtrl->_vCurAngle.x = vangle.x;
+			pCtrl->_vCurAngle.y = vangle.y;
 
 			if (pPart->_bMediay) {
 				pPart->_CPPart[pPart->_idt].Reset();
@@ -1975,14 +1975,14 @@ bool _CreateShrink(CMPPartSys* pPart, CMPParticle* pCtrl) {
 			}
 		}
 
-		pCtrl->m_bLive = true;
-		pCtrl->m_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
+		pCtrl->_bLive = true;
+		pCtrl->_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
 
-		pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
+		pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
 
-		pCtrl->m_fCurTime = 0;
-		pCtrl->m_wCurFrame = 0;
-		pCtrl->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pCtrl->_fCurTime = 0;
+		pCtrl->_wCurFrame = 0;
+		pCtrl->_fPartTime = ((float)Rand(100)) / 1000.0f;
 
 		return true;
 	}
@@ -2007,8 +2007,8 @@ void _FrameMoveShrink(CMPPartSys* pPart, DWORD dwDailTime) {
 
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				continue;
 			}
@@ -2019,12 +2019,12 @@ void _FrameMoveShrink(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
-			pParticle->m_vPos += pParticle->m_vAccel * (pPart->_fVecl * *pPart->_pfDailTime);
-			if (PointPointRange(&pParticle->m_vPos, &pParticle->m_vOldPos, 0.5f)) {
-				pParticle->m_bLive = false;
+			pParticle->_vPos += pParticle->_vAccel * (pPart->_fVecl * *pPart->m_pfDailTime);
+			if (PointPointRange(&pParticle->_vPos, &pParticle->_vOldPos, 0.5f)) {
+				pParticle->_bLive = false;
 				if (pPart->_bStop) {
 					pPart->_wDeath++;
 					if (pPart->_wDeath >= pPart->_iParNum)
@@ -2033,32 +2033,32 @@ void _FrameMoveShrink(CMPPartSys* pPart, DWORD dwDailTime) {
 				continue;
 			}
 
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y, pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y, pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				//D3DXVec3Lerp(&pParticle->m_vCurAngle,pPart->_vecFrameAngle[wCurFrame],
+				//D3DXVec3Lerp(&pParticle->_vCurAngle,pPart->_vecFrameAngle[wCurFrame],
 			}
 		}
 		else {
@@ -2082,24 +2082,24 @@ bool _CreateBlast3(CMPPartSys* pPart, CMPParticle* pCtrl) {
 		D3DXMatrixRotationYawPitchRoll(&mat, 0, 0, angle * n);
 		D3DXVec3Transform(&pos, &dir, &mat);
 
-		pParticle->m_vOldPos.x = pos.x;
-		pParticle->m_vOldPos.y = pos.y;
-		pParticle->m_vOldPos.z = pos.z;
+		pParticle->_vOldPos.x = pos.x;
+		pParticle->_vOldPos.y = pos.y;
+		pParticle->_vOldPos.z = pos.z;
 
-		pParticle->m_vOldPos += pPart->_vDir;
+		pParticle->_vOldPos += pPart->_vDir;
 
 
-		pParticle->m_vPos = pPart->_vPos;
+		pParticle->_vPos = pPart->_vPos;
 
-		pParticle->m_bLive = true;
-		pParticle->m_fLife = pPart->_fLife;
+		pParticle->_bLive = true;
+		pParticle->_fLife = pPart->_fLife;
 
-		pParticle->m_fFrameTime = pParticle->m_fLife / pPart->_wFrameCount;
+		pParticle->_fFrameTime = pParticle->_fLife / pPart->_wFrameCount;
 
-		pParticle->m_fCurTime = 0;
-		pParticle->m_wCurFrame = 0;
+		pParticle->_fCurTime = 0;
+		pParticle->_wCurFrame = 0;
 
-		pParticle->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pParticle->_fPartTime = ((float)Rand(100)) / 1000.0f;
 	}
 	pPart->_wDeath = 0;
 	pPart->_fCurTime = 0;
@@ -2119,8 +2119,8 @@ void _FrameMoveBlast3(CMPPartSys* pPart, DWORD dwDailTime) {
 	}
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				pPart->_bPlay = false;
 				return;
@@ -2132,42 +2132,42 @@ void _FrameMoveBlast3(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
-			//pParticle->m_vPos.y = pos.y;0
+			//pParticle->_vPos.y = pos.y;0
 
-			float fvel = pPart->_fVecl * *pPart->_pfDailTime;
+			float fvel = pPart->_fVecl * *pPart->m_pfDailTime;
 
-			pParticle->m_vPos += pParticle->m_vOldPos * fvel;
-			pParticle->m_vOldPos += pPart->_vAccel * *pPart->_pfDailTime;
+			pParticle->_vPos += pParticle->_vOldPos * fvel;
+			pParticle->_vOldPos += pPart->_vAccel * *pPart->m_pfDailTime;
 
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y, pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y, pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 				if (pPart->_bUseBone) {
 				}
@@ -2186,26 +2186,26 @@ bool _CreateBlast2(CMPPartSys* pPart, CMPParticle* pCtrl) {
 		pParticle = pPart->_vecParticle[n];
 
 
-		pParticle->m_vOldPos.x = dir.x;
-		pParticle->m_vOldPos.y = dir.y;
-		pParticle->m_vOldPos.z = dir.z;
+		pParticle->_vOldPos.x = dir.x;
+		pParticle->_vOldPos.y = dir.y;
+		pParticle->_vOldPos.z = dir.z;
 
 
-		pParticle->m_vPos = pPart->_vPos;
+		pParticle->_vPos = pPart->_vPos;
 
-		pParticle->m_bLive = true;
-		pParticle->m_fLife = pPart->_fLife;
+		pParticle->_bLive = true;
+		pParticle->_fLife = pPart->_fLife;
 
-		pParticle->m_fFrameTime = pParticle->m_fLife / pPart->_wFrameCount;
+		pParticle->_fFrameTime = pParticle->_fLife / pPart->_wFrameCount;
 
-		pParticle->m_fCurTime = 0;
-		pParticle->m_wCurFrame = 0;
+		pParticle->_fCurTime = 0;
+		pParticle->_wCurFrame = 0;
 
-		pParticle->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pParticle->_fPartTime = ((float)Rand(100)) / 1000.0f;
 
-		pParticle->m_vAccel.x = 0;
-		pParticle->m_vAccel.y = pPart->_vecFrameAngle[0]->x;
-		pParticle->m_vAccel.z = 0;
+		pParticle->_vAccel.x = 0;
+		pParticle->_vAccel.y = pPart->_vecFrameAngle[0]->x;
+		pParticle->_vAccel.z = 0;
 	}
 	pPart->_wDeath = 0;
 	pPart->_fCurTime = 0;
@@ -2225,17 +2225,17 @@ void _FrameMoveBlast2(CMPPartSys* pPart, DWORD dwDailTime) {
 	}
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			if (pParticle->m_vAccel.x == 0) {
-				wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime,
-												   pPart->_wFrameCount, pParticle->m_fFrameTime / 3);
+		if (pParticle->_bLive) {
+			if (pParticle->_vAccel.x == 0) {
+				wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime,
+												   pPart->_wFrameCount, pParticle->_fFrameTime / 3);
 				if (wCurFrame == 1) {
-					pParticle->m_vAccel.x += 1;
-					pParticle->m_vCurAngle = pParticle->m_vPos;
+					pParticle->_vAccel.x += 1;
+					pParticle->_vCurAngle = pParticle->_vPos;
 				}
 			}
 			else
-				wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+				wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 
 			float fvel{};
 
@@ -2245,17 +2245,17 @@ void _FrameMoveBlast2(CMPPartSys* pPart, DWORD dwDailTime) {
 			}
 			else {
 				if (wCurFrame == 1) {
-					if (pParticle->m_vAccel.z == 0) {
-						pParticle->m_vPos.x = pParticle->m_vCurAngle.x + pParticle->m_vAccel.y;
-						pParticle->m_vAccel.z = 1;
+					if (pParticle->_vAccel.z == 0) {
+						pParticle->_vPos.x = pParticle->_vCurAngle.x + pParticle->_vAccel.y;
+						pParticle->_vAccel.z = 1;
 					}
-					else if (pParticle->m_vAccel.z == 1) {
-						pParticle->m_vPos.x = pParticle->m_vCurAngle.x - pParticle->m_vAccel.y;
-						pParticle->m_vAccel.z = 2;
+					else if (pParticle->_vAccel.z == 1) {
+						pParticle->_vPos.x = pParticle->_vCurAngle.x - pParticle->_vAccel.y;
+						pParticle->_vAccel.z = 2;
 					}
-					else if (pParticle->m_vAccel.z == 2) {
-						pParticle->m_vPos.x = pParticle->m_vCurAngle.x;
-						pParticle->m_vAccel.z = 3;
+					else if (pParticle->_vAccel.z == 2) {
+						pParticle->_vPos.x = pParticle->_vCurAngle.x;
+						pParticle->_vAccel.z = 3;
 						wCurFrame++;
 						continue;
 					}
@@ -2269,46 +2269,46 @@ void _FrameMoveBlast2(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
 
-			fvel = pPart->_fVecl * *pPart->_pfDailTime;
-			if (pParticle->m_vAccel.x == 0) {
+			fvel = pPart->_fVecl * *pPart->m_pfDailTime;
+			if (pParticle->_vAccel.x == 0) {
 				fvel *= 3;
 			}
-			pParticle->m_vPos += pParticle->m_vOldPos * fvel;
-			pParticle->m_vOldPos += pPart->_vAccel * *pPart->_pfDailTime;
+			pParticle->_vPos += pParticle->_vOldPos * fvel;
+			pParticle->_vOldPos += pPart->_vAccel * *pPart->m_pfDailTime;
 
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 		_ret:
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y, pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y, pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 				if (pPart->_bUseBone) {
-					D3DXMatrixIdentity(&pParticle->m_SCurMat);
+					D3DXMatrixIdentity(&pParticle->_SCurMat);
 				}
 			}
 		}
@@ -2327,19 +2327,19 @@ bool _CreateRound(CMPPartSys* pPart, CMPParticle* pCtrl) {
 		D3DXMatrixRotationZ(&mat, angle * n);
 		D3DXVec3Transform(&pos, &dir, &mat);
 
-		pParticle->m_vOldPos.x = pos.x;
-		pParticle->m_vOldPos.y = pos.y;
-		pParticle->m_vOldPos.z = pos.z;
+		pParticle->_vOldPos.x = pos.x;
+		pParticle->_vOldPos.y = pos.y;
+		pParticle->_vOldPos.z = pos.z;
 
-		pParticle->m_bLive = true;
-		pParticle->m_fLife = pPart->_fLife;
+		pParticle->_bLive = true;
+		pParticle->_fLife = pPart->_fLife;
 
-		pParticle->m_fFrameTime = pParticle->m_fLife / pPart->_wFrameCount;
+		pParticle->_fFrameTime = pParticle->_fLife / pPart->_wFrameCount;
 
-		pParticle->m_fCurTime = 0;
-		pParticle->m_wCurFrame = 0;
+		pParticle->_fCurTime = 0;
+		pParticle->_wCurFrame = 0;
 
-		pParticle->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pParticle->_fPartTime = ((float)Rand(100)) / 1000.0f;
 	}
 	pPart->_wDeath = 0;
 	pPart->_fCurTime = 0;
@@ -2358,19 +2358,19 @@ void _FrameMoveRound(CMPPartSys* pPart, DWORD dwDailTime) {
 		pPart->_CPPart->FrameMove(dwDailTime);
 	}
 
-	pPart->_fCurTime += pPart->_fVecl * *pPart->_pfDailTime;
+	pPart->_fCurTime += pPart->_fVecl * *pPart->m_pfDailTime;
 	if (pPart->_fCurTime >= 6.283185f)
 		pPart->_fCurTime = pPart->_fCurTime - 6.283185f;
 	D3DXMatrixRotationZ(&mat, pPart->_fCurTime);
 
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
-				pParticle->m_bLive = true;
-				pParticle->m_fCurTime = 0;
-				pParticle->m_wCurFrame = 0;
+				pParticle->_bLive = true;
+				pParticle->_fCurTime = 0;
+				pParticle->_wCurFrame = 0;
 				continue;
 			}
 			else {
@@ -2380,47 +2380,47 @@ void _FrameMoveRound(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
-			D3DXVec3Transform(&pos, &pParticle->m_vOldPos, &mat);
-			pParticle->m_vPos.x = pos.x;
-			pParticle->m_vPos.y = pos.y;
-			pParticle->m_vPos.z = pos.z;
+			D3DXVec3Transform(&pos, &pParticle->_vOldPos, &mat);
+			pParticle->_vPos.x = pos.x;
+			pParticle->_vPos.y = pos.y;
+			pParticle->_vPos.z = pos.z;
 			D3DXVECTOR3 vt = pPart->_vPos + D3DXVECTOR3(pPart->_fRange[0] / 2, pPart->_fRange[1] / 2,
 														pPart->_fRange[2] / 2);;
-			pParticle->m_vPos += vt;
+			pParticle->_vPos += vt;
 
 
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y, pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y, pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 				if (pPart->_bUseBone) {
-					D3DXMatrixIdentity(&pParticle->m_SCurMat);
+					D3DXMatrixIdentity(&pParticle->_SCurMat);
 				}
 			}
 		}
@@ -2431,14 +2431,14 @@ bool _CreateArraw(CMPPartSys* pPart, CMPParticle* pCtrl) {
 	pPart->_vecBone.resize(256);
 	pPart->_iParNum = 1;
 
-	pCtrl->m_bLive = true;
+	pCtrl->_bLive = true;
 
-	pCtrl->m_fLife = pPart->_fLife;
+	pCtrl->_fLife = pPart->_fLife;
 
-	pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
+	pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
 
-	pCtrl->m_fCurTime = 0;
-	pCtrl->m_wCurFrame = 0;
+	pCtrl->_fCurTime = 0;
+	pCtrl->_wCurFrame = 0;
 
 	return true;
 }
@@ -2450,10 +2450,10 @@ void _FrameMoveArraw(CMPPartSys* pPart, DWORD dwDailTime) {
 	CMPParticle* pParticle;
 
 	pParticle = pPart->_vecParticle[0];
-	pParticle->m_vPos = pPart->_vPos + D3DXVECTOR3(pPart->_fRange[0] / 2,
+	pParticle->_vPos = pPart->_vPos + D3DXVECTOR3(pPart->_fRange[0] / 2,
 												   pPart->_fRange[1] / 2, pPart->_fRange[2] / 2);
 
-	wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+	wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 	if (wCurFrame == pPart->_wFrameCount) {
 		_CreateArraw(pPart, pParticle);
 		return;
@@ -2465,21 +2465,21 @@ void _FrameMoveArraw(CMPPartSys* pPart, DWORD dwDailTime) {
 			wNextFrame = wCurFrame + 1;
 	}
 	fLerp = pParticle->GetLerpValue();
-	pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+	pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 		(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
-	D3DXColorLerp(&pParticle->m_SCurColor,
+	D3DXColorLerp(&pParticle->_SCurColor,
 				  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 	if (pPart->_pCModel) {
-		D3DXMatrixScaling(&pParticle->m_SCurMat,
-						  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+		D3DXMatrixScaling(&pParticle->_SCurMat,
+						  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-		pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-		pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-		pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+		pParticle->_SCurMat._41 = pParticle->_vPos.x;
+		pParticle->_SCurMat._42 = pParticle->_vPos.y;
+		pParticle->_SCurMat._43 = pParticle->_vPos.z;
 		if (pPart->_bBillBoard)
-			D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-							   &pParticle->m_SCurMat);
+			D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+							   &pParticle->_SCurMat);
 	}
 	else {
 		if (pPart->_CPPart) {
@@ -2491,14 +2491,14 @@ void _FrameMoveArraw(CMPPartSys* pPart, DWORD dwDailTime) {
 bool _CreateModel(CMPPartSys* pPart, CMPParticle* pCtrl) {
 	pPart->_iParNum = 1;
 
-	pCtrl->m_bLive = true;
+	pCtrl->_bLive = true;
 
-	pCtrl->m_fLife = pPart->_fLife;
+	pCtrl->_fLife = pPart->_fLife;
 
-	pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
+	pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
 
-	pCtrl->m_fCurTime = 0;
-	pCtrl->m_wCurFrame = 0;
+	pCtrl->_fCurTime = 0;
+	pCtrl->_wCurFrame = 0;
 
 	return true;
 }
@@ -2510,10 +2510,10 @@ void _FrameMoveModel(CMPPartSys* pPart, DWORD dwDailTime) {
 	CMPParticle* pParticle;
 
 	pParticle = pPart->_vecParticle[0];
-	pParticle->m_vPos = pPart->_vPos + D3DXVECTOR3(pPart->_fRange[0] / 2,
+	pParticle->_vPos = pPart->_vPos + D3DXVECTOR3(pPart->_fRange[0] / 2,
 												   pPart->_fRange[1] / 2, pPart->_fRange[2] / 2);
 
-	wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+	wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 	if (wCurFrame == pPart->_wFrameCount) {
 		//	return;
 		_CreateModel(pPart, pParticle);
@@ -2526,42 +2526,42 @@ void _FrameMoveModel(CMPPartSys* pPart, DWORD dwDailTime) {
 			wNextFrame = wCurFrame + 1;
 	}
 	fLerp = pParticle->GetLerpValue();
-	pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+	pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 		(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
-	D3DXColorLerp(&pParticle->m_SCurColor,
+	D3DXColorLerp(&pParticle->_SCurColor,
 				  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 	if (pPart->_pCModel) {
-		D3DXMatrixScaling(&pParticle->m_SCurMat,
-						  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+		D3DXMatrixScaling(&pParticle->_SCurMat,
+						  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-		pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-		pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-		pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+		pParticle->_SCurMat._41 = pParticle->_vPos.x;
+		pParticle->_SCurMat._42 = pParticle->_vPos.y;
+		pParticle->_SCurMat._43 = pParticle->_vPos.z;
 		if (pPart->_bBillBoard)
-			D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-							   &pParticle->m_SCurMat);
+			D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+							   &pParticle->_SCurMat);
 		else {
-			D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+			D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 						 pPart->_vecFrameAngle[wNextFrame], fLerp);
 			D3DXMATRIX tm;
 			D3DXMatrixRotationYawPitchRoll(&tm,
-										   pParticle->m_vCurAngle.y, pParticle->m_vCurAngle.x,
-										   pParticle->m_vCurAngle.z);
-			D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-							   &pParticle->m_SCurMat);
+										   pParticle->_vCurAngle.y, pParticle->_vCurAngle.x,
+										   pParticle->_vCurAngle.z);
+			D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+							   &pParticle->_SCurMat);
 
 			if (pPart->_bUseBone) {
-				D3DXMatrixMultiply(&pParticle->m_SCurMat, &pPart->_SBoneMat,
-								   &pParticle->m_SCurMat);
+				D3DXMatrixMultiply(&pParticle->_SCurMat, &pPart->_SBoneMat,
+								   &pParticle->_SCurMat);
 			}
 		}
 	}
 	else {
-		D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+		D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 					 pPart->_vecFrameAngle[wNextFrame], fLerp);
 		if (pPart->_bUseBone) {
-			pParticle->m_SCurMat = pPart->_SBoneMat;
+			pParticle->_SCurMat = pPart->_SBoneMat;
 		}
 		if (pPart->_CPPart) {
 			pPart->_CPPart->FrameMove(dwDailTime);
@@ -2575,7 +2575,7 @@ void _FrameMoveModel(CMPPartSys* pPart, DWORD dwDailTime) {
 
 bool _CreateStrip(CMPPartSys* pPart, CMPParticle* pCtrl) {
 	pPart->_iParNum = 1;
-	pCtrl->m_bLive = true;
+	pCtrl->_bLive = true;
 	return true;
 }
 
@@ -2583,38 +2583,38 @@ void _FrameMoveStrip(CMPPartSys* pPart, DWORD dwDailTime) {
 	CMPParticle* pParticle;
 
 	pParticle = pPart->_vecParticle[0];
-	pParticle->m_vPos = pPart->_vPos;
-	pParticle->m_SCurColor = *pPart->_vecFrameColor[0];
+	pParticle->_vPos = pPart->_vPos;
+	pParticle->_SCurColor = *pPart->_vecFrameColor[0];
 
 	if (pPart->_pCModel) {
 		float fsize = *pPart->_vecFrameSize[0];
-		D3DXMatrixScaling(&pParticle->m_SCurMat, fsize, fsize, fsize);
+		D3DXMatrixScaling(&pParticle->_SCurMat, fsize, fsize, fsize);
 
-		pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-		pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-		pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+		pParticle->_SCurMat._41 = pParticle->_vPos.x;
+		pParticle->_SCurMat._42 = pParticle->_vPos.y;
+		pParticle->_SCurMat._43 = pParticle->_vPos.z;
 		if (pPart->_bBillBoard)
-			D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard, &pParticle->m_SCurMat);
+			D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard, &pParticle->_SCurMat);
 		else {
-			pParticle->m_vCurAngle = *pPart->_vecFrameAngle[0];
+			pParticle->_vCurAngle = *pPart->_vecFrameAngle[0];
 			D3DXMATRIX tm;
 			D3DXMatrixRotationYawPitchRoll(&tm,
-										   pParticle->m_vCurAngle.y, pParticle->m_vCurAngle.x,
-										   pParticle->m_vCurAngle.z);
-			D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-							   &pParticle->m_SCurMat);
+										   pParticle->_vCurAngle.y, pParticle->_vCurAngle.x,
+										   pParticle->_vCurAngle.z);
+			D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+							   &pParticle->_SCurMat);
 			if (pPart->_bUseBone) {
-				D3DXMatrixMultiply(&pParticle->m_SCurMat, &pPart->_SBoneMat,
-								   &pParticle->m_SCurMat);
+				D3DXMatrixMultiply(&pParticle->_SCurMat, &pPart->_SBoneMat,
+								   &pParticle->_SCurMat);
 			}
 		}
 	}
 	else {
-		pParticle->m_fSize = *pPart->_vecFrameSize[0];
-		pParticle->m_vCurAngle = *pPart->_vecFrameAngle[0];
+		pParticle->_fSize = *pPart->_vecFrameSize[0];
+		pParticle->_vCurAngle = *pPart->_vecFrameAngle[0];
 
 		if (pPart->_bUseBone) {
-			pParticle->m_SCurMat = pPart->_SBoneMat;
+			pParticle->_SCurMat = pPart->_SBoneMat;
 		}
 		if (pPart->_CPPart) {
 			pPart->_CPPart->FrameMove(dwDailTime);
@@ -2627,32 +2627,32 @@ void _FrameMoveStrip(CMPPartSys* pPart, DWORD dwDailTime) {
 }
 
 bool _CreateWind(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	//float fFrameTime = pParticle->m_fLife / pPart->_wFrameCount;//
+	//float fFrameTime = pParticle->_fLife / pPart->_wFrameCount;//
 
-	//	pParticle->m_fLife		=   Randf(pPart->_fVecl);//pPart->_fLife;//
+	//	pParticle->_fLife		=   Randf(pPart->_fVecl);//pPart->_fLife;//
 
 
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
 
-		pCtrl->m_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
+		pCtrl->_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
 												   Randf(pPart->_fRange[1]), Randf(pPart->_fRange[2]));
-		pCtrl->m_vOldPos = pCtrl->m_vPos;
-		pCtrl->m_vAccel = D3DXVECTOR3(0, 0, 0);
+		pCtrl->_vOldPos = pCtrl->_vPos;
+		pCtrl->_vAccel = D3DXVECTOR3(0, 0, 0);
 
-		pCtrl->m_bLive = true;
-		pCtrl->m_fLife = pPart->_fLife;
+		pCtrl->_bLive = true;
+		pCtrl->_fLife = pPart->_fLife;
 
-		pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
+		pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
 
-		pCtrl->m_vVel.z = pPart->_fVecl;
+		pCtrl->_vVel.z = pPart->_fVecl;
 
-		pCtrl->m_fCurTime = 0;
-		pCtrl->m_wCurFrame = 0;
+		pCtrl->_fCurTime = 0;
+		pCtrl->_wCurFrame = 0;
 
-		pCtrl->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pCtrl->_fPartTime = ((float)Rand(100)) / 1000.0f;
 		return true;
 	}
 	return false;
@@ -2665,14 +2665,14 @@ void _FrameMoveWind(CMPPartSys* pPart, DWORD dwDailTime) {
 	//		//
 
 
-	//			//D3DXColorLerp( &pParticle->m_SCurColor,
+	//			//D3DXColorLerp( &pParticle->_SCurColor,
 
-	//				D3DXMatrixScaling(&pParticle->m_SCurMat,
+	//				D3DXMatrixScaling(&pParticle->_SCurMat,
 
-	//				D3DXMatrixMultiply(&pParticle->m_SCurMat,
+	//				D3DXMatrixMultiply(&pParticle->_SCurMat,
 
 
-	//			//D3DXVec3Lerp(&pParticle->m_vCurAngle,pPart->_vecFrameAngle[wCurFrame],
+	//			//D3DXVec3Lerp(&pParticle->_vCurAngle,pPart->_vecFrameAngle[wCurFrame],
 
 	WORD wCurFrame;
 	WORD wNextFrame;
@@ -2685,8 +2685,8 @@ void _FrameMoveWind(CMPPartSys* pPart, DWORD dwDailTime) {
 	}
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				if (pPart->_bStop) {
 					pPart->_wDeath++;
@@ -2706,43 +2706,43 @@ void _FrameMoveWind(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
-			pParticle->m_vAccel.y += pPart->_vDir.y * *pPart->_pfDailTime;
-			pParticle->m_vAccel.z += pPart->_vDir.z * *pPart->_pfDailTime;
+			pParticle->_vAccel.y += pPart->_vDir.y * *pPart->m_pfDailTime;
+			pParticle->_vAccel.z += pPart->_vDir.z * *pPart->m_pfDailTime;
 
 			D3DXMATRIX tm;
 			D3DXVECTOR4 tpos;
 
-			float* fz = &pParticle->m_vCurAngle.z;
-			*fz += pParticle->m_vVel.z * *pPart->_pfDailTime;
+			float* fz = &pParticle->_vCurAngle.z;
+			*fz += pParticle->_vVel.z * *pPart->m_pfDailTime;
 			if (*fz >= 6.283185f)
 				*fz = *fz - 6.283185f;
 			D3DXMatrixRotationZ(&tm, *fz);
-			D3DXVec3Transform(&tpos, &pParticle->m_vAccel, &tm);
-			pParticle->m_vPos = (D3DXVECTOR3)tpos + pParticle->m_vOldPos;
+			D3DXVec3Transform(&tpos, &pParticle->_vAccel, &tm);
+			pParticle->_vPos = (D3DXVECTOR3)tpos + pParticle->_vOldPos;
 
 			if (pPart->_pCModel) {
 				//	D3DXMatrixScaling(&tm,
 				{
-					D3DXMatrixScaling(&pParticle->m_SCurMat,
-									  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+					D3DXMatrixScaling(&pParticle->_SCurMat,
+									  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 				}
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat,
-									   pPart->_SpmatBBoard, &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat,
+									   pPart->_SpmatBBoard, &pParticle->_SCurMat);
 
-				//GetMatrixRotation(&tm, &pParticle->m_vPos,\
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
-				D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm, &pParticle->m_SCurMat);
+				//GetMatrixRotation(&tm, &pParticle->_vPos,\
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
+				D3DXMatrixMultiply(&pParticle->_SCurMat, &tm, &pParticle->_SCurMat);
 			}
 			else {
-				//D3DXVec3Lerp(&pParticle->m_vCurAngle,pPart->_vecFrameAngle[wCurFrame],
+				//D3DXVec3Lerp(&pParticle->_vCurAngle,pPart->_vecFrameAngle[wCurFrame],
 			}
 		}
 		else {
@@ -2753,38 +2753,38 @@ void _FrameMoveWind(CMPPartSys* pPart, DWORD dwDailTime) {
 }
 
 bool _CreateFire(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
 
 
-		D3DXVec3Normalize(&pCtrl->m_vOldPos, &pPart->_vDir);
+		D3DXVec3Normalize(&pCtrl->_vOldPos, &pPart->_vDir);
 		if (pPart->_bUseBone) {
 			pPart->_vPos.x = pPart->_SBoneMat._41;
 			pPart->_vPos.y = pPart->_SBoneMat._42;
 			pPart->_vPos.z = pPart->_SBoneMat._43;
 		}
 		if (!pPart->_bModelRange) {
-			pCtrl->m_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
+			pCtrl->_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
 													   Randf(pPart->_fRange[1]), Randf(pPart->_fRange[2]));
 		}
 		else {
-			pCtrl->m_vPos = pPart->_vPos + pPart->_vecPointRange[Rand(pPart->_wVecNum)];
+			pCtrl->_vPos = pPart->_vPos + pPart->_vecPointRange[Rand(pPart->_wVecNum)];
 		}
-		pCtrl->m_bLive = true;
-		pCtrl->m_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
+		pCtrl->_bLive = true;
+		pCtrl->_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
 
-		pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
+		pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
 
-		pCtrl->m_fCurTime = 0;
-		pCtrl->m_wCurFrame = 0;
+		pCtrl->_fCurTime = 0;
+		pCtrl->_wCurFrame = 0;
 
-		pCtrl->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pCtrl->_fPartTime = ((float)Rand(100)) / 1000.0f;
 
 		if (pPart->_bModelDir && pPart->_CPPart) {
-			pCtrl->m_vOldPos.x = pPart->_vTemDir.x;
-			pCtrl->m_vOldPos.y = pPart->_vTemDir.y;
+			pCtrl->_vOldPos.x = pPart->_vTemDir.x;
+			pCtrl->_vOldPos.y = pPart->_vTemDir.y;
 		}
 
 		if (pPart->_CPPart) {
@@ -2805,16 +2805,16 @@ void _FrameMoveFire(CMPPartSys* pPart, DWORD dwDailTime) {
 	CMPParticle* pParticle;
 
 	if (pPart->_bStop == false) {
-		if (pPart->m_strHitEff != "") {
-			if (pPart->m_pMap) {
+		if (pPart->_strHitEff != "") {
+			if (pPart->_pMap) {
 				if (pPart->_pcPath) {
 					if (pPart->_pcPath->IsEnd()) {
 						D3DXVECTOR3 VPos = pPart->_vPos;
-						VPos.z = pPart->m_pMap->GetGridHeight((int)VPos.x * 2, (int)VPos.y * 2);
+						VPos.z = pPart->_pMap->GetGridHeight((int)VPos.x * 2, (int)VPos.y * 2);
 						if (VPos.z < 0)
 							VPos.z = 0.1f;
 						pPart->Stop();
-						pPart->m_pCResMagr->SendResMessage(pPart->m_strHitEff, VPos, pPart->m_pMap);
+						pPart->_pCResMagr->SendResMessage(pPart->_strHitEff, VPos, pPart->_pMap);
 					}
 				}
 				else {
@@ -2824,7 +2824,7 @@ void _FrameMoveFire(CMPPartSys* pPart, DWORD dwDailTime) {
 			else {
 				if (pPart->_vPos.z <= 0.1f || pPart->_vPos.z > 50.0f) {
 					pPart->Stop();
-					pPart->m_pCResMagr->SendResMessage(pPart->m_strHitEff, *pPart->_pcPath->GetEnd(),NULL);
+					pPart->_pCResMagr->SendResMessage(pPart->_strHitEff, *pPart->_pcPath->GetEnd(),NULL);
 				}
 			}
 		}
@@ -2841,8 +2841,8 @@ void _FrameMoveFire(CMPPartSys* pPart, DWORD dwDailTime) {
 
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				if (pPart->_bStop) {
 					pPart->_wDeath++;
@@ -2860,46 +2860,46 @@ void _FrameMoveFire(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
 
-			pParticle->m_vVel = pParticle->m_vOldPos * (pPart->_fVecl * *pPart->_pfDailTime);
+			pParticle->_vVel = pParticle->_vOldPos * (pPart->_fVecl * *pPart->m_pfDailTime);
 			if (rand() % 2)
-				pParticle->m_vAccel = (pPart->_vAccel * *pPart->_pfDailTime);
+				pParticle->_vAccel = (pPart->_vAccel * *pPart->m_pfDailTime);
 			else
-				pParticle->m_vAccel = -(pPart->_vAccel * *pPart->_pfDailTime);
+				pParticle->_vAccel = -(pPart->_vAccel * *pPart->m_pfDailTime);
 
-			pParticle->m_vVel += pParticle->m_vAccel;
+			pParticle->_vVel += pParticle->_vAccel;
 
-			pParticle->m_vPos += pParticle->m_vVel;
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			pParticle->_vPos += pParticle->_vVel;
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y,
-												   pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y,
+												   pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 
 				{
@@ -2916,40 +2916,40 @@ void _FrameMoveFire(CMPPartSys* pPart, DWORD dwDailTime) {
 }
 
 bool _CreateSnow(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
 
 		if (pPart->_iRoadom == 1)
-			pCtrl->m_vOldPos = D3DXVECTOR3(pPart->_fVecl, pPart->_fVecl, pPart->_fVecl);
+			pCtrl->_vOldPos = D3DXVECTOR3(pPart->_fVecl, pPart->_fVecl, pPart->_fVecl);
 		else {
 			float flerp = pPart->_fVecl / pPart->_iRoadom;
-			pCtrl->m_vOldPos = D3DXVECTOR3(Randf(flerp, pPart->_fVecl), Randf(flerp, pPart->_fVecl),
+			pCtrl->_vOldPos = D3DXVECTOR3(Randf(flerp, pPart->_fVecl), Randf(flerp, pPart->_fVecl),
 										   Randf(flerp, pPart->_fVecl));
 		}
-		pCtrl->m_vAccel = pPart->_vAccel; //;
-		pCtrl->m_vOldPos.x *= Rand(2) ? pPart->_vDir.x : -pPart->_vDir.x;
-		pCtrl->m_vOldPos.y *= Rand(2) ? pPart->_vDir.y : -pPart->_vDir.y;
-		pCtrl->m_vOldPos.z *= pPart->_vDir.z;
-		if (!(pCtrl->m_vOldPos.z != 0.0f))
+		pCtrl->_vAccel = pPart->_vAccel; //;
+		pCtrl->_vOldPos.x *= Rand(2) ? pPart->_vDir.x : -pPart->_vDir.x;
+		pCtrl->_vOldPos.y *= Rand(2) ? pPart->_vDir.y : -pPart->_vDir.y;
+		pCtrl->_vOldPos.z *= pPart->_vDir.z;
+		if (!(pCtrl->_vOldPos.z != 0.0f))
 			return false;
 
 		if (!pPart->_bModelRange) {
-			pCtrl->m_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
+			pCtrl->_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
 													   Randf(pPart->_fRange[1]), Randf(pPart->_fRange[2]));
 		}
 		else {
-			pCtrl->m_vPos = pPart->_vPos + pPart->_vecPointRange[Rand(pPart->_wVecNum)];
+			pCtrl->_vPos = pPart->_vPos + pPart->_vecPointRange[Rand(pPart->_wVecNum)];
 		}
-		pCtrl->m_bLive = true;
-		pCtrl->m_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
+		pCtrl->_bLive = true;
+		pCtrl->_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
 
-		pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
+		pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
 
-		pCtrl->m_fCurTime = 0;
-		pCtrl->m_wCurFrame = 0;
-		pCtrl->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pCtrl->_fCurTime = 0;
+		pCtrl->_wCurFrame = 0;
+		pCtrl->_fPartTime = ((float)Rand(100)) / 1000.0f;
 
 		if (pPart->_CPPart) {
 			if (pPart->_bMediay) {
@@ -2979,8 +2979,8 @@ void _FrameMoveSnow(CMPPartSys* pPart, DWORD dwDailTime) {
 
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				if (pPart->_bStop) {
 					pPart->_wDeath++;
@@ -2998,47 +2998,47 @@ void _FrameMoveSnow(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
 
-			pParticle->m_vVel = pParticle->m_vOldPos * *pPart->_pfDailTime;
+			pParticle->_vVel = pParticle->_vOldPos * *pPart->m_pfDailTime;
 			if (rand() % 2)
-				pParticle->m_vVel += (pParticle->m_vAccel * *pPart->_pfDailTime);
+				pParticle->_vVel += (pParticle->_vAccel * *pPart->m_pfDailTime);
 			else
-				pParticle->m_vVel -= (pParticle->m_vAccel * *pPart->_pfDailTime);
+				pParticle->_vVel -= (pParticle->_vAccel * *pPart->m_pfDailTime);
 
-			pParticle->m_vPos += pParticle->m_vVel;
+			pParticle->_vPos += pParticle->_vVel;
 
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y, pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y, pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 				if (pPart->_bUseBone) {
-					D3DXMatrixIdentity(&pParticle->m_SCurMat);
+					D3DXMatrixIdentity(&pParticle->_SCurMat);
 				}
 			}
 		}
@@ -3056,28 +3056,28 @@ bool _CreateBlast(CMPPartSys* pPart, CMPParticle* pCtrl) {
 	CMPParticle* pParticle;
 	for (int n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		pParticle->m_vOldPos = D3DXVECTOR3(Randf(pPart->_fVecl),
+		pParticle->_vOldPos = D3DXVECTOR3(Randf(pPart->_fVecl),
 										   -Randf(pPart->_fVecl), Randf(pPart->_fVecl));
-		pParticle->m_vAccel = pPart->_vAccel; //;
-		pParticle->m_vOldPos.x *= Rand(2) ? pPart->_vDir.x : -pPart->_vDir.x;
-		pParticle->m_vOldPos.y *= Rand(2) ? pPart->_vDir.y : -pPart->_vDir.y;
-		pParticle->m_vOldPos.z *= pPart->_vDir.z;
+		pParticle->_vAccel = pPart->_vAccel; //;
+		pParticle->_vOldPos.x *= Rand(2) ? pPart->_vDir.x : -pPart->_vDir.x;
+		pParticle->_vOldPos.y *= Rand(2) ? pPart->_vDir.y : -pPart->_vDir.y;
+		pParticle->_vOldPos.z *= pPart->_vDir.z;
 
 		if (!pPart->_bModelRange) {
-			pParticle->m_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
+			pParticle->_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
 														   Randf(pPart->_fRange[1]), Randf(pPart->_fRange[2]));
 		}
 		else {
-			pParticle->m_vPos = pPart->_vPos + pPart->_vecPointRange[Rand(pPart->_wVecNum)];
+			pParticle->_vPos = pPart->_vPos + pPart->_vecPointRange[Rand(pPart->_wVecNum)];
 		}
-		pParticle->m_bLive = true;
-		pParticle->m_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
+		pParticle->_bLive = true;
+		pParticle->_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
 
-		pParticle->m_fFrameTime = pParticle->m_fLife / pPart->_wFrameCount;
+		pParticle->_fFrameTime = pParticle->_fLife / pPart->_wFrameCount;
 
-		pParticle->m_fCurTime = 0;
-		pParticle->m_wCurFrame = 0;
-		pParticle->m_fPartTime = -1;
+		pParticle->_fCurTime = 0;
+		pParticle->_wCurFrame = 0;
+		pParticle->_fPartTime = -1;
 	}
 	pPart->_wDeath = 0;
 	return true;
@@ -3095,8 +3095,8 @@ void _FrameMoveBlast(CMPPartSys* pPart, DWORD dwDailTime) {
 
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				pPart->_wDeath++;
 				if (pPart->_wDeath == pPart->_iParNum) {
@@ -3115,44 +3115,44 @@ void _FrameMoveBlast(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
 
 
-			pParticle->m_vVel = pParticle->m_vOldPos * *pPart->_pfDailTime;
+			pParticle->_vVel = pParticle->_vOldPos * *pPart->m_pfDailTime;
 
-			pParticle->m_vPos += pParticle->m_vVel;
-			pParticle->m_vOldPos += pParticle->m_vAccel * *pPart->_pfDailTime;
+			pParticle->_vPos += pParticle->_vVel;
+			pParticle->_vOldPos += pParticle->_vAccel * *pPart->m_pfDailTime;
 
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
-				D3DXMatrixScaling(&pParticle->m_SCurMat,
-								  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+				D3DXMatrixScaling(&pParticle->_SCurMat,
+								  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-				pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-				pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-				pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+				pParticle->_SCurMat._41 = pParticle->_vPos.x;
+				pParticle->_SCurMat._42 = pParticle->_vPos.y;
+				pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, pPart->_SpmatBBoard,
-									   &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, pPart->_SpmatBBoard,
+									   &pParticle->_SCurMat);
 				else {
-					D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+					D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 								 pPart->_vecFrameAngle[wNextFrame], fLerp);
 					D3DXMATRIX tm;
 					D3DXMatrixRotationYawPitchRoll(&tm,
-												   pParticle->m_vCurAngle.y, pParticle->m_vCurAngle.x,
-												   pParticle->m_vCurAngle.z);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm,
-									   &pParticle->m_SCurMat);
+												   pParticle->_vCurAngle.y, pParticle->_vCurAngle.x,
+												   pParticle->_vCurAngle.z);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm,
+									   &pParticle->_SCurMat);
 				}
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 				if (pPart->_bUseBone) {
-					D3DXMatrixIdentity(&pParticle->m_SCurMat);
+					D3DXMatrixIdentity(&pParticle->_SCurMat);
 				}
 			}
 		}
@@ -3160,28 +3160,28 @@ void _FrameMoveBlast(CMPPartSys* pPart, DWORD dwDailTime) {
 }
 
 bool _CreateRipple(CMPPartSys* pPart, CMPParticle* pCtrl) {
-	pPart->_fCurTime += *pPart->_pfDailTime;
+	pPart->_fCurTime += *pPart->m_pfDailTime;
 
 	if (pPart->_fCurTime >= pPart->_fStep) {
 		pPart->_fCurTime = 0;
 		if (!pPart->_bModelRange) {
-			pCtrl->m_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
+			pCtrl->_vPos = pPart->_vPos + D3DXVECTOR3(Randf(pPart->_fRange[0]),
 													   Randf(pPart->_fRange[1]), Randf(pPart->_fRange[2]));
 		}
 		else {
-			pCtrl->m_vPos = pPart->_vPos + pPart->_vecPointRange[Rand(pPart->_wVecNum)];
+			pCtrl->_vPos = pPart->_vPos + pPart->_vecPointRange[Rand(pPart->_wVecNum)];
 		}
-		pCtrl->m_bLive = true;
-		pCtrl->m_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
+		pCtrl->_bLive = true;
+		pCtrl->_fLife = Randf(pPart->_fLife / pPart->_iRoadom, pPart->_fLife);
 
-		pCtrl->m_fFrameTime = pCtrl->m_fLife / pPart->_wFrameCount;
+		pCtrl->_fFrameTime = pCtrl->_fLife / pPart->_wFrameCount;
 
 		if (pPart->_bUseBone)
-			pCtrl->m_SBoneMat = pPart->_SBoneMat; //Z
-		pCtrl->m_fCurTime = 0;
-		pCtrl->m_wCurFrame = 0;
+			pCtrl->_SBoneMat = pPart->_SBoneMat; //Z
+		pCtrl->_fCurTime = 0;
+		pCtrl->_wCurFrame = 0;
 
-		pCtrl->m_fPartTime = ((float)Rand(100)) / 1000.0f;
+		pCtrl->_fPartTime = ((float)Rand(100)) / 1000.0f;
 
 		return true;
 	}
@@ -3202,8 +3202,8 @@ void _FrameMoveRipple(CMPPartSys* pPart, DWORD dwDailTime) {
 	}
 	for (WORD n = 0; n < pPart->_iParNum; ++n) {
 		pParticle = pPart->_vecParticle[n];
-		if (pParticle->m_bLive) {
-			wCurFrame = pParticle->GetCurFrame(*pPart->_pfDailTime, pPart->_wFrameCount);
+		if (pParticle->_bLive) {
+			wCurFrame = pParticle->GetCurFrame(*pPart->m_pfDailTime, pPart->_wFrameCount);
 			if (wCurFrame == pPart->_wFrameCount) {
 				if (pPart->_bStop) {
 					pPart->_wDeath++;
@@ -3221,35 +3221,35 @@ void _FrameMoveRipple(CMPPartSys* pPart, DWORD dwDailTime) {
 					wNextFrame = wCurFrame + 1;
 			}
 			fLerp = pParticle->GetLerpValue();
-			pParticle->m_fSize = *pPart->_vecFrameSize[wCurFrame] +
+			pParticle->_fSize = *pPart->_vecFrameSize[wCurFrame] +
 				(*pPart->_vecFrameSize[wNextFrame] - *pPart->_vecFrameSize[wCurFrame]) * fLerp;
-			D3DXColorLerp(&pParticle->m_SCurColor,
+			D3DXColorLerp(&pParticle->_SCurColor,
 						  pPart->_vecFrameColor[wCurFrame], pPart->_vecFrameColor[wNextFrame], fLerp);
 
 			if (pPart->_pCModel) {
 				if (pPart->_bUseBone) {
 					D3DXMATRIX tm;
 					D3DXMatrixScaling(&tm,
-									  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
-					D3DXMatrixMultiply(&pParticle->m_SCurMat, &tm, &pParticle->m_SBoneMat);
+									  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
+					D3DXMatrixMultiply(&pParticle->_SCurMat, &tm, &pParticle->_SBoneMat);
 				}
 				else {
-					D3DXMatrixScaling(&pParticle->m_SCurMat,
-									  pParticle->m_fSize, pParticle->m_fSize, pParticle->m_fSize);
+					D3DXMatrixScaling(&pParticle->_SCurMat,
+									  pParticle->_fSize, pParticle->_fSize, pParticle->_fSize);
 
-					pParticle->m_SCurMat._41 = pParticle->m_vPos.x;
-					pParticle->m_SCurMat._42 = pParticle->m_vPos.y;
-					pParticle->m_SCurMat._43 = pParticle->m_vPos.z;
+					pParticle->_SCurMat._41 = pParticle->_vPos.x;
+					pParticle->_SCurMat._42 = pParticle->_vPos.y;
+					pParticle->_SCurMat._43 = pParticle->_vPos.z;
 				}
 				if (pPart->_bBillBoard)
-					D3DXMatrixMultiply(&pParticle->m_SCurMat,
-									   pPart->_SpmatBBoard, &pParticle->m_SCurMat);
+					D3DXMatrixMultiply(&pParticle->_SCurMat,
+									   pPart->_SpmatBBoard, &pParticle->_SCurMat);
 			}
 			else {
-				D3DXVec3Lerp(&pParticle->m_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
+				D3DXVec3Lerp(&pParticle->_vCurAngle, pPart->_vecFrameAngle[wCurFrame],
 							 pPart->_vecFrameAngle[wNextFrame], fLerp);
 				if (pPart->_bUseBone) {
-					pParticle->m_SCurMat = pPart->_SBoneMat;
+					pParticle->_SCurMat = pPart->_SBoneMat;
 				}
 			}
 		}
@@ -3282,15 +3282,15 @@ void CopyPartSys(CMPPartSys* part1, CMPPartSys* part2) {
 	part1->_wFrameCount = part2->_wFrameCount;
 
 	part1->_pdwVShader = 0L;
-	part1->_pfDailTime = part2->_pfDailTime;
-	part1->_pMatViewProj = part2->_pMatViewProj;
+	part1->m_pfDailTime = part2->m_pfDailTime;
+	part1->m_pMatViewProj = part2->m_pMatViewProj;
 
 	part1->_bBillBoard = part2->_bBillBoard;
 	part1->_SpmatBBoard = NULL; //part2->_SpmatBBoard;
 
 	part1->_pCEffectFile = part2->_pCEffectFile;
 
-	part1->m_bShade = part2->m_bShade;
+	part1->_bShade = part2->_bShade;
 
 	part1->SetOpertion();
 
@@ -3350,7 +3350,7 @@ void CopyPartSys(CMPPartSys* part1, CMPPartSys* part2) {
 	else {
 		SAFE_DELETE(part1->_pcPath);
 	}
-	part1->m_strHitEff = part2->m_strHitEff;
+	part1->_strHitEff = part2->_strHitEff;
 
 	part1->_iDummy1 = -1;
 	part1->_iDummy2 = -1;
@@ -3397,8 +3397,8 @@ void CMPPartSys::SetFrameSize(int iFrame, float fsize, CMPResManger* pCResMagr) 
 		*_vecFrameSize[iFrame] = fsize;
 	}
 
-	if (m_bShade) {
-		m_cShade.Create(_strTexName, pCResMagr, *_vecFrameSize[0]);
+	if (_bShade) {
+		_cShade.Create(_strTexName, pCResMagr, *_vecFrameSize[0]);
 	}
 }
 

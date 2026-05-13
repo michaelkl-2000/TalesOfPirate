@@ -20,10 +20,10 @@ CMPShadeMap::CMPShadeMap(void) {
 	_SVerPos = D3DXVECTOR3(0.0f, 0.0f, 0);
 
 	_dwColor = 0x80ffffff;
-	_pfDailTime = NULL;
+	m_pfDailTime = NULL;
 	_bShow = true;
 
-	_iIdxTech = 2;
+	_idxTech = 2;
 	_pCEffectFile = NULL;
 
 	_eSrcBlend = D3DBLEND_SRCALPHA;
@@ -67,17 +67,17 @@ void CMPShadeMap::BoundingRes(CMPResManger* m_CResMagr) {
 
 	if (!_pModel) {
 		_pModel = new CEffectModel;
-		_pModel->InitDevice(m_CResMagr->_dev, m_CResMagr->m_pSysGraphics->GetResourceMgr());
+		_pModel->InitDevice(m_CResMagr->_dev, m_CResMagr->_pSysGraphics->GetResourceMgr());
 	}
 
 
-	_pfDailTime = m_CResMagr->GetDailTime();
+	m_pfDailTime = m_CResMagr->GetDailTime();
 
 	_pCEffectFile = m_CResMagr->GetEffectFile();
 
-	_pMatViewProj = m_CResMagr->GetViewProjMat();
+	m_pMatViewProj = m_CResMagr->GetViewProjMat();
 
-	_useSoft = m_CResMagr->m_bUseSoftOrg;
+	_useSoft = m_CResMagr->_bUseSoftOrg;
 
 
 	_vsConst = m_CResMagr->GetDevCap()->MaxVertexShaderConst;
@@ -144,7 +144,7 @@ void CMPShadeMap::setFrameTexture(s_string& strTexName, CMPResManger* pCResMagr)
 void CMPShadeMap::FrameMove(DWORD dwDailTime) {
 	static float dwTime = 1.5f;
 	_bUpdate = false;
-	dwTime += *_pfDailTime;
+	dwTime += *m_pfDailTime;
 	if (dwTime > 1.5f) {
 		dwTime = 0;
 		_bUpdate = true;
@@ -239,7 +239,7 @@ void CMPShadeMap::RenderVS() {
 
 	_pModel->Begin();
 
-	if (!_pCEffectFile->SetTechnique(_iIdxTech)) {
+	if (!_pCEffectFile->SetTechnique(_idxTech)) {
 		return;
 	}
 
@@ -259,7 +259,7 @@ void CMPShadeMap::RenderVS() {
 	_pModel->_dev->SetVertexDeclaration(CMPResManger::Instance().GetShadeVDecl());
 
 	_pModel->_dev->SetVertexShaderConstantF(0, t_mat, 4);
-	_pModel->_dev->SetVertexShaderConstantF(4, *_pMatViewProj, 4);
+	_pModel->_dev->SetVertexShaderConstantF(4, *m_pMatViewProj, 4);
 	_pModel->_dev->SetVertexShaderConstantF(8, _dwColor, 1);
 
 	D3DXVECTOR4 tv(0, 0, 0, 0);
@@ -297,17 +297,17 @@ void CMPShadeMap::FillVertex() {
 
 	int nIndex = 9; //!VS9
 	for (int n = 0; n < _iVerNum; n++) {
-		pVertex[n].m_dwDiffuse = _dwColor;
-		pVertex[n].m_SPos.x = _SShadePos[n].x;
-		pVertex[n].m_SPos.y = _SShadePos[n].y;
-		pVertex[n].m_SPos.z = _SShadePos[n].z;
+		pVertex[n]._dwDiffuse = _dwColor;
+		pVertex[n]._SPos.x = _SShadePos[n].x;
+		pVertex[n]._SPos.y = _SShadePos[n].y;
+		pVertex[n]._SPos.z = _SShadePos[n].z;
 
-		pVertex[n].m_SUV.x = _SShadeUV[n].x;
-		pVertex[n].m_SUV.y = _SShadeUV[n].y;
+		pVertex[n]._SUV.x = _SShadeUV[n].x;
+		pVertex[n]._SUV.y = _SShadeUV[n].y;
 
-		pVertex[n].m_SUV2.x = (float)nIndex;
+		pVertex[n]._SUV2.x = (float)nIndex;
 		nIndex++;
-		pVertex[n].m_SUV2.y = (float)nIndex;
+		pVertex[n]._SUV2.y = (float)nIndex;
 		nIndex++;
 	}
 	_pModel->Unlock();
@@ -325,8 +325,8 @@ void CMPShadeMap::RenderSoft() {
 	_pCEffectFile->_dev->SetRenderStateForced(D3DRS_ALPHABLENDENABLE, TRUE);
 	_pCEffectFile->_dev->SetRenderStateForced(D3DRS_ZWRITEENABLE, FALSE);
 	_pCEffectFile->_dev->SetRenderStateForced(D3DRS_CULLMODE, D3DCULL_CCW);
-	if (_iIdxTech != 4) {
-		if (!_pCEffectFile->SetTechnique(_iIdxTech))
+	if (_idxTech != 4) {
+		if (!_pCEffectFile->SetTechnique(_idxTech))
 			return;
 		_pCEffectFile->Begin(D3DXFX_DONOTSAVESTATE);
 		_pCEffectFile->Pass(0);
@@ -341,13 +341,13 @@ void CMPShadeMap::RenderSoft() {
 	if (_lpCurTex && _lpCurTex->IsLoadingOK())
 		_pModel->_dev->SetTexture(0, _lpCurTex->GetTex());
 	else {
-		if (_iIdxTech != 4) {
+		if (_idxTech != 4) {
 			_pCEffectFile->End();
 		}
 		return;
 	}
 	//to fix models get front of each other when render wings/pets
-	if (_iIdxTech != 4) {
+	if (_idxTech != 4) {
 		_pModel->GetDev()->SetTransformWorld(&t_mat);
 	}
 
@@ -359,7 +359,7 @@ void CMPShadeMap::RenderSoft() {
 	_pModel->_dev->SetVertexShader(nullptr);
 	_pModel->_dev->SetFVF(EFFECT_SHADE_FVF);
 	//this part not 100% sure of it yet need testing
-	if (_iIdxTech != 4) {
+	if (_idxTech != 4) {
 		_pCEffectFile->End();
 	}
 }
@@ -392,7 +392,7 @@ bool CMPShadeMap::SaveToFile(FILE* pFile) {
 
 
 	fwrite(&_dwColor, sizeof(D3DXCOLOR), 1, pFile);
-	fwrite(&_iIdxTech, sizeof(int), 1, pFile);
+	fwrite(&_idxTech, sizeof(int), 1, pFile);
 
 	return true;
 }
@@ -409,7 +409,7 @@ bool CMPShadeMap::LoadFromFile(FILE* pFile) {
 	_eDestBlend = (D3DBLEND)t_temp;
 
 	fread(&_dwColor, sizeof(D3DXCOLOR), 1, pFile);
-	fread(&_iIdxTech, sizeof(int), 1, pFile);
+	fread(&_idxTech, sizeof(int), 1, pFile);
 	return true;
 }
 
@@ -495,7 +495,7 @@ void CMPShadeEX::FrameMove(DWORD dwDailTime) {
 		return;
 
 	int iNextFrame;
-	_fCurTime += *_pfDailTime;
+	_fCurTime += *m_pfDailTime;
 	if (_fCurTime >= _fFrameTime) {
 		_iCurFrame++;
 		if (_iCurFrame >= _iFrameCount) {
@@ -513,10 +513,10 @@ void CMPShadeEX::FrameMove(DWORD dwDailTime) {
 		iNextFrame = _iCurFrame;
 	else
 		iNextFrame = _iCurFrame + 1;
-	_fLerp = _fCurTime / _fFrameTime;
-	D3DXColorLerp(&_dwColor, &_vecFrameColor[_iCurFrame], &_vecFrameColor[iNextFrame], _fLerp);
+	m_fLerp = _fCurTime / _fFrameTime;
+	D3DXColorLerp(&_dwColor, &_vecFrameColor[_iCurFrame], &_vecFrameColor[iNextFrame], m_fLerp);
 
-	_fTexCurTime += *_pfDailTime;
+	_fTexCurTime += *m_pfDailTime;
 	if (_fTexCurTime >= _fTexFrameTime) {
 		_iCurTex++;
 		if (_iCurTex == _iNumTex) {
@@ -640,7 +640,7 @@ bool CMPShadeEX::SaveToFile(FILE* pFile) {
 	//!
 	fwrite(&_fTexFrameTime, sizeof(float), 1, pFile);
 
-	fwrite(&_iIdxTech, sizeof(int), 1, pFile);
+	fwrite(&_idxTech, sizeof(int), 1, pFile);
 
 	return true;
 }
@@ -670,7 +670,7 @@ bool CMPShadeEX::LoadFromFile(FILE* pFile) {
 	//!
 	fread(&_fTexFrameTime, sizeof(float), 1, pFile);
 
-	fread(&_iIdxTech, sizeof(int), 1, pFile);
+	fread(&_idxTech, sizeof(int), 1, pFile);
 
 	return true;
 }

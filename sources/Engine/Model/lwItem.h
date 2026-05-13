@@ -14,7 +14,7 @@ namespace Corsairs::Engine::Render {
 	// lwItem теперь standalone, без виртуальной диспетчеризации.
 	class lwItem {
 	private:
-		lwIResourceMgr* _res_mgr;
+		IResourceMgr* _res_mgr;
 		lwISceneMgr* _scene_mgr;
 
 		lwLinkCtrl* _link_ctrl;
@@ -28,7 +28,7 @@ namespace Corsairs::Engine::Render {
 		float _opacity;
 
 	public:
-		lwItem(lwIResourceMgr* res_mgr);
+		lwItem(IResourceMgr* res_mgr);
 		~lwItem();
 
 		// Был частью lwInterface; сохранён как удобный legacy-вызов

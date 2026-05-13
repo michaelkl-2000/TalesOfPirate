@@ -1,4 +1,4 @@
-﻿#include "mygraph.h"
+#include "mygraph.h"
 #include "i_effect.h"
 
 
@@ -19,37 +19,37 @@
 
 class MPCameraNOLEECH {
 public:
-	D3DXVECTOR3 m_EyePos;
-	D3DXVECTOR3 m_RefPos;
+	D3DXVECTOR3 _EyePos;
+	D3DXVECTOR3 _RefPos;
 
-	D3DXVECTOR3 m_vRoll;
+	D3DXVECTOR3 _vRoll;
 
 
-	float m_fRoll;
+	float _fRoll;
 
 	std::string strCameraInfo;
 
 	VOID InitPosition(float ex, float ey, float ez, float rx, float ry, float rz) {
-		m_EyePos.x = ex;
-		m_EyePos.y = ey;
-		m_EyePos.z = ez;
-		m_RefPos.x = rx;
-		m_RefPos.y = ry;
-		m_RefPos.z = rz;
+		_EyePos.x = ex;
+		_EyePos.y = ey;
+		_EyePos.z = ez;
+		_RefPos.x = rx;
+		_RefPos.y = ry;
+		_RefPos.z = rz;
 	}
 
 	VOID Move(DWORD dwMoveType);
 
 	D3DXVECTOR3 GetRollVector() {
 		D3DXMATRIX mat;
-		D3DXMatrixRotationY(&mat, D3DXToRadian(m_fRoll));
+		D3DXMatrixRotationY(&mat, D3DXToRadian(_fRoll));
 
 		D3DXVECTOR4 v;
 		const auto v2 = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 		D3DXVec3Transform(&v, &v2, &mat);
 
-		m_vRoll = (D3DXVECTOR3)v;
-		return m_vRoll;
+		_vRoll = (D3DXVECTOR3)v;
+		return _vRoll;
 	}
 
 	void MoveForward(float fStep, BOOL bHang = TRUE);

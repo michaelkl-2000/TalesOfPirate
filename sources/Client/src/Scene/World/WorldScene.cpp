@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "worldscene.h"
 #include "Character.h"
 #include "SceneObj.h"
@@ -232,8 +232,8 @@ void CWorldScene::_FrameMove(DWORD dwTimeParam) {
 	static DWORD dwLastTime = 0;
 	if ((dwLastTime < dwTimeParam) && GetMainCha()) {
 		dwLastTime = dwTimeParam + 200 + rand() % 300;
-		PlayEnvSound((int)(g_pGameApp->GetMainCam()->m_RefPos.x * 100.0f),
-					 (int)(g_pGameApp->GetMainCam()->m_RefPos.y * 100.0f));
+		PlayEnvSound((int)(g_pGameApp->GetMainCam()->_RefPos.x * 100.0f),
+					 (int)(g_pGameApp->GetMainCam()->_RefPos.y * 100.0f));
 
 		if (_pTerrain) {
 			static bool isOldFight = false;
@@ -1281,7 +1281,7 @@ void CWorldScene::SetMainCha(int nChaID) {
 	//g_pGameApp->ResetGameCamera( pCha->IsBoat() ? 3 : 0 );
 
 	pCam->SetViewTransform();
-	//g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+	//g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 	//g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 
 	CGameScene::LoadingCall();
@@ -1335,7 +1335,7 @@ bool CWorldScene::_MouseButtonDB(int nButton) {
 	//	pCam->SetFollowObj(vecCha);
 	//	pCam->FrameMove(0);
 	//	g_Render.SetWorldViewFOV(Angle2Radian(pCam->m_ffov));
-	//	g_Render.LookAt(pCam->m_EyePos, pCam->m_RefPos);
+	//	g_Render.LookAt(pCam->_EyePos, pCam->_RefPos);
 	//	g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 	//}
 

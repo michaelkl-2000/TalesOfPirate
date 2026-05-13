@@ -886,7 +886,9 @@ namespace Corsairs::Engine::Render {
 		else {
 			// diagonal is negative
 			i = 0;
-			if (matrix->m[1][1] > matrix->m[0][0]) i = 1;
+			if (matrix->m[1][1] > matrix->m[0][0]) {
+				i = 1;
+			}
 			if (matrix->m[2][2] > matrix->m[i][i]) i = 2;
 			j = nxt[i];
 			k = nxt[j];

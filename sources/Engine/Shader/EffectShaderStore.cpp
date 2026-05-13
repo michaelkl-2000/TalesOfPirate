@@ -4,7 +4,7 @@
 #include "EffectShaderStore.h"
 
 #include "lwInterface.h"
-#include "lwSysGraphics.h"
+#include "SysGraphics.h"
 #include "ShaderLoad.h"
 
 #include <format>
@@ -90,8 +90,8 @@ D3DVERTEXELEMENT9* const kDeclTables[] = {
     kDeclMinimap,
 };
 
-lwIShaderMgr* GetShaderMgr(lwISysGraphics* sysGraphics) {
-    lwIResourceMgr* resMgr = nullptr;
+IShaderMgr* GetShaderMgr(ISysGraphics* sysGraphics) {
+    IResourceMgr* resMgr = nullptr;
     sysGraphics->GetInterface(reinterpret_cast<LW_VOID**>(&resMgr), LW_GUID_RESOURCEMGR);
     return resMgr ? resMgr->GetShaderMgr() : nullptr;
 }
@@ -107,13 +107,13 @@ void EffectShaderStore::SetSoftFallback(bool useSoft) noexcept {
     _useSoft = useSoft;
 }
 
-bool EffectShaderStore::LoadAll(lwISysGraphics* sysGraphics) {
-    lwISystem* sys = sysGraphics->GetSystem();
+bool EffectShaderStore::LoadAll(ISysGraphics* sysGraphics) {
+    ISystem* sys = sysGraphics->GetSystem();
 
-    lwIPathInfo* pathInfo = nullptr;
+    IPathInfo* pathInfo = nullptr;
     sys->GetInterface(reinterpret_cast<LW_VOID**>(&pathInfo), LW_GUID_PATHINFO);
 
-    lwIShaderMgr* shaderMgr = GetShaderMgr(sysGraphics);
+    IShaderMgr* shaderMgr = GetShaderMgr(sysGraphics);
     if (!shaderMgr || !pathInfo) {
         return false;
     }
@@ -167,8 +167,8 @@ bool EffectShaderStore::LoadAll(lwISysGraphics* sysGraphics) {
     return true;
 }
 
-bool EffectShaderStore::Restore(lwISysGraphics* sysGraphics) {
-    lwIShaderMgr* shaderMgr = GetShaderMgr(sysGraphics);
+bool EffectShaderStore::Restore(ISysGraphics* sysGraphics) {
+    IShaderMgr* shaderMgr = GetShaderMgr(sysGraphics);
     if (!shaderMgr) {
         return false;
     }

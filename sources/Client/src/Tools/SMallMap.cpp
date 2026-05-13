@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 #include "UIText.h"
 #include "smallmap.h"
 #include "EffectObj.h"
@@ -84,7 +84,7 @@ bool CSMallWnd::Create(IDirect3DDeviceX* pDev, RECT rcwnd, CGameScene* pScene, i
 	//#ifdef MGR
 	//DWORD handle;
 
-	//   lwIDeviceObject* dev_obj = g_Render.GetInterfaceMgr()->dev_obj;
+	//   IDeviceObject* dev_obj = g_Render.GetInterfaceMgr()->dev_obj;
 	//   IDirect3DX* d3d = dev_obj->GetDirect3D();
 	//   lwD3DCreateParam* d3dcp = dev_obj->GetD3DCreateParam();
 	//   D3DDISPLAYMODE* d3ddm = dev_obj->GetAdapterDisplayMode();
@@ -522,7 +522,7 @@ void CSMallMap2D::RenderScene() {
 	m_pDev->SetStreamSource(0, _pVB, sizeof(M2D_VER));
 #endif
 
-	if (CMPResManger::Instance().m_bUseSoft) {
+	if (CMPResManger::Instance()._bUseSoft) {
 		g_Render.SetVertexShader(NULL);
 		g_Render.SetFVF(D3DFVF_M2D);
 		g_Render.SetTransformWorld(&matIdentity);
@@ -609,10 +609,10 @@ void CSMallMap2D::RenderScene() {
 				g_Render.SetTexture(0, _pTex[n][m].pTex);
 #endif
 			}
-			if (CMPResManger::Instance().m_bUseSoft) {
+			if (CMPResManger::Instance()._bUseSoft) {
 				M2D_VER* pVertices;
 #ifdef MGR
-				lwILockableStreamVB* _lpSVB = _pVB->GetLockableStreamVB();
+				ILockableStreamVB* _lpSVB = _pVB->GetLockableStreamVB();
 				_lpSVB->Lock(0, 0, (void**)&pVertices, 0);
 #else
 				_pVB->Lock(0, 0, (BYTE**)&pVertices, 0);
@@ -656,7 +656,7 @@ void CSMallMap2D::RenderScene() {
 
 	_Cha._vecNpc.clear();
 
-	if (!CMPResManger::Instance().m_bUseSoft) {
+	if (!CMPResManger::Instance()._bUseSoft) {
 		_Cha.Begin(CMPResManger::Instance().GetMinimapVS());
 		g_Render.SetVertexDeclaration(CMPResManger::Instance().GetMinimapVDecl());
 		CCharacter* pCha = NULL;
@@ -839,7 +839,7 @@ void CSMallMap2D::RenderScene() {
 	//g_Render.SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);  
 	//g_Render.SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 
-	//g_Render.LookAt(g_pGameApp->GetMainCam()->m_EyePos, g_pGameApp->GetMainCam()->m_RefPos);
+	//g_Render.LookAt(g_pGameApp->GetMainCam()->_EyePos, g_pGameApp->GetMainCam()->_RefPos);
 	//g_Render.SetCurrentView(MPRender::VIEW_WORLD);
 }
 
@@ -1053,7 +1053,7 @@ void CAniWnd::MoveWnd(int x, int y) {
 	};
 	M2D_AVER* pVers;
 #ifdef MGR
-	lwILockableStreamVB* _lpSVB = _pVBWnd->GetLockableStreamVB();
+	ILockableStreamVB* _lpSVB = _pVBWnd->GetLockableStreamVB();
 	_lpSVB->Lock(0, 0, (void**)&pVers, 0);
 #else
 	_pVBWnd->Lock(0, 0, (BYTE**)&pVers, D3DLOCK_DISCARD);
@@ -1202,7 +1202,7 @@ void CAniWnd::RenderScene() {
 	g_Render.SetTransformView(&_matView);
 
 	//MPInterfaceMgr* imgr = g_Render.GetInterfaceMgr();
-	//lwIDynamicStreamMgr* dsm = imgr->res_mgr->GetDynamicStreamMgr();
+	//IDynamicStreamMgr* dsm = imgr->res_mgr->GetDynamicStreamMgr();
 	//dsm->BindDataVB(0, &_vVertex, sizeof(ClockVer) * 6, sizeof(ClockVer));
 	//dsm->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 4);
 

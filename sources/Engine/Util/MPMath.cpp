@@ -1,4 +1,4 @@
-﻿#include "Stdafx.h"
+#include "Stdafx.h"
 #include "MPMath.h"
 
 using namespace std;
@@ -105,7 +105,9 @@ BOOL Get2DLineIntersection(float* pv1, float* pv2, float* pv3, float* pv4, float
 
 	// t1, t2 range [0,1]
 
-	if (a1 * c2 == a2 * c1) return FALSE;
+	if (a1 * c2 == a2 * c1) {
+		return FALSE;
+	}
 
 
 	t2 = (b1 * c1 + a1 * d2 - a1 * d1 - b2 * c1) / (a2 * c1 - a1 * c2);
@@ -166,11 +168,15 @@ int GetVectorRelativeDirection(float* fSrcDir, float* fDestDir, float* pfAngleOf
 
 	int nDestDir;
 	if (fAngleOff < 180.0f) {
-		if (p1 > p2) nDestDir = 1;
+		if (p1 > p2) {
+			nDestDir = 1;
+		}
 		else nDestDir = 0;
 	}
 	else {
-		if (p1 > p2) nDestDir = 0;
+		if (p1 > p2) {
+			nDestDir = 0;
+		}
 		else nDestDir = 1;
 		fAngleOff = 360.0f - fAngleOff;
 	}
@@ -189,7 +195,9 @@ int BSplineCurveCV(int numCV, D3DXVECTOR3* vCtrl, D3DXVECTOR3* pVertices, int* n
 
 	// calculate span number
 	int nSpan = numCV - 3;
-	if (numVert) *numVert = nSpan * (nPrecise - 1);
+	if (numVert) {
+		*numVert = nSpan * (nPrecise - 1);
+	}
 
 	// return if vertex buffer is empty
 	if (pVertices == NULL)

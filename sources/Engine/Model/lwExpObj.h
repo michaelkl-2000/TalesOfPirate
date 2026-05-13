@@ -13,7 +13,7 @@
 
 // Forward decl для friend-объявлений у data-классов: вся логика чтения/записи
 // бинарных форматов .lgo/.lmo живёт в LgoLoader, она же читает/пишет приватные
-// поля lwModelObjInfo и lwHelperDummyObjInfo. AssetLoaders.h инклюдить нельзя
+// поля lwModelObjInfo и HelperDummyObjInfo. AssetLoaders.h инклюдить нельзя
 // (циклическая зависимость — он сам тянет lwExpObj.h).
 namespace Corsairs::Engine::Render { class LgoLoader; }
 
@@ -263,7 +263,7 @@ namespace Corsairs::Engine::Render {
 		}
 	};
 
-	struct lwHelperDummyInfo_1000 {
+	struct HelperDummyInfo_1000 {
 		DWORD id;
 		lwMatrix44 mat;
 	};
@@ -327,13 +327,13 @@ namespace Corsairs::Engine::Render {
 		DWORD pose_num;
 	};
 
-	struct lwHelperInfo {
-		lwHelperInfo()
+	struct HelperInfo {
+		HelperInfo()
 			: type(HELPER_TYPE_INVALID), mesh_seq(0), box_seq(0), dummy_seq(0), bbox_seq(0), bsphere_seq(0),
 			  mesh_num(0), box_num(0), dummy_num(0), bbox_num(0), bsphere_num(0) {
 		}
 
-		~lwHelperInfo() {
+		~HelperInfo() {
 			LW_SAFE_DELETE_A(dummy_seq);
 			LW_SAFE_DELETE_A(box_seq);
 			LW_SAFE_DELETE_A(mesh_seq);
@@ -344,9 +344,9 @@ namespace Corsairs::Engine::Render {
 
 		DWORD type;
 
-		lwHelperDummyInfo* dummy_seq;
-		lwHelperBoxInfo* box_seq;
-		lwHelperMeshInfo* mesh_seq;
+		HelperDummyInfo* dummy_seq;
+		HelperBoxInfo* box_seq;
+		HelperMeshInfo* mesh_seq;
 		lwBoundingBoxInfo* bbox_seq;
 		lwBoundingSphereInfo* bsphere_seq;
 
@@ -359,7 +359,7 @@ namespace Corsairs::Engine::Render {
 		// Load/Save/GetDataSize и пять _Load*/_Save*-helpers перенесены в
 		// Corsairs::Engine::Render::LgoLoader (см. AssetLoaders.h). Здесь
 		// остаётся только копирование — это не I/O-операция.
-		LW_RESULT Copy(const lwHelperInfo* src);
+		LW_RESULT Copy(const HelperInfo* src);
 	};
 
 
@@ -708,7 +708,7 @@ namespace Corsairs::Engine::Render {
 		lwMeshInfo mesh;
 
 		// helper data
-		lwHelperInfo helper_data;
+		HelperInfo helper_data;
 
 		// animation data
 		lwAnimDataInfo anim_data;
@@ -754,7 +754,7 @@ namespace Corsairs::Engine::Render {
 		lwGeomObjInfo* geom_obj_seq[LW_MAX_MODEL_GEOM_OBJ_NUM];
 
 		// helper data
-		lwHelperInfo helper_data;
+		HelperInfo helper_data;
 
 	public:
 		lwModelObjInfo()
@@ -776,7 +776,7 @@ namespace Corsairs::Engine::Render {
 
 	typedef lwModelObjInfo::lwModelObjInfoHeader lwModelObjInfoHeader;
 
-	class lwHelperDummyObjInfo : public lwIHelperDummyObjInfo {
+	class HelperDummyObjInfo : public IHelperDummyObjInfo {
 		LW_STD_DECLARATION()
 
 		friend class ::Corsairs::Engine::Render::LgoLoader;
@@ -788,8 +788,8 @@ namespace Corsairs::Engine::Render {
 		lwIAnimDataMatrix* _anim_data;
 
 	public:
-		lwHelperDummyObjInfo();
-		virtual ~lwHelperDummyObjInfo();
+		HelperDummyObjInfo();
+		virtual ~HelperDummyObjInfo();
 
 		void SetID(DWORD id) {
 			_id = id;
@@ -901,10 +901,10 @@ namespace Corsairs::Engine::Render {
 	// перенесены в Corsairs::Engine::Render::LgoLoader (см. AssetLoaders.h).
 	DWORD lwMtlTexInfo_GetDataSize(lwMtlTexInfo* info);
 
-	DWORD lwGetHelperBoxInfoSize(const lwHelperBoxInfo* info);
-	DWORD lwGetHelperMeshInfoSize(const lwHelperMeshInfo* info);
+	DWORD lwGetHelperBoxInfoSize(const HelperBoxInfo* info);
+	DWORD lwGetHelperMeshInfoSize(const HelperMeshInfo* info);
 
-	LW_RESULT lwCreateHelperMeshInfo(lwHelperMeshInfo* info, const lwMeshInfo* mi);
+	LW_RESULT lwCreateHelperMeshInfo(HelperMeshInfo* info, const lwMeshInfo* mi);
 
 	LW_RESULT lwCopyAnimKeySetPRS(lwAnimKeySetPRS* dst, const lwAnimKeySetPRS* src);
 

@@ -16,12 +16,12 @@ public:
 
 	Identity():m_maxID(0){}
 
-	dbc::uLong GetID()
+	std::uint32_t GetID()
 	{
 		return ++m_maxID;
 	}
 
 private:
-	dbc::uLong m_maxID;
+	std::uint32_t m_maxID;
 };
 #endif //IDENTITY_H

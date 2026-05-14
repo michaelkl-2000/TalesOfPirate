@@ -11,9 +11,9 @@
 //----------------------------------------------
 
 // 
-void CCharacter::Run(DWORD dwCurTime) {
-	MPTimer t;
-	Char chCount = 0;
+void CCharacter::Run(std::uint32_t dwCurTime) {
+	Corsairs::Util::MPTimer t;
+	auto chCount = 0;
 
 	t.Begin();
 
@@ -248,7 +248,7 @@ void CCharacter::OnScriptTimer(DWORD dwExecTime, bool bNotice) {
 	if (!IsPlayerCha())
 		return;
 
-	Long lOldHP = (long)getAttr(ATTR_HP);
+	std::int32_t lOldHP = (long)getAttr(ATTR_HP);
 	m_CChaAttr.ResetChangeFlag();
 	if (IsPlayerCha())
 		m_CKitbag.SetChangeFlag(false);

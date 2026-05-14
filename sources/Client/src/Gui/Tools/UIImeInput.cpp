@@ -51,7 +51,7 @@ bool CImeInput::HandleWindowMsg(DWORD dwMsg, WPARAM wParam, LPARAM lParam) {
 			std::wstring wbuf(static_cast<size_t>(wlen), L'\0');
 			::ImmGetDescriptionW((HKL)lParam, wbuf.data(), wlen + 1);
 			_immName = "[";
-			_immName += encoding::WideToUtf8(wbuf);
+			_immName += Corsairs::Util::Encoding::WideToUtf8(wbuf);
 			_immName += "]";
 			_composition.clear();
 			_bIsShow = true;
@@ -121,7 +121,7 @@ bool CImeInput::_GetCompositionStringUtf8(std::string& out, DWORD ImeValue) {
 	const size_t wcharCount = static_cast<size_t>(byteSize) / sizeof(wchar_t);
 	std::wstring wbuf(wcharCount, L'\0');
 	::ImmGetCompositionStringW(_hImc, ImeValue, wbuf.data(), static_cast<DWORD>(byteSize));
-	out = encoding::WideToUtf8(wbuf);
+	out = Corsairs::Util::Encoding::WideToUtf8(wbuf);
 	return true;
 }
 
@@ -155,7 +155,7 @@ bool CImeInput::_GetCandidateList() {
 	for (unsigned int i = start; i < pList->dwCount && i < end; ++i) {
 		const wchar_t* candW = reinterpret_cast<const wchar_t*>(
 			buf.data() + pList->dwOffset[i]);
-		const std::string candUtf8 = encoding::WideToUtf8(candW);
+		const std::string candUtf8 = Corsairs::Util::Encoding::WideToUtf8(candW);
 		_candidate += std::format(" {}:{}\n", i + 1 - sel, candUtf8);
 	}
 	return true;

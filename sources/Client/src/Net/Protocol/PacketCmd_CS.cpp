@@ -13,8 +13,9 @@ using namespace Corsairs::Client::Crypto;
 //------------------------
 // C->S :
 //------------------------
-bool CS_Connect(cChar* hostname, uint16_t port, uint32_t timeout) {
-	g_logManager.InternalLog(LogLevel::Debug, "connections", SafeVFormat(GetLanguageString(294), hostname));
+bool CS_Connect(std::string_view hostname, uint16_t port, uint32_t timeout) {
+	std::string host{hostname};
+	g_logManager.InternalLog(LogLevel::Debug, "connections", SafeVFormat(GetLanguageString(294), host.c_str()));
 	if (g_NetIF->m_pCProCir) {
 		delete g_NetIF->m_pCProCir;
 	}
@@ -24,7 +25,7 @@ bool CS_Connect(cChar* hostname, uint16_t port, uint32_t timeout) {
 	updateDiscordPresence("Connecting...", "");
 
 
-	return g_NetIF->m_pCProCir->Connect(hostname, port, timeout);
+	return g_NetIF->m_pCProCir->Connect(host.c_str(), port, timeout);
 }
 
 //------------------------
@@ -711,13 +712,13 @@ void CS_PrenticeAsr(short sRet, const char* szName, DWORD dwCharID) {
 }
 
 //  
-void CS_MasterDel(const char* szName, uLong ulChaID) {
+void CS_MasterDel(const char* szName, std::uint32_t ulChaID) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmMasterDelMessage{szName, (int64_t)ulChaID});
 	g_NetIF->SendPacketMessage(packet);
 }
 
 //  
-void CS_PrenticeDel(const char* szName, uLong ulChaID) {
+void CS_PrenticeDel(const char* szName, std::uint32_t ulChaID) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmPrenticeDelMessage{szName, (int64_t)ulChaID});
 	g_NetIF->SendPacketMessage(packet);
 }
@@ -761,8 +762,8 @@ void CS_GMRecv(DWORD dwNPCID) {
 //}
 
 //    
-void CS_CheatCheck(cChar* answer) {
-	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmCheatCheckMessage{answer});
+void CS_CheatCheck(std::string_view answer) {
+	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmCheatCheckMessage{std::string{answer}});
 	g_NetIF->SendPacketMessage(pk);
 }
 
@@ -849,7 +850,7 @@ void CS_UnlockCharacter() {
 }
 
 //   
-void CS_AutionBidup(DWORD dwNPCID, short sItemID, uLong price) {
+void CS_AutionBidup(DWORD dwNPCID, short sItemID, std::uint32_t price) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmBidUpMessage{(int64_t)dwNPCID, (int64_t)sItemID, (int64_t)price});
 	g_NetIF->SendPacketMessage(packet);
 }
@@ -880,7 +881,7 @@ void CS_SendGameRequest(const char szPassword[]) {
 
 
 //    
-void CS_SetGuildPerms(DWORD ID, uLong Perms) {
+void CS_SetGuildPerms(DWORD ID, std::uint32_t Perms) {
 	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildPermMessage{(int64_t)ID, (int64_t)Perms});
 	g_NetIF->SendPacketMessage(pk);
 }

@@ -84,7 +84,7 @@ void CGameApp::_Render() {
 
 
 	// Scene------------------------------------------------------------
-	MPTimer tScene;
+	Corsairs::Util::MPTimer tScene;
 	tScene.Begin();
 	_pCurScene->_Render();
 	m_dwRenderSceneTime = tScene.End();
@@ -98,7 +98,7 @@ void CGameApp::_Render() {
 	g_Render.RenderAllLines();
 
 	// -----------------------------------------------------------------------
-	MPTimer tUI;
+	Corsairs::Util::MPTimer tUI;
 	tUI.Begin();
 
 	_stCursorMgr.Render();
@@ -106,7 +106,7 @@ void CGameApp::_Render() {
 
 	// ----------------------------------------------------------------------------
 	CCharacter* pMainCha = _pCurScene->GetMainCha();
-	MPTimer mpt;
+	Corsairs::Util::MPTimer mpt;
 	mpt.Begin();
 	if (CGameScene::_bShowMinimap && CGameScene::_pSmallMap) {
 		if (pMainCha) {
@@ -134,7 +134,7 @@ void CGameApp::_Render() {
 	CMPResManger::Instance().RestoreEffect();
 	//app->core->run_callbacks(app->core);
 
-	MPTimer mt;
+	Corsairs::Util::MPTimer mt;
 	mt.Begin();
 
 	if (CGameScene::_pBigMap)

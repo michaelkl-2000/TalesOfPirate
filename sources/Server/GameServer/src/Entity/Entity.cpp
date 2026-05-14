@@ -9,15 +9,12 @@
 #include "App/Config.h"
 #include "Entity/GamePool.h"
 #include "App/GameApp.h"
-
-_DBC_USING
-
 Entity::Entity() : m_cat(0), m_ID(0) {
 	m_pCStateCellHead = 0;
 	m_pCStateCellTail = 0;
 	m_submap = 0;
 	m_sAngle = 0;
-	memset(&m_STerritory, 0, sizeof(Circle));
+	memset(&m_STerritory, 0, sizeof(Corsairs::Util::Circle));
 
 	m_SExistCtrl.sState = enumEXISTS_WAITING;
 	m_SExistCtrl.sStopState = enumEXISTS_WAITING;
@@ -78,8 +75,8 @@ void Entity::Free(std::source_location loc)
 void Entity::Initially() {
 	SetLogName("Unnamed Log");
 	m_bValid = true;
-	memset(&m_shape, 0, sizeof(Square));
-	memset(&m_STerritory, 0, sizeof(Circle));
+	memset(&m_shape, 0, sizeof(Corsairs::Util::Square));
+	memset(&m_STerritory, 0, sizeof(Corsairs::Util::Circle));
 	m_sAngle = 0;
 	m_submap = 0;
 	m_pCStateCellHead = 0;
@@ -112,13 +109,13 @@ void Entity::Finally() {
 	m_pCEyeshotHost = 0;
 }
 
-Entity* Entity::SearchByIDInEyeshot(cuLong culID) {
-	Point l_pos = GetShape().centre;
-	Rect l_rect = m_submap->GetEyeshot(l_pos);
+Entity* Entity::SearchByIDInEyeshot(std::uint32_t culID) {
+	Corsairs::Util::Point l_pos = GetShape().Centre;
+	Corsairs::Util::Rect l_rect = m_submap->GetEyeshot(l_pos);
 
 	Entity* pCEnt = 0;
-	for (long y = l_rect.ltop.y; y <= l_rect.rbtm.y; y++) {
-		for (long x = l_rect.ltop.x; x <= l_rect.rbtm.x; x++) {
+	for (long y = l_rect.LeftTop.Y; y <= l_rect.RightBottom.Y; y++) {
+		for (long x = l_rect.LeftTop.X; x <= l_rect.RightBottom.X; x++) {
 			pCEnt = m_submap->m_pCEyeshotCell[y][x].m_pCChaL;
 			while (pCEnt) {
 				if (pCEnt->m_ID == culID)
@@ -148,14 +145,14 @@ void Entity::ActiveEyeshot(bool bActive) {
 		return;
 
 	m_bActiveEyeshot = bActive;
-	Long lNum = -1;
+	std::int32_t lNum = -1;
 	if (bActive)
 		lNum = 1;
 
-	Point l_pt = GetPos();
-	Rect l_rect = m_submap->GetEyeshot(l_pt);
-	for (long y = l_rect.ltop.y; y <= l_rect.rbtm.y; y++) {
-		for (long x = l_rect.ltop.x; x <= l_rect.rbtm.x; x++) {
+	Corsairs::Util::Point l_pt = GetPos();
+	Corsairs::Util::Rect l_rect = m_submap->GetEyeshot(l_pt);
+	for (long y = l_rect.LeftTop.Y; y <= l_rect.RightBottom.Y; y++) {
+		for (long x = l_rect.LeftTop.X; x <= l_rect.RightBottom.X; x++) {
 			if (bActive)
 				m_submap->ActiveEyeshotCell(x, y);
 			else
@@ -175,7 +172,7 @@ void Entity::NotiChgToEyeshot(Corsairs::Net::WPacket chginf, bool bIncludeOwn) {
 		pCMap = pCSrcCha->GetSubMap();
 	}
 
-	cChar* cszSrcLogName = GetLogName();
+	const char* cszSrcLogName = GetLogName();
 	if (pCSrcCha)
 		cszSrcLogName = pCSrcCha->GetLogName();
 	if (!pCMap) {
@@ -184,18 +181,18 @@ void Entity::NotiChgToEyeshot(Corsairs::Net::WPacket chginf, bool bIncludeOwn) {
 		return;
 	}
 
-	Point l_pos = GetPos();
+	Corsairs::Util::Point l_pos = GetPos();
 	if (pCSrcCha)
 		l_pos = pCSrcCha->GetPos();
-	Point l_pos1 = l_pos;
-	Rect l_rect = pCMap->GetEyeshot(l_pos);
+	Corsairs::Util::Point l_pos1 = l_pos;
+	Corsairs::Util::Rect l_rect = pCMap->GetEyeshot(l_pos);
 
 	std::vector<CPlayer*> recipients;
 	long x = 0, y = 0;
 	long lEntCount, lEntNum;
 	try {
-		for (y = l_rect.ltop.y; y <= l_rect.rbtm.y; y++) {
-			for (x = l_rect.ltop.x; x <= l_rect.rbtm.x; x++) {
+		for (y = l_rect.LeftTop.Y; y <= l_rect.RightBottom.Y; y++) {
+			for (x = l_rect.LeftTop.X; x <= l_rect.RightBottom.X; x++) {
 				lEntCount = 0;
 				pCTarEnt = pCMap->m_pCEyeshotCell[y][x].m_pCChaL;
 				lEntNum = pCMap->m_pCEyeshotCell[y][x].GetChaNum();
@@ -221,9 +218,9 @@ void Entity::NotiChgToEyeshot(Corsairs::Net::WPacket chginf, bool bIncludeOwn) {
 								//LG("", " %s[%d,%d]  %s(%s)[%d,%d] \n",
 								ToLogService("errors", LogLevel::Error,
 											 "when entity {}[{},{}] is doing eye shot notify, the aim player {}({})[{},{}] map is null",
-											 cszSrcLogName, l_pos1.x, l_pos1.y,
+											 cszSrcLogName, l_pos1.X, l_pos1.Y,
 											 pCTarCha->GetLogName(), pCTarCha->GetPlyCtrlCha()->GetLogName(),
-											 pCTarCha->GetPos().x, pCTarCha->GetPos().y);
+											 pCTarCha->GetPos().X, pCTarCha->GetPos().Y);
 						}
 					}
 
@@ -238,7 +235,7 @@ void Entity::NotiChgToEyeshot(Corsairs::Net::WPacket chginf, bool bIncludeOwn) {
 		ToLogService("errors", LogLevel::Error,
 					 "entity {} eye shot notify error(coordnate [{},{}]eye shot [{},{};{},{}])currently eye shot cell[{},{}]",
 					 cszSrcLogName,
-					 l_pos1.x, l_pos1.y, l_rect.ltop.x, l_rect.ltop.y, l_rect.rbtm.x, l_rect.rbtm.y, x, y);
+					 l_pos1.X, l_pos1.Y, l_rect.LeftTop.X, l_rect.LeftTop.Y, l_rect.RightBottom.X, l_rect.RightBottom.Y, x, y);
 		throw;
 	}
 
@@ -248,7 +245,7 @@ void Entity::NotiChgToEyeshot(Corsairs::Net::WPacket chginf, bool bIncludeOwn) {
 bool Entity::overlap(long& xdist, long& ydist) {
 	bool b_retval = false;
 
-	if (!m_submap || !m_submap->IsValidPos(m_shape.centre.x + xdist, m_shape.centre.y + ydist))
+	if (!m_submap || !m_submap->IsValidPos(m_shape.Centre.X + xdist, m_shape.Centre.Y + ydist))
 		return true;
 
 	//if (EdgeOverlap(xdist, ydist))
@@ -269,20 +266,20 @@ bool Entity::EdgeOverlap(long& xdist, long& ydist) {
 	const long lc_ydist = ydist;
 	//
 
-	Square l_shape, SSrcShape = GetShape();
+	Corsairs::Util::Square l_shape, SSrcShape = GetShape();
 
-	l_shape.radius = SSrcShape.radius;
+	l_shape.Radius = SSrcShape.Radius;
 	//x
-	const Rect& area = m_submap->GetRange();
+	const Corsairs::Util::Rect& area = m_submap->GetRange();
 	bool l_flag = false;
-	l_shape.centre.x = SSrcShape.centre.x + xdist;
-	long l_xdlt = (l_shape.centre.x - l_shape.radius) - area.ltop.x;
+	l_shape.Centre.X = SSrcShape.Centre.X + xdist;
+	long l_xdlt = (l_shape.Centre.X - l_shape.Radius) - area.LeftTop.X;
 	if (l_xdlt < 0) {
 		l_flag = true;
 		xdist -= l_xdlt;
 	}
 	else {
-		l_xdlt = (l_shape.centre.x + l_shape.radius) - area.rbtm.x;
+		l_xdlt = (l_shape.Centre.X + l_shape.Radius) - area.RightBottom.X;
 		if (l_xdlt > 0) {
 			l_flag = true;
 			xdist -= l_xdlt;
@@ -296,14 +293,14 @@ bool Entity::EdgeOverlap(long& xdist, long& ydist) {
 	}
 	//y
 	l_flag = false;
-	l_shape.centre.y = SSrcShape.centre.y + ydist;
-	long l_ydlt = (l_shape.centre.y - l_shape.radius) - area.ltop.y;
+	l_shape.Centre.Y = SSrcShape.Centre.Y + ydist;
+	long l_ydlt = (l_shape.Centre.Y - l_shape.Radius) - area.LeftTop.Y;
 	if (l_ydlt < 0) {
 		l_flag = true;
 		ydist -= l_ydlt;
 	}
 	else {
-		l_ydlt = (l_shape.centre.y + l_shape.radius) - area.rbtm.y;
+		l_ydlt = (l_shape.Centre.Y + l_shape.Radius) - area.RightBottom.Y;
 		if (l_ydlt > 0) {
 			l_flag = true;
 			ydist -= l_ydlt;
@@ -321,17 +318,17 @@ bool Entity::EdgeOverlap(long& xdist, long& ydist) {
 
 //bool Entity::ObstacleOverlap(long &xdist, long &ydist)
 //{
-//	Short	sUnitSX, sUnitEX, sUnitSY, sUnitEY;
-//	Short	sUnitWidth, sUnitHeight;
-//	Point	SPos = GetPos();
+//	int16_t	sUnitSX, sUnitEX, sUnitSY, sUnitEY;
+//	int16_t	sUnitWidth, sUnitHeight;
+//	Corsairs::Util::Point	SPos = GetPos();
 //
 //	sUnitWidth = m_submap->GetBlockCellWidth();
 //	sUnitHeight = m_submap->GetBlockCellHeight();
 //
-//	sUnitSX = Short(SPos.x / sUnitWidth);
-//	sUnitEX = Short((SPos.x + xdist) / sUnitWidth);
-//	sUnitSY = Short(SPos.y / sUnitHeight);
-//	sUnitEY = Short((SPos.y + ydist) / sUnitHeight);
+//	sUnitSX = int16_t(SPos.x / sUnitWidth);
+//	sUnitEX = int16_t((SPos.x + xdist) / sUnitWidth);
+//	sUnitSY = int16_t(SPos.y / sUnitHeight);
+//	sUnitEY = int16_t((SPos.y + ydist) / sUnitHeight);
 //
 //	if (sUnitSX == sUnitEX && sUnitSY == sUnitEY)
 //	{
@@ -347,30 +344,30 @@ bool Entity::EdgeOverlap(long& xdist, long& ydist) {
 //	bool	bIs45Dir = false;
 //	if (xdist == ydist)
 //	{
-//		Short	sModelX = Short(SPos.x % sUnitWidth);
-//		Short	sModelY = Short(SPos.y % sUnitHeight);
+//		int16_t	sModelX = int16_t(SPos.x % sUnitWidth);
+//		int16_t	sModelY = int16_t(SPos.y % sUnitHeight);
 //		if (sModelX == sModelY)
 //			bIs45Dir = true;
 //	}
 //	else if (-1 * xdist == ydist)
 //	{
-//		Short	sModelX = Short(SPos.x % sUnitWidth);
-//		Short	sModelY = Short(SPos.y % sUnitHeight);
+//		int16_t	sModelX = int16_t(SPos.x % sUnitWidth);
+//		int16_t	sModelY = int16_t(SPos.y % sUnitHeight);
 //		if (sUnitWidth - sModelX == sModelY || sModelX == sUnitHeight - sModelY)
 //			bIs45Dir = true;
 //	}
 //
 //	if (bIs45Dir)
 //	{
-//		Char	chXDir = 1;
-//		Char	chYDir = 1;
+//		char	chXDir = 1;
+//		char	chYDir = 1;
 //		if (sUnitSX > sUnitEX)
 //			chXDir = -1;
 //		if (sUnitSY > sUnitEY)
 //			chYDir = -1;
 //
-//		Short	sLoop = (sUnitEX - sUnitSX) * chXDir;
-//		for (Short i = 0; i <= sLoop; i++)
+//		int16_t	sLoop = (sUnitEX - sUnitSX) * chXDir;
+//		for (int16_t i = 0; i <= sLoop; i++)
 //			if (m_submap->IsBlock(sUnitSX + i * chXDir, sUnitSY + i * chYDir))
 //			{
 //				xdist = 0, ydist = 0;
@@ -389,19 +386,19 @@ bool Entity::EdgeOverlap(long& xdist, long& ydist) {
 //		{
 //			if (xdist == 0)
 //				return false;
-//			Long	lRSX = SPos.x, lRSY = SPos.y;
+//			std::int32_t	lRSX = SPos.x, lRSY = SPos.y;
 //			if (sUnitSX > sUnitEX)
 //			{
-//				Short	sTemp = sUnitSX;
+//				int16_t	sTemp = sUnitSX;
 //				sUnitSX = sUnitEX;
 //				sUnitEX = sTemp;
 //				lRSX += xdist;
 //				lRSY += ydist;
 //			}
-//			for (Short x = 0; x < sUnitEX - sUnitSX; x++)
+//			for (int16_t x = 0; x < sUnitEX - sUnitSX; x++)
 //			{
-//				Long y = ydist * ((sUnitWidth - lRSX % sUnitWidth) + x * sUnitWidth) / xdist + lRSY;
-//				Short sRUnitY = Short(y / sUnitHeight);
+//				std::int32_t y = ydist * ((sUnitWidth - lRSX % sUnitWidth) + x * sUnitWidth) / xdist + lRSY;
+//				int16_t sRUnitY = int16_t(y / sUnitHeight);
 //				if (m_submap->IsBlock(sUnitSX + x, sRUnitY))
 //				{
 //					xdist = 0, ydist = 0;
@@ -418,19 +415,19 @@ bool Entity::EdgeOverlap(long& xdist, long& ydist) {
 //		{
 //			if (ydist == 0)
 //				return false;
-//			Long	lRSX = SPos.x, lRSY = SPos.y;
+//			std::int32_t	lRSX = SPos.x, lRSY = SPos.y;
 //			if (sUnitSY > sUnitEY)
 //			{
-//				Short	sTemp = sUnitSY;
+//				int16_t	sTemp = sUnitSY;
 //				sUnitSY = sUnitEY;
 //				sUnitEY = sTemp;
 //				lRSX += xdist;
 //				lRSY += ydist;
 //			}
-//			for (Short y = 0; y < sUnitEY - sUnitSY; y++)
+//			for (int16_t y = 0; y < sUnitEY - sUnitSY; y++)
 //			{
-//				Long x = xdist * ((sUnitHeight - lRSY % sUnitHeight) + y * sUnitHeight) / ydist + lRSX;
-//				Short sRUnitX = Short(x / sUnitWidth);
+//				std::int32_t x = xdist * ((sUnitHeight - lRSY % sUnitHeight) + y * sUnitHeight) / ydist + lRSX;
+//				int16_t sRUnitX = int16_t(x / sUnitWidth);
 //				if (m_submap->IsBlock(sRUnitX, sUnitSY + y))
 //				{
 //					xdist = 0, ydist = 0;
@@ -449,17 +446,17 @@ bool Entity::EdgeOverlap(long& xdist, long& ydist) {
 //}
 
 bool Entity::ObstacleOverlap(long& xdist, long& ydist) {
-	Short sUnitSX, sUnitEX, sUnitSY, sUnitEY;
-	Short sUnitWidth, sUnitHeight;
-	Point SPos = GetPos();
+	int16_t sUnitSX, sUnitEX, sUnitSY, sUnitEY;
+	int16_t sUnitWidth, sUnitHeight;
+	Corsairs::Util::Point SPos = GetPos();
 
 	sUnitWidth = m_submap->GetBlockCellWidth();
 	sUnitHeight = m_submap->GetBlockCellHeight();
 
-	sUnitSX = Short(SPos.x / sUnitWidth);
-	sUnitEX = Short((SPos.x + xdist) / sUnitWidth);
-	sUnitSY = Short(SPos.y / sUnitHeight);
-	sUnitEY = Short((SPos.y + ydist) / sUnitHeight);
+	sUnitSX = int16_t(SPos.X / sUnitWidth);
+	sUnitEX = int16_t((SPos.X + xdist) / sUnitWidth);
+	sUnitSY = int16_t(SPos.Y / sUnitHeight);
+	sUnitEY = int16_t((SPos.Y + ydist) / sUnitHeight);
 
 	if (sUnitSX == sUnitEX && sUnitSY == sUnitEY) {
 		if (m_submap->IsBlock(sUnitSX, sUnitSY)) {
@@ -470,28 +467,28 @@ bool Entity::ObstacleOverlap(long& xdist, long& ydist) {
 
 	bool bIs45Dir = false;
 	if (xdist == ydist) {
-		Short sModelX = Short(SPos.x % sUnitWidth);
-		Short sModelY = Short(SPos.y % sUnitHeight);
+		int16_t sModelX = int16_t(SPos.X % sUnitWidth);
+		int16_t sModelY = int16_t(SPos.Y % sUnitHeight);
 		if (sModelX == sModelY)
 			bIs45Dir = true;
 	}
 	else if (-1 * xdist == ydist) {
-		Short sModelX = Short(SPos.x % sUnitWidth);
-		Short sModelY = Short(SPos.y % sUnitHeight);
+		int16_t sModelX = int16_t(SPos.X % sUnitWidth);
+		int16_t sModelY = int16_t(SPos.Y % sUnitHeight);
 		if (sUnitWidth - sModelX == sModelY || sModelX == sUnitHeight - sModelY)
 			bIs45Dir = true;
 	}
 
 	if (bIs45Dir) {
-		Char chXDir = 1;
-		Char chYDir = 1;
+		char chXDir = 1;
+		char chYDir = 1;
 		if (sUnitSX > sUnitEX)
 			chXDir = -1;
 		if (sUnitSY > sUnitEY)
 			chYDir = -1;
 
-		Short sLoop = (sUnitEX - sUnitSX) * chXDir;
-		for (Short i = 0; i <= sLoop; i++)
+		int16_t sLoop = (sUnitEX - sUnitSX) * chXDir;
+		for (int16_t i = 0; i <= sLoop; i++)
 			if (m_submap->IsBlock(sUnitSX + i * chXDir, sUnitSY + i * chYDir)) {
 				xdist = 0, ydist = 0;
 				return true;
@@ -499,23 +496,23 @@ bool Entity::ObstacleOverlap(long& xdist, long& ydist) {
 	}
 	else {
 		if (sUnitSX > sUnitEX) {
-			Short sTemp = sUnitSX;
+			int16_t sTemp = sUnitSX;
 			sUnitSX = sUnitEX;
 			sUnitEX = sTemp;
 		}
 		if (sUnitSY > sUnitEY) {
-			Short sTemp = sUnitSY;
+			int16_t sTemp = sUnitSY;
 			sUnitSY = sUnitEY;
 			sUnitEY = sTemp;
 		}
 
 		float v0[2];
-		v0[0] = (float)SPos.x, v0[1] = (float)SPos.y;
+		v0[0] = (float)SPos.X, v0[1] = (float)SPos.Y;
 		float v1[2];
-		v1[0] = (float)(SPos.x + xdist), v1[1] = (float)(SPos.y + ydist);
+		v1[0] = (float)(SPos.X + xdist), v1[1] = (float)(SPos.Y + ydist);
 		float p1[2], p2[2], p3[2], p4[2];
-		for (Short x = sUnitSX; x <= sUnitEX; x++) {
-			for (Short y = sUnitSY; y <= sUnitEY; y++) {
+		for (int16_t x = sUnitSX; x <= sUnitEX; x++) {
+			for (int16_t y = sUnitSY; y <= sUnitEY; y++) {
 				if (m_submap->IsBlock(x, y)) {
 					p1[0] = (float)(x * sUnitWidth), p1[1] = (float)(y * sUnitHeight);
 					p2[0] = (float)(p1[0] + sUnitWidth - 1), p2[1] = p1[1];
@@ -607,20 +604,20 @@ void Entity::SetCenterMgrNode(CStateCellNode* pCMgrNode) {
 	m_pCStateCellHead = pCMgrNode;
 }
 
-SSkillStateUnit* Entity::GetAreaState(dbc::uChar uchStateID) {
+SSkillStateUnit* Entity::GetAreaState(std::uint8_t uchStateID) {
 	if (!m_pCStateCellHead || !m_pCStateCellHead->m_pCStateCell)
 		return 0;
 	return m_pCStateCellHead->m_pCStateCell->m_CSkillState.GetSStateByID(uchStateID);
 }
 
 void Entity::RefreshArea(void) {
-	uShort usAreaAttr;
-	uChar uchIsland;
-	Short sUnitWidth, sUnitHeight;
-	Short sUnitX, sUnitY;
+	std::uint16_t usAreaAttr;
+	std::uint8_t uchIsland;
+	int16_t sUnitWidth, sUnitHeight;
+	int16_t sUnitX, sUnitY;
 	m_submap->GetTerrainCellSize(&sUnitWidth, &sUnitHeight);
-	sUnitX = Short(m_shape.centre.x / sUnitWidth);
-	sUnitY = Short(m_shape.centre.y / sUnitHeight);
+	sUnitX = int16_t(m_shape.Centre.X / sUnitWidth);
+	sUnitY = int16_t(m_shape.Centre.Y / sUnitHeight);
 	m_submap->GetTerrainCellAttr(sUnitX, sUnitY, usAreaAttr);
 	m_submap->GetTerrainCellIsland(sUnitX, sUnitY, uchIsland);
 
@@ -633,18 +630,18 @@ void Entity::RefreshArea(void) {
 	m_ucIslandID[1] = uchIsland;
 }
 
-void Entity::RefreshArea(Point* pSrcPos) {
-	Short sUnitWidth, sUnitHeight;
+void Entity::RefreshArea(Corsairs::Util::Point* pSrcPos) {
+	int16_t sUnitWidth, sUnitHeight;
 	m_submap->GetTerrainCellSize(&sUnitWidth, &sUnitHeight);
-	Short sUnitX, sUnitY;
-	sUnitX = Short(m_shape.centre.x / sUnitWidth);
-	sUnitY = Short(m_shape.centre.y / sUnitHeight);
+	int16_t sUnitX, sUnitY;
+	sUnitX = int16_t(m_shape.Centre.X / sUnitWidth);
+	sUnitY = int16_t(m_shape.Centre.Y / sUnitHeight);
 
-	if ((pSrcPos->x / sUnitWidth == sUnitX) && (pSrcPos->y / sUnitHeight == sUnitY))
+	if ((pSrcPos->X / sUnitWidth == sUnitX) && (pSrcPos->Y / sUnitHeight == sUnitY))
 		return;
 
-	uShort usAreaAttr;
-	uChar uchIsland;
+	std::uint16_t usAreaAttr;
+	std::uint8_t uchIsland;
 	m_submap->GetTerrainCellAttr(sUnitX, sUnitY, usAreaAttr);
 	m_submap->GetTerrainCellIsland(sUnitX, sUnitY, uchIsland);
 
@@ -657,7 +654,7 @@ void Entity::RefreshArea(Point* pSrcPos) {
 	m_ucIslandID[1] = uchIsland;
 }
 
-dbc::Short Entity::GetEyeshotWidth(void) {
+int16_t Entity::GetEyeshotWidth(void) {
 	if (!GetSubMap()) return 0;
 	return GetSubMap()->GetEyeshotWidth();
 }
@@ -669,12 +666,12 @@ bool Entity::IsInEyeshot(Entity* pCTarEnti) {
 		return false;
 	if (GetSubMap() != pCTarEnti->GetSubMap())
 		return false;
-	Point SEyeshotC = GetPos(), STarEyeshotC = pCTarEnti->GetPos();
+	Corsairs::Util::Point SEyeshotC = GetPos(), STarEyeshotC = pCTarEnti->GetPos();
 	GetSubMap()->GetEyeshotCenter(SEyeshotC);
 	GetSubMap()->GetEyeshotCenter(STarEyeshotC);
-	dbc::Short sEyeshotW = GetEyeshotWidth();
-	dbc::Short sEyeshotH = GetEyeshotHeight();
-	if (abs(SEyeshotC.x - STarEyeshotC.x) <= sEyeshotW && abs(SEyeshotC.y - STarEyeshotC.y) <= sEyeshotH)
+	int16_t sEyeshotW = GetEyeshotWidth();
+	int16_t sEyeshotH = GetEyeshotHeight();
+	if (abs(SEyeshotC.X - STarEyeshotC.X) <= sEyeshotW && abs(SEyeshotC.Y - STarEyeshotC.Y) <= sEyeshotH)
 		return true;
 
 	return false;
@@ -724,36 +721,36 @@ void NotiPkToWorld(Corsairs::Net::WPacket chginf) {
 // Ранее inline-методы из Entity.h, вынесены в .cpp 2026-04-22.
 // ============================================================================
 
-void Entity::SetInitShape(const Square& shape) {
+void Entity::SetInitShape(const Corsairs::Util::Square& shape) {
 	m_shape = shape;
 }
 
-const Square& Entity::GetShape() const {
+const Corsairs::Util::Square& Entity::GetShape() const {
 	return m_shape;
 }
 
-void Entity::SetPos(const Point& pos) {
-	m_shape.centre = pos;
+void Entity::SetPos(const Corsairs::Util::Point& pos) {
+	m_shape.Centre = pos;
 }
 
-void Entity::SetPos(dbc::Long lPosX, dbc::Long lPosY) {
-	m_shape.centre.x = lPosX;
-	m_shape.centre.y = lPosY;
+void Entity::SetPos(std::int32_t lPosX, std::int32_t lPosY) {
+	m_shape.Centre.X = lPosX;
+	m_shape.Centre.Y = lPosY;
 }
 
-const Point& Entity::GetPos() const {
-	return m_shape.centre;
+const Corsairs::Util::Point& Entity::GetPos() const {
+	return m_shape.Centre;
 }
 
 void Entity::SetRadius(const long& lRadius) {
-	m_shape.radius = lRadius;
+	m_shape.Radius = lRadius;
 }
 
 const long& Entity::GetRadius() const {
-	return m_shape.radius;
+	return m_shape.Radius;
 }
 
-dbc::uLong Entity::GetID() const {
+std::uint32_t Entity::GetID() const {
 	return m_ID;
 }
 
@@ -761,7 +758,7 @@ short Entity::GetCat() const {
 	return m_cat;
 }
 
-void Entity::SetID(dbc::uLong ulID) {
+void Entity::SetID(std::uint32_t ulID) {
 	m_ID = ulID;
 }
 
@@ -769,11 +766,11 @@ void Entity::SetCat(short sCat) {
 	m_cat = sCat;
 }
 
-void Entity::SetHandle(dbc::Long lHandle) {
+void Entity::SetHandle(std::int32_t lHandle) {
 	m_lHandle = lHandle;
 }
 
-dbc::Long Entity::GetHandle(void) {
+std::int32_t Entity::GetHandle(void) {
 	return m_lHandle;
 }
 
@@ -793,11 +790,11 @@ void Entity::SetAngle(short sAngle) {
 	m_sAngle = sAngle;
 }
 
-const Circle& Entity::GetTerritory() {
+const Corsairs::Util::Circle& Entity::GetTerritory() {
 	return m_STerritory;
 }
 
-void Entity::SetTerritory(Circle& STerritory) {
+void Entity::SetTerritory(Corsairs::Util::Circle& STerritory) {
 	m_STerritory = STerritory;
 }
 
@@ -826,7 +823,7 @@ const std::string& Entity::GetNameStr() const {
 	return _name;
 }
 
-void Entity::SetBirthCity(dbc::cChar* cszName) {
+void Entity::SetBirthCity(const char* cszName) {
 	strncpy(m_szBirthCity, cszName, MAX_MAPNAME_LENGTH - 1);
 	m_szBirthCity[MAX_MAPNAME_LENGTH - 1] = '\0';
 }
@@ -835,7 +832,7 @@ const char* Entity::GetBirthCity() {
 	return m_szBirthCity;
 }
 
-void Entity::SetBirthMap(dbc::cChar* cszName) {
+void Entity::SetBirthMap(const char* cszName) {
 	strncpy(m_szBirthMap, cszName, MAX_MAPNAME_LENGTH - 1);
 	m_szBirthMap[MAX_MAPNAME_LENGTH - 1] = '\0';
 }
@@ -844,11 +841,11 @@ const char* Entity::GetBirthMap() {
 	return m_szBirthMap;
 }
 
-void Entity::SetWitherTime(dbc::Long lWitherTime) {
+void Entity::SetWitherTime(std::int32_t lWitherTime) {
 	m_SExistCtrl.lWitherTime = lWitherTime;
 }
 
-void Entity::SetResumeTime(dbc::Long lResumeTime) {
+void Entity::SetResumeTime(std::int32_t lResumeTime) {
 	m_SExistCtrl.lResumeTime = lResumeTime;
 }
 
@@ -860,22 +857,22 @@ CEvent& Entity::GetEvent(void) {
 	return m_CEvent;
 }
 
-void Entity::Run(dbc::uLong /*ulCurTick*/) {
+void Entity::Run(std::uint32_t /*ulCurTick*/) {
 }
 
-dbc::Short Entity::GetExistState(void) {
+int16_t Entity::GetExistState(void) {
 	return m_SExistCtrl.sState;
 }
 
-void Entity::SetExistState(dbc::Short sState) {
+void Entity::SetExistState(int16_t sState) {
 	m_SExistCtrl.sState = sState;
 }
 
-dbc::Short Entity::GetStopState(void) {
+int16_t Entity::GetStopState(void) {
 	return m_SExistCtrl.sStopState;
 }
 
-void Entity::SetStopState(dbc::Short sState) {
+void Entity::SetStopState(int16_t sState) {
 	m_SExistCtrl.sStopState = sState;
 }
 
@@ -895,20 +892,20 @@ void Entity::SetValid(bool bValid) {
 	m_bValid = bValid;
 }
 
-dbc::uShort Entity::GetAreaAttr(void) {
+std::uint16_t Entity::GetAreaAttr(void) {
 	return m_usAreaAttr[1];
 }
 
-void Entity::SetAreaAttr(dbc::uShort usAreaAttr) {
+void Entity::SetAreaAttr(std::uint16_t usAreaAttr) {
 	m_usAreaAttr[0] = m_usAreaAttr[1];
 	m_usAreaAttr[1] = usAreaAttr;
 }
 
-dbc::uChar Entity::GetIslandID(void) {
+std::uint8_t Entity::GetIslandID(void) {
 	return m_ucIslandID[1];
 }
 
-void Entity::SetIslandID(dbc::uChar uchIsland) {
+void Entity::SetIslandID(std::uint8_t uchIsland) {
 	m_ucIslandID[0] = m_ucIslandID[1];
 	m_ucIslandID[1] = uchIsland;
 }
@@ -917,7 +914,7 @@ bool Entity::IsInSafeArea(void) {
 	return (GetAreaAttr() & enumAREA_TYPE_NOT_FIGHT) != 0;
 }
 
-dbc::Short Entity::GetEyeshotHeight(void) {
+int16_t Entity::GetEyeshotHeight(void) {
 	return GetEyeshotWidth();
 }
 
@@ -971,7 +968,7 @@ void Entity::EndSee(Entity* obj) {
 void Entity::ReflectINFof(Entity* /*srcent*/, Corsairs::Net::WPacket /*chginf*/) {
 }
 
-const Square& Entity::GetLapChkShape() {
+const Corsairs::Util::Square& Entity::GetLapChkShape() {
 	return m_shape;
 }
 

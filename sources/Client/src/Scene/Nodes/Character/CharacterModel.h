@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <optional>
+
 // CharacterModel MPCharacter
 // , 
 // , 
@@ -169,7 +171,7 @@ protected:
 
 private:
 	int GetBoatPart(int dummy);
-	DWORD _BigPose2SmallPose(DWORD pose_id);
+	std::optional<DWORD> _BigPose2SmallPose(DWORD pose_id);
 
 public:
 	CCharacterModel();

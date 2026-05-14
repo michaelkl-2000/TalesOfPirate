@@ -8,19 +8,12 @@
 
 class CProCirculate;
 
-//   (  dbc:: namespace)
-using uChar = uint8_t;
-using uShort = uint16_t;
-using uLong = unsigned long;
-using cChar = const char;
-using LLong = __int64;
-
-//  
+//
 #ifndef DS_DISCONN
 #define DS_DISCONN  (0xFFFE)
 #endif
 
-//   ( dbc::RPacket& / dbc::WPacket&)
+//   ( Corsairs::Net::RPacket& / Corsairs::Net::WPacket&)
 typedef Corsairs::Net::RPacket& LPRPACKET;
 typedef Corsairs::Net::WPacket& LPWPACKET;
 //    
@@ -73,7 +66,7 @@ public:
 		_client.PollPackets(maxPackets);
 	}
 
-	unsigned long GetAveragePing();
+	std::uint32_t GetAveragePing();
 
 	CProCirculate* GetProCir() {
 		return m_pCProCir;
@@ -89,15 +82,15 @@ public:
 	Connection m_connect;
 
 	struct {
-		unsigned long m_pingid;
-		unsigned long m_maxdelay, m_curdelay, m_mindelay;
+		std::uint32_t m_pingid;
+		std::uint32_t m_maxdelay, m_curdelay, m_mindelay;
 		DWORD dwLatencyTime[20];
 
-		unsigned long m_ulCurStatistic;
-		unsigned long m_ulDelayTime[4];
+		std::uint32_t m_ulCurStatistic;
+		std::uint32_t m_ulDelayTime[4];
 	};
 
-	unsigned long m_ulPacketCount;
+	std::uint32_t m_ulPacketCount;
 	long m_framedelay;
 
 	CProCirculate* m_pCProCir;
@@ -119,9 +112,9 @@ public:
 	int _comm_enc;
 
 private:
-	bool EncryptAES(char* ciphertext, unsigned long ciphertext_len,
-					const char* plaintext, unsigned long& ciphersize);
-	bool DecryptAES(char* ciphertext, unsigned long& len);
+	bool EncryptAES(char* ciphertext, std::uint32_t ciphertext_len,
+					const char* plaintext, std::uint32_t& ciphersize);
+	bool DecryptAES(char* ciphertext, std::uint32_t& len);
 
 	Corsairs::Net::TcpClient _client;
 };

@@ -13,8 +13,8 @@ ZRBlock::~ZRBlock() = default;
 void ZRBlock::Attach(Corsairs::Engine::Render::MapStream& stream) {
 	_stream = &stream;
 	const auto& header = stream.Header();
-	_sectionWidth = header.nSectionWidth;
-	_sectionHeight = header.nSectionHeight;
+	_sectionWidth = header.SectionWidth;
+	_sectionHeight = header.SectionHeight;
 	_sectionCntX = stream.SectionCountX();
 	_sectionCntY = stream.SectionCountY();
 	ClearSectionArray();
@@ -31,7 +31,7 @@ void ZRBlock::GetBlockByRange(int CenterX, int CenterY, int range) {
 	_showCenterX = CenterX;
 	_showCenterY = CenterY;
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 	int nCurSectionX = (int)(_showCenterX - (float)range / 2.0f) / _sectionWidth;
 	int nCurSectionY = (int)(_showCenterY - (float)range / 2.0f) / _sectionHeight;

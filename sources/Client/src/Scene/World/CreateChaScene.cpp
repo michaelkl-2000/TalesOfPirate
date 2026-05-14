@@ -1177,7 +1177,7 @@ void CCreateChaScene::_ChaFoundFrmMouseEvent(CCompent* pSender, int nMsgType,
 											 int x, int y, DWORD dwKey) {
 	string strName = pSender->GetName();
 
-	if (!encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmFound")) {
+	if (!Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmFound")) {
 		return;
 	}
 
@@ -1222,7 +1222,7 @@ void CCreateChaScene::_ChaCityFrmMouseEvent(CCompent* pSender, int nMsgType,
 	string strName = pSender->GetName();
 
 
-	if (!encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmCity")) {
+	if (!Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmCity")) {
 		return;
 	}
 
@@ -1262,7 +1262,7 @@ void CCreateChaScene::_QuitFrmMouseEvent(CCompent* pSender, int nMsgType,
 										 int x, int y, DWORD dwKey) {
 	string strName = pSender->GetName();
 
-	if (!encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmQuit")) {
+	if (!Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmQuit")) {
 		return;
 	}
 

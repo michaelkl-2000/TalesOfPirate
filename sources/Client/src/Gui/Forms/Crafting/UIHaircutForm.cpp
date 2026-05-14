@@ -52,7 +52,7 @@ namespace GUI {
 		frmHaircut->evtEntrustMouseEvent = _MainMouseHaircutEvent;
 		frmHaircut->evtClose = _MainOnCloseEvent;
 
-		for (int i(0); i < defHAIR_MAX_ITEM; i++) {
+		for (int i(0); i < Corsairs::Common::Character::kHairMaxNeedItems; i++) {
 			const std::string szBuf = std::format("cmdHead{}", i + 1);
 			cmdProp[i] = dynamic_cast<COneCommand*>(frmHaircut->Find(szBuf.c_str()));
 			if (!cmdProp[i])
@@ -202,9 +202,9 @@ namespace GUI {
 		CHairRecord* pHairRecord = pHairName->GetInfo(m_dwHairColorIndex);
 		if (!pHairRecord) return;
 
-		lblHairColor->SetCaption(pHairRecord->szColor.c_str());
+		lblHairColor->SetCaption(pHairRecord->Color.c_str());
 		lblHairType->SetCaption(pHairRecord->DataName.c_str());
-		lblHairFare->SetCaption(std::format("{}", pHairRecord->dwMoney).c_str());
+		lblHairFare->SetCaption(std::format("{}", pHairRecord->Cost).c_str());
 
 		CGoodsGrid* pGrid = g_stUIEquip.GetGoodsGrid();
 		if (!pGrid) return;
@@ -226,13 +226,13 @@ namespace GUI {
 
 		// 
 		CItemCommand* propItem = NULL;
-		for (int i(0); i < defHAIR_MAX_ITEM; i++) {
-			CItemRecord* pItemRecord = GetItemRecordInfo(pHairRecord->dwNeedItem[i][0]);
+		for (int i(0); i < Corsairs::Common::Character::kHairMaxNeedItems; i++) {
+			CItemRecord* pItemRecord = GetItemRecordInfo(pHairRecord->NeedItems[i].Id);
 			if (!pItemRecord) continue;
 
 			propItem = new CItemCommand(pItemRecord);
 			cmdProp[i]->AddCommand(propItem);
-			propItem->SetTotalNum(pHairRecord->dwNeedItem[i][1]);
+			propItem->SetTotalNum(pHairRecord->NeedItems[i].Count);
 
 			CItemCommand* pItem = NULL;
 			int j = 0;
@@ -242,8 +242,8 @@ namespace GUI {
 
 				if (!pItem->GetIsValid()) continue;
 
-				if (pItem->GetItemInfo()->Id == pHairRecord->dwNeedItem[i][0]) {
-					if (pItem->GetTotalNum() >= (int)pHairRecord->dwNeedItem[i][1])
+				if (pItem->GetItemInfo()->Id == pHairRecord->NeedItems[i].Id) {
+					if (pItem->GetTotalNum() >= (int)pHairRecord->NeedItems[i].Count)
 						break;
 				}
 			}
@@ -269,7 +269,7 @@ namespace GUI {
 			res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 			res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
 
-			m_pCurrMainCha->ChangePart(enumEQUIP_HEAD, pHairRecord->dwItemID);
+			m_pCurrMainCha->ChangePart(enumEQUIP_HEAD, pHairRecord->ResultItemId);
 
 			res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, loadtex_flag);
 			res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, loadmesh_flag);
@@ -331,7 +331,7 @@ namespace GUI {
 		stNetUpdateHair sNetUpdateHair;
 		memset(&sNetUpdateHair, 0, sizeof(sNetUpdateHair));
 		sNetUpdateHair.sScriptID = g_stUIHaircut.m_sScriptID;
-		for (int i = 0; i < defHAIR_MAX_ITEM; i++)
+		for (int i = 0; i < Corsairs::Common::Character::kHairMaxNeedItems; i++)
 			sNetUpdateHair.sGridLoc[i] = g_stUIHaircut.m_iGoodsIndex[i];
 		CS_UpdateHair(sNetUpdateHair);
 	}

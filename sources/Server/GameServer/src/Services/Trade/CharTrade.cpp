@@ -1,4 +1,4 @@
-﻿// CharTrade.cpp Created by knight-gongjian 2004.12.7.
+// CharTrade.cpp Created by knight-gongjian 2004.12.7.
 //---------------------------------------------------------
 #include "Core/stdafx.h"
 namespace Corsairs::Common::Localization {}
@@ -88,7 +88,7 @@ namespace mission
         }
 
 		CCharacter* pMain = &character;
-		CCharacter* pChar = pMain->GetSubMap()->FindCharacter( dwAcceptID, pMain->GetShape().centre );
+		CCharacter* pChar = pMain->GetSubMap()->FindCharacter( dwAcceptID, pMain->GetShape().Centre );
 		if( pChar == NULL || !pChar->IsPlayerCha() ) 
 		{
 			//pMain->SystemNotice( "!" );
@@ -220,10 +220,10 @@ namespace mission
 
 	BOOL CTradeSystem::IsTradeDist( CCharacter& Char1, CCharacter& Char2, DWORD dwDist )
 	{
-		DWORD dwxDist = (Char1.GetShape().centre.x - Char2.GetShape().centre.x) * 
-			(Char1.GetShape().centre.x - Char2.GetShape().centre.x);
-		DWORD dwyDist = (Char1.GetShape().centre.y - Char2.GetShape().centre.y) * 
-			(Char1.GetShape().centre.y - Char2.GetShape().centre.y);
+		DWORD dwxDist = (Char1.GetShape().Centre.X - Char2.GetShape().Centre.X) * 
+			(Char1.GetShape().Centre.X - Char2.GetShape().Centre.X);
+		DWORD dwyDist = (Char1.GetShape().Centre.Y - Char2.GetShape().Centre.Y) * 
+			(Char1.GetShape().Centre.Y - Char2.GetShape().Centre.Y);
 		return ( dwxDist + dwyDist < dwDist * 100 );
 	}
 
@@ -284,7 +284,7 @@ namespace mission
 			return FALSE;
 		}
 
-		CCharacter* pChar = pMain->GetSubMap()->FindCharacter( dwRequestID, pMain->GetShape().centre );
+		CCharacter* pChar = pMain->GetSubMap()->FindCharacter( dwRequestID, pMain->GetShape().Centre );
 		if( pChar == NULL ) 
 		{
 			//pMain->SystemNotice( "!" );
@@ -1024,7 +1024,7 @@ namespace mission
 					return FALSE;
 				}
 
-				CCharacter* pBoat = pMain->GetPlayer()->GetBoat( (DWORD)Bag.GetDBParam( enumITEMDBP_INST_ID, byItemIndex ) );
+				CCharacter* pBoat = pMain->GetPlayer()->GetBoat(Bag.GetDBParam( enumITEMDBP_INST_ID, byItemIndex ) );
 				if( !pBoat )
 				{
 					/*pMain->SystemNotice( "ID[0x%X]", 
@@ -1081,7 +1081,7 @@ namespace mission
 			if( pItem->sType == enumItemTypeBoat )
 			{
 				Corsairs::Net::Msg::TradeBoatData boat;
-				CCharacter* pBoat = pMain->GetPlayer()->GetBoat( (DWORD)Bag.GetDBParam( enumITEMDBP_INST_ID, byItemIndex ) );
+				CCharacter* pBoat = pMain->GetPlayer()->GetBoat(Bag.GetDBParam( enumITEMDBP_INST_ID, byItemIndex ) );
 				if( pBoat )
 				{
 					boat.hasBoat = true;
@@ -1470,7 +1470,7 @@ namespace mission
 
 						if( pItem->sType == enumItemTypeBoat )
 						{
-							CCharacter* pBoat = pAccept->GetPlayer()->GetBoat( (DWORD)AcpGrid[i].GetDBParam( enumITEMDBP_INST_ID ) );
+							CCharacter* pBoat = pAccept->GetPlayer()->GetBoat(AcpGrid[i].GetDBParam( enumITEMDBP_INST_ID ) );
 							if( pBoat )
 							{
 								std::snprintf( szTemp, sizeof(szTemp), RES_STRING(GM_CHARTRADE_CPP_00063), AcpGrid[i].sNum, pBoat->GetName(),
@@ -1545,7 +1545,7 @@ namespace mission
 
 						if( pItem->sType == enumItemTypeBoat )
 						{
-							CCharacter* pBoat = pRequest->GetPlayer()->GetBoat( (DWORD)ReqGrid[i].GetDBParam( enumITEMDBP_INST_ID ) );
+							CCharacter* pBoat = pRequest->GetPlayer()->GetBoat(ReqGrid[i].GetDBParam( enumITEMDBP_INST_ID ) );
 							if( pBoat )
 							{
 								/*sprintf( szTemp, "%d%sID[0x%X]", ReqGrid[i].sNum, pBoat->GetName(),
@@ -1611,8 +1611,8 @@ namespace mission
 
 					// 					
 					USHORT sCount = AcpGrid[i].sNum;
-					Short sPushPos = defKITBAG_DEFPUSH_POS;
-					Short sPushRet = pRequest->KbPushItem( true, false, AcpGrid + i, sPushPos );
+					int16_t sPushPos = defKITBAG_DEFPUSH_POS;
+					int16_t sPushRet = pRequest->KbPushItem( true, false, AcpGrid + i, sPushPos );
 
 					if( sPushRet == enumKBACT_ERROR_FULL ) // 
 					{
@@ -1620,7 +1620,7 @@ namespace mission
 						USHORT sNum = sCount - AcpGrid[i].sNum;
 
 						CCharacter	*pCCtrlCha = pRequest->GetPlyCtrlCha(), *pCMainCha = pRequest->GetPlyMainCha();
-						Long	lPosX, lPosY;
+						std::int32_t	lPosX, lPosY;
 						pCCtrlCha->GetTrowItemPos(&lPosX, &lPosY);
 						if( pCCtrlCha->GetSubMap()->ItemSpawn( AcpGrid + i, lPosX, lPosY, enumITEM_APPE_THROW, pCCtrlCha->GetID(), pCMainCha->GetID(), pCMainCha->GetHandle() ) == NULL )
 						{
@@ -1697,8 +1697,8 @@ namespace mission
 
 					// 
 					USHORT sCount = ReqGrid[i].sNum;
-					Short sPushPos = defKITBAG_DEFPUSH_POS;
-					Short sPushRet = pAccept->KbPushItem( true, false, ReqGrid + i, sPushPos );
+					int16_t sPushPos = defKITBAG_DEFPUSH_POS;
+					int16_t sPushRet = pAccept->KbPushItem( true, false, ReqGrid + i, sPushPos );
 					
 					if( sPushRet == enumKBACT_ERROR_FULL ) // 
 					{
@@ -1706,7 +1706,7 @@ namespace mission
 						USHORT sNum = sCount - ReqGrid[i].sNum;
 
 						CCharacter	*pCCtrlCha = pAccept->GetPlyCtrlCha(), *pCMainCha = pAccept->GetPlyMainCha();
-						Long	lPosX, lPosY;
+						std::int32_t	lPosX, lPosY;
 						pCCtrlCha->GetTrowItemPos(&lPosX, &lPosY);
 						if( pCCtrlCha->GetSubMap()->ItemSpawn( ReqGrid + i, lPosX, lPosY, enumITEM_APPE_THROW, pCCtrlCha->GetID(), pCMainCha->GetID(), pCMainCha->GetHandle() ) == NULL )
 						{

@@ -38,16 +38,16 @@ void NetMC_LISTGUILD_END() {
 	CUIGuildList::ShowGuildList();
 }
 
-void NetMC_LISTGUILD(uLong id, cChar* name, cChar* motto, cChar* leadername, uShort memtotal, LLong exp) {
+void NetMC_LISTGUILD(std::uint32_t id, std::string_view name, std::string_view motto, std::string_view leadername, std::uint16_t memtotal, std::int64_t exp) {
 	CGuildListMgr::AddGuild(new CGuildListData(id, name, motto, leadername, memtotal, exp));
 }
 
-void NetMC_GUILD_TRYFORCFM(cChar* oldgldname) {
+void NetMC_GUILD_TRYFORCFM(std::string_view oldgldname) {
 	CUIGuildList::OnMsgReplaceApply(oldgldname);
 }
 
-void NetMC_LISTTRYPLAYER_BEGIN(uLong gldid, cChar* gldname, cChar* motto, char stat, cChar* ldrname, uShort memnum,
-							   uShort maxmem, LLong exp, uLong remain) {
+void NetMC_LISTTRYPLAYER_BEGIN(std::uint32_t gldid, std::string_view gldname, std::string_view motto, char stat, std::string_view ldrname, std::uint16_t memnum,
+							   std::uint16_t maxmem, std::int64_t exp, std::uint32_t remain) {
 	CRecruitMembersMgr::ResetAll();
 	CGuildData::sGuildData data;
 	data.guild_id = gldid;
@@ -66,7 +66,7 @@ void NetMC_LISTTRYPLAYER_END() {
 	CUIGuildMgr::ShowForm();
 }
 
-void NetMC_LISTTRYPLAYER(uLong chaid, cChar* chaname, cChar* job, uShort degree) {
+void NetMC_LISTTRYPLAYER(std::uint32_t chaid, std::string_view chaname, std::string_view job, std::uint16_t degree) {
 	CRecruitMemberData* pMemberData = new CRecruitMemberData;
 	pMemberData->SetID(chaid);
 	pMemberData->SetName(chaname);
@@ -75,7 +75,7 @@ void NetMC_LISTTRYPLAYER(uLong chaid, cChar* chaname, cChar* job, uShort degree)
 	CRecruitMembersMgr::AddRecruitMember(pMemberData);
 }
 
-void NetPC_GUILD_ONLINE(uLong chaid) {
+void NetPC_GUILD_ONLINE(std::uint32_t chaid) {
 	CGuildMemberData* pMemberData = CGuildMembersMgr::FindGuildMemberByID(chaid);
 	if (!pMemberData) return;
 	pMemberData->SetOnline(true);
@@ -94,13 +94,13 @@ void NetPC_GUILD_ONLINE(uLong chaid) {
 	}
 }
 
-void NetPC_GUILD_UPDATEPERM(uLong chaid, uLong perm) {
+void NetPC_GUILD_UPDATEPERM(std::uint32_t chaid, std::uint32_t perm) {
 	CGuildMemberData* pMemberData = CGuildMembersMgr::FindGuildMemberByID(chaid);
 	if (!pMemberData) return;
 	pMemberData->SetPerm(perm);
 }
 
-void NetPC_GUILD_OFFLINE(uLong chaid) {
+void NetPC_GUILD_OFFLINE(std::uint32_t chaid) {
 	CGuildMemberData* pMemberData = CGuildMembersMgr::FindGuildMemberByID(chaid);
 	if (!pMemberData) return;
 	pMemberData->SetOnline(false);
@@ -119,7 +119,7 @@ void NetPC_GUILD_OFFLINE(uLong chaid) {
 	}
 }
 
-void NetPC_GUILD_START_BEGIN(uLong guildid, cChar* guildname, uLong leaderid) {
+void NetPC_GUILD_START_BEGIN(std::uint32_t guildid, std::string_view guildname, std::uint32_t leaderid) {
 	CGuildMembersMgr::ResetAll();
 	g_stUIChat.GetGuildNode()->Clear();
 	CGuildData::SetGuildID(guildid);
@@ -141,8 +141,8 @@ void NetPC_GUILD_START_END() {
 	g_stUIChat.GetTeamView()->Refresh();
 }
 
-void NetPC_GUILD_START(bool online, uLong chaid, cChar* chaname, cChar* motto, cChar* job, uShort degree, uShort icon,
-					   uLong permission) {
+void NetPC_GUILD_START(bool online, std::uint32_t chaid, std::string_view chaname, std::string_view motto, std::string_view job, std::uint16_t degree, std::uint16_t icon,
+					   std::uint32_t permission) {
 	CGuildMemberData* pMemberData = new CGuildMemberData;
 	pMemberData->SetOnline(online);
 	pMemberData->SetID(chaid);
@@ -157,7 +157,7 @@ void NetPC_GUILD_START(bool online, uLong chaid, cChar* chaname, cChar* motto, c
 	if (g_pGameApp->GetCurScene()->GetMainCha()->getHumanID() == chaid) return;
 	CTextGraph* pItem = new CTextGraph(2);
 	pMemberData->SetPointer(pItem);
-	string str = chaname;
+	string str{chaname};
 	if (!std::string_view{motto}.empty()) {
 		str += "(" + string(motto) + ")";
 	}
@@ -184,8 +184,8 @@ void NetPC_GUILD_START(bool online, uLong chaid, cChar* chaname, cChar* motto, c
 	g_stUIChat.GetGuildNode()->AddItem(pItem);
 }
 
-void NetPC_GUILD_ADD(bool online, uLong chaid, cChar* chaname, cChar* motto, cChar* job, uShort degree, uShort icon,
-					 uLong permission) {
+void NetPC_GUILD_ADD(bool online, std::uint32_t chaid, std::string_view chaname, std::string_view motto, std::string_view job, std::uint16_t degree, std::uint16_t icon,
+					 std::uint32_t permission) {
 	if (CGuildMembersMgr::FindGuildMemberByID(chaid)) return;
 	CGuildMemberData* pMemberData = new CGuildMemberData;
 	pMemberData->SetOnline(online);
@@ -201,7 +201,7 @@ void NetPC_GUILD_ADD(bool online, uLong chaid, cChar* chaname, cChar* motto, cCh
 	if (g_pGameApp->GetCurScene()->GetMainCha()->getHumanID() == chaid) return;
 	CTextGraph* pItem = new CTextGraph(2);
 	pMemberData->SetPointer(pItem);
-	string str = chaname;
+	string str{chaname};
 	if (!std::string_view{motto}.empty()) {
 		str += "(" + string(motto) + ")";
 	}
@@ -231,7 +231,7 @@ void NetPC_GUILD_ADD(bool online, uLong chaid, cChar* chaname, cChar* motto, cCh
 	CUIGuildMgr::RefreshForm();
 }
 
-void NetPC_GUILD_DEL(uLong chaid) {
+void NetPC_GUILD_DEL(std::uint32_t chaid) {
 	CGuildMemberData* pMemberData = CGuildMembersMgr::FindGuildMemberByID(chaid);
 	g_stUIChat.GetGuildNode()->DelItem((CItemObj*)pMemberData->GetPointer());
 	CGuildMembersMgr::DelGuildMemberByID(chaid);
@@ -248,14 +248,14 @@ void NetPC_GUILD_STOP() {
 	CGuildData::Reset();
 }
 
-void NetMC_GUILD_MOTTO(cChar* motto) {
+void NetMC_GUILD_MOTTO(std::string_view motto) {
 	//()-Arcol 2005.10.9
 	CGuildData::SetGuildMottoName(motto);
 	CUIGuildMgr::RefreshAttribute();
 }
 
 void NetMC_GUILD_INFO(DWORD dwCharID, DWORD dwGuildID, const char szGuildName[], const char szGuildMotto[],
-					  uLong chGuildPermission) {
+					  std::uint32_t chGuildPermission) {
 	g_logManager.InternalLog(LogLevel::Debug, "common",
 							 std::format("Guild Info:{}, Name:{}, Motto:{}", dwGuildID, szGuildName, szGuildMotto));
 

@@ -56,7 +56,7 @@ void MPEditor::Init(int nMapID) {
 		MPMapFileHeader maphdr;
 		if (_getMapHeader(pMapInfo->szName, maphdr))
 			{
-			if (createAttribFile(pMapInfo->szName, maphdr.nWidth, maphdr.nHeight))
+			if (createAttribFile(pMapInfo->szName, maphdr.Width, maphdr.Height))
 				openAttribFile(pMapInfo->szName); // 
 			Tip(szTip);
 			}
@@ -1631,7 +1631,7 @@ void MPEditor::SetCha(bool press, int num) {
 	if (press) {
 		int nTypeID = num;
 
-		m_nSelTypeID = nTypeID; // Str2Int(strNum);
+		m_nSelTypeID = nTypeID; // Corsairs::Util::Str2Int(strNum);
 
 		pCha = pScene->AddCharacter(m_nSelTypeID);
 		if (pCha) {
@@ -2144,7 +2144,7 @@ void MPEditor::_UpdateObjHeightmap(CSceneObj* pObj) {
 	if (!pTerrain)
 		return;
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 
 	int sx, sy, width, height;

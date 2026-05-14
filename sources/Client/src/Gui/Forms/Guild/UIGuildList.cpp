@@ -162,8 +162,8 @@ void CUIGuildList::OnClickApply(CGuiData* pSender, int x, int y, DWORD key) {
 	CM_GUILD_TRYFOR(pListData->GetGuildID());
 }
 
-void CUIGuildList::OnMsgReplaceApply(string strOldGuildName) {
-	string str = GetLanguageString(593) + strOldGuildName;
+void CUIGuildList::OnMsgReplaceApply(std::string_view strOldGuildName) {
+	string str = GetLanguageString(593) + std::string{strOldGuildName};
 	CBoxMgr::ShowSelectBox(OnMsgReplaceApplySelectClick, str.c_str(), true);
 }
 

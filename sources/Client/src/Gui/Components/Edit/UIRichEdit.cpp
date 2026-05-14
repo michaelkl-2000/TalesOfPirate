@@ -106,7 +106,7 @@ bool CRichEdit::OnChar(char c) {
 		std::string utf8;
 		if (_nEnterPos == 1) {
 			_szEnter[1] = c;
-			utf8 = encoding::AnsiToUtf8(std::string_view(_szEnter, 2));
+			utf8 = Corsairs::Util::Encoding::AnsiToUtf8(std::string_view(_szEnter, 2));
 			_nEnterPos = 0;
 			_szEnter[0] = _szEnter[1] = 0;
 		}
@@ -116,7 +116,7 @@ bool CRichEdit::OnChar(char c) {
 			return false;
 		}
 		else {
-			encoding::AppendAnsiByteAsUtf8(byte, utf8);
+			Corsairs::Util::Encoding::AppendAnsiByteAsUtf8(byte, utf8);
 		}
 		if (utf8.size() == 1) {
 			_cArticle.AddChar(utf8[0]);

@@ -219,7 +219,7 @@ void ClearHelpNPC() {
 
 // DBLog
 void TestDBLog(int nCnt) {
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 	for (int i = 0; i < nCnt; i++) {
 		g_pGameApp->Log("newtest", "abcdefg", "1234567", "000000", "qqqppp", "abcdefghijklmnopqrstuvwxyz");
@@ -280,13 +280,13 @@ int GetChaID(CCharacter* pCha) {
 CCharacter* CreateChaNearPlayer(CCharacter* pCha, int nScriptID) {
 	if (!g_pScriptMap) return nullptr;
 	if (!pCha) return nullptr;
-	Point Pos;
-	Pos.x = (int)pCha->GetPos().x;
-	Pos.y = (int)pCha->GetPos().y;
+	Corsairs::Util::Point Pos;
+	Pos.X = (int)pCha->GetPos().X;
+	Pos.Y = (int)pCha->GetPos().Y;
 
-	AddMonsterHelp(nScriptID, Pos.x, Pos.y);
+	AddMonsterHelp(nScriptID, Pos.X, Pos.Y);
 
-	CCharacter* pCCha = pCha->GetSubMap()->ChaSpawn(nScriptID, enumCHACTRL_NONE, 0, &Pos);
+	CCharacter* pCCha = pCha->GetSubMap()->ChaSpawn(nScriptID, static_cast<char>(EChaCtrlType::NONE), 0, &Pos);
 	if (pCCha) {
 		return pCCha;
 	}
@@ -301,16 +301,16 @@ CCharacter* CreateChaNearPlayer(CCharacter* pCha, int nScriptID) {
 CCharacter* CreateCha(int nScriptID, int x, int y, int sAngle, int lReliveTime) {
 	if (!g_pScriptMap) return nullptr;
 
-	Point Pos;
-	Pos.x = x;
-	Pos.y = y;
+	Corsairs::Util::Point Pos;
+	Pos.X = x;
+	Pos.Y = y;
 
-	ToLogService("common", "create bugbear{}  pos = {} {}, angle = {}, rTime = {}", nScriptID, Pos.x, Pos.y, sAngle,
+	ToLogService("common", "create bugbear{}  pos = {} {}, angle = {}, rTime = {}", nScriptID, Pos.X, Pos.Y, sAngle,
 				 lReliveTime);
 
-	AddMonsterHelp(nScriptID, Pos.x, Pos.y);
+	AddMonsterHelp(nScriptID, Pos.X, Pos.Y);
 
-	CCharacter* pCCha = g_pScriptMap->ChaSpawn(nScriptID, enumCHACTRL_NONE, (short)sAngle, &Pos);
+	CCharacter* pCCha = g_pScriptMap->ChaSpawn(nScriptID, static_cast<char>(EChaCtrlType::NONE), (short)sAngle, &Pos);
 	if (pCCha) {
 		pCCha->SetResumeTime(lReliveTime * 1000);
 		return pCCha;
@@ -323,16 +323,16 @@ CCharacter* CreateCha(int nScriptID, int x, int y, int sAngle, int lReliveTime) 
 
 CCharacter* CreateChaX(int nScriptID, int x, int y, int sAngle, int lReliveTime, CCharacter* pMainCha) {
 	if (!pMainCha) return nullptr;
-	Point Pos;
-	Pos.x = x;
-	Pos.y = y;
+	Corsairs::Util::Point Pos;
+	Pos.X = x;
+	Pos.Y = y;
 
-	ToLogService("common", "create bugbearX{}  pos = {} {}, angle = {}, rTime = {}", nScriptID, Pos.x, Pos.y, sAngle,
+	ToLogService("common", "create bugbearX{}  pos = {} {}, angle = {}, rTime = {}", nScriptID, Pos.X, Pos.Y, sAngle,
 				 lReliveTime);
 
-	AddMonsterHelp(nScriptID, Pos.x, Pos.y);
+	AddMonsterHelp(nScriptID, Pos.X, Pos.Y);
 
-	CCharacter* pCCha = pMainCha->m_submap->ChaSpawn(nScriptID, enumCHACTRL_NONE, (short)sAngle, &Pos);
+	CCharacter* pCCha = pMainCha->m_submap->ChaSpawn(nScriptID, static_cast<char>(EChaCtrlType::NONE), (short)sAngle, &Pos);
 	if (pCCha) {
 		pCCha->SetResumeTime(lReliveTime * 1000);
 		return pCCha;
@@ -347,16 +347,16 @@ CCharacter* CreateChaEx(int nScriptID, int x, int y, int sAngle, int lReliveTime
 	if (!g_pScriptMap) return nullptr;
 	if (!pMap) return nullptr;
 
-	Point Pos;
-	Pos.x = x;
-	Pos.y = y;
+	Corsairs::Util::Point Pos;
+	Pos.X = x;
+	Pos.Y = y;
 
-	ToLogService("common", "create bugbearEx{}  pos = {} {}, angle = {}, rTime = {}", nScriptID, Pos.x, Pos.y, sAngle,
+	ToLogService("common", "create bugbearEx{}  pos = {} {}, angle = {}, rTime = {}", nScriptID, Pos.X, Pos.Y, sAngle,
 				 lReliveTime);
 
-	AddMonsterHelp(nScriptID, Pos.x, Pos.y);
+	AddMonsterHelp(nScriptID, Pos.X, Pos.Y);
 
-	CCharacter* pCCha = pMap->ChaSpawn(nScriptID, enumCHACTRL_NONE, (short)sAngle, &Pos);
+	CCharacter* pCCha = pMap->ChaSpawn(nScriptID, static_cast<char>(EChaCtrlType::NONE), (short)sAngle, &Pos);
 	if (pCCha) {
 		pCCha->SetResumeTime(lReliveTime * 1000);
 		return pCCha;
@@ -370,27 +370,27 @@ CCharacter* CreateChaEx(int nScriptID, int x, int y, int sAngle, int lReliveTime
 //
 void ChaMove(CCharacter* pCCha, int x, int y) {
 	if (pCCha) {
-		Point Path[2] = {pCCha->GetPos(), {x, y}};
+		Corsairs::Util::Point Path[2] = {pCCha->GetPos(), {x, y}};
 		pCCha->m_CActCache.AddCommand(enumCACHEACTION_MOVE);
 		short sPing = 0;
 		char chPointNum = 2;
 		pCCha->m_CActCache.PushParam(&sPing, sizeof(short));
 		pCCha->m_CActCache.PushParam(&chPointNum, sizeof(char));
-		pCCha->m_CActCache.PushParam(Path, sizeof(Point) * 2);
+		pCCha->m_CActCache.PushParam(Path, sizeof(Corsairs::Util::Point) * 2);
 	}
 }
 
 //
 void ChaMoveToSleep(CCharacter* pCCha, int x, int y) {
 	if (pCCha) {
-		Point Path[2] = {pCCha->GetPos(), {x, y}};
+		Corsairs::Util::Point Path[2] = {pCCha->GetPos(), {x, y}};
 		pCCha->m_CActCache.AddCommand(enumCACHEACTION_MOVE);
 		short sPing = 0;
 		char chPointNum = 2;
 		char chStopState = enumEXISTS_SLEEPING;
 		pCCha->m_CActCache.PushParam(&sPing, sizeof(short));
 		pCCha->m_CActCache.PushParam(&chPointNum, sizeof(char));
-		pCCha->m_CActCache.PushParam(Path, sizeof(Point) * 2);
+		pCCha->m_CActCache.PushParam(Path, sizeof(Corsairs::Util::Point) * 2);
 		pCCha->m_CActCache.PushParam(&chStopState, sizeof(char));
 	}
 }
@@ -410,8 +410,8 @@ int GetChaSpawnPos_raw(lua_State* L) {
 		return 2;
 	}
 	CCharacter* pCha = *pChaResult;
-	lua_pushinteger(L, pCha->GetTerritory().centre.x);
-	lua_pushinteger(L, pCha->GetTerritory().centre.y);
+	lua_pushinteger(L, pCha->GetTerritory().Centre.X);
+	lua_pushinteger(L, pCha->GetTerritory().Centre.Y);
 	return 2;
 }
 
@@ -923,8 +923,8 @@ int GetChaPos_raw(lua_State* L) {
 	}
 
 	CCharacter* pCha = *pChaResult;
-	lua_pushinteger(L, pCha->GetShape().centre.x);
-	lua_pushinteger(L, pCha->GetShape().centre.y);
+	lua_pushinteger(L, pCha->GetShape().Centre.X);
+	lua_pushinteger(L, pCha->GetShape().Centre.Y);
 	return 2;
 }
 
@@ -973,8 +973,8 @@ int GetChaByRange_raw(lua_State* L) {
 	int x = (int)lua_tonumber(L, 2);
 	int y = (int)lua_tonumber(L, 3);
 	if (pSelf) {
-		x = pSelf->GetShape().centre.x;
-		y = pSelf->GetShape().centre.y;
+		x = pSelf->GetShape().Centre.X;
+		y = pSelf->GetShape().Centre.Y;
 		pMap = pSelf->GetSubMap();
 	}
 	else {
@@ -991,8 +991,8 @@ int GetChaByRange_raw(lua_State* L) {
 	unsigned long ulMinDist2 = r * r, ulTempDist2;
 	long lDistX, lDistY;
 	CCharacter* pCTempCha;
-	Long lRangeB[] = {x, y, 0};
-	Long lRangeE[] = {enumRANGE_TYPE_CIRCLE, r};
+	std::int32_t lRangeB[] = {x, y, 0};
+	std::int32_t lRangeE[] = {enumRANGE_TYPE_CIRCLE, r};
 	pMap->BeginSearchInRange(lRangeB, lRangeE);
 	while (pCTempCha = pMap->GetNextCharacterInRange()) {
 		if (pCTempCha == pSelf) continue;
@@ -1010,8 +1010,8 @@ int GetChaByRange_raw(lua_State* L) {
 			continue;
 		}
 
-		lDistX = pCTempCha->GetShape().centre.x - x;
-		lDistY = pCTempCha->GetShape().centre.y - y;
+		lDistX = pCTempCha->GetShape().Centre.X - x;
+		lDistY = pCTempCha->GetShape().Centre.Y - y;
 		ulTempDist2 = lDistX * lDistX + lDistY * lDistY;
 		if (ulTempDist2 <= ulMinDist2) {
 			pCTarget = pCTempCha;
@@ -1049,8 +1049,8 @@ int ClearHideChaByRange_raw(lua_State* L) {
 	int x = (int)lua_tonumber(L, 2);
 	int y = (int)lua_tonumber(L, 3);
 	if (pSelf) {
-		x = pSelf->GetShape().centre.x;
-		y = pSelf->GetShape().centre.y;
+		x = pSelf->GetShape().Centre.X;
+		y = pSelf->GetShape().Centre.Y;
 		pMap = pSelf->GetSubMap();
 	}
 	else {
@@ -1067,8 +1067,8 @@ int ClearHideChaByRange_raw(lua_State* L) {
 	unsigned long ulMinDist2 = r * r, ulTempDist2;
 	long lDistX, lDistY;
 	CCharacter* pCTempCha;
-	Long lRangeB[] = {x, y, 0};
-	Long lRangeE[] = {enumRANGE_TYPE_CIRCLE, r};
+	std::int32_t lRangeB[] = {x, y, 0};
+	std::int32_t lRangeE[] = {enumRANGE_TYPE_CIRCLE, r};
 	pMap->BeginSearchInRange(lRangeB, lRangeE, true);
 	while (pCTempCha = pMap->GetNextCharacterInRange()) {
 		if (pCTempCha == pSelf) continue;
@@ -1081,8 +1081,8 @@ int ClearHideChaByRange_raw(lua_State* L) {
 
 		if (flag == 1 && pCTempCha->IsPlayerCha()) continue;
 
-		lDistX = pCTempCha->GetShape().centre.x - x;
-		lDistY = pCTempCha->GetShape().centre.y - y;
+		lDistX = pCTempCha->GetShape().Centre.X - x;
+		lDistY = pCTempCha->GetShape().Centre.Y - y;
 		ulTempDist2 = lDistX * lDistX + lDistY * lDistY;
 		if (ulTempDist2 <= ulMinDist2) {
 			pCTarget = pCTempCha;
@@ -1115,8 +1115,8 @@ int GetChaSetByRange_raw(lua_State* L) {
 	}
 	CCharacter* pSelf = *pSelfResult;
 	SubMap* pMap = pSelf->GetSubMap();
-	int x = pSelf->GetShape().centre.x;
-	int y = pSelf->GetShape().centre.y;
+	int x = pSelf->GetShape().Centre.X;
+	int y = pSelf->GetShape().Centre.Y;
 	int r = (int)lua_tonumber(L, 4);
 	int nMonsterType = (int)lua_tonumber(L, 5);
 
@@ -1126,8 +1126,8 @@ int GetChaSetByRange_raw(lua_State* L) {
 	long lDistX, lDistY;
 	CCharacter* pCTempCha = nullptr;
 	CCharacter* ChaList[12];
-	Long lRangeB[] = {x, y, 0};
-	Long lRangeE[] = {enumRANGE_TYPE_CIRCLE, r};
+	std::int32_t lRangeB[] = {x, y, 0};
+	std::int32_t lRangeE[] = {enumRANGE_TYPE_CIRCLE, r};
 	pMap->BeginSearchInRange(lRangeB, lRangeE);
 	int n = 0;
 	while (pCTempCha = pMap->GetNextCharacterInRange()) {
@@ -1136,8 +1136,8 @@ int GetChaSetByRange_raw(lua_State* L) {
 
 		if (nMonsterType != 0 && nMonsterType != pCTempCha->GetCat()) continue;
 
-		lDistX = pCTempCha->GetShape().centre.x - x;
-		lDistY = pCTempCha->GetShape().centre.y - y;
+		lDistX = pCTempCha->GetShape().Centre.X - x;
+		lDistY = pCTempCha->GetShape().Centre.Y - y;
 		ulTempDist2 = lDistX * lDistX + lDistY * lDistY;
 		if (ulTempDist2 <= ulMinDist2) {
 			ChaList[n] = pCTempCha;
@@ -1180,9 +1180,9 @@ int GetItemPos_raw(lua_State* L) {
 		return 2;
 	}
 	CItem* pItem = *pItemResult;
-	const Point& p = pItem->GetPos();
-	lua_pushinteger(L, p.x);
-	lua_pushinteger(L, p.y);
+	const Corsairs::Util::Point& p = pItem->GetPos();
+	lua_pushinteger(L, p.X);
+	lua_pushinteger(L, p.Y);
 	return 2;
 }
 
@@ -1209,8 +1209,8 @@ int GetChaFacePos_raw(lua_State* L) {
 		return 2;
 	}
 	CCharacter* pCha = *pChaResult;
-	int x = pCha->GetShape().centre.x;
-	int y = pCha->GetShape().centre.y;
+	int x = pCha->GetShape().Centre.X;
+	int y = pCha->GetShape().Centre.Y;
 	short sAngle = pCha->GetAngle();
 	float fAngle = (float)sAngle / 53.3f;
 	int xOff = (int)(600.0 * cos(PI / 2 - fAngle));
@@ -1723,12 +1723,12 @@ int GetBoatCtrlTick(CCharacter* pCha) {
 CCharacter* SummonCha(CCharacter* pHost, int sType, int sChaInfoID) {
 	if (!pHost) return nullptr;
 
-	Point Pos = pHost->GetPos();
+	Corsairs::Util::Point Pos = pHost->GetPos();
 
 	CCharacter* pCha = NULL;
 
 	if (sType == 1) {
-		pCha = pHost->GetSubMap()->ChaSpawn((short)sChaInfoID, enumCHACTRL_PLAYER_PET, rand() % 360, &Pos);
+		pCha = pHost->GetSubMap()->ChaSpawn((short)sChaInfoID, static_cast<char>(EChaCtrlType::PLAYER_PET), rand() % 360, &Pos);
 		if (pCha) {
 			pCha->m_HostCha = pHost;
 			pCha->SetPlayer(pHost->GetPlayer());
@@ -1736,8 +1736,8 @@ CCharacter* SummonCha(CCharacter* pHost, int sType, int sChaInfoID) {
 		}
 	}
 	else if (sType == 2) {
-		Pos.move(rand() % 360, 3 * 100);
-		pCha = pHost->GetSubMap()->ChaSpawn((short)sChaInfoID, enumCHACTRL_PLAYER_PET, rand() % 360, &Pos);
+		Pos.Move(rand() % 360, 3 * 100);
+		pCha = pHost->GetSubMap()->ChaSpawn((short)sChaInfoID, static_cast<char>(EChaCtrlType::PLAYER_PET), rand() % 360, &Pos);
 		if (pCha) {
 			pCha->m_HostCha = pHost;
 			pCha->SetPlayer(pHost->GetPlayer());

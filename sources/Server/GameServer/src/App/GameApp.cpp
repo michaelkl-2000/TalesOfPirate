@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: GameApp.cpp
 // Creater: ZhangXuedong
 // Date: 2004.11.04
@@ -56,7 +56,7 @@ using namespace Corsairs::Common::Mount;
 #include "World/MapEntry.h"
 
 using namespace std;
-_DBC_USING;
+;
 
 bool g_bLogEntity = false;
 
@@ -67,8 +67,8 @@ string g_strChaState[2];
 
 
 // cha
-uLong g_ulCurID = defINVALID_CHA_ID;
-Long g_lCurHandle = defINVALID_CHA_HANDLE;
+std::uint32_t g_ulCurID = defINVALID_CHA_ID;
+std::int32_t g_lCurHandle = defINVALID_CHA_HANDLE;
 //
 
 
@@ -84,7 +84,7 @@ char szChaLifeLvUpName[256] = "lifelvup";
 char szItemInfoName[256] = "ItemInfo";
 char szHairInfoName[64] = "Hairs"; //
 
-void ChaException(uLong ulCurID, Long lCurHandle) {
+void ChaException(std::uint32_t ulCurID, std::int32_t lCurHandle) {
 	if (g_ulCurID == defINVALID_CHA_ID || g_lCurHandle == defINVALID_CHA_HANDLE) {
 		ToLogService("errors", LogLevel::Error, "unknown (ID:{}, Handle:{})occur abnormity", ulCurID, lCurHandle);
 		return;
@@ -243,7 +243,7 @@ void CDBLogMgr::HandleLogList() {
 	_nLogLeft = (int)(_LogList.size());
 
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 
 
@@ -393,7 +393,7 @@ BOOL CGameApp::Init() {
 	g_pCSystemCha->SetID(m_Ident.GetID());
 	//g_pCSystemCha->SetName("");
 	g_pCSystemCha->SetName(RES_STRING(GM_GAMEAPP_CPP_00018));
-	g_pCSystemCha->setAttr(ATTR_CHATYPE, enumCHACTRL_NONE, 1);
+	g_pCSystemCha->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::NONE), 1);
 
 	//LG("init", "Entity\n");
 	ToLogService("common", "start to assign every Entity memory");
@@ -459,8 +459,8 @@ void CGameApp::Run(DWORD dwCurTime) {
 	dwActiveMgrUnit = m_dwActiveMgrUnit;
 
 	static DWORD dwRunTick = GetTickCount();
-	static Long lLogTime = 0;
-	MPTimer t, t1;
+	static std::int32_t lLogTime = 0;
+	Corsairs::Util::MPTimer t, t1;
 
 	t1.Begin();
 	m_dwRunStep = 1;
@@ -579,16 +579,16 @@ void CGameApp::MgrUnitRun(DWORD dwCurTime) {
 	CEyeshotCell* pCMgrUnit;
 	CStateCell* pCStateCell;
 	Entity *pCEnt, *pCFlagEnt;
-	Short sMapCpyNum;
+	int16_t sMapCpyNum;
 	DWORD dwActMgrCellNum;
 
-	MPTimer t, t1, t2;
+	Corsairs::Util::MPTimer t, t1, t2;
 	DWORD dwPartRunTime[8]{};
-	Char chPartCount;
+	char chPartCount;
 	CCharacter* pCLongTimeCha;
 	DWORD dwTempTick1, dwTempTick2;
 	static std::vector<DWORD> dwMapRunTick(m_mapnum, 0);
-	static std::vector<Long> lMapLogTime(m_mapnum, 0);
+	static std::vector<std::int32_t> lMapLogTime(m_mapnum, 0);
 	bool bLogRun;
 	DWORD dwRTimeKey = 60;
 
@@ -798,7 +798,7 @@ CPlayer* CGameApp::IsValidPlayer(long lID, long lHandle) {
 
 //
 // chType01
-CPlayer* CGameApp::CreateGamePlayer(const char szPassword[], uLong ulChaDBId, uLong ulWorldId, const char* cszMapName,
+CPlayer* CGameApp::CreateGamePlayer(const char szPassword[], std::uint32_t ulChaDBId, std::uint32_t ulWorldId, const char* cszMapName,
 									char chType) {
 	CPlayer* pCOldPly = GetPlayerByDBID(ulChaDBId);
 	if (pCOldPly) {
@@ -1245,12 +1245,12 @@ void CGameApp::SaveAllPlayer(void) {
 }
 
 void CGameApp::DataStatistic(void) {
-	Long lCabinHeapNum = static_cast<Long>(m_CabinPool.GetUsedCount());
-	Long lTradeDataHeapNum = static_cast<Long>(m_TradeDataPool.GetUsedCount());
-	Long lSkillTDataHeapNum = static_cast<Long>(m_SkillTDataPool.GetUsedCount());
-	Long lMapMgrUnitHeapNum = static_cast<Long>(m_MapStateCellPool.GetUsedCount());
-	Long lEntityListHeapNum = static_cast<Long>(m_ChaListPool.GetUsedCount());
-	Long lMgrNodeHeapNum = static_cast<Long>(m_StateCellNodePool.GetUsedCount());
+	std::int32_t lCabinHeapNum = static_cast<std::int32_t>(m_CabinPool.GetUsedCount());
+	std::int32_t lTradeDataHeapNum = static_cast<std::int32_t>(m_TradeDataPool.GetUsedCount());
+	std::int32_t lSkillTDataHeapNum = static_cast<std::int32_t>(m_SkillTDataPool.GetUsedCount());
+	std::int32_t lMapMgrUnitHeapNum = static_cast<std::int32_t>(m_MapStateCellPool.GetUsedCount());
+	std::int32_t lEntityListHeapNum = static_cast<std::int32_t>(m_ChaListPool.GetUsedCount());
+	std::int32_t lMgrNodeHeapNum = static_cast<std::int32_t>(m_StateCellNodePool.GetUsedCount());
 
 	if (lCabinHeapNum > m_lCabinHeapNum || lTradeDataHeapNum > m_lTradeDataHeapNum || lSkillTDataHeapNum >
 		m_lSkillTDataHeapNum
@@ -1369,7 +1369,7 @@ void CGameApp::UnbanAccount(const char* szString) {
 	SENDTOGROUP(WtPk);
 }
 
-void CGameApp::CanReceiveRequests(uLong chaID, bool CanSend) {
+void CGameApp::CanReceiveRequests(std::uint32_t chaID, bool CanSend) {
 	//  :    (GameServerGroup)
 	auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmCanReceiveRequestsMessage{(int64_t)chaID, (int64_t)CanSend});
 	SENDTOGROUP(WtPk);
@@ -1456,17 +1456,17 @@ CSkillTempData* CGameApp::GetSkillTData(short sSkillNo, char chSkillLv) {
 		m_chSkillSetLv = chSkillLv;
 		// SP
 		if (pCSkillRec->szUseSP != "0")
-			m_pCSkillTData[sSkillNo][chSkillLv]->sUseSP = (Short)g_luaAPI.CallR<int>(pCSkillRec->szUseSP, (int)chSkillLv).value_or(0);
+			m_pCSkillTData[sSkillNo][chSkillLv]->sUseSP = (int16_t)g_luaAPI.CallR<int>(pCSkillRec->szUseSP, (int)chSkillLv).value_or(0);
 		else
 			m_pCSkillTData[sSkillNo][chSkillLv]->sUseSP = 0;
 
 		if (pCSkillRec->szUseEndure != "0")
-			m_pCSkillTData[sSkillNo][chSkillLv]->sUseEndure = (Short)g_luaAPI.CallR<int>(pCSkillRec->szUseEndure, (int)chSkillLv).value_or(0);
+			m_pCSkillTData[sSkillNo][chSkillLv]->sUseEndure = (int16_t)g_luaAPI.CallR<int>(pCSkillRec->szUseEndure, (int)chSkillLv).value_or(0);
 		else
 			m_pCSkillTData[sSkillNo][chSkillLv]->sUseEndure = 0;
 
 		if (pCSkillRec->szUseEnergy != "0")
-			m_pCSkillTData[sSkillNo][chSkillLv]->sUseEnergy = (Short)g_luaAPI.CallR<int>(pCSkillRec->szUseEnergy, (int)chSkillLv).value_or(0);
+			m_pCSkillTData[sSkillNo][chSkillLv]->sUseEnergy = (int16_t)g_luaAPI.CallR<int>(pCSkillRec->szUseEnergy, (int)chSkillLv).value_or(0);
 		else
 			m_pCSkillTData[sSkillNo][chSkillLv]->sUseEnergy = 0;
 

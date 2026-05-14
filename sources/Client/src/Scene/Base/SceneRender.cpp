@@ -157,7 +157,7 @@ void CGameScene::_Render() {
 
 	if (m_bShowTerrain) {
 		if (_pTerrain) {
-			//MPTimer tMap;
+			//Corsairs::Util::MPTimer tMap;
 			//tMap.Begin();
 
 			//_pTerrain->DynamicLoading(GetTickCount());
@@ -213,7 +213,7 @@ void CGameScene::_Render() {
 #endif
 
 
-	MPTimer tObj;
+	Corsairs::Util::MPTimer tObj;
 	tObj.Begin();
 
 	dev_obj->BeginBenchMark();
@@ -227,7 +227,7 @@ void CGameScene::_Render() {
 
 	// scene objects
 	if (_bShowSceneObj) {
-		MPTimer t;
+		Corsairs::Util::MPTimer t;
 		t.Begin();
 
 		MPVector3 org(0.0f, 0.0f, 0.0f);
@@ -409,7 +409,7 @@ void CGameScene::_Render() {
 
 	dev_obj->BeginBenchMark();
 
-	MPTimer tCha;
+	Corsairs::Util::MPTimer tCha;
 	tCha.Begin();
 	m_dwValidChaCnt = 0;
 
@@ -435,7 +435,7 @@ void CGameScene::_Render() {
 		g_Render.GetRenderState(D3DRS_AMBIENT, &env_color_old);
 		g_Render.SetRenderState(D3DRS_AMBIENT, env_color);
 
-		MPTimer t;
+		Corsairs::Util::MPTimer t;
 		t.Begin();
 
 		BOOL cha_lgt = 1;
@@ -730,7 +730,7 @@ void CGameScene::_Render() {
 
 	//
 	//g_CEffBox.Render();
-	MPTimer mpt;
+	Corsairs::Util::MPTimer mpt;
 
 	{
 		mpt.Begin();
@@ -904,7 +904,7 @@ void CGameScene::RenderSMallMap() {
 #endif
 
 
-	MPTimer tObj;
+	Corsairs::Util::MPTimer tObj;
 	tObj.Begin();
 
 	dev_obj->BeginBenchMark();
@@ -916,7 +916,7 @@ void CGameScene::RenderSMallMap() {
 	m_dwRenderSceneObjCnt = 0;
 	m_dwCullingTime = 0;
 	if (_bShowSceneObj) {
-		MPTimer t;
+		Corsairs::Util::MPTimer t;
 		t.Begin();
 
 		MPVector3 org(0.0f, 0.0f, 0.0f);

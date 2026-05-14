@@ -218,7 +218,7 @@ void CItemCommand::SaleRender(int x, int y, int nWidth, int nHeight) {
 		// UTF-8: не разрываем codepoint — если szBuf1[nEnter] — continuation-
 		// байт (10xxxxxx), отступаем назад до starter-байта включительно.
 		while (nEnter > 0
-			&& !encoding::IsUtf8StartByte(static_cast<unsigned char>(szBuf1[nEnter]))) {
+			&& !Corsairs::Util::Encoding::IsUtf8StartByte(static_cast<unsigned char>(szBuf1[nEnter]))) {
 			--nEnter;
 		}
 		if (nEnter < 0) return;
@@ -399,7 +399,7 @@ void CItemCommand::OwnDefRender(int x, int y, int nWidth, int nHeight) {
 		// UTF-8: не разрываем codepoint — если szBuf1[nEnter] — continuation-
 		// байт (10xxxxxx), отступаем назад до starter-байта включительно.
 		while (nEnter > 0
-			&& !encoding::IsUtf8StartByte(static_cast<unsigned char>(szBuf1[nEnter]))) {
+			&& !Corsairs::Util::Encoding::IsUtf8StartByte(static_cast<unsigned char>(szBuf1[nEnter]))) {
 			--nEnter;
 		}
 		if (nEnter < 0) return;

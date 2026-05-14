@@ -82,7 +82,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 	loadtex_flag = res_bs->GetValue(OPT_RESMGR_LOADTEXTURE_MT);
 	loadmesh_flag = res_bs->GetValue(OPT_RESMGR_LOADMESH_MT);
 
-	if (pInfo->chModalType == enumMODAL_MAIN_CHA) {
+	if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA)) {
 		// save loading res mt flag
 		// res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 		// res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
@@ -110,7 +110,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 			goto __ret;
 		}
 	}
-	else if (pInfo->chModalType == enumMODAL_BOAT) {
+	else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT)) {
 		// res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 		// res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
 		DWORD part_buf[3] = {
@@ -130,7 +130,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 			goto __ret;
 		}
 	}
-	else if (pInfo->chModalType == enumMODAL_EMPL) {
+	else if (pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) {
 		// res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 		// res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
 		DWORD part_buf[5] = {
@@ -150,7 +150,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 			goto __ret;
 		}
 	}
-	else if (pInfo->chModalType == enumMODAL_OTHER) {
+	else if (pInfo->chModalType == static_cast<char>(EChaModalType::OTHER)) {
 		// res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 		// res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
 
@@ -213,7 +213,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 		pCha->SetScale(D3DXVECTOR3(pInfo->scaling[0], pInfo->scaling[1], pInfo->scaling[2]));
 	}
 __ret:
-	// if( res_bs && (pInfo->chModalType==enumMODAL_MAIN_CHA) )
+	// if( res_bs && (pInfo->chModalType==static_cast<char>(EChaModalType::MAIN_CHA)) )
 	if (res_bs) {
 		res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, loadtex_flag);
 		res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, loadmesh_flag);

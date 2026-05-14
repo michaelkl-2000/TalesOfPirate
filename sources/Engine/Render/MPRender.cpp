@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <filesystem>
 #include "MPRender.h"
 #include "AssetLoaders.h"  // ScreenshotSaver
 #include "MPMath.h"
@@ -65,7 +66,6 @@ void MPRender::End() {
 BOOL MPRender::Init(HWND hWnd, int nScrWidth, int nScrHeight, int nColorBit, BOOL bFullScreen) {
 	_hWnd = hWnd;
 
-	g_bBinaryTable = TRUE;
 	::GetClientRect(::GetDesktopWindow(), &_rcDeskTop);
 
 
@@ -623,7 +623,7 @@ void MPRender::EndRender(const bool present) // vim
 		if (_bCaptureScreen) //
 		{
 			static int g_nScreenCap = 0;
-			Util_MakeDir("screenshot\\");
+			std::filesystem::create_directories("screenshot");
 
 			struct tm* newtime;
 			__int64 ltime;
@@ -633,7 +633,7 @@ void MPRender::EndRender(const bool present) // vim
 													newtime->tm_year + 1900,
 													newtime->tm_mon + 1,
 													newtime->tm_mday);
-			Util_MakeDir(pszName.c_str());
+			std::filesystem::create_directories(pszName);
 
 			const std::string fileName = std::format("{}cap{:05}.png", pszName, g_nScreenCap);
 			g_Render.CaptureScreen(fileName.c_str());
@@ -644,7 +644,7 @@ void MPRender::EndRender(const bool present) // vim
 		if (_bEnableCaptureAVI) //
 		{
 			static int g_nAviCnt = 0;
-			Util_MakeDir("screenshot/");
+			std::filesystem::create_directories("screenshot");
 			const std::string szFileName = std::format("avi{:06}.png", g_nAviCnt);
 			CaptureScreen(szFileName.c_str());
 			g_nAviCnt++;

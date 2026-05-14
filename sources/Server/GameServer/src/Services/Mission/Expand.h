@@ -11,7 +11,6 @@
 #include "Core/stdafx.h"   //add by alfred.shi 20080304
 
 #include "Character/Character.h"
-#include "excp.h"
 #include "lua.hpp"
 #include "Db/GameDB.h"
 #include "World/MapEntry.h"

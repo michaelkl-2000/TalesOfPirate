@@ -1,4 +1,4 @@
-﻿#include "Core/stdafx.h"
+#include "Core/stdafx.h"
 #include "App/GameApp.h"
 #include "Character/Character.h"
 #include "World/SubMap.h"
@@ -21,18 +21,18 @@ using namespace std;
 #pragma warning(disable: 4355)
 
 
-void CCharacter::DoCommand(cChar *cszCommand, uLong ulLen)
+void CCharacter::DoCommand(const char *cszCommand, std::uint32_t ulLen)
 {
-	Char	szComHead[256], szComParam[2048];
+	char	szComHead[256], szComParam[2048];
 	std::string	strList[10];
 	std::string strPrint = cszCommand;
 
-	Char	*szCom = (Char *)cszCommand;
+	char	*szCom = (char *)cszCommand;
 	size_t	tStart = strspn(cszCommand, " ");
 	if (tStart >= strlen(cszCommand))
 		return;
 	szCom += tStart;
-	Char	*szParam = strstr(szCom, " ");
+	char	*szParam = strstr(szCom, " ");
 	if (szParam)
 	{
 		*szParam = '\0';
@@ -69,7 +69,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	CPlayer *pPlayer = GetPlayer(); 
 	if(!pPlayer) return FALSE;
 	
-	uChar uchGMLv = pPlayer->GetGMLev();
+	std::uint8_t uchGMLv = pPlayer->GetGMLev();
 	if (uchGMLv == 0)
 	{
 		//SystemNotice("!");
@@ -86,10 +86,10 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	//-----------------------
 	if (strCmd==g_Command.m_cMove) // move x,y,
 	{
-		int n = Util_ResolveTextLine(pszParam, strList, 10, ',');
-		Point l_aim;
-		l_aim.x = Str2Int(strList[0]) * 100;
-		l_aim.y = Str2Int(strList[1]) * 100;
+		int n = Corsairs::Util::ResolveTextLine(pszParam, strList, 10, ',');
+		Corsairs::Util::Point l_aim;
+		l_aim.X = Corsairs::Util::Str2Int(strList[0]) * 100;
+		l_aim.Y = Corsairs::Util::Str2Int(strList[1]) * 100;
 		const char	*szMapName = 0;
 		short	sMapCpyNO = 0;
 		if (n == 3)
@@ -97,9 +97,9 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 		else
 			szMapName = GetSubMap()->GetName();
 		if (n == 4)
-			sMapCpyNO = Str2Int(strList[1]);
+			sMapCpyNO = Corsairs::Util::Str2Int(strList[1]);
 
-		SwitchMap(GetSubMap(), szMapName, l_aim.x, l_aim.y, true, enumSWITCHMAP_CARRY, sMapCpyNO);
+		SwitchMap(GetSubMap(), szMapName, l_aim.X, l_aim.Y, true, enumSWITCHMAP_CARRY, sMapCpyNO);
 		// Delete by lark.li 20080814 begin
 		//LG("ServerRunLog", "ChaID: %i, ChaName: %s, CMD: %s, Param: %s\n", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
 		// End
@@ -125,7 +125,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if(strCmd==g_Command.m_cGoto) // 
 	{
-		int n = Util_ResolveTextLine(pszParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(pszParam, strList, 10, ',');
 		//  :    
 		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmGotoChaMessage{GetID(), strList[0], 1, GetName()});
 		ReflectINFof(this, WtPk);
@@ -146,27 +146,27 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	
 	if (strCmd == g_Command.m_cMute)
 	{
-		const auto n = Util_ResolveTextLine(pszParam, strList, 10, ',');
+		const auto n = Corsairs::Util::ResolveTextLine(pszParam, strList, 10, ',');
 		if (n < 2)
 		{
 			return false;
 		}
 
 		//  :   (ReflectINFof  trailer )
-		auto wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmMutePlayerMessage{strList[0], static_cast<int64_t>(Str2Int(strList[1]))});
+		auto wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmMutePlayerMessage{strList[0], static_cast<int64_t>(Corsairs::Util::Str2Int(strList[1]))});
 		ReflectINFof(this, wpk);
 	}
 
 	if (strCmd==g_Command.m_cKick) // 
 	{
-		int n = Util_ResolveTextLine(pszParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(pszParam, strList, 10, ',');
 		if (n < 1)
 		{
 			SystemNotice("You did not input a player name!");
 			return FALSE;
 		}
 		//  :   (-)
-		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmKickChaMessage{GetID(), strList[0], (n == 2) ? (int64_t)Str2Int(strList[1]) : 0LL});
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmKickChaMessage{GetID(), strList[0], (n == 2) ? (int64_t)Corsairs::Util::Str2Int(strList[1]) : 0LL});
 		ReflectINFof(this, WtPk);
 		ToLogService("common", "ChaID: {}, ChaName: {}, CMD: {}, Param: {}", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
 		return TRUE;
@@ -203,16 +203,16 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 
     ToLogService("common", "ChaID: {}, ChaName: {}, CMD: {}, Param: {}", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
 
-	cChar	*szComHead = pszCmd;
-	cChar	*szComParam = pszParam;
+	const char	*szComHead = pszCmd;
+	const char	*szComParam = pszParam;
 	//-----------------------
 	// 99GM
 	//-----------------------
 	if (!strcmp(szComHead, g_Command.m_cReload)) // 
 	{
-		cChar *pszChaInfo = "characterinfo";
-		cChar *pszSkillInfo = "skillinfo";
-		cChar *pszItemInfo = "iteminfo";
+		const char *pszChaInfo = "characterinfo";
+		const char *pszSkillInfo = "skillinfo";
+		const char *pszItemInfo = "iteminfo";
 		if (!strcmp(szComParam, pszChaInfo))
 			g_pGameApp->LoadCharacterInfo();
 		else if (!strcmp(szComParam, pszSkillInfo))
@@ -235,7 +235,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if(!strcmp(szComHead, g_Command.m_cQcha)) // (,,ID)
 	{
-		int n = Util_ResolveTextLine(pszParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(pszParam, strList, 10, ',');
 		//  :    
 		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmQueryChaMessage{GetID(), strList[0]});
 		ReflectINFof(this, WtPk);
@@ -244,7 +244,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if(!strcmp(szComHead, g_Command.m_cQitem)) // 
 	{
-		int n = Util_ResolveTextLine(pszParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(pszParam, strList, 10, ',');
 		//  :   
 		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmQueryChaItemMessage{GetID(), strList[0]});
 		ReflectINFof(this, WtPk);
@@ -253,9 +253,9 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
     if(!strcmp(szComHead, g_Command.m_cCall)) // 
 	{
-		int n = Util_ResolveTextLine(pszParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(pszParam, strList, 10, ',');
 		//  :    
-		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmCallChaMessage{GetID(), strList[0], IsBoat() ? 1LL : 0LL, GetSubMap()->GetName(), (int64_t)GetPos().x, (int64_t)GetPos().y, (int64_t)GetSubMap()->GetCopyNO()});
+		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmCallChaMessage{GetID(), strList[0], IsBoat() ? 1LL : 0LL, GetSubMap()->GetName(), (int64_t)GetPos().X, (int64_t)GetPos().Y, (int64_t)GetSubMap()->GetCopyNO()});
 		ReflectINFof(this, WtPk);
 		ToLogService("common", "ChaID: {}, ChaName: {}, CMD: {}, Param: {}", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
 		return TRUE;
@@ -329,8 +329,8 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if( !strcmp(szComHead, "setrecord" ) ) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');		
-		USHORT sID   = Str2Int(strList[0]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');		
+		USHORT sID   = Corsairs::Util::Str2Int(strList[0]);
 		if( GetPlayer()->MisSetRecord( sID ) )
 		{
 			//SystemNotice( "!ID[%d]", sID );
@@ -349,8 +349,8 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if( !strcmp(szComHead, "clearrecord" ) ) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');		
-		USHORT sID   = Str2Int(strList[0]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');		
+		USHORT sID   = Corsairs::Util::Str2Int(strList[0]);
 		if( GetPlayer()->MisClearRecord( sID ) )
 		{
 			//SystemNotice( "!ID[%d]", sID );
@@ -368,9 +368,9 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if( !strcmp(szComHead, "setflag" ) ) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');		
-		USHORT sID   = Str2Int(strList[0]);
-		USHORT sFlag = Str2Int(strList[1]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');		
+		USHORT sID   = Corsairs::Util::Str2Int(strList[0]);
+		USHORT sFlag = Corsairs::Util::Str2Int(strList[1]);
 		if( GetPlayer()->MisSetFlag( sID, sFlag ) )
 		{
 			//SystemNotice( "!ID[%d], FLAG[%d]", sID, sFlag );
@@ -388,9 +388,9 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if( !strcmp(szComHead, "clearflag" ) ) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');		
-		USHORT sID   = Str2Int(strList[0]);
-		USHORT sFlag = Str2Int(strList[1]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');		
+		USHORT sID   = Corsairs::Util::Str2Int(strList[0]);
+		USHORT sFlag = Corsairs::Util::Str2Int(strList[1]);
 		if( GetPlayer()->MisClearFlag( sID, sFlag ) )
 		{
 			//SystemNotice( "!ID[%d], FLAG[%d]", sID, sFlag );
@@ -408,9 +408,9 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if( !strcmp(szComHead, "addmission" ) ) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');		
-		USHORT sMID   = Str2Int(strList[0]);
-		USHORT sSID   = Str2Int(strList[1]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');		
+		USHORT sMID   = Corsairs::Util::Str2Int(strList[0]);
+		USHORT sSID   = Corsairs::Util::Str2Int(strList[1]);
 		if( GetPlayer()->MisAddRole( sMID, sSID ) )
 		{
 			//SystemNotice( "!MID[%d], SID[%d]", sMID, sSID );
@@ -428,8 +428,8 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if( !strcmp(szComHead, "clearmission" ) ) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
-		USHORT sID   = Str2Int(strList[0]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
+		USHORT sID   = Corsairs::Util::Str2Int(strList[0]);
 		if( GetPlayer()->MisCancelRole( sID ) )
 		{
 			//SystemNotice( "!MID[%d]", sID );
@@ -447,8 +447,8 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if( !strcmp(szComHead, "delmission" ) ) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
-		USHORT sID   = Str2Int(strList[0]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
+		USHORT sID   = Corsairs::Util::Str2Int(strList[0]);
 		if( GetPlayer()->MisClearRole( sID ) )
 		{
 			//SystemNotice( "!MID[%d]", sID );
@@ -480,7 +480,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, "isblock")) // 
 	{
-		if (m_submap->IsBlock(GetPos().x / m_submap->GetBlockCellWidth(), GetPos().y / m_submap->GetBlockCellHeight()))
+		if (m_submap->IsBlock(GetPos().X / m_submap->GetBlockCellWidth(), GetPos().Y / m_submap->GetBlockCellHeight()))
 			//SystemNotice("");
 			SystemNotice(RES_STRING(GM_CHARACTERSUPERCMD_CPP_00017));
 		else
@@ -491,10 +491,10 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, "pet")) // 
 	{
-		Long	lChaInfoID = Str2Int(strList[0]);
-		Point	Pos = GetPos();
-		Pos.move(rand() % 360, 3 * 100);
-		CCharacter *pCha = m_submap->ChaSpawn(lChaInfoID, enumCHACTRL_PLAYER_PET, rand()%360, &Pos);
+		std::int32_t	lChaInfoID = Corsairs::Util::Str2Int(strList[0]);
+		Corsairs::Util::Point	Pos = GetPos();
+		Pos.Move(rand() % 360, 3 * 100);
+		CCharacter *pCha = m_submap->ChaSpawn(lChaInfoID, static_cast<char>(EChaCtrlType::PLAYER_PET), rand()%360, &Pos);
 		if (pCha)
 		{
 			pCha->m_HostCha = this;
@@ -513,23 +513,23 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, g_Command.m_cSummon)) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n >= 1)
 		{
-			Long	lChaInfoID = Str2Int(strList[0]);
-			Point	Pos = GetPos();
-			Pos.move(rand() % 360, 3 * 100);
-			CCharacter *pCha = m_submap->ChaSpawn(lChaInfoID, enumCHACTRL_NONE, rand()%360, &Pos);
+			std::int32_t	lChaInfoID = Corsairs::Util::Str2Int(strList[0]);
+			Corsairs::Util::Point	Pos = GetPos();
+			Pos.Move(rand() % 360, 3 * 100);
+			CCharacter *pCha = m_submap->ChaSpawn(lChaInfoID, static_cast<char>(EChaCtrlType::NONE), rand()%360, &Pos);
 			if (pCha)
 			{
 				if(n>=2)
 				{
-					DWORD dwLifeTime = Str2Int(strList[1]);
+					DWORD dwLifeTime = Corsairs::Util::Str2Int(strList[1]);
 					pCha->ResetLifeTime(dwLifeTime);	
 				}
 				if( n==3 )
 				{
-					int nAIType = Str2Int(strList[2]);
+					int nAIType = Corsairs::Util::Str2Int(strList[2]);
 					pCha->m_AIType  = (BYTE)nAIType; // AI
 				}
 			}
@@ -546,26 +546,26 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, g_Command.m_cSummonex)) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n >= 1)
 		{
-			Long	lChaInfoID = Str2Int(strList[0]);
-			Point	Pos;
-			long	lChaNum = 1;
+			std::int32_t	lChaInfoID = Corsairs::Util::Str2Int(strList[0]);
+			Corsairs::Util::Point	Pos;
+			std::int32_t	lChaNum = 1;
 			if (n > 1)
-				lChaNum = Str2Int(strList[1]);
+				lChaNum = Corsairs::Util::Str2Int(strList[1]);
 			bool	bActEyeshot = false;
 			if( n > 2 )
-				bActEyeshot = Str2Int(strList[2]) ? true : false;
+				bActEyeshot = Corsairs::Util::Str2Int(strList[2]) ? true : false;
 			int nAIType = 0;
 			if( n > 3 )
-				nAIType = Str2Int(strList[3]);
+				nAIType = Corsairs::Util::Str2Int(strList[3]);
 			CCharacter *pCha;
-			for (long i = 0; i < lChaNum; i++)
+			for (std::int32_t i = 0; i < lChaNum; i++)
 			{
 				Pos = GetPos();
-				Pos.move(rand() % 360, rand() % 20 * 100);
-				pCha = m_submap->ChaSpawn(lChaInfoID, enumCHACTRL_NONE, rand()%360, &Pos, bActEyeshot);
+				Pos.Move(rand() % 360, rand() % 20 * 100);
+				pCha = m_submap->ChaSpawn(lChaInfoID, static_cast<char>(EChaCtrlType::NONE), rand()%360, &Pos, bActEyeshot);
 				if (pCha)
 				{
 					if( n > 3 )
@@ -584,21 +584,21 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, g_Command.m_cKill)) // 8
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n >= 1)
 		{
 			const char	*szMonsName = strList[0].c_str();
-			long	lRange = 8 * 100;
-			long	lNum = 0;
+			std::int32_t	lRange = 8 * 100;
+			std::int32_t	lNum = 0;
 			if (n >= 2)
-				lRange = Str2Int(strList[1]) * 100;
+				lRange = Corsairs::Util::Str2Int(strList[1]) * 100;
 			if (n >= 3)
-				lNum = Str2Int(strList[2]);
+				lNum = Corsairs::Util::Str2Int(strList[2]);
 
-			long	lBParam[defSKILL_RANGE_BASEP_NUM] = {GetPos().x, GetPos().y, 0};
-			long	lEParam[defSKILL_RANGE_EXTEP_NUM] = {enumRANGE_TYPE_CIRCLE, lRange};
+			std::int32_t	lBParam[defSKILL_RANGE_BASEP_NUM] = {GetPos().X, GetPos().Y, 0};
+			std::int32_t	lEParam[defSKILL_RANGE_EXTEP_NUM] = {enumRANGE_TYPE_CIRCLE, lRange};
 			CCharacter	*pCCha = 0, *pCFreeCha = 0;
-			long	lFindNum = 0, lKillNum = 0;
+			std::int32_t	lFindNum = 0, lKillNum = 0;
 			GetSubMap()->BeginSearchInRange(lBParam, lEParam);
 			while (pCCha = GetSubMap()->GetNextCharacterInRange())
 			{
@@ -702,19 +702,19 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	else if (!strcmp(szComHead, g_Command.m_cMake)) // [][1.]
 	{
 		ToLogService("commands", "begin make");
-		int n = Util_ResolveTextLine(szComParam, strList, 20, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 20, ',');
 		if(n >= 2)
 		{
-			short	sID = Str2Int(strList[0]);
-			short	sNum = Str2Int(strList[1]);
+			short	sID = Corsairs::Util::Str2Int(strList[0]);
+			short	sNum = Corsairs::Util::Str2Int(strList[1]);
 			short	sTo = 1; // 
 			char	chSpawnType = enumITEM_INST_MONS;
 			if (sNum < 0 || sNum > 100)
 				sNum = 10;
 			if (n == 3)
-				chSpawnType = Str2Int(strList[2]);
+				chSpawnType = Corsairs::Util::Str2Int(strList[2]);
 			if (n == 4)
-				sTo = Str2Int(strList[3]);
+				sTo = Corsairs::Util::Str2Int(strList[3]);
 			
 			
 			ToLogService("commands", "atorNome = {},sID = {},sNum = {},sTo = {},chSpawnType = {}",
@@ -732,7 +732,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 			{
 				SItemGrid GridContent(sID, sNum);
 				ItemInstance(chSpawnType, &GridContent);
-				Long	lPosX, lPosY;
+				std::int32_t	lPosX, lPosY;
 				CCharacter	*pCCtrlCha = GetPlyCtrlCha();
 				pCCtrlCha->GetTrowItemPos(&lPosX, &lPosY);
 				if (pCCtrlCha->GetSubMap()->ItemSpawn(&GridContent, lPosX, lPosY, enumITEM_APPE_THROW, pCCtrlCha->GetID()))
@@ -749,19 +749,19 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, g_Command.m_cAttr)) // .
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n < 2)
 			return FALSE;
 		CCharacter	*pCCha = this;
 
-		long	lAttrID = Str2Int(strList[0]);
+		std::int32_t	lAttrID = Corsairs::Util::Str2Int(strList[0]);
 
 
-		long	lAttrVal = Str2Int(strList[1]);
+		std::int32_t	lAttrVal = Corsairs::Util::Str2Int(strList[1]);
 		//LONG64 lAttrVal = _atoi64(strList[1].c_str());
 
 		if (n == 3)
-			pCCha = g_pGameApp->FindChaByID(Str2Int(strList[2]));
+			pCCha = g_pGameApp->FindChaByID(Corsairs::Util::Str2Int(strList[2]));
 		if (!pCCha)
 		{
 			//SystemNotice("!");
@@ -793,17 +793,17 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, g_Command.m_cItemattr)) // 1.2.
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n != 4)
 			return FALSE;
 
-		Char	chPosType = Str2Int(strList[0]);
-		Long	lPosID = Str2Int(strList[1]);
+		char	chPosType = Corsairs::Util::Str2Int(strList[0]);
+		std::int32_t	lPosID = Corsairs::Util::Str2Int(strList[1]);
 		SItemGrid	*pSItem = GetItem2(chPosType, lPosID);
 		if (!pSItem)
 			return FALSE;
-		Long	lAttrID = Str2Int(strList[2]);
-		Short	sAttr = Str2Int(strList[3]);
+		std::int32_t	lAttrID = Corsairs::Util::Str2Int(strList[2]);
+		int16_t	sAttr = Corsairs::Util::Str2Int(strList[3]);
 		pSItem->SetAttr(lAttrID, sAttr);
 		pSItem->SetInstAttr(lAttrID, sAttr);
 		ToLogService("common", "ChaID: {}, ChaName: {}, CMD: {}, Param: {}", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
@@ -812,15 +812,15 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	
 	else if (!strcmp(szComHead, "setexpiration"))
 	{
-	int n = Util_ResolveTextLine(szComParam, strList, 30, ',');
+	int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 30, ',');
 	if (n != 3) return FALSE;
-	Char	chPosType = Str2Int(strList[0]);
-	Long	lPosID = Str2Int(strList[1]);
+	char	chPosType = Corsairs::Util::Str2Int(strList[0]);
+	std::int32_t	lPosID = Corsairs::Util::Str2Int(strList[1]);
 	SItemGrid* pSItem = GetItem2(chPosType, lPosID);
 	if (!pSItem)
 		return FALSE;
 
-	int minutes = Str2Int(strList[2]);
+	int minutes = Corsairs::Util::Str2Int(strList[2]);
 	time_t expirationt;
 	if (minutes == 0) expirationt = 0;
 	else expirationt = std::time(0) + minutes;
@@ -834,12 +834,12 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 
 	else if (!strcmp(szComHead, "seeattr")) // WorldID.
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n != 2)
 			return FALSE;
 
-		uLong	ulWorldID = Str2Int(strList[0]);
-		short	sAttrID = Str2Int(strList[1]);
+		std::uint32_t	ulWorldID = Corsairs::Util::Str2Int(strList[0]);
+		short	sAttrID = Corsairs::Util::Str2Int(strList[1]);
 		CCharacter	*pCCha = g_pGameApp->FindChaByID(ulWorldID);
 		if (!pCCha)
 		{
@@ -854,11 +854,11 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, "forge")) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
-		char	chAddLv = Str2Int(strList[0]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
+		char	chAddLv = Corsairs::Util::Str2Int(strList[0]);
 		short	sGridID = 0;
 		if (n == 2)
-			sGridID = Str2Int(strList[1]);
+			sGridID = Corsairs::Util::Str2Int(strList[1]);
 
 		SItemGrid *pItemCont = m_CKitbag.GetGridContByID(sGridID);
 		if (pItemCont)
@@ -878,11 +878,11 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, g_Command.m_cSkill)) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
-		short	sID = Str2Int(strList[0]);
-		char	chLv = Str2Int(strList[1]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
+		short	sID = Corsairs::Util::Str2Int(strList[0]);
+		char	chLv = Corsairs::Util::Str2Int(strList[1]);
 		bool	bLimit = true;
-		if (n == 3 && Str2Int(strList[2]) == 0)
+		if (n == 3 && Corsairs::Util::Str2Int(strList[2]) == 0)
 			bLimit = false;
 
 		if (!GetPlayer()->GetMainCha()->LearnSkill(sID, chLv, true, false, bLimit))
@@ -896,15 +896,15 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, g_Command.m_cDelitem))
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n == 6)
 		{
-			long	lItemID = Str2Int(strList[0]);
-			long	lItemNum = Str2Int(strList[1]);
-			char	chFromType = Str2Int(strList[2]);
-			short	sFromID = Str2Int(strList[3]);
-			char	chToType = Str2Int(strList[4]);
-			char	chForcible = Str2Int(strList[5]);
+			std::int32_t	lItemID = Corsairs::Util::Str2Int(strList[0]);
+			std::int32_t	lItemNum = Corsairs::Util::Str2Int(strList[1]);
+			char	chFromType = Corsairs::Util::Str2Int(strList[2]);
+			short	sFromID = Corsairs::Util::Str2Int(strList[3]);
+			char	chToType = Corsairs::Util::Str2Int(strList[4]);
+			char	chForcible = Corsairs::Util::Str2Int(strList[5]);
 			if (Cmd_RemoveItem(lItemID, lItemNum, chFromType, sFromID, chToType, 0, true, chForcible) != enumITEMOPT_SUCCESS)
 			{
 				//SystemNotice("!");
@@ -934,14 +934,14 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, "setping"))
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n != 1)
 		{
 			//SystemNotice("");
 			SystemNotice(RES_STRING(GM_CHARACTERSUPERCMD_CPP_00032));
 			return FALSE;
 		}
-		Long	lPing = Str2Int(strList[0]);
+		std::int32_t	lPing = Corsairs::Util::Str2Int(strList[0]);
 		m_lSetPing = lPing;
 		SendPreMoveTime();
 		ToLogService("common", "ChaID: {}, ChaName: {}, CMD: {}, Param: {}", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
@@ -956,7 +956,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, "senddata"))
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n != 2)
 		{
 			//SystemNotice("");
@@ -964,14 +964,14 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 			return FALSE;
 		}
 
-		m_timerNetSendFreq.SetInterval((DWORD)Str2Int(strList[0]));
-		m_ulNetSendLen = (uLong)Str2Int(strList[1]);
+		m_timerNetSendFreq.SetInterval((DWORD)Corsairs::Util::Str2Int(strList[0]));
+		m_ulNetSendLen = (std::uint32_t)Corsairs::Util::Str2Int(strList[1]);
 		ToLogService("common", "ChaID: {}, ChaName: {}, CMD: {}, Param: {}", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
 		return TRUE;
 	}
 	else if (!strcmp(szComHead, "setpinginfo"))
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n != 2)
 		{
 			//SystemNotice("");
@@ -979,18 +979,18 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 			return FALSE;
 		}
 
-		m_timerPing.SetInterval((DWORD)Str2Int(strList[0]));
-		m_ulPingDataLen = (uLong)Str2Int(strList[1]);
+		m_timerPing.SetInterval((DWORD)Corsairs::Util::Str2Int(strList[0]));
+		m_ulPingDataLen = (std::uint32_t)Corsairs::Util::Str2Int(strList[1]);
 		ToLogService("common", "ChaID: {}, ChaName: {}, CMD: {}, Param: {}", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
 		return TRUE;
 	}
 	else if (!strcmp(szComHead, g_Command.m_cAddkb)) // [,WorldID]
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
-		short	sAddCap = Str2Int(strList[0]);
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
+		short	sAddCap = Corsairs::Util::Str2Int(strList[0]);
 		CCharacter	*pCCha = this;
 		if (n == 2)
-			pCCha = g_pGameApp->FindChaByID(Str2Int(strList[1]));
+			pCCha = g_pGameApp->FindChaByID(Corsairs::Util::Str2Int(strList[1]));
 		if (!pCCha)
 		{
 			//SystemNotice(".!");
@@ -1017,15 +1017,15 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 	}
 	else if (!strcmp(szComHead, "itemvalid")) // 
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		if (n != 2)
 		{
 			//SystemNotice("!");
 			SystemNotice(RES_STRING(GM_CHARACTERSUPERCMD_CPP_00038));
 			return FALSE;
 		}
-		short	sPosID = Str2Int(strList[0]);
-		bool	bValid = Str2Int(strList[1]) != 0 ? true : false;
+		short	sPosID = Corsairs::Util::Str2Int(strList[0]);
+		bool	bValid = Corsairs::Util::Str2Int(strList[1]) != 0 ? true : false;
 
 		if (!SetKitbagItemValid(sPosID, bValid))
 		{
@@ -1175,12 +1175,12 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 		return TRUE;
 	}
 	else if (!strcmp(szComHead, "editcharbag")) {
-		int n = Util_ResolveTextLine(szComParam, strList, 16, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 16, ',');
 		const char* charname = strList[0].c_str();
-		int positionID = Str2Int(strList[1]);
-		int ATTR_TYPE = Str2Int(strList[2]);
-		int ATTR_VALUE = Str2Int(strList[3]);
-		int TYPE = Str2Int(strList[4]);
+		int positionID = Corsairs::Util::Str2Int(strList[1]);
+		int ATTR_TYPE = Corsairs::Util::Str2Int(strList[2]);
+		int ATTR_VALUE = Corsairs::Util::Str2Int(strList[3]);
+		int TYPE = Corsairs::Util::Str2Int(strList[4]);
 		CCharacter* player = g_pGameApp->FindChaByName(charname);
 		if (!player) return FALSE;
 		char buffer[32];
@@ -1209,12 +1209,12 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 }
 
 // 
-void CCharacter::DoCommand_CheckStatus(cChar *pszCommand, uLong ulLen)
+void CCharacter::DoCommand_CheckStatus(const char *pszCommand, std::uint32_t ulLen)
 {
-	Char szComHead[256], szComParam[256];
+	char szComHead[256], szComParam[256];
 	std::string	strList[10];
 
-	int n = Util_ResolveTextLine(pszCommand, strList, 10, ' ');
+	int n = Corsairs::Util::ResolveTextLine(pszCommand, strList, 10, ' ');
 	strncpy(szComHead, strlwr((char *)strList[0].c_str()), 256 - 1);
 	strncpy(szComParam, strList[1].c_str(), 256 - 1);
 
@@ -1232,7 +1232,7 @@ void CCharacter::DoCommand_CheckStatus(cChar *pszCommand, uLong ulLen)
 	}
 	else if (strCmd=="ping_game") // GameServerping
 	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
+		int n = Corsairs::Util::ResolveTextLine(szComParam, strList, 10, ',');
 		//  :   
 		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmQueryChaPingMessage{GetID(), strList[0]});
 		ReflectINFof(this, WtPk);
@@ -1249,7 +1249,7 @@ void NPC_PrivateTalk(CCharacter *pCha, CCharacter *pNPC, const char *pszText)
 }		
 
 // 
-void CCharacter::HandleHelp(cChar *pszCommand, uLong ulLen)
+void CCharacter::HandleHelp(const char *pszCommand, std::uint32_t ulLen)
 {
 	if(!pszCommand)           return;
 	
@@ -1264,8 +1264,8 @@ void CCharacter::HandleHelp(cChar *pszCommand, uLong ulLen)
 	if(GetSubMap()==NULL) return;
 	if(strcmp(GetSubMap()->GetName(), "garner")!=0) return;
 
-	int x = this->GetPos().x / 100;
-	int y = this->GetPos().y / 100;
+	int x = this->GetPos().X / 100;
+	int y = this->GetPos().Y / 100;
 
 	if(g_HelpNPCList.size()==0) return;
 
@@ -1285,7 +1285,7 @@ void CCharacter::HandleHelp(cChar *pszCommand, uLong ulLen)
 	}
 	
 	std::string	strList[3];
-	int n = Util_ResolveTextLine(pszCommand, strList, 3, ' ');
+	int n = Corsairs::Util::ResolveTextLine(pszCommand, strList, 3, ' ');
 	
 	const char *pszHelp = FindHelpInfo(strList[0].c_str());
 	

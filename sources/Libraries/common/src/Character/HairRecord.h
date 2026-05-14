@@ -1,48 +1,50 @@
-﻿//======================================================================================================================
+//======================================================================================================================
 // FileName: HairRecord.h
-// Creater: Jerry li
-// Date: 2005.08.29
-// Comment: CHairRecordSet class
+// Comment: CHairRecord — DTO одной строки таблицы причёсок (цвет, цена, набор ингредиентов,
+//          альтернативные предметы при неудаче, флаги доступности по типу персонажа).
 //======================================================================================================================
 
-#ifndef	HAIRRECORD_H
-#define	HAIRRECORD_H
+#pragma once
 
-#include <tchar.h>
-#include <string>
-#include <source_location>
-#include "util.h"
 #include "Database/TableData.h"
 
-#define defHAIR_MAX_ITEM		4
-#define defHAIR_MAX_FAIL_ITEM	3
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <source_location>
+#include <string>
 
 
 namespace Corsairs::Common::Character {
 
-class CHairRecord : public EntityData
-{
-public:
-	CHairRecord();
-	std::string	szColor;
+inline constexpr std::size_t kHairMaxNeedItems       = 4;
+inline constexpr std::size_t kHairMaxFailItems       = 3;
+inline constexpr std::size_t kHairCharacterTypeCount = 4;
 
-	DWORD	dwNeedItem[defHAIR_MAX_ITEM][2];		// ID,
-	DWORD	dwMoney;								// 
-	DWORD	dwItemID;								// ()ID
-	DWORD	dwFailItemID[defHAIR_MAX_FAIL_ITEM];	// 
-	bool	IsChaUse[4];							// 4
-	
-	int		GetFailItemNum()		{ return _nFailNum;		}
-	void	RefreshPrivateData();
-
-private:
-	int		_nFailNum;
-	
+struct HairNeedItem {
+	std::uint32_t Id{};
+	std::uint32_t Count{};
 };
 
-CHairRecord* GetHairRecordInfo(int nTypeID, const std::source_location& loc = std::source_location::current());
+struct HairRecord : public EntityData
+{
+	std::string Color;
+
+	std::array<HairNeedItem, kHairMaxNeedItems>  NeedItems{};
+	std::uint32_t                                Cost{};
+	std::uint32_t                                ResultItemId{};
+	std::array<std::uint32_t, kHairMaxFailItems> FailItemIds{};
+	std::array<bool, kHairCharacterTypeCount>    IsUsableByCharacterType{};
+
+	// Возвращает число валидных fail-предметов (соответствует старой логике
+	// «считаем до первого нулевого id» — массив трактуется как prefix-заполненный).
+	[[nodiscard]] int GetFailItemCount() const noexcept {
+		const auto it = std::ranges::find(FailItemIds, std::uint32_t{0});
+		return static_cast<int>(it - FailItemIds.begin());
+	}
+};
+
+HairRecord* GetHairRecordInfo(int nTypeID, const std::source_location& loc = std::source_location::current());
 
 
 } // namespace Corsairs::Common::Character
-
-#endif //HAIRRECORD_H

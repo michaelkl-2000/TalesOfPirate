@@ -250,7 +250,7 @@ ClassifyMapStatus(Corsairs::Engine::Render::MapLoadStatus s) {
                 "Section body truncated or out-of-range offset. Re-export from MapTool."};
     case S::UnknownVersion:
         return {ValidationStatus::Error,
-                "Unknown map version (NEW_VERSION mismatch). Re-export from MapTool."};
+                "Unsupported map version (MapFlag mismatch). Re-export from MapTool."};
     }
     return {ValidationStatus::Error, "Unknown MapLoader status."};
 }

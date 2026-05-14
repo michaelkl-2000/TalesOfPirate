@@ -29,21 +29,21 @@ namespace mission
 
 		//
 		BOOL	LoadBoat( CCharacter& owner, char chType );
-		BOOL	CreateBoat( CCharacter& owner, DWORD dwBoatID, char chType );
+		BOOL	CreateBoat( CCharacter& owner, std::uint32_t dwBoatID, char chType );
 		BOOL	Create( CCharacter& owner, USHORT sBoatID, USHORT sBerthID );
 		void	Cancel( CCharacter& owner );
 		BOOL	Update( CCharacter& owner, const Corsairs::Net::Msg::CmUpdateBoatMessage& msg );
 		BOOL	MakeBoat( CCharacter& owner, const Corsairs::Net::Msg::CmCreateBoatMessage& msg );
 		void	GetBerthName( USHORT sBerthID, char szBerth[], USHORT sLen );
-		BOOL	GetBoatInfo( CCharacter& owner, DWORD dwBoatID );
-		BOOL	GetTradeBoatInfo( CCharacter& viewer, CCharacter& owner, DWORD dwBoatID );
+		BOOL	GetBoatInfo( CCharacter& owner, std::uint32_t dwBoatID );
+		BOOL	GetTradeBoatInfo( CCharacter& viewer, CCharacter& owner, std::uint32_t dwBoatID );
 		BOOL	BoatPfLimit( CCharacter& owner, USHORT sBoatID );
 		BOOL	BoatLvLimit( CCharacter& owner, USHORT sBoatID );
 		BOOL	BoatLimit( CCharacter& owner, USHORT sBoatID );
 
 	private:
 		void	UpdateBoat( const BOAT_DATA& Data );
-		BOOL	SyncAttr( CCharacter& owner, DWORD dwBoatID, USHORT sCmd, USHORT sBerthID,
+		BOOL	SyncAttr( CCharacter& owner, std::uint32_t dwBoatID, USHORT sCmd, USHORT sBerthID,
 					const BOAT_SYNC_ATTR& AttrInfo );
 		BOOL	GetData( CCharacter& owner, BYTE byIsUpdate, const BOAT_DATA& Info, xShipAttrInfo& Data );
 		BOOL	SetPartData( CCharacter& boat, USHORT sTypeID, const BOAT_DATA& AttrInfo );

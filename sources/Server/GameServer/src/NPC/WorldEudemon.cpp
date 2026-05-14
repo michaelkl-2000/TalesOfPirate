@@ -103,7 +103,7 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CWorldEudemon::Load( const char szMsgProc[], const char szName[], dbc::uLong ulID )
+	BOOL CWorldEudemon::Load( const char szMsgProc[], const char szName[], std::uint32_t ulID )
 	{
 		Clear();
 
@@ -118,7 +118,7 @@ namespace mission
 		strncpy( m_szMsgProc, szMsgProc, ROLE_MAXSIZE_MSGPROC - 1 );
 
 		m_ID = ulID;
-		Char szLogName[defLOG_NAME_LEN] = "";
+		char szLogName[defLOG_NAME_LEN] = "";
 		{
 			auto _s = std::format("Cha-{}+{}", GetName(), GetID());
 			std::strncpy(szLogName, _s.c_str(), sizeof(szLogName) - 1);
@@ -131,7 +131,7 @@ namespace mission
 		m_cat = (SHORT)m_pCChaRecord->lID;
 
 		m_CChaAttr.Init( 1 );		
-		setAttr(ATTR_CHATYPE, enumCHACTRL_NPC);
+		setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::NPC));
 
 		return TRUE;
 	}

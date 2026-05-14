@@ -1,10 +1,12 @@
 #include "IniFile.h"
-#include "excp.h"
+#include "ThrowRuntimeError.h"
 #include <fstream>
 #include <filesystem>
 #include <charconv>
 
-namespace dbc {
+namespace Corsairs::Util::Ini {
+
+using Corsairs::Util::ThrowRuntimeError;
 
 static std::string_view TrimView(std::string_view sv) {
 	while (!sv.empty() && (sv.front() == ' ' || sv.front() == '\t' || sv.front() == '\r' || sv.front() == '\n'))
@@ -28,7 +30,7 @@ void IniFile::ReadFile(std::string_view filename) {
 
 	std::ifstream file(m_filename);
 	if (!file.is_open())
-		THROW_EXCP(excpFile, "Не удалось открыть: " + m_filename);
+		ThrowRuntimeError("Не удалось открыть: " + m_filename);
 
 	std::string line;
 	int lineNo = 0;
@@ -44,7 +46,7 @@ void IniFile::ReadFile(std::string_view filename) {
 		if (trimmed.front() == '[') {
 			auto closing = trimmed.find(']');
 			if (closing == std::string_view::npos)
-				THROW_EXCP(excpFile, "INI:" + std::to_string(lineNo) + " — нет закрывающей ]");
+				ThrowRuntimeError("INI:" + std::to_string(lineNo) + " — нет закрывающей ]");
 
 			auto sectName = TrimView(trimmed.substr(1, closing - 1));
 			currentSection = &(*this)[sectName];
@@ -52,7 +54,7 @@ void IniFile::ReadFile(std::string_view filename) {
 		else {
 			auto eqPos = trimmed.find('=');
 			if (eqPos == std::string_view::npos)
-				THROW_EXCP(excpFile, "INI:" + std::to_string(lineNo) + " — ошибка формата");
+				ThrowRuntimeError("INI:" + std::to_string(lineNo) + " — ошибка формата");
 
 			// Ключи до первой секции попадают в дефолтную секцию ""
 			if (!currentSection)
@@ -67,7 +69,7 @@ void IniFile::ReadFile(std::string_view filename) {
 			val = TrimView(val);
 
 			if (key.empty())
-				THROW_EXCP(excpFile, "INI:" + std::to_string(lineNo) + " — пустой ключ");
+				ThrowRuntimeError("INI:" + std::to_string(lineNo) + " — пустой ключ");
 
 			currentSection->SetString(key, val);
 		}
@@ -87,14 +89,14 @@ IniSection& IniFile::operator[](std::string_view sectname) {
 void IniFile::Save(std::string_view filename) const {
 	auto path = filename.empty() ? m_filename : std::string(filename);
 	if (path.empty())
-		THROW_EXCP(excpFile, "IniFile::Save — путь не указан");
+		ThrowRuntimeError("IniFile::Save — путь не указан");
 
 	if (auto parent = std::filesystem::path(path).parent_path(); !parent.empty())
 		std::filesystem::create_directories(parent);
 
 	std::ofstream file(path);
 	if (!file.is_open())
-		THROW_EXCP(excpFile, "Не удалось записать: " + path);
+		ThrowRuntimeError("Не удалось записать: " + path);
 
 	for (const auto& sect : m_sections) {
 		file << '[' << sect.m_name << "]\n";
@@ -150,4 +152,4 @@ void IniSection::SetInt64(std::string_view key, int64_t value) {
 	SetString(key, std::to_string(value));
 }
 
-} // namespace dbc
+} // namespace Corsairs::Util::Ini

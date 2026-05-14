@@ -38,7 +38,6 @@
 
 // Project — Util
 #include "util.h"
-#include "util2.h"
 #include "logutil.h"
 
 // Project — Common core (включается в 43-44 заголовка Common)

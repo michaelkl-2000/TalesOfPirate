@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: Item.h
 // Creater: ZhangXuedong
 // Date: 2004.09.21
@@ -28,19 +28,19 @@ public:
 	void	Initially();
 	void	Finally();
 
-	virtual void	Run(dbc::uLong ulCurTick);
+	virtual void	Run(std::uint32_t ulCurTick);
 
 	SItemGrid	*GetGridContent(void) {return &m_SGridContent;}
-	void		SetFromID(dbc::Long lFromEntityID) {m_lFromEntityID = lFromEntityID;}
-	void		SetSpawnType(dbc::Char chType) {m_chSpawType = chType;}
-	void		SetStartTick(dbc::uLong ulTick) {m_ulStartTick = ulTick;}
-	void		SetOnTick(dbc::uLong ulOnTick) {m_ulOnTick = ulOnTick;}
-	void		SetProtOnTick(dbc::uLong ulProtOnTick) {m_ulProtOnTick = ulProtOnTick;}
-	void		SetProtCha(dbc::uLong ulChaID, dbc::uLong ulChaHandle) {if (m_ulProtOnTick == 0) m_ulProtID = 0; else m_ulProtID = ulChaID, m_ulProtHandle = ulChaHandle;}
-	dbc::uLong	GetProtChaID(void) {return m_ulProtID;}
-	dbc::uLong	GetProtChaHandle(void) {return m_ulProtHandle;}
-	void		SetProtType(dbc::Char chType = enumITEM_PROT_OWN) {m_chProtType = chType;}
-	dbc::Char	GetProtType(void) {return m_chProtType;}
+	void		SetFromID(std::int32_t lFromEntityID) {m_lFromEntityID = lFromEntityID;}
+	void		SetSpawnType(char chType) {m_chSpawType = chType;}
+	void		SetStartTick(std::uint32_t ulTick) {m_ulStartTick = ulTick;}
+	void		SetOnTick(std::uint32_t ulOnTick) {m_ulOnTick = ulOnTick;}
+	void		SetProtOnTick(std::uint32_t ulProtOnTick) {m_ulProtOnTick = ulProtOnTick;}
+	void		SetProtCha(std::uint32_t ulChaID, std::uint32_t ulChaHandle) {if (m_ulProtOnTick == 0) m_ulProtID = 0; else m_ulProtID = ulChaID, m_ulProtHandle = ulChaHandle;}
+	std::uint32_t	GetProtChaID(void) {return m_ulProtID;}
+	std::uint32_t	GetProtChaHandle(void) {return m_ulProtHandle;}
+	void		SetProtType(char chType = enumITEM_PROT_OWN) {m_chProtType = chType;}
+	char	GetProtType(void) {return m_chProtType;}
 
 	char			chValid;
 	CItemRecord		*m_pCItemRecord;
@@ -51,15 +51,15 @@ protected:
 	virtual CItem *IsItem(){return this;}
 
 private:
-	dbc::Char	m_chSpawType;
-	dbc::Long	m_lFromEntityID;
-	dbc::uLong	m_ulStartTick;
-	dbc::uLong	m_ulOnTick;		// 0
+	char	m_chSpawType;
+	std::int32_t	m_lFromEntityID;
+	std::uint32_t	m_ulStartTick;
+	std::uint32_t	m_ulOnTick;		// 0
 
-	dbc::Char	m_chProtType;	// 
-	dbc::uLong	m_ulProtOnTick;	// 0
-	dbc::uLong	m_ulProtID;		// ID
-	dbc::uLong	m_ulProtHandle;	// Handle
+	char	m_chProtType;	// 
+	std::uint32_t	m_ulProtOnTick;	// 0
+	std::uint32_t	m_ulProtID;		// ID
+	std::uint32_t	m_ulProtHandle;	// Handle
 
 	virtual void OnBeginSeen(CCharacter *pCCha);
 	virtual void OnEndSeen(CCharacter *pCCha);

@@ -3,8 +3,10 @@
 #include "Inventory/Kitbag.h"
 #include "algo.h"
 #include "mpack.h"
-#include <vector>
+#include <cstdint>
 #include <format>
+#include <span>
+#include <string_view>
 
 
 namespace Corsairs::Common::Inventory {
@@ -88,23 +90,20 @@ std::string KitbagData2Msgpack(CKitbag* pKitbag) {
 
 	if (mpack_writer_destroy(&writer) != mpack_ok) { free(data); return {}; }
 
-	unsigned int b64Len = 0;
-	std::vector<char> b64Buf(size * 2 + 4);
-	base64(data, static_cast<unsigned int>(size), b64Buf.data(), static_cast<unsigned int>(b64Buf.size()), &b64Len);
+	const auto b64 = Corsairs::Util::Base64Encode(
+		std::span(reinterpret_cast<const std::uint8_t*>(data), size));
 	free(data);
 
-	return std::format("{}@{}#{}", pKitbag->GetCapacity(), KITBAG_VERSION_MSGPACK, std::string_view(b64Buf.data(), b64Len));
+	return std::format("{}@{}#{}", pKitbag->GetCapacity(), KITBAG_VERSION_MSGPACK, b64);
 }
 
 bool Msgpack2KitbagData(CKitbag* pKitbag, const char* b64Data, size_t b64Len) {
 	if (!pKitbag || !b64Data || b64Len == 0) return false;
 
-	unsigned int binLen = 0;
-	std::vector<char> binBuf(b64Len);
-	ibase64(b64Data, static_cast<unsigned int>(b64Len), binBuf.data(), &binLen);
+	const auto binBuf = Corsairs::Util::Base64Decode(std::string_view(b64Data, b64Len));
 
 	mpack_reader_t reader;
-	mpack_reader_init_data(&reader, binBuf.data(), binLen);
+	mpack_reader_init_data(&reader, reinterpret_cast<const char*>(binBuf.data()), binBuf.size());
 
 	uint32_t rootCount = mpack_expect_map(&reader);
 	for (uint32_t r = 0; r < rootCount; r++) {

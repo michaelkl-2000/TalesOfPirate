@@ -80,31 +80,31 @@ struct SItemGrid //
 		SetChange();
 	}
 
-	long GetDBParam(short sParamID) const {
+	std::int32_t GetDBParam(short sParamID) const {
 		return lDBParam[sParamID];
 	}
 
-	void SetDBParam(short sParamID, long lParamVal);
+	void SetDBParam(short sParamID, std::int32_t lParamVal);
 
-	long GetForgeParam(void) const {
+	std::int32_t GetForgeParam(void) const {
 		return GetDBParam(enumITEMDBP_FORGE);
 	}
 
-	void SetForgeParam(long lVal) {
+	void SetForgeParam(std::int32_t lVal) {
 		SetDBParam(enumITEMDBP_FORGE, lVal);
 	}
 
 	bool operator ==(SItemGrid& SItem);
-	bool HasInstAttr(long lAttrID);
-	short GetInstAttr(long lAttrID) const;
-	bool SetInstAttr(long lAttrID, short sAttr);
-	bool AddInstAttr(long lAttrID, short sAttr);
+	bool HasInstAttr(std::int32_t lAttrID);
+	short GetInstAttr(std::int32_t lAttrID) const;
+	bool SetInstAttr(std::int32_t lAttrID, short sAttr);
+	bool AddInstAttr(std::int32_t lAttrID, short sAttr);
 
 	bool InitAttr();
 	bool CheckAttr();
-	short GetAttr(long lAttrID);
-	short SetAttr(long lAttrID, short sAttr);
-	short AddAttr(long lAttrID, short sAttr);
+	short GetAttr(std::int32_t lAttrID);
+	short SetAttr(std::int32_t lAttrID, short sAttr);
+	short AddAttr(std::int32_t lAttrID, short sAttr);
 
 	void CheckValid();
 
@@ -137,17 +137,17 @@ struct SItemGrid //
 	std::array<short, 2> sEndure{};
 	std::array<short, 2> sEnergy{};
 	char chForgeLv{0}; //
-	std::array<long, enumITEMDBP_MAXNUM> lDBParam{};
+	std::array<std::int32_t, enumITEMDBP_MAXNUM> lDBParam{};
 	std::array<std::array<short, 2>, defITEM_INSTANCE_ATTR_NUM> sInstAttr{};
 	CItemAttr CAttr; //
 
 	bool bValid{true};
 	bool bChange{false}; //
 	bool bItemTradable{true};
-	long expiration{0};
+	std::int32_t expiration{0};
 };
 
-inline void SItemGrid::SetDBParam(short sParamID, long lParamVal) {
+inline void SItemGrid::SetDBParam(short sParamID, std::int32_t lParamVal) {
 	if (sParamID >= 0 && sParamID < lDBParam.size()) {
 		lDBParam[sParamID] = lParamVal;
 	}
@@ -172,7 +172,7 @@ inline bool SItemGrid::operator ==(SItemGrid& SItem) {
 		&& sInstAttr == SItem.sInstAttr;
 }
 
-inline bool SItemGrid::HasInstAttr(long lAttrID) {
+inline bool SItemGrid::HasInstAttr(std::int32_t lAttrID) {
 	if (lAttrID == ITEMATTR_URE)
 		return true;
 	if (lAttrID == ITEMATTR_MAXURE)
@@ -195,7 +195,7 @@ inline bool SItemGrid::HasInstAttr(long lAttrID) {
 	return false;
 }
 
-inline short SItemGrid::GetInstAttr(long lAttrID) const {
+inline short SItemGrid::GetInstAttr(std::int32_t lAttrID) const {
 	if (lAttrID == ITEMATTR_URE)
 		return sEndure[0];
 	if (lAttrID == ITEMATTR_MAXURE)
@@ -218,7 +218,7 @@ inline short SItemGrid::GetInstAttr(long lAttrID) const {
 	return 0;
 }
 
-inline bool SItemGrid::SetInstAttr(long lAttrID, short sAttr) {
+inline bool SItemGrid::SetInstAttr(std::int32_t lAttrID, short sAttr) {
 	if (lAttrID == ITEMATTR_TRADABLE) {
 		bItemTradable = sAttr == 0 ? false : true;
 		goto ItemAttrSetSuc;
@@ -268,7 +268,7 @@ ItemAttrSetSuc:
 	return true;
 }
 
-inline bool SItemGrid::AddInstAttr(long lAttrID, short sAttr) {
+inline bool SItemGrid::AddInstAttr(std::int32_t lAttrID, short sAttr) {
 	if (lAttrID == ITEMATTR_TRADABLE) {
 		bItemTradable = sAttr == 0 ? false : true;
 		goto ItemAttrAddSuc;
@@ -349,20 +349,20 @@ inline bool SItemGrid::CheckAttr() {
 	return true;
 }
 
-inline short SItemGrid::GetAttr(long lAttrID) {
+inline short SItemGrid::GetAttr(std::int32_t lAttrID) {
 	if (!CheckAttr()) {
 		return 0;
 	}
 	return CAttr.GetAttr(short(lAttrID));
 }
 
-inline short SItemGrid::SetAttr(long lAttrID, short sAttr) {
+inline short SItemGrid::SetAttr(std::int32_t lAttrID, short sAttr) {
 	if (!CheckAttr())
 		return 0;
 	return CAttr.SetAttr(short(lAttrID), sAttr);
 }
 
-inline short SItemGrid::AddAttr(long lAttrID, short sAttr) {
+inline short SItemGrid::AddAttr(std::int32_t lAttrID, short sAttr) {
 	if (!CheckAttr())
 		return 0;
 	return CAttr.AddAttr(short(lAttrID), sAttr);

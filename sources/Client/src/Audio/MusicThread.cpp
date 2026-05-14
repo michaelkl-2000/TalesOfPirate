@@ -39,7 +39,7 @@ private:
 
 DWORD WINAPI ThreadStartRoutine(LPVOID lpThreadParameter) {
 	::SetThreadName("music");
-	TalesOfPirate::Utils::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
 	return ((CMusicThread*)lpThreadParameter)->Run();
 }
 

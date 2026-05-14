@@ -2,10 +2,10 @@
 // клиента Tales of Pirate на CP_UTF8 везде.
 //
 // Использование (примеры):
-//   std::string utf8 = encoding::AnsiToUtf8(ansiFromWmChar);
-//   encoding::AppendAnsiByteAsUtf8(byteFromWmChar, targetUtf8String);
-//   encoding::PopLastUtf8Codepoint(utf8);          // бэкспейс
-//   bool isUtf8Starter = encoding::IsUtf8StartByte(b);
+//   std::string utf8 = Corsairs::Util::Encoding::AnsiToUtf8(ansiFromWmChar);
+//   Corsairs::Util::Encoding::AppendAnsiByteAsUtf8(byteFromWmChar, targetUtf8String);
+//   Corsairs::Util::Encoding::PopLastUtf8Codepoint(utf8);          // бэкспейс
+//   bool isUtf8Starter = Corsairs::Util::Encoding::IsUtf8StartByte(b);
 //
 // Все функции принимают std::string_view / std::string; hex-dump первых байт
 // удобен для разведки формата сетевых пакетов.
@@ -15,7 +15,7 @@
 #include <string>
 #include <string_view>
 
-namespace encoding {
+namespace Corsairs::Util::Encoding {
 
 // --- UTF-8 byte classification -------------------------------------------
 
@@ -64,4 +64,4 @@ bool EqualsIgnoreCaseAscii(std::string_view a, std::string_view b) noexcept;
 // Формат: "48 65 6c 6c 6f ..." (маленькие буквы, пробел-разделённые).
 std::string HexDump(std::string_view bytes, std::size_t maxBytes = 64);
 
-}  // namespace encoding
+}  // namespace Corsairs::Util::Encoding

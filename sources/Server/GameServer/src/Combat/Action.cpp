@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: Action.cpp
 // Creater: ZhangXuedong
 // Date: 2004.10.08
@@ -10,7 +10,7 @@
 #include "Combat/MoveAble.h"
 #include "Character/Character.h"
 
-_DBC_USING;
+;
 
 CAction::CAction(Entity *pCEntity)
 {
@@ -20,7 +20,7 @@ CAction::CAction(Entity *pCEntity)
 	m_sCurAction = -1;
 }
 
-bool CAction::Add(dbc::Short sActionType, void *pActionData)
+bool CAction::Add(int16_t sActionType, void *pActionData)
 {
 	if (m_sCurAction != -1 || m_sActionNum >= defMAX_ACTION_NUM)
 	{
@@ -59,7 +59,7 @@ bool CAction::Add(dbc::Short sActionType, void *pActionData)
 // sActionType .0
 // sActionState 
 //=============================================================================
-bool CAction::DoNext(Short sActionType, Short sActionState)
+bool CAction::DoNext(int16_t sActionType, int16_t sActionState)
 {
 	if (m_sActionNum == 0 || m_pCEntity == NULL)
 	{
@@ -171,14 +171,14 @@ void CAction::Interrupt()
 	return;
 }
 
-bool CAction::Has(Short sActionType, void *pActionData)
+bool CAction::Has(int16_t sActionType, void *pActionData)
 {
 	//if (m_sActionNum == 0 || m_pCEntity == NULL)
 	//	return false;
 	//if (m_sCurAction >= m_sActionNum - 1)
 	//	return false;
 
-	//for (Short i = m_sCurAction + 1; i < m_sActionNum; i++)
+	//for (int16_t i = m_sCurAction + 1; i < m_sActionNum; i++)
 	//{
 	//	if (m_SAction[i].sType == sActionType)
 	//	{
@@ -217,7 +217,7 @@ CActionCache::~CActionCache()
 	}
 }
 
-void CActionCache::AddCommand(Short sCommand)
+void CActionCache::AddCommand(int16_t sCommand)
 {
 	SAction	*pSCarrier = NULL;
 
@@ -231,8 +231,7 @@ void CActionCache::AddCommand(Short sCommand)
 		pSCarrier = new SAction;
 		if (!pSCarrier)
 		{
-			//THROW_EXCP(excpMem, "");
-			THROW_EXCP(excpMem, RES_STRING(GM_ACTION_CPP_00001));
+			ThrowRuntimeError(RES_STRING(GM_ACTION_CPP_00001));
 		}
 	}
 
@@ -243,7 +242,7 @@ void CActionCache::AddCommand(Short sCommand)
 	m_pSExecQueue = pSCarrier;
 }
 
-void CActionCache::PushParam(void *pParam, Char chSize)
+void CActionCache::PushParam(void *pParam, char chSize)
 {
 	if (m_pSExecQueue && (m_pSExecQueue->chParamPos + chSize <= defMAX_CACHE_ACTION_PARAM_LEN))
 	{
@@ -284,23 +283,23 @@ void CActionCache::Run()
 
 void CActionCache::ExecAction(SAction *pSCarrier)
 {
-	Char	chCurParamPos = 0;
+	char	chCurParamPos = 0;
 	switch (pSCarrier->sCommand)
 	{
 	case	enumCACHEACTION_MOVE:
 		{
-			Short sPing = *((Short *)(pSCarrier->szParam + chCurParamPos));
-			chCurParamPos += sizeof(Short);
-			Char chPointNum = pSCarrier->szParam[chCurParamPos];
-			chCurParamPos += sizeof(Char);
-			Point *pPath = (Point *)(pSCarrier->szParam + chCurParamPos);
-			chCurParamPos += sizeof(Point) * chPointNum;
+			int16_t sPing = *((int16_t *)(pSCarrier->szParam + chCurParamPos));
+			chCurParamPos += sizeof(int16_t);
+			char chPointNum = pSCarrier->szParam[chCurParamPos];
+			chCurParamPos += sizeof(char);
+			Corsairs::Util::Point *pPath = (Corsairs::Util::Point *)(pSCarrier->szParam + chCurParamPos);
+			chCurParamPos += sizeof(Corsairs::Util::Point) * chPointNum;
 			if (chCurParamPos == pSCarrier->chParamPos)
 				m_pCOwn->Cmd_BeginMove(sPing, pPath, chPointNum);
 			else if (chCurParamPos < pSCarrier->chParamPos)
 			{
-				Char chStopState = pSCarrier->szParam[chCurParamPos];
-				chCurParamPos += sizeof(Char);
+				char chStopState = pSCarrier->szParam[chCurParamPos];
+				chCurParamPos += sizeof(char);
 				if (chCurParamPos == pSCarrier->chParamPos)
 					m_pCOwn->Cmd_BeginMove(sPing, pPath, chPointNum, chStopState);
 			}
@@ -308,22 +307,22 @@ void CActionCache::ExecAction(SAction *pSCarrier)
 		break;
 	case	enumCACHEACTION_SKILL:
 		{
-			Long lSkillID = *((Long *)(pSCarrier->szParam + chCurParamPos));
-			chCurParamPos += sizeof(Long);
+			std::int32_t lSkillID = *((std::int32_t *)(pSCarrier->szParam + chCurParamPos));
+			chCurParamPos += sizeof(std::int32_t);
 			CCharacter *pCTar = *((CCharacter **)(pSCarrier->szParam + chCurParamPos));
 			m_pCOwn->Cmd_BeginSkillDirect(lSkillID, pCTar);
 		}
 		break;
 	case	enumCACHEACTION_SKILL2:
 		{
-			Long lSkillID = *((Long *)(pSCarrier->szParam + chCurParamPos));
-			chCurParamPos += sizeof(Long);
-			Long lSkillLv = *((Long *)(pSCarrier->szParam + chCurParamPos));
-			chCurParamPos += sizeof(Long);
-			Long lPosX = *((Long *)(pSCarrier->szParam + chCurParamPos));
-			chCurParamPos += sizeof(Long);
-			Long lPosY = *((Long *)(pSCarrier->szParam + chCurParamPos));
-			chCurParamPos += sizeof(Long);
+			std::int32_t lSkillID = *((std::int32_t *)(pSCarrier->szParam + chCurParamPos));
+			chCurParamPos += sizeof(std::int32_t);
+			std::int32_t lSkillLv = *((std::int32_t *)(pSCarrier->szParam + chCurParamPos));
+			chCurParamPos += sizeof(std::int32_t);
+			std::int32_t lPosX = *((std::int32_t *)(pSCarrier->szParam + chCurParamPos));
+			chCurParamPos += sizeof(std::int32_t);
+			std::int32_t lPosY = *((std::int32_t *)(pSCarrier->szParam + chCurParamPos));
+			chCurParamPos += sizeof(std::int32_t);
 			m_pCOwn->Cmd_BeginSkillDirect2(lSkillID, lSkillLv, lPosX, lPosY);
 		}
 		break;

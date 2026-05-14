@@ -5,7 +5,7 @@
 class CGuildListData {
 public:
 	CGuildListData(void);
-	CGuildListData(DWORD dwID, std::string strName, std::string strMottoName, std::string strMasterName,
+	CGuildListData(DWORD dwID, std::string_view strName, std::string_view strMottoName, std::string_view strMasterName,
 				   DWORD dwMemberCount, __int64 i64Exp);
 	~CGuildListData(void);
 
@@ -17,7 +17,7 @@ public:
 		return m_dwID;
 	}
 
-	void SetGuildName(std::string strName) {
+	void SetGuildName(std::string_view strName) {
 		m_strName = strName;
 	}
 
@@ -25,7 +25,7 @@ public:
 		return m_strName;
 	}
 
-	void SetGuildMottoName(std::string strMottoName) {
+	void SetGuildMottoName(std::string_view strMottoName) {
 		m_strMottoName = strMottoName;
 	}
 
@@ -33,7 +33,7 @@ public:
 		return m_strMottoName;
 	}
 
-	void SetGuildMasterName(std::string strMasterName) {
+	void SetGuildMasterName(std::string_view strMasterName) {
 		m_strMasterName = strMasterName;
 	}
 

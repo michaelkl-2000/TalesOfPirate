@@ -22,8 +22,6 @@ class CChaListNode;
 class CEyeshotCell;
 struct SSkillStateUnit;
 
-//using	namespace	GAME;
-
 namespace mission {
 	class CNpc;
 	class CEventEntity;
@@ -59,23 +57,23 @@ public:
 	// Free() остаётся в eyeshot-cell как dangling.
 	virtual void Finally();
 
-	void          SetInitShape(const Square& shape);
-	const Square& GetShape() const;
+	void          SetInitShape(const Corsairs::Util::Square& shape);
+	const Corsairs::Util::Square& GetShape() const;
 
-	void          SetPos(const Point& pos);
-	void          SetPos(dbc::Long lPosX, dbc::Long lPosY);
-	const Point&  GetPos() const;
+	void          SetPos(const Corsairs::Util::Point& pos);
+	void          SetPos(std::int32_t lPosX, std::int32_t lPosY);
+	const Corsairs::Util::Point&  GetPos() const;
 
 	void          SetRadius(const long& lRadius);
 	const long&   GetRadius() const;
 
-	dbc::uLong    GetID() const;
+	std::uint32_t    GetID() const;
 	short         GetCat() const;
-	void          SetID(dbc::uLong ulID);
+	void          SetID(std::uint32_t ulID);
 	void          SetCat(short sCat);
 
-	void          SetHandle(dbc::Long lHandle);
-	dbc::Long     GetHandle(void);
+	void          SetHandle(std::int32_t lHandle);
+	std::int32_t     GetHandle(void);
 
 	SubMap*       GetSubMap() const;
 	SubMap*       GetSubMapFar();
@@ -84,8 +82,8 @@ public:
 	short         GetAngle() const;
 	void          SetAngle(short sAngle);
 
-	const Circle& GetTerritory();
-	void          SetTerritory(Circle& STerritory);
+	const Corsairs::Util::Circle& GetTerritory();
+	void          SetTerritory(Corsairs::Util::Circle& STerritory);
 
 	void NotiChgToEyeshot(Corsairs::Net::WPacket chginf, bool bIncludeOwn = true);
 
@@ -101,28 +99,28 @@ public:
 	const char*        GetName() const;
 	const std::string& GetNameStr() const;
 
-	void          SetBirthCity(dbc::cChar* cszName);
+	void          SetBirthCity(const char* cszName);
 	const char*   GetBirthCity();
 
-	void          SetBirthMap(dbc::cChar* cszName);
+	void          SetBirthMap(const char* cszName);
 	const char*   GetBirthMap();
 
-	void          SetWitherTime(dbc::Long lWitherTime);
-	void          SetResumeTime(dbc::Long lResumeTime);
+	void          SetWitherTime(std::int32_t lWitherTime);
+	void          SetResumeTime(std::int32_t lResumeTime);
 
 	void          SetEvent(CEvent& CEvt);
 	CEvent&       GetEvent(void);
 
-	virtual void Run(dbc::uLong ulCurTick);
-	Entity* SearchByIDInEyeshot(dbc::cuLong culID);
+	virtual void Run(std::uint32_t ulCurTick);
+	Entity* SearchByIDInEyeshot(std::uint32_t culID);
 
-	dbc::Short    GetExistState(void);
-	void          SetExistState(dbc::Short sState);
+	int16_t    GetExistState(void);
+	void          SetExistState(int16_t sState);
 
 	bool IsLiveing(void);
 
-	dbc::Short    GetStopState(void);
-	void          SetStopState(dbc::Short sState);
+	int16_t    GetStopState(void);
+	void          SetStopState(int16_t sState);
 
 	bool          GetEyeshotAbility(void);
 	void          SetEyeshotAbility(bool bEyeshot);
@@ -131,23 +129,23 @@ public:
 	bool          IsValid(void);
 	void          SetValid(bool bValid = true);
 
-	dbc::uShort   GetAreaAttr(void);
-	void          SetAreaAttr(dbc::uShort usAreaAttr);
+	std::uint16_t   GetAreaAttr(void);
+	void          SetAreaAttr(std::uint16_t usAreaAttr);
 
-	dbc::uChar    GetIslandID(void);
-	void          SetIslandID(dbc::uChar uchIsland);
+	std::uint8_t    GetIslandID(void);
+	void          SetIslandID(std::uint8_t uchIsland);
 
 	bool          IsInSafeArea(void);
 
 	CStateCellNode* EnterStateCell(CStateCell* pStateCell, CChaListNode* pEntiNode, bool bIsIn = false);
 	void OutMgrUnit(CStateCellNode* pCMgrNode);
 	void SetCenterMgrNode(CStateCellNode* pCMgrNode);
-	SSkillStateUnit* GetAreaState(dbc::uChar uchStateID);
+	SSkillStateUnit* GetAreaState(std::uint8_t uchStateID);
 	void RefreshArea(void);
-	void RefreshArea(Point* pSrcPos);
-	dbc::Short GetEyeshotWidth(void);
+	void RefreshArea(Corsairs::Util::Point* pSrcPos);
+	int16_t GetEyeshotWidth(void);
 
-	dbc::Short    GetEyeshotHeight(void);
+	int16_t    GetEyeshotHeight(void);
 
 	bool IsInEyeshot(Entity* pCTarEnti);
 
@@ -170,7 +168,7 @@ public:
 	void SynEventInfo(void);
 
 	char m_szLogName[defLOG_NAME_LEN];
-	dbc::uLong m_ID;
+	std::uint32_t m_ID;
 
 protected:
 	Entity();
@@ -180,7 +178,7 @@ protected:
 	virtual bool overlap(long& xdist, long& ydist);
 
 private:
-	virtual const Square& GetLapChkShape();
+	virtual const Corsairs::Util::Square& GetLapChkShape();
 
 	virtual void OnBeginSee(Entity*);
 	virtual void OnEndSee(Entity*);
@@ -195,13 +193,13 @@ private:
 public:
 	bool m_bValid;
 
-	dbc::Long m_lHandle;
+	std::int32_t m_lHandle;
 
 	short m_cat;
 
-	Point m_lastpos;
-	Square m_shape;
-	Circle m_STerritory; //
+	Corsairs::Util::Point m_lastpos;
+	Corsairs::Util::Square m_shape;
+	Corsairs::Util::Circle m_STerritory; //
 	short m_sAngle;
 	/**
 	 * @label
@@ -214,19 +212,19 @@ public:
 		CEyeshotCell* m_pCEyeshotHost;
 	};
 
-	dbc::Char m_szBirthMap[MAX_MAPNAME_LENGTH];
-	dbc::Char m_szBirthCity[MAX_MAPNAME_LENGTH];
+	char m_szBirthMap[MAX_MAPNAME_LENGTH];
+	char m_szBirthCity[MAX_MAPNAME_LENGTH];
 
 	CEvent m_CEvent;
 
 	struct SExistCtrl {
-		dbc::Short sState; // CompCommand.h EExistState
-		dbc::Short sStopState; // EExistState enumEXISTS_WAITINGenumEXISTS_SLEEPING
+		int16_t sState; // CompCommand.h EExistState
+		int16_t sStopState; // EExistState enumEXISTS_WAITINGenumEXISTS_SLEEPING
 
 		//
-		dbc::Long lWitherTime; //
-		dbc::Long lResumeTime; //
-		dbc::uLong ulTick;
+		std::int32_t lWitherTime; //
+		std::int32_t lResumeTime; //
+		std::uint32_t ulTick;
 		//
 	};
 
@@ -234,8 +232,8 @@ public:
 	SExistCtrl m_SExistCtrl;
 	bool m_bActiveEyeshot;
 
-	dbc::uShort m_usAreaAttr[2]; // 01CompCommand.hEAreaMask
-	dbc::uChar m_ucIslandID[2]; // 01
+	std::uint16_t m_usAreaAttr[2]; // 01CompCommand.hEAreaMask
+	std::uint8_t m_ucIslandID[2]; // 01
 };
 
 extern void NotiPkToWorld(Corsairs::Net::WPacket chginf);

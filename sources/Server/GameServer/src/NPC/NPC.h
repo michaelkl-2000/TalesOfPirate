@@ -10,15 +10,13 @@
 //---------------------------------------------------------
 
 namespace Corsairs::Common::NPC { class CNpcRecord; }
-namespace Corsairs::Common::Character { class CChaRecord; }
-using CChaRecord = Corsairs::Common::Character::CChaRecord;
+namespace Corsairs::Common::Character { class ChaRecord; }
+using CChaRecord = Corsairs::Common::Character::ChaRecord;
 
 namespace mission
 {
-	using namespace dbc;
-
-	#define EN_OK						 0		// 
-	#define EN_FAILER					-1		// 
+	#define EN_OK						 0		//
+	#define EN_FAILER					-1		//
 	#define INVALID_SCRIPT_NPCHANDLE	USHORT(-1)		// NPCID
 
 	//	

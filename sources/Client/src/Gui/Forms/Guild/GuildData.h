@@ -29,7 +29,7 @@ public:
 		return m_dwID;
 	}
 
-	static void SetGuildName(const std::string strName) {
+	static void SetGuildName(std::string_view strName) {
 		m_strName = strName;
 	}
 
@@ -37,7 +37,7 @@ public:
 		return m_strName;
 	}
 
-	static void SetGuildMottoName(const std::string strName) {
+	static void SetGuildMottoName(std::string_view strName) {
 		m_strMottoName = strName;
 	}
 
@@ -69,7 +69,7 @@ public:
 		return m_dwMasterID;
 	}
 
-	static void SetGuildMasterName(const std::string strMasterName) {
+	static void SetGuildMasterName(std::string_view strMasterName) {
 		m_strMasterName = strMasterName;
 	}
 

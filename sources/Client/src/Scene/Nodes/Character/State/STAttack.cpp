@@ -276,7 +276,7 @@ void CWaitAttackState::ActionFrame(DWORD pose_id, int key_frame) {
 	_cHit.ActionExec(_pHarm, key_frame);
 
 	// 
-	if (_pTarget && key_frame >= 0 && _pTarget->getChaCtrlType() == enumCHACTRL_MONS_TREE) {
+	if (_pTarget && key_frame >= 0 && _pTarget->getChaCtrlType() == EChaCtrlType::MONS_TREE) {
 		_pTarget->PlayPose(7, PLAY_ONCE_SMOOTH);
 	}
 

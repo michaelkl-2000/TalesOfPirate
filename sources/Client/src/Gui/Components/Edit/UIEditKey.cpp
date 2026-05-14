@@ -82,7 +82,7 @@ bool CEditKey::OnChar(char c) {
 		if (_nEnterPos == 1) {
 			_szEnter[1] = c;
 			const std::string_view pair(_szEnter, 2);
-			utf8 = encoding::AnsiToUtf8(pair);
+			utf8 = Corsairs::Util::Encoding::AnsiToUtf8(pair);
 			_nEnterPos = 0;
 			_szEnter[0] = _szEnter[1] = 0;
 		}
@@ -92,7 +92,7 @@ bool CEditKey::OnChar(char c) {
 			return false; // ждём trail-байт
 		}
 		else {
-			encoding::AppendAnsiByteAsUtf8(byte, utf8);
+			Corsairs::Util::Encoding::AppendAnsiByteAsUtf8(byte, utf8);
 		}
 		// Порционно разложить UTF-8 в CEditChar: 1 byte → CEditChar(b0),
 		// 2 byte → CEditChar(b0, b1). 3+ byte (CJK UTF-8) пока не

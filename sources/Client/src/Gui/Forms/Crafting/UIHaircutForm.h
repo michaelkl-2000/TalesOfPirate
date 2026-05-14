@@ -58,7 +58,7 @@ namespace GUI {
 	private:
 		//UI
 		CForm* frmHaircut;
-		COneCommand* cmdProp[defHAIR_MAX_ITEM];
+		COneCommand* cmdProp[Corsairs::Common::Character::kHairMaxNeedItems];
 		CLabel* lblHairColor;
 		CLabel* lblHairType;
 		CLabel* lblHairFare;
@@ -73,7 +73,7 @@ namespace GUI {
 		DWORD m_dwHairColorMaxNum;
 
 		short m_sScriptID;
-		int m_iGoodsIndex[defHAIR_MAX_ITEM];
+		int m_iGoodsIndex[Corsairs::Common::Character::kHairMaxNeedItems];
 	}; // end of class CHaircutMgr
 } // end of namespace GUI
 

@@ -16,30 +16,30 @@
 class	CMapEntryCopyCell
 {
 public:
-	CMapEntryCopyCell(dbc::Short sMaxPlyNum = 0, dbc::Short sCurPlyNum = 0);
+	CMapEntryCopyCell(int16_t sMaxPlyNum = 0, int16_t sCurPlyNum = 0);
 
-	void		SetMaxPlyNum(dbc::Short sPlyNum);
-	dbc::Short	GetMaxPlyNum(void);
-	void		SetCurPlyNum(dbc::Short sPlyNum);
-	dbc::Short	GetCurPlyNum(void);
-	bool		AddCurPlyNum(dbc::Short sAddNum);
-	bool		HasFreePlyCount(dbc::Short sRequestNum);
+	void		SetMaxPlyNum(int16_t sPlyNum);
+	int16_t	GetMaxPlyNum(void);
+	void		SetCurPlyNum(int16_t sPlyNum);
+	int16_t	GetCurPlyNum(void);
+	bool		AddCurPlyNum(int16_t sAddNum);
+	bool		HasFreePlyCount(int16_t sRequestNum);
 
-	dbc::Long	GetParam(dbc::Char chParamID);
-	bool		SetParam(dbc::Char chParamID, dbc::Long lParamVal);
+	std::int32_t	GetParam(char chParamID);
+	bool		SetParam(char chParamID, std::int32_t lParamVal);
 
 	void		WriteParamPacket(Corsairs::Net::WPacket &pk);
 
-	void		SetPosID(dbc::Long lPosID);
-	dbc::Long	GetPosID(void);
+	void		SetPosID(std::int32_t lPosID);
+	std::int32_t	GetPosID(void);
 
 private:
-	dbc::Short	m_sMaxPlyNum;
-	dbc::Short	m_sCurPlyNum;
+	int16_t	m_sMaxPlyNum;
+	int16_t	m_sCurPlyNum;
 
-	dbc::Long	m_lParam[defMAPCOPY_INFO_PARAM_NUM];
+	std::int32_t	m_lParam[defMAPCOPY_INFO_PARAM_NUM];
 
-	dbc::Short	m_sPosID;
+	int16_t	m_sPosID;
 
 };
 
@@ -52,44 +52,44 @@ public:
 	void		    SetPos(void *pPos);
 	void*		    GetPos(void);
 
-	void		    SetMapName(dbc::cChar *cszMapName);
-	dbc::cChar*	    GetMapName(void) const;
-	void		    SetTMapName(dbc::cChar *cszTMapName);
-	dbc::cChar*	    GetTMapName(void) const;
-	const Point*    GetEntiPos(void) const;
-	void            SetEntiPos(const Point* cpSPos);
-	void            SetEntiPos(dbc::Long lPosX, dbc::Long lPosY);
-	void		    SetEntiID(dbc::Long lEntiID);
-	dbc::Long	    GetEntiID(void);
-	void		    SetEventID(dbc::Long lEventID);
-	dbc::Long	    GetEventID(void);
-	void		    SetEventName(dbc::cChar *cszEventName);
+	void		    SetMapName(const char *cszMapName);
+	const char*	    GetMapName(void) const;
+	void		    SetTMapName(const char *cszTMapName);
+	const char*	    GetTMapName(void) const;
+	const Corsairs::Util::Point*    GetEntiPos(void) const;
+	void            SetEntiPos(const Corsairs::Util::Point* cpSPos);
+	void            SetEntiPos(std::int32_t lPosX, std::int32_t lPosY);
+	void		    SetEntiID(std::int32_t lEntiID);
+	std::int32_t	    GetEntiID(void);
+	void		    SetEventID(std::int32_t lEventID);
+	std::int32_t	    GetEventID(void);
+	void		    SetEventName(const char *cszEventName);
 	void		    SetEnti(Entity *pCEnt);
-	void		    GetPosInfo(const char** pMapN, dbc::Long* lpPosX, dbc::Long* lpPosY, const char** pTMapN);
+	void		    GetPosInfo(const char** pMapN, std::int32_t* lpPosX, std::int32_t* lpPosY, const char** pTMapN);
 	CEvent*		    GetEvent(void);
-	void		    SetCopyNum(dbc::Short sCopyNum);
-	dbc::Short	    GetCopyNum(void);
-	void		    SetCopyPlyNum(dbc::Short sCopyNum);
-	dbc::Short	    GetCopyPlyNum(void);
+	void		    SetCopyNum(int16_t sCopyNum);
+	int16_t	    GetCopyNum(void);
+	void		    SetCopyPlyNum(int16_t sCopyNum);
+	int16_t	    GetCopyPlyNum(void);
 	CMapEntryCopyCell* AddCopy(CMapEntryCopyCell *pCCpyCell);
-	CMapEntryCopyCell* GetCopy(dbc::Short sCopyID);
+	CMapEntryCopyCell* GetCopy(int16_t sCopyID);
 	bool		    ReleaseCopy(CMapEntryCopyCell *pCCpyCell);
-	bool		    ReleaseCopy(dbc::Long lCopyNO);
+	bool		    ReleaseCopy(std::int32_t lCopyNO);
 	void		    FreeEnti(void);
 
-	void		    SynCopyParam(dbc::Short sCopyID);
-	void		    SynCopyRun(dbc::Short sCopyID, dbc::Char chCdtType, dbc::Long chCdtVal);
+	void		    SynCopyParam(int16_t sCopyID);
+	void		    SynCopyRun(int16_t sCopyID, char chCdtType, std::int32_t chCdtVal);
 
 private:
-	dbc::Char	m_szMapName[MAX_MAPNAME_LENGTH];
-	Point		m_SEntiPos;
-	dbc::Long	m_lEntiID;
-	dbc::Char	m_szTMapName[MAX_MAPNAME_LENGTH];
+	char	m_szMapName[MAX_MAPNAME_LENGTH];
+	Corsairs::Util::Point		m_SEntiPos;
+	std::int32_t	m_lEntiID;
+	char	m_szTMapName[MAX_MAPNAME_LENGTH];
 	CEvent		m_CEvtObj;
 	Entity		*m_pCEnt;
 
-	dbc::Short	m_sMapCopyNum;
-	dbc::Short	m_sCopyPlyNum;
+	int16_t	m_sMapCopyNum;
+	int16_t	m_sCopyPlyNum;
 	CListArray<CMapEntryCopyCell>	m_LCopyInfo;
 
 	void*		m_pPos;
@@ -104,8 +104,8 @@ public:
 
 	CDynMapEntryCell*	Add(CDynMapEntryCell *pCCell);
 	bool	Del(CDynMapEntryCell *pCCell);
-	bool	Del(dbc::cChar *cszTMapName);
-	CDynMapEntryCell*	GetEntry(dbc::cChar *cszTMapN);
+	bool	Del(const char *cszTMapName);
+	CDynMapEntryCell*	GetEntry(const char *cszTMapN);
 	void	AfterPlayerLogin(const char *cszName);
 
 private:

@@ -10,7 +10,7 @@
 #include <utility>
 
 #include <logutil.h>
-#include <util2.h>
+#include <util.h>
 
 
 namespace Corsairs::Common::World {
@@ -71,7 +71,7 @@ bool SwitchMapRecordStore::Load(const char* txtPath) {
 			strLine.resize(pos);
 		}
 
-		int n = Util_ResolveTextLine(strLine.c_str(), fields.get(), MAX_FIELDS + 1, '\t');
+		int n = Corsairs::Util::ResolveTextLine(strLine.c_str(), fields.get(), MAX_FIELDS + 1, '\t');
 		if (n < 2) {
 			continue;
 		}
@@ -86,25 +86,25 @@ bool SwitchMapRecordStore::Load(const char* txtPath) {
 		// [6] "x,y"  TargetPos
 		// [7,8] ActivateCondition, Name — игнорируются
 		CSwitchMapRecord r{};
-		r.Id = Str2Int(fields[0]);
+		r.Id = Corsairs::Util::Str2Int(fields[0]);
 		r.lID = r.Id;
-		r.lEntityID = n > 1 ? Str2Int(fields[1]) : 0;
-		r.lEventID  = n > 2 ? Str2Int(fields[2]) : 0;
+		r.lEntityID = n > 1 ? Corsairs::Util::Str2Int(fields[1]) : 0;
+		r.lEventID  = n > 2 ? Corsairs::Util::Str2Int(fields[2]) : 0;
 
 		auto [x, y] = n > 3 ? ParseXY(fields[3]) : std::pair<int, int>{0, 0};
-		r.SEntityPos.x = x;
-		r.SEntityPos.y = y;
+		r.SEntityPos.X = x;
+		r.SEntityPos.Y = y;
 
-		r.sAngle = n > 4 ? static_cast<short>(Str2Int(fields[4])) : -1;
+		r.sAngle = n > 4 ? static_cast<short>(Corsairs::Util::Str2Int(fields[4])) : -1;
 
 		if (n > 5) {
-			Util_TrimTabString(fields[5]);
+			std::erase(fields[5], '\t');
 			CopyFixed(r.szTarMapName, std::string_view{fields[5]});
 		}
 
 		auto [tx2, ty2] = n > 6 ? ParseXY(fields[6]) : std::pair<int, int>{0, 0};
-		r.STarPos.x = tx2;
-		r.STarPos.y = ty2;
+		r.STarPos.X = tx2;
+		r.STarPos.Y = ty2;
 
 		_records.push_back(std::move(r));
 	}

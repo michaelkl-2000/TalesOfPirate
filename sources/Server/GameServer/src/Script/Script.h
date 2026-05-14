@@ -1,4 +1,4 @@
-﻿// Script.h Created by knight-gongjian 2004.12.1.
+// Script.h Created by knight-gongjian 2004.12.1.
 //---------------------------------------------------------
 #pragma once
 
@@ -28,7 +28,6 @@ void print_error(lua_State* state);
 // Register a raw lua_CFunction directly
 #define LUA_REGISTER_CFUNC(L, fn) lua_register(L, #fn, fn)
 
-#include "dbccommon.h"
 #include "Character/Character.h"
 
 extern lua_State* g_pLuaState;

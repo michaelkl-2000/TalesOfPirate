@@ -13,7 +13,7 @@ namespace GUI {
 		static void OnClickSortByGuildExperience(CGuiData* pSender, int x, int y, DWORD key);
 		static void OnSelectChange(CGuiData* pSender);
 		static void OnClickApply(CGuiData* pSender, int x, int y, DWORD key);
-		static void OnMsgReplaceApply(std::string strOldGuildName);
+		static void OnMsgReplaceApply(std::string_view strOldGuildName);
 		static void OnMsgReplaceApplySelectClick(CCompent* pSender, int nMsgType, int x, int y, DWORD dwKey);
 		static void ResetGuildList();
 		static void ResetOrder();

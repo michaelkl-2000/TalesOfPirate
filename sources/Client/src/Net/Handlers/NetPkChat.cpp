@@ -17,7 +17,7 @@
 #include "UIGuildMgr.h"
 #include "CommandMessages.h"
 
-//  uChar, uShort, uLong, cChar   NetIF.h
+//  std::uint8_t, std::uint16_t, std::uint32_t, cChar   NetIF.h
 
 // =================================================================
 //   CP- ( -> GroupServer  GateServer)
@@ -341,17 +341,17 @@ BOOL PC_SESS_CREATE(LPRPACKET pk) {
 		NetSessCreate(msg.errorMsg.c_str());
 	}
 	else {
-		uShort l_chanum = static_cast<uShort>(msg.members.size());
+		std::uint16_t l_chanum = static_cast<std::uint16_t>(msg.members.size());
 		if (!l_chanum || l_chanum > 100) return FALSE;
 
 		stNetSessCreate l_nsc[100];
-		for (uShort i = 0; i < l_chanum; i++) {
-			l_nsc[i].lChaID = static_cast<uLong>(msg.members[i].chaId);
+		for (std::uint16_t i = 0; i < l_chanum; i++) {
+			l_nsc[i].lChaID = static_cast<std::uint32_t>(msg.members[i].chaId);
 			l_nsc[i].szChaName = msg.members[i].chaName;
 			l_nsc[i].szMotto = msg.members[i].motto;
-			l_nsc[i].sIconID = static_cast<uShort>(msg.members[i].icon);
+			l_nsc[i].sIconID = static_cast<std::uint16_t>(msg.members[i].icon);
 		}
-		NetSessCreate(static_cast<uLong>(msg.sessId), l_nsc, l_chanum);
+		NetSessCreate(static_cast<std::uint32_t>(msg.sessId), l_nsc, l_chanum);
 	}
 	return TRUE;
 }
@@ -487,35 +487,35 @@ BOOL PC_GM_INFO(LPRPACKET pk) {
 	switch (msg.type) {
 	case MSG_FRND_REFRESH_START: {
 		auto& startData = std::get<Corsairs::Net::Msg::GmInfoStartData>(msg.data);
-		uShort l_count = static_cast<uShort>(startData.entries.size());
+		std::uint16_t l_count = static_cast<std::uint16_t>(startData.entries.size());
 		stNetFrndStart l_nfs[100];
-		for (uShort i = 0; i < l_count && i < 100; i++) {
+		for (std::uint16_t i = 0; i < l_count && i < 100; i++) {
 			l_nfs[i].szGroup = "GM";
-			l_nfs[i].lChaid = static_cast<uLong>(startData.entries[i].chaId);
+			l_nfs[i].lChaid = static_cast<std::uint32_t>(startData.entries[i].chaId);
 			l_nfs[i].szChaname = startData.entries[i].chaName;
 			l_nfs[i].szMotto = startData.entries[i].motto;
-			l_nfs[i].sIconID = static_cast<uShort>(startData.entries[i].icon);
+			l_nfs[i].sIconID = static_cast<std::uint16_t>(startData.entries[i].icon);
 			l_nfs[i].cStatus = static_cast<unsigned char>(startData.entries[i].status);
 		}
 		NetGMStart(l_nfs, l_count);
 		break;
 	}
 	case MSG_FRND_REFRESH_OFFLINE:
-		NetGMOffline(static_cast<uLong>(std::get<Corsairs::Net::Msg::GmInfoChaIdData>(msg.data).chaId));
+		NetGMOffline(static_cast<std::uint32_t>(std::get<Corsairs::Net::Msg::GmInfoChaIdData>(msg.data).chaId));
 		break;
 	case MSG_FRND_REFRESH_ONLINE:
-		NetGMOnline(static_cast<uLong>(std::get<Corsairs::Net::Msg::GmInfoChaIdData>(msg.data).chaId));
+		NetGMOnline(static_cast<std::uint32_t>(std::get<Corsairs::Net::Msg::GmInfoChaIdData>(msg.data).chaId));
 		break;
 	case MSG_FRND_REFRESH_DEL:
-		NetGMDel(static_cast<uLong>(std::get<Corsairs::Net::Msg::GmInfoChaIdData>(msg.data).chaId));
+		NetGMDel(static_cast<std::uint32_t>(std::get<Corsairs::Net::Msg::GmInfoChaIdData>(msg.data).chaId));
 		break;
 	case MSG_FRND_REFRESH_ADD: {
 		auto& addEntry = std::get<Corsairs::Net::Msg::GmFrndAddEntry>(msg.data);
 		NetGMAdd(
-			static_cast<uLong>(addEntry.chaId),
+			static_cast<std::uint32_t>(addEntry.chaId),
 			addEntry.chaName.c_str(),
 			addEntry.motto.c_str(),
-			static_cast<uShort>(addEntry.icon),
+			static_cast<std::uint16_t>(addEntry.icon),
 			addEntry.group.c_str());
 		break;
 	}
@@ -532,43 +532,43 @@ BOOL PC_FRND_REFRESH(LPRPACKET pk) {
 
 	switch (msg.type) {
 	case MSG_FRND_REFRESH_ONLINE:
-		NetFrndOnline(static_cast<uLong>(std::get<Corsairs::Net::Msg::FrndRefreshChaIdData>(msg.data).chaId));
+		NetFrndOnline(static_cast<std::uint32_t>(std::get<Corsairs::Net::Msg::FrndRefreshChaIdData>(msg.data).chaId));
 		break;
 	case MSG_FRND_REFRESH_OFFLINE:
-		NetFrndOffline(static_cast<uLong>(std::get<Corsairs::Net::Msg::FrndRefreshChaIdData>(msg.data).chaId));
+		NetFrndOffline(static_cast<std::uint32_t>(std::get<Corsairs::Net::Msg::FrndRefreshChaIdData>(msg.data).chaId));
 		break;
 	case MSG_FRND_REFRESH_DEL:
-		NetFrndDel(static_cast<uLong>(std::get<Corsairs::Net::Msg::FrndRefreshChaIdData>(msg.data).chaId));
+		NetFrndDel(static_cast<std::uint32_t>(std::get<Corsairs::Net::Msg::FrndRefreshChaIdData>(msg.data).chaId));
 		break;
 	case MSG_FRND_REFRESH_ADD: {
 		auto& addEntry = std::get<Corsairs::Net::Msg::GmFrndAddEntry>(msg.data);
 		NetFrndAdd(
-			static_cast<uLong>(addEntry.chaId),
+			static_cast<std::uint32_t>(addEntry.chaId),
 			addEntry.chaName.c_str(),
 			addEntry.motto.c_str(),
-			static_cast<uShort>(addEntry.icon),
+			static_cast<std::uint16_t>(addEntry.icon),
 			addEntry.group.c_str());
 		break;
 	}
 	case MSG_FRND_REFRESH_START: {
 		auto& startData = std::get<Corsairs::Net::Msg::FrndRefreshStartData>(msg.data);
 		stNetFrndStart l_self;
-		l_self.lChaid = static_cast<uLong>(startData.self.chaId);
+		l_self.lChaid = static_cast<std::uint32_t>(startData.self.chaId);
 		l_self.szChaname = startData.self.chaName;
 		l_self.szMotto = startData.self.motto;
-		l_self.sIconID = static_cast<uShort>(startData.self.icon);
+		l_self.sIconID = static_cast<std::uint16_t>(startData.self.icon);
 
 		stNetFrndStart l_nfs[100];
-		uShort l_nfnum = 0;
+		std::uint16_t l_nfnum = 0;
 
 		for (const auto& grp : startData.groups) {
 			for (const auto& m : grp.members) {
 				if (l_nfnum >= 100) break;
 				l_nfs[l_nfnum].szGroup = grp.groupName;
-				l_nfs[l_nfnum].lChaid = static_cast<uLong>(m.chaId);
+				l_nfs[l_nfnum].lChaid = static_cast<std::uint32_t>(m.chaId);
 				l_nfs[l_nfnum].szChaname = m.chaName;
 				l_nfs[l_nfnum].szMotto = m.motto;
-				l_nfs[l_nfnum].sIconID = static_cast<uShort>(m.icon);
+				l_nfs[l_nfnum].sIconID = static_cast<std::uint16_t>(m.icon);
 				l_nfs[l_nfnum].cStatus = static_cast<unsigned char>(m.status);
 				l_nfnum++;
 			}

@@ -103,7 +103,7 @@ void CReadyDieState::FrameMove() {
 	if (_eDieState == enumFallDown) {
 		_nFallDownTime++;
 		if (_nFallDownTime == _nDelayTime) {
-			_pCha->PlayAni(_pCha->GetDefaultChaInfo()->nDiedBehave, defCHA_DIE_EFFECT_NUM);
+			_pCha->PlayAni(_pCha->GetDefaultChaInfo()->nDiedBehave.data(), kChaDieEffectNum);
 			PopState();
 		}
 	}

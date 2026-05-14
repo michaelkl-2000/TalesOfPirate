@@ -23,8 +23,8 @@ class CGameScene;
 class CActor;
 namespace Corsairs::Common::Skill { class CSkillRecord; }
 using CSkillRecord = Corsairs::Common::Skill::CSkillRecord;
-namespace Corsairs::Common::Character { class CChaRecord; }
-using CChaRecord = Corsairs::Common::Character::CChaRecord;
+namespace Corsairs::Common::Character { class ChaRecord; }
+using CChaRecord = Corsairs::Common::Character::ChaRecord;
 namespace Corsairs::Common::Skill { class CSkillStateRecord; }
 using CSkillStateRecord = Corsairs::Common::Skill::CSkillStateRecord;
 struct stSkillState;
@@ -872,19 +872,19 @@ inline void CCharacter::setNameColor(DWORD dwColor) {
 }
 
 inline bool CCharacter::IsPlayer() {
-	return _eChaCtrlType == enumCHACTRL_PLAYER;
+	return _eChaCtrlType == EChaCtrlType::PLAYER;
 }
 
 inline bool CCharacter::IsBoat() {
-	return _eChaModalType == enumMODAL_BOAT;
+	return _eChaModalType == EChaModalType::BOAT;
 }
 
 inline bool CCharacter::IsNPC() {
-	return enumCHACTRL_NPC == _eChaCtrlType;
+	return EChaCtrlType::NPC == _eChaCtrlType;
 }
 
 inline bool CCharacter::IsMonster() {
-	return enumCHACTRL_MONS == _eChaCtrlType;
+	return EChaCtrlType::MONS == _eChaCtrlType;
 }
 
 inline CSceneItem* CCharacter::GetAttackItem() {
@@ -923,11 +923,11 @@ inline void CCharacter::_SetReadySkill(CSkillRecord* p) {
 }
 
 inline bool CCharacter::IsResource() {
-	return _eChaCtrlType >= enumCHACTRL_MONS_TREE && _eChaCtrlType <= enumCHACTRL_MONS_DBOAT;
+	return _eChaCtrlType >= EChaCtrlType::MONS_TREE && _eChaCtrlType <= EChaCtrlType::MONS_DBOAT;
 }
 
 inline CSceneItem* CCharacter::GetHandItem(int nEquipPos) {
-	if (nEquipPos < 0 || nEquipPos >= Corsairs::Common::Network::enumEQUIP_NUM) return NULL;
+	if (nEquipPos < 0 || nEquipPos >= Corsairs::Common::Network::enumEQUIP_NUM) return nullptr;
 
 	return _pHandItem[nEquipPos];
 }

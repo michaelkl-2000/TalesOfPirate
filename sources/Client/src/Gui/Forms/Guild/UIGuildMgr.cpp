@@ -393,7 +393,7 @@ void CUIGuildMgr::_OnClickNextLogs(CGuiData* pSender, int x, int y, DWORD key) {
 	// For "previous" button, check if client has enough data to fill the previous page
 	if (g_stUIGuildMgr.banklogs.size() < g_stUIGuildMgr.curLogPage * 13) {
 		// Ask server for more data
-		uShort curSize = g_stUIGuildMgr.banklogs.size();
+		std::uint16_t curSize = g_stUIGuildMgr.banklogs.size();
 		CS_BeginAction(g_stUIBoat.GetHuman(), enumACTION_REQUESTGUILDLOGS, &curSize);
 	}
 	else {

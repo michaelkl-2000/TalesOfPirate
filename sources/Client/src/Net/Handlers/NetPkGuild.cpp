@@ -12,8 +12,11 @@ BOOL MC_GUILD_GETNAME(LPRPACKET pk) {
 	return TRUE;
 }
 
-void CM_GUILD_PUTNAME(bool confirm, cChar* guildname, cChar* passwd) {
-	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildPutNameMessage{confirm ? 1 : 0, guildname, passwd});
+void CM_GUILD_PUTNAME(bool confirm, std::string_view guildname, std::string_view passwd) {
+	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildPutNameMessage{
+		confirm ? 1 : 0,
+		std::string(guildname), std::string(passwd)
+	});
 	g_NetIF->SendPacketMessage(pk);
 }
 
@@ -28,8 +31,8 @@ BOOL MC_LISTGUILD(LPRPACKET pk) {
 		NetMC_LISTGUILD_BEGIN();
 	}
 	for (const auto& e : msg.entries) {
-		NetMC_LISTGUILD(static_cast<uLong>(e.guildId), e.guildName.c_str(), e.motto.c_str(),
-						e.leaderName.c_str(), static_cast<uShort>(e.memberCount), e.exp);
+		NetMC_LISTGUILD(static_cast<std::uint32_t>(e.guildId), e.guildName.c_str(), e.motto.c_str(),
+						e.leaderName.c_str(), static_cast<std::uint16_t>(e.memberCount), e.exp);
 	}
 	if (msg.entries.size() < 20) {
 		NetMC_LISTGUILD_END();
@@ -38,7 +41,7 @@ BOOL MC_LISTGUILD(LPRPACKET pk) {
 	return TRUE;
 }
 
-void CM_GUILD_TRYFOR(uLong guildid) //    
+void CM_GUILD_TRYFOR(std::uint32_t guildid) //
 {
 	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildTryForMessage{(int64_t)guildid});
 	g_NetIF->SendPacketMessage(pk);
@@ -67,13 +70,15 @@ BOOL MC_GUILD_LISTTRYPLAYER(LPRPACKET pk) {
 	//   McGuildListTryPlayerMessage (count-first)
 	Corsairs::Net::Msg::McGuildListTryPlayerMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
-	uChar l_stat = CGuildData::eState::normal;
-	NetMC_LISTTRYPLAYER_BEGIN(static_cast<uLong>(msg.guildId), msg.guildName.c_str(), msg.motto.c_str(),
-							  l_stat, msg.leaderName.c_str(), static_cast<uShort>(msg.memberTotal),
-							  static_cast<uShort>(msg.maxMembers), msg.exp, static_cast<uLong>(msg.reserved));
+	std::uint8_t l_stat = CGuildData::eState::normal;
+	NetMC_LISTTRYPLAYER_BEGIN(static_cast<std::uint32_t>(msg.guildId), msg.guildName.c_str(), msg.motto.c_str(),
+							  l_stat, msg.leaderName.c_str(), static_cast<std::uint16_t>(msg.memberTotal),
+							  static_cast<std::uint16_t>(msg.maxMembers), msg.exp,
+							  static_cast<std::uint32_t>(msg.reserved));
 
 	for (const auto& p : msg.players) {
-		NetMC_LISTTRYPLAYER(static_cast<uLong>(p.chaId), p.name.c_str(), p.job.c_str(), static_cast<uShort>(p.degree));
+		NetMC_LISTTRYPLAYER(static_cast<std::uint32_t>(p.chaId), p.name.c_str(), p.job.c_str(),
+							static_cast<std::uint16_t>(p.degree));
 	}
 	NetMC_LISTTRYPLAYER_END();
 	return TRUE;
@@ -81,13 +86,13 @@ BOOL MC_GUILD_LISTTRYPLAYER(LPRPACKET pk) {
 
 struct stGuildInfo {
 	bool bOnline;
-	uLong nChaID;
+	std::uint32_t nChaID;
 	char szChaName[65];
 	char szMotto[257];
 	char szJob[33];
-	uShort sDegree;
-	uShort sIcon;
-	uLong sPreMission;
+	std::uint16_t sDegree;
+	std::uint16_t sIcon;
+	std::uint32_t sPreMission;
 };
 
 
@@ -117,26 +122,26 @@ BOOL PC_GUILD(LPRPACKET pk) {
 	break;
 	case MSG_GUILD_START: {
 		auto& startData = std::get<Corsairs::Net::Msg::GuildStartData>(msg.data);
-		uChar l_num = static_cast<uChar>(startData.members.size());
-		uLong lPacketIndex = static_cast<uLong>(startData.packetIndex);
+		std::uint8_t l_num = static_cast<std::uint8_t>(startData.members.size());
+		std::uint32_t lPacketIndex = static_cast<std::uint32_t>(startData.packetIndex);
 		static int nGuildCount = 0;
 
 		if (lPacketIndex == 0 && l_num > 0) //  
 		{
-			NetPC_GUILD_START_BEGIN(static_cast<uLong>(startData.guildId),
+			NetPC_GUILD_START_BEGIN(static_cast<std::uint32_t>(startData.guildId),
 									startData.guildName.c_str(),
-									static_cast<uLong>(startData.leaderId));
+									static_cast<std::uint32_t>(startData.leaderId));
 		}
-		for (uChar i = 0; i < l_num; ++i) {
+		for (std::uint8_t i = 0; i < l_num; ++i) {
 			const auto& m = startData.members[i];
 
 			stGuildInfo info;
 			memset(&info, 0, sizeof(stGuildInfo));
 			info.bOnline = m.online ? true : false;
-			info.nChaID = static_cast<uLong>(m.chaId);
-			info.sDegree = static_cast<uShort>(m.degree);
-			info.sIcon = static_cast<uShort>(m.icon);
-			info.sPreMission = static_cast<uLong>(m.permission);
+			info.nChaID = static_cast<std::uint32_t>(m.chaId);
+			info.sDegree = static_cast<std::uint16_t>(m.degree);
+			info.sIcon = static_cast<std::uint16_t>(m.icon);
+			info.sPreMission = static_cast<std::uint32_t>(m.permission);
 			strncpy(info.szChaName, m.chaName.c_str(), sizeof(info.szChaName) - 1);
 			strncpy(info.szJob, m.job.c_str(), sizeof(info.szJob) - 1);
 			strncpy(info.szMotto, m.motto.c_str(), sizeof(info.szMotto) - 1);
@@ -172,10 +177,10 @@ BOOL PC_GUILD(LPRPACKET pk) {
 	case MSG_GUILD_ADD: {
 		const auto& m = std::get<Corsairs::Net::Msg::GuildAddData>(msg.data).member;
 		NetPC_GUILD_ADD(m.online ? true : false,
-						static_cast<uLong>(m.chaId),
+						static_cast<std::uint32_t>(m.chaId),
 						m.chaName.c_str(), m.motto.c_str(), m.job.c_str(),
-						static_cast<uShort>(m.degree), static_cast<uShort>(m.icon),
-						static_cast<uLong>(m.permission));
+						static_cast<std::uint16_t>(m.degree), static_cast<std::uint16_t>(m.icon),
+						static_cast<std::uint32_t>(m.permission));
 	}
 	break;
 	case MSG_GUILD_DEL: {
@@ -188,17 +193,17 @@ BOOL PC_GUILD(LPRPACKET pk) {
 	return TRUE;
 }
 
-void CM_GUILD_APPROVE(uLong chaid) {
+void CM_GUILD_APPROVE(std::uint32_t chaid) {
 	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildApproveMessage{(int64_t)chaid});
 	g_NetIF->SendPacketMessage(pk);
 }
 
-void CM_GUILD_REJECT(uLong chaid) {
+void CM_GUILD_REJECT(std::uint32_t chaid) {
 	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildRejectMessage{(int64_t)chaid});
 	g_NetIF->SendPacketMessage(pk);
 }
 
-void CM_GUILD_KICK(uLong chaid) {
+void CM_GUILD_KICK(std::uint32_t chaid) {
 	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildKickMessage{(int64_t)chaid});
 	g_NetIF->SendPacketMessage(pk);
 }
@@ -208,23 +213,26 @@ void CM_GUILD_LEAVE() {
 	g_NetIF->SendPacketMessage(pk);
 }
 
-void CM_GUILD_DISBAND(cChar* passwd) {
-	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildDisbandMessage{passwd});
+void CM_GUILD_DISBAND(std::string_view passwd) {
+	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildDisbandMessage{std::string(passwd)});
 	g_NetIF->SendPacketMessage(pk);
 }
 
-void CM_GUILD_MOTTO(cChar* motto) {
-	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildMottoMessage{motto});
+void CM_GUILD_MOTTO(std::string_view motto) {
+	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildMottoMessage{std::string(motto)});
 	g_NetIF->SendPacketMessage(pk);
 }
 
 void CM_GUILD_CHALL(BYTE byLevel, DWORD dwMoney) {
-	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildChallMessage{(int64_t)byLevel, (int64_t)dwMoney});
+	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildChallMessage{
+		(int64_t)byLevel, (int64_t)dwMoney
+	});
 	g_NetIF->SendPacketMessage(pk);
 }
 
 void CM_GUILD_LEIZHU(BYTE byLevel, DWORD dwMoney) {
-	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmGuildLeizhuMessage{(int64_t)byLevel, (int64_t)dwMoney});
+	auto pk = Corsairs::Net::Msg::serialize(
+		Corsairs::Net::Msg::CmGuildLeizhuMessage{(int64_t)byLevel, (int64_t)dwMoney});
 	g_NetIF->SendPacketMessage(pk);
 }
 

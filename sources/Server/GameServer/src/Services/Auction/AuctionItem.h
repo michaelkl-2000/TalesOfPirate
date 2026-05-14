@@ -1,28 +1,25 @@
-﻿//add by ALLEN 2007-10-19
+//add by ALLEN 2007-10-19
 #pragma once
 
-#include "DBCCommon.h"
 #include "Character/Character.h"
 #include "Player/Player.h"
 #include <string>
-
-_DBC_USING
 using namespace std;
 
 class CAuctionItem
 {
 public:
-	CAuctionItem(short sItemID, const string& strName, short sCount, uInt nBasePrice, uInt nMinBid);
+	CAuctionItem(short sItemID, const string& strName, short sCount, std::uint32_t nBasePrice, std::uint32_t nMinBid);
 	~CAuctionItem();
 
-	uInt GetBasePrice() { return m_nBasePrice; }
-	void SetBasePrice(uInt price) { m_nBasePrice = price; }
+	std::uint32_t GetBasePrice() { return m_nBasePrice; }
+	void SetBasePrice(std::uint32_t price) { m_nBasePrice = price; }
 
-	uInt GetMinBid() { return m_nMinBid; }
-	void SetMinbid(uInt price) { m_nMinBid = price; }
+	std::uint32_t GetMinBid() { return m_nMinBid; }
+	void SetMinbid(std::uint32_t price) { m_nMinBid = price; }
 
-	uInt GetCurPrice() { return m_nCurPrice; }
-	void SetCurPrice(uInt price) { m_nCurPrice = price; }
+	std::uint32_t GetCurPrice() { return m_nCurPrice; }
+	void SetCurPrice(std::uint32_t price) { m_nCurPrice = price; }
 
 	DWORD GetCurChaID() { return m_dwCurChaID; }
 	void SetCurChaID(DWORD id) { m_dwCurChaID = id; }
@@ -39,12 +36,12 @@ public:
 	string GetName() { return m_strName; }
 	void SetName(string strName) { m_strName = strName; }
 
-	BOOL BidUp(CCharacter *pCha, uInt price);
+	BOOL BidUp(CCharacter *pCha, std::uint32_t price);
 
 private:
-	uInt m_nBasePrice;
-	uInt m_nMinBid;
-	uInt m_nCurPrice;
+	std::uint32_t m_nBasePrice;
+	std::uint32_t m_nMinBid;
+	std::uint32_t m_nCurPrice;
 	DWORD m_dwCurChaID;
 	string m_strCurChaName;
 	string m_strName;

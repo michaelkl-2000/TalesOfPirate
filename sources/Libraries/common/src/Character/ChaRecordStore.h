@@ -10,7 +10,7 @@
 
 namespace Corsairs::Common::Character {
 
-class ChaRecordStore : public GameRecordset<CChaRecord> {
+class ChaRecordStore : public GameRecordset<ChaRecord> {
 public:
 	static ChaRecordStore* Instance() {
 		static ChaRecordStore instance{};

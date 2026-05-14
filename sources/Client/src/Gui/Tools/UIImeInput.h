@@ -6,7 +6,7 @@
 //     ImmGetCandidateListW, ImmGetDescriptionW) — они возвращают UTF-16
 //     независимо от системной ANSI codepage.
 //   - Отображаемые буферы хранятся как `std::string` в UTF-8 (результат
-//     encoding::WideToUtf8). Ui::Render принимает UTF-8 (после снятия
+//     Corsairs::Util::Encoding::WideToUtf8). Ui::Render принимает UTF-8 (после снятия
 //     костыля SetAllCodepage(CP_ACP) в этапе E).
 //
 // :lh 2004-07-28

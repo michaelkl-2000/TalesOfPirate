@@ -4,7 +4,17 @@
 
 #pragma once
 
-//  Windows 
+//  Windows
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif
+#ifndef _WIN32_WINDOWS
+#define _WIN32_WINDOWS _WIN32_WINNT_WIN7
+#endif
+
+#include <winsock2.h>
+#define NOMINMAX
+#include <windows.h>
 #include <tchar.h>
 
 //  C standard 
@@ -37,10 +47,12 @@
 #include <unordered_map>
 #include <vector>
 
-//    () 
-#include "DBCCommon.h"
-#include "excp.h"
+//    ()
+#include "PointerCast.h"
+#include "ThrowRuntimeError.h"
 #include "util.h"
+
+using Corsairs::Util::ThrowRuntimeError;
 #include "Core/i18n.h"
 #include "point.h"
 #include "Core/Timer.h"

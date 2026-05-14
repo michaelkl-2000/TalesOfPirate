@@ -1,4 +1,4 @@
-﻿// CharStall.cpp Created by knight-gongjian 2005.8.29.
+// CharStall.cpp Created by knight-gongjian 2005.8.29.
 //---------------------------------------------------------
 #include "Core/stdafx.h"
 namespace Corsairs::Common::Localization {}
@@ -141,12 +141,12 @@ namespace mission
 		}
 	
 		int r = 150; // 3
-		int x = staller.GetPos().x;
-		int y = staller.GetPos().y;
+		int x = staller.GetPos().X;
+		int y = staller.GetPos().Y;
 		unsigned long	ulMinDist2 = r * r;
 		CCharacter	*pCTempCha = NULL;
-		Long	lRangeB[] = {x, y, 0};
-		Long	lRangeE[] = {enumRANGE_TYPE_CIRCLE, r};
+		std::int32_t	lRangeB[] = {x, y, 0};
+		std::int32_t	lRangeE[] = {enumRANGE_TYPE_CIRCLE, r};
 		pMap->BeginSearchInRange(lRangeB, lRangeE);
 
 
@@ -354,7 +354,7 @@ namespace mission
 
 			if( pItem->sType == enumItemTypeBoat )
 			{
-				DWORD dwBoatID = staller.m_CKitbag.GetDBParam( enumITEMDBP_INST_ID, pData->m_Goods[i].byIndex );
+				auto dwBoatID = staller.m_CKitbag.GetDBParam( enumITEMDBP_INST_ID, pData->m_Goods[i].byIndex );
 				CCharacter* pBoat = staller.GetPlayer()->GetBoat( dwBoatID );
 				if( !pBoat )
 				{
@@ -432,7 +432,7 @@ return;
 		}
 
 		DWORD dwCharID = static_cast<DWORD>(msg.charId);
-		CCharacter* pStaller = character.GetSubMap()->FindCharacter(dwCharID, character.GetShape().centre);
+		CCharacter* pStaller = character.GetSubMap()->FindCharacter(dwCharID, character.GetShape().Centre);
 		if (!pStaller)
 		{
 			return;
@@ -477,7 +477,7 @@ return;
 							r.name = pCha->GetName();
 							r.stallName = pCha->GetStallName();
 							{
-								auto _s = std::format("{},{}", (int)pCha->GetPos().x/100, (int)pCha->GetPos().y/100);
+								auto _s = std::format("{},{}", (int)pCha->GetPos().X/100, (int)pCha->GetPos().Y/100);
 								std::strncpy(r.location, _s.c_str(), sizeof(r.location) - 1);
 								r.location[sizeof(r.location) - 1] = 0;
 							}
@@ -550,7 +550,7 @@ return;
 		}
 
 		DWORD dwCharID = static_cast<DWORD>(msg.charId);
-		CCharacter* pStaller = character.GetSubMap()->FindCharacter( dwCharID, character.GetShape().centre );
+		CCharacter* pStaller = character.GetSubMap()->FindCharacter( dwCharID, character.GetShape().Centre );
 		if( !pStaller || !pStaller->GetStallData() )
 		{
 			return;
@@ -599,7 +599,7 @@ return;
 				}
 				//check if char has item.
 				SItemGrid	*pSItem = 0;
-				int slot = static_cast<dbc::Char>(msg.gridId);
+				int slot = static_cast<char>(msg.gridId);
 				pSItem = character.GetItem2(2, slot);
 				if (!pSItem->GetInstAttr(ITEMATTR_TRADABLE)) {
 					character.SystemNotice("Item is untradable!");
@@ -624,7 +624,7 @@ return;
 							return;
 						}
 						else{
-							Short sPushPos = defKITBAG_DEFPUSH_POS;
+							int16_t sPushPos = defKITBAG_DEFPUSH_POS;
 							//give seller item
 							SItemGrid Grid;
 							Grid.sNum = quantity;
@@ -635,7 +635,7 @@ return;
 								Bag.Lock();
 								return;
 							}
-							Short sPushRet = pStaller->KbPushItem(true, false, &Grid, sPushPos);
+							int16_t sPushRet = pStaller->KbPushItem(true, false, &Grid, sPushPos);
 							//give char item
 							SItemGrid Grid2;
 							Grid2.sNum = 1;
@@ -646,7 +646,7 @@ return;
 								Bag.Lock();
 								return;
 							}
-							Short sPushRet2 = character.KbPushItem(true, false, &Grid2, sPushPos);
+							int16_t sPushRet2 = character.KbPushItem(true, false, &Grid2, sPushPos);
 							pData->m_Goods[byIndex].byCount -= 1;
 
 							character.SynAttr(enumATTRSYN_TRADE);
@@ -742,7 +742,7 @@ return;
 			SItemGrid Grid;
 			Grid.sNum = byCount;
 			Grid.sID = pData->m_Goods[byIndex].sItemID;
-			Short sPushPos = defKITBAG_DEFPUSH_POS;
+			int16_t sPushPos = defKITBAG_DEFPUSH_POS;
 			if (character.m_CKitbag.CanPush(&Grid, sPushPos) != enumKBACT_SUCCESS)
 			{
 				//character.SystemNotice( "!" );
@@ -770,7 +770,7 @@ return;
 				return;
 			}
 
-			Short sPushRet = character.KbPushItem(true, false, &Grid, sPushPos);
+			int16_t sPushRet = character.KbPushItem(true, false, &Grid, sPushPos);
 			if (sPushRet != enumKBACT_SUCCESS)
 			{
 				Bag.Lock();
@@ -789,7 +789,7 @@ return;
 
 			if (pItem->sType == enumItemTypeBoat)
 			{
-				CCharacter* pBoat = pStaller->GetPlayer()->GetBoat((DWORD)Grid.GetDBParam(enumITEMDBP_INST_ID));
+				CCharacter* pBoat = pStaller->GetPlayer()->GetBoat(Grid.GetDBParam(enumITEMDBP_INST_ID));
 				if (!pBoat)
 				{
 					/*pStaller->SystemNotice( "ID[0x%X]", (DWORD)Grid.GetDBParam( enumITEMDBP_INST_ID ) );
@@ -904,7 +904,7 @@ return;
 			if (pData->m_byNum == 0)
 			{
 				// check if player is in offline mode state
-				Long pStallerId = pStaller->GetID();
+				std::int32_t pStallerId = pStaller->GetID();
 				CPlayer* pStallPly = pStaller->GetPlayer();
 				if (!pStallPly || !pStallPly->IsValid()) {
 					return;
@@ -962,7 +962,7 @@ return;
 
 			if( entry.isBoat )
 			{
-				CCharacter* pBoat = staller.GetPlayer()->GetBoat( (DWORD)Bag.GetDBParam( enumITEMDBP_INST_ID, pData->m_Goods[i].byIndex ) );
+				CCharacter* pBoat = staller.GetPlayer()->GetBoat(Bag.GetDBParam( enumITEMDBP_INST_ID, pData->m_Goods[i].byIndex ) );
 				if( pBoat )
 				{
 					entry.hasBoat = true;

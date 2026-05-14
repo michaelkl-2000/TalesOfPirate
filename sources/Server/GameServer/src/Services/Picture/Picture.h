@@ -1,10 +1,6 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
-#include "DBCCommon.h"
-
-_DBC_USING
-
 class CPicture
 {
 public:
@@ -20,18 +16,18 @@ public:
 	char GetID() { return m_nID; }
 	void SetID(char id) { m_nID = id; }
 
-	uInt GetSize() { return m_size; }
+	std::uint32_t GetSize() { return m_size; }
 	
-	char GetImgByte(uInt index);
+	char GetImgByte(std::uint32_t index);
 
 	bool LoadImg();
 
 private:
-	void SetSize(uInt size) { m_size = size; }
+	void SetSize(std::uint32_t size) { m_size = size; }
 
 	std::string m_strName; //
 	char m_nID;
 	char *_img;
-	uInt m_size;
-	uInt m_start;
+	std::uint32_t m_size;
+	std::uint32_t m_start;
 };

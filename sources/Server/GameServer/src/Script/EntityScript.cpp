@@ -7,7 +7,6 @@
 #include "Script/lua_gamectrl.h"
 
 //---------------------------------------------------------
-_DBC_USING
 using namespace mission;
 
 std::tuple<int, SubMap*> GetCurSubmap()

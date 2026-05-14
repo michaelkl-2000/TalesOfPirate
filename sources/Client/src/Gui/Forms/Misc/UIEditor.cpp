@@ -284,7 +284,7 @@ void CEditor::_TreeEvent(CTreeView* tree, bool press) {
 
 			switch (p->nTag) {
 			case 0: {
-				pCha->PlayAni(pCha->GetDefaultChaInfo()->nBirthBehave, defCHA_DIE_EFFECT_NUM);
+				pCha->PlayAni(pCha->GetDefaultChaInfo()->nBirthBehave.data(), kChaDieEffectNum);
 
 				CEffectObj* pEffect = pCha->GetScene()->GetFirstInvalidEffObj();
 				if (pEffect && pEffect->Create(pCha->GetDefaultChaInfo()->sBornEff)) {
@@ -508,14 +508,14 @@ bool CEditor::_evtShotMiniMap(CGuiData* pSender, char& key) {
 			int value[SIZE] = {0, 0, 10, 10};
 
 			string strList[SIZE];
-			int n = Util_ResolveTextLine(pEdit->GetCaption(), strList, SIZE, ',');
+			int n = Corsairs::Util::ResolveTextLine(pEdit->GetCaption(), strList, SIZE, ',');
 			if (n != 4) {
 				g_pGameApp->MsgBox(GetLanguageString(543));
 				return true;
 			}
 
 			for (int i = 0; i < SIZE; i++) {
-				value[i] = Str2Int(strList[i]);
+				value[i] = Corsairs::Util::Str2Int(strList[i]);
 			}
 
 			g_pGameApp->SetStartMinimap(value[0], value[1], value[2], value[3]);
@@ -554,7 +554,7 @@ bool CEditor::_evtSetIslandIndex(CGuiData* pSender, char& key) {
 	if (key == ',' || isdigit(key) || key == VK_RETURN || key == VK_BACK || key == '-') {
 		if (key == VK_RETURN) {
 			string str = g_stUIEditor.edtSetIslandIndex->GetCaption();
-			int index = Str2Int(str);
+			int index = Corsairs::Util::Str2Int(str);
 			g_Editor.selectIsland(index);
 		}
 		return true;

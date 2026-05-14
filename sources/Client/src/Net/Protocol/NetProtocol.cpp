@@ -437,8 +437,8 @@ void stNetActorCreate::SetValue(CCharacter* pCha) {
 	pCha->setAttachID(ulWorldID);
 	pCha->lTag = lHandle;
 	pCha->setName(szName.c_str());
-	pCha->setPos(SArea.centre.x, SArea.centre.y);
-	pCha->SetServerPos(SArea.centre.x, SArea.centre.y);
+	pCha->setPos(SArea.Centre.X, SArea.Centre.Y);
+	pCha->SetServerPos(SArea.Centre.X, SArea.Centre.Y);
 	pCha->setYaw(sAngle);
 	pCha->setChaCtrlType(chCtrlType);
 	pCha->SetTeamLeaderID(ulTLeaderID);
@@ -472,8 +472,8 @@ void stNetActorCreate::SetValue(CCharacter* pCha) {
 }
 
 CCharacter* stNetActorCreate::CreateCha() {
-	ToLogService("common", "Create WorldID:{}, ChaID = {}, Pos = [{},{}]", ulWorldID, ulChaID, SArea.centre.x,
-				 SArea.centre.y);
+	ToLogService("common", "Create WorldID:{}, ChaID = {}, Pos = [{},{}]", ulWorldID, ulChaID, SArea.Centre.X,
+				 SArea.Centre.Y);
 
 	if (chSeeType == enumENTITY_SEEN_SWITCH) {
 		CCharacter* pCha = g_stUIBoat.FindCha(ulWorldID);
@@ -501,7 +501,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 	CChaRecord* pChaRec = GetChaRecordInfo(ulChaID);
 	if (!pChaRec) return NULL;
 
-	if (pChaRec->chModalType == enumMODAL_BOAT) {
+	if (pChaRec->chModalType == static_cast<char>(EChaModalType::BOAT)) {
 		p = CGameApp::GetCurScene()->AddBoat(SLookInfo.SLook);
 	}
 	else {
@@ -512,7 +512,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 		ToLogService("network", LogLevel::Error,
 					 "msgNetCreateActor AddCharacter Failed:chType[{}], chCtrlType[{}], MainType[{}], id[{}], type[{}], x[{}], y[{}], name[{}]",
 					 static_cast<int>(pChaRec->chModalType), static_cast<int>(chCtrlType), static_cast<int>(chMainCha),
-					 ulWorldID, ulChaID, SArea.centre.x, SArea.centre.y, szName);
+					 ulWorldID, ulChaID, SArea.Centre.X, SArea.Centre.Y, szName);
 		return 0;
 	}
 
@@ -528,7 +528,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 		SEvent.Exec(p);
 	}
 
-	if (pChaRec->chModalType != enumMODAL_BOAT) {
+	if (pChaRec->chModalType != static_cast<char>(EChaModalType::BOAT)) {
 		// Apply look
 		if (p->GetMainType() != enumMainPlayer && pChaRec->chCtrlType == 5) {
 			p->setTypeID(pChaRec->lScript);
@@ -560,7 +560,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 		}
 		p->SetHide(TRUE);
 	}
-	else if (chCtrlType == enumCHACTRL_PLAYER) {
+	else if (chCtrlType == static_cast<char>(EChaCtrlType::PLAYER)) {
 		g_stUIChat.GetTeamMgr()->Find(enumTeamRoad)->Add(ulWorldID, szCommName.c_str(), strMottoName.c_str(), sIcon);
 	}
 
@@ -581,7 +581,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 			break;
 		case enumEXISTS_NATALITY: {
 			p->GetActor()->SetState(enumNormal);
-			p->PlayAni(p->GetDefaultChaInfo()->nBirthBehave, defCHA_DIE_EFFECT_NUM);
+			p->PlayAni(p->GetDefaultChaInfo()->nBirthBehave.data(), kChaDieEffectNum);
 
 			CEffectObj* pEffect = p->GetScene()->GetFirstInvalidEffObj();
 			if (pEffect && pEffect->Create(p->GetDefaultChaInfo()->sBornEff)) {
@@ -596,8 +596,8 @@ CCharacter* stNetActorCreate::CreateCha() {
 	}
 
 	switch (chCtrlType) {
-	case enumCHACTRL_MONS_TREE:
-	case enumCHACTRL_MONS_MINE:
+	case static_cast<char>(EChaCtrlType::MONS_TREE):
+	case static_cast<char>(EChaCtrlType::MONS_MINE):
 		p->GetActor()->SetSleep();
 		break;
 	default:
@@ -640,7 +640,7 @@ void NetActorDestroy(unsigned int nID, char chSeeType) {
 	// Disappear
 	CCharacter* pCha = CGameApp::GetCurScene()->SearchByID(nID);
 	if (pCha) {
-		if (pCha->getChaCtrlType() == enumCHACTRL_PLAYER) {
+		if (pCha->getChaCtrlType() == EChaCtrlType::PLAYER) {
 			CTeam* pTeam = g_stUIChat.GetTeamMgr()->Find(enumTeamRoad);
 			pTeam->Del(nID);
 
@@ -960,12 +960,12 @@ void NetActorSkillEff(unsigned int nID, stNetNotiSkillEffect& SkillEff) {
 			CEffectObj* pEffect = CGameApp::GetCurScene()->GetFirstInvalidEffObj();
 			if (pEffect && pEffect->Create(pSkill->sSkyEffect)) {
 				D3DXVECTOR3 pos, target;
-				pos.x = (float)SkillEff.SSrcPos.x / 100;
-				pos.y = (float)SkillEff.SSrcPos.y / 100;
+				pos.x = (float)SkillEff.SSrcPos.X / 100;
+				pos.y = (float)SkillEff.SSrcPos.Y / 100;
 
 				if (pSkill->IsAttackArea()) {
-					target.x = (float)SkillEff.SSkillTPos.x / 100;
-					target.y = (float)SkillEff.SSkillTPos.y / 100;
+					target.x = (float)SkillEff.SSkillTPos.X / 100;
+					target.y = (float)SkillEff.SSkillTPos.Y / 100;
 					target.z = CGameApp::GetCurScene()->GetGridHeight(target.x, target.y);
 				}
 				else {
@@ -991,7 +991,7 @@ void NetActorSkillEff(unsigned int nID, stNetNotiSkillEffect& SkillEff) {
 					pHarm->ReadyExec();
 				}
 				CHitRepresent Hit;
-				Hit.SetAttackPoint(SkillEff.SSrcPos.x, SkillEff.SSrcPos.y);
+				Hit.SetAttackPoint(SkillEff.SSrcPos.X, SkillEff.SSrcPos.Y);
 				Hit.SetSkill(pSkill);
 				Hit.SetTarget(pTarget);
 				pEffect->GetEffDelay()->SetServerHarm(Hit, pHarm);
@@ -1007,7 +1007,7 @@ void NetActorSkillEff(unsigned int nID, stNetNotiSkillEffect& SkillEff) {
 	// Damage values
 	eff->SetIsDoubleAttack(SkillEff.bDoubleAttack);
 	eff->SetIsMiss(SkillEff.bMiss);
-	eff->SetBeatPos(SkillEff.bBeatBack, SkillEff.SPos.x, SkillEff.SPos.y);
+	eff->SetBeatPos(SkillEff.bBeatBack, SkillEff.SPos.X, SkillEff.SPos.Y);
 	eff->SetHarmValue(SkillEff.SEffect.GetValue(), SkillEff.SEffect.GetCount());
 	eff->SetHarmState(SkillEff.SState.GetValue(), SkillEff.SState.GetCount());
 	if (SkillEff.sState & enumFSTATE_DIE) {
@@ -1216,8 +1216,8 @@ CSceneItem* NetCreateItem(stNetItemCreate& info) {
 #endif
 
 	ToLogService("common", "Create - ID:{}, Angle:{}, Pos:[{}, {}], WorldID:{}, EventID:{}", info.lID, info.sAngle,
-				 info.SPos.x,
-				 info.SPos.y, info.lWorldID, info.SEvent.usEventID);
+				 info.SPos.X,
+				 info.SPos.Y, info.lWorldID, info.SEvent.usEventID);
 
 	CGameScene* pScene = CGameApp::GetCurScene();
 	CSceneItem* pItem = pScene->SearchItemByID(info.lWorldID);
@@ -1235,7 +1235,7 @@ CSceneItem* NetCreateItem(stNetItemCreate& info) {
 
 	pItem->setIsShowName(true);
 	pItem->setYaw(info.sAngle);
-	pItem->setPos(info.SPos.x, info.SPos.y);
+	pItem->setPos(info.SPos.X, info.SPos.Y);
 	pItem->setAttachID(info.lWorldID);
 	pItem->lTag = info.lHandle;
 	pItem->PlayObjImpPose(ANIM_CTRL_TYPE_MAT, 0, PLAY_LOOP, 0.0f, 2.0f);
@@ -1263,7 +1263,7 @@ CSceneItem* NetCreateItem(stNetItemCreate& info) {
 				ToLogService(
 					"common",
 					"\tCreateItem, Type:{} - ID:{}, Name:{}, ItemPos:[{}, {}], WorldID:{}, ChaLogName:{}, ChaPos[{}, {}]",
-					static_cast<int>(info.chAppeType), info.lID, pItem->GetItemInfo()->szName, info.SPos.x, info.SPos.y,
+					static_cast<int>(info.chAppeType), info.lID, pItem->GetItemInfo()->szName, info.SPos.X, info.SPos.Y,
 					info.lWorldID,
 					pFromCha->getLogName(), pFromCha->GetCurX(), pFromCha->GetCurY());
 
@@ -1300,7 +1300,7 @@ void NetItemDisappear(unsigned int nID) {
 
 void NetChangeChaPart(CCharacter* pCha, stNetLookInfo& SLookInfo) {
 	stNetChangeChaPart& SPart = SLookInfo.SLook;
-	if (pCha->getChaModalType() == enumMODAL_BOAT) {
+	if (pCha->getChaModalType() == EChaModalType::BOAT) {
 		pCha->LoadBoat(SPart);
 	}
 	else {

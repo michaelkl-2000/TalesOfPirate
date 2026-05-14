@@ -139,7 +139,7 @@ public:
 	//------------------------------------
 
 
-    CPlayer*    CreateGamePlayer(const char szPassword[], uLong ulChaDBId, uLong ulWorldId, const char *cszMapName, char chType);
+    CPlayer*    CreateGamePlayer(const char szPassword[], std::uint32_t ulChaDBId, std::uint32_t ulWorldId, const char *cszMapName, char chType);
     void        ReleaseGamePlayer(CPlayer*);
 	void		GoOutGame(CPlayer* pPlayer, bool bOffLine, bool mOffLine = false);
 	CPlayer*	GetNewPlayer();
@@ -222,7 +222,7 @@ public:
 
 	void		BanAccount(const char *szString);
 	void		UnbanAccount(const char *szString);
-	void		CanReceiveRequests(uLong chaID, bool CanSend);
+	void		CanReceiveRequests(std::uint32_t chaID, bool CanSend);
 	short		GetMapNum();
 
 	DWORD   m_dwFPS;
@@ -244,12 +244,12 @@ public:
 	TrackedPool<CStateCellNode>				m_StateCellNodePool{"StateCellNode"};
 
 	//
-	dbc::Long	m_lCabinHeapNum;
-	dbc::Long	m_lTradeDataHeapNum;
-	dbc::Long	m_lSkillTDataHeapNum;
-	dbc::Long	m_lMapMgrUnitHeapNum;
-	dbc::Long	m_lEntityListHeapNum;
-	dbc::Long	m_lMgrNodeHeapNum;
+	std::int32_t	m_lCabinHeapNum;
+	std::int32_t	m_lTradeDataHeapNum;
+	std::int32_t	m_lSkillTDataHeapNum;
+	std::int32_t	m_lMapMgrUnitHeapNum;
+	std::int32_t	m_lEntityListHeapNum;
+	std::int32_t	m_lMgrNodeHeapNum;
 	//
 
 	Identity			m_Ident;
@@ -317,9 +317,9 @@ struct SSwitchMapInfo //
 {
 	SubMap		*pSrcMap;
 	char		szSrcMapName[256];
-	Point		SSrcPos;
+	Corsairs::Util::Point		SSrcPos;
 	char		szTarMapName[256];
-	Point		STarPos;
+	Corsairs::Util::Point		STarPos;
 };
 
 extern bool             g_bLogEntity;
@@ -329,8 +329,8 @@ extern std::unordered_map<int, CItemRecordAttr> g_itemAttrMap;
 extern CCharacter*		g_pCSystemCha;		//
 extern SubMap *			g_pScriptMap;		//
 extern std::string			g_strChaState[2];	// 01
-extern uLong			g_ulCurID;
-extern Long				g_lCurHandle;
+extern std::uint32_t			g_ulCurID;
+extern std::int32_t				g_lCurHandle;
 extern HANDLE			hConsole;
 
 #define C_PRINT(s, ...) \

@@ -590,6 +590,113 @@ struct Blake2sTestVector {
 }
 
 // =============================================================================
+// Self-test MPMapDef — sizeof + round-trip TileInfo_Pack/Unpack.
+//
+// Бинарный контракт .map зависит от того, что:
+//   а) sizeof(MPMapFileHeader)==20 и sizeof(SNewFileTile)==15 (зафиксировано
+//      static_assert'ами в MPMapDef.h, повторяем runtime для журнала);
+//   б) TileInfo_Pack → TileInfo_Unpack восстанавливает исходные 8 байт
+//      MPTile::TexLayer без потерь.
+//
+// Перебираем все валидные (tex ∈ [0..63], alpha ∈ [0..15]) на каждом из трёх
+// верхних слоёв, держа остальные на четырёх «фоновых» паттернах (0, max,
+// и две middle-маски), плюс полный обход BaseTex ∈ [0..255]. Это ~12.5K
+// кейсов, < 10 мс. Если кодек сломан — падаем до прогона датасета.
+// =============================================================================
+
+[[nodiscard]] bool RunMpMapDefSelfTest() {
+    using ::Corsairs::Util::Map::MPMapFileHeader;
+    using ::Corsairs::Util::Map::SNewFileTile;
+    using ::Corsairs::Util::Map::TileInfo_Pack;
+    using ::Corsairs::Util::Map::TileInfo_Unpack;
+
+    if (sizeof(MPMapFileHeader) != 20) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     "MPMapDef self-test: sizeof(MPMapFileHeader)={}, ожидалось 20",
+                     sizeof(MPMapFileHeader));
+        return false;
+    }
+    if (sizeof(SNewFileTile) != 15) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     "MPMapDef self-test: sizeof(SNewFileTile)={}, ожидалось 15",
+                     sizeof(SNewFileTile));
+        return false;
+    }
+
+    auto checkRoundTrip = [&](std::uint8_t baseTex,
+                              std::uint8_t t1, std::uint8_t a1,
+                              std::uint8_t t2, std::uint8_t a2,
+                              std::uint8_t t3, std::uint8_t a3) -> bool {
+        const std::uint8_t tileIn[8] = {baseTex, 15, t1, a1, t2, a2, t3, a3};
+        std::uint32_t info{};
+        std::uint8_t  base{};
+        TileInfo_Pack(tileIn, info, base);
+
+        std::uint8_t tileOut[8] = {};
+        TileInfo_Unpack(info, base, tileOut);
+
+        for (int i = 0; i < 8; ++i) {
+            if (tileIn[i] != tileOut[i]) {
+                ToLogService(kLogChannel, LogLevel::Error,
+                             "MPMapDef self-test: TileInfo round-trip mismatch "
+                             "byte[{}]: in=0x{:02X}, out=0x{:02X} "
+                             "(baseTex=0x{:02X}, t1={},a1={},t2={},a2={},t3={},a3={})",
+                             i, tileIn[i], tileOut[i],
+                             baseTex, t1, a1, t2, a2, t3, a3);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    // Четыре фоновых паттерна для двух «нетекущих» слоёв — ловят crosstalk
+    // между битовыми полями.
+    constexpr std::array<std::array<std::uint8_t, 2>, 4> kBackgrounds = {{
+        {0x00, 0x00},
+        {0x3F, 0x0F},
+        {0x2A, 0x05},
+        {0x15, 0x0A},
+    }};
+
+    std::size_t cases = 0;
+    for (const auto& bg : kBackgrounds) {
+        const std::uint8_t bgTex   = bg[0];
+        const std::uint8_t bgAlpha = bg[1];
+        for (std::uint32_t tex = 0; tex < 64; ++tex) {
+            for (std::uint32_t alpha = 0; alpha < 16; ++alpha) {
+                const auto t = static_cast<std::uint8_t>(tex);
+                const auto a = static_cast<std::uint8_t>(alpha);
+                if (!checkRoundTrip(0x00, t, a, bgTex, bgAlpha, bgTex, bgAlpha)) {
+                    return false;
+                }
+                if (!checkRoundTrip(0xFF, bgTex, bgAlpha, t, a, bgTex, bgAlpha)) {
+                    return false;
+                }
+                if (!checkRoundTrip(0x7F, bgTex, bgAlpha, bgTex, bgAlpha, t, a)) {
+                    return false;
+                }
+                cases += 3;
+            }
+        }
+    }
+
+    // BaseTex не упаковывается, но проверяем что Pack/Unpack пропускает его
+    // identity (через отдельный аргумент, мимо упакованного 32-битного слова).
+    for (std::uint32_t b = 0; b < 256; ++b) {
+        if (!checkRoundTrip(static_cast<std::uint8_t>(b),
+                            0x20, 0x07, 0x10, 0x08, 0x05, 0x0E)) {
+            return false;
+        }
+        ++cases;
+    }
+
+    ToLogService(kLogChannel, LogLevel::Info,
+                 "MPMapDef self-test: sizeof OK, TileInfo round-trip OK ({} cases)",
+                 cases);
+    return true;
+}
+
+// =============================================================================
 // Self-test .csf round-trip — проверяет EffPathLoader::Save/Load на синтетике,
 // поскольку реальных .csf-файлов в датасете нет (формат «спящий», создаётся
 // внешними редакторами эффектов). Работает в `runs/selftest/`.
@@ -766,6 +873,17 @@ int main(int argc, char** argv) {
         return 2;
     }
 
+    // MPMapDef self-test — sizeof и round-trip битовой упаковки TileInfo.
+    // Если кодек сломан, дальнейший .map round-trip всё равно провалится,
+    // но без понятной причины; падаем сразу с указанием конкретного байта.
+    if (!RunMpMapDefSelfTest()) {
+        ToLogService(kLogChannel, LogLevel::Error,
+                     "MPMapDef self-test провален — TileInfo Pack/Unpack или sizeof "
+                     "структур .map не совпадают с ожидаемыми, прерываемся");
+        g_logManager.Shutdown();
+        return 2;
+    }
+
     // .csf round-trip self-test — синтетический, не зависит от наличия
     // реальных ассетов. .csf-файлов в датасете сейчас нет, но Save/Load
     // должны быть консистентны для редакторских инструментов.
@@ -932,7 +1050,7 @@ int main(int argc, char** argv) {
     // (header + offset table + сырое body): Load копирует файл «как есть» в
     // три буфера, Save пишет их обратно. Byte-deterministic: round-trip
     // Load→Save обязан совпадать побайтно как для kCurrentMapFlag, так и для
-    // kLegacyMapFlag (Save не апгрейдит nMapFlag). Поэтому `currentVersion`
+    // kLegacyMapFlag (Save не апгрейдит MapFlag). Поэтому `currentVersion`
     // выставлен в legacy: ничего из датасета не должно проваливаться в
     // ветку "skip legacy".
     const AssetKind mapKind{

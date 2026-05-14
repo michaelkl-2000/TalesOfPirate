@@ -59,7 +59,7 @@ namespace GUI {
 		std::array<short, 2> sEndure;
 		std::array<short, 2> sEnergy;
 		char chForgeLv;
-		std::array<long, enumITEMDBP_MAXNUM> lDBParam;
+		std::array<std::int32_t, enumITEMDBP_MAXNUM> lDBParam;
 		std::array<short, ITEMATTR_CLIENT_MAX> sInstAttr;
 		bool bItemTradable;
 		long expiration;

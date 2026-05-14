@@ -48,7 +48,7 @@ namespace mission
 		}
 
 		m_ID = g_pGameApp->m_Ident.GetID();
-		Char szLogName[defLOG_NAME_LEN] = "";
+		char szLogName[defLOG_NAME_LEN] = "";
 		{
 			auto _s = std::format("Cha-{}+{}", GetName(), GetID());
 			std::strncpy(szLogName, _s.c_str(), sizeof(szLogName) - 1);
@@ -61,9 +61,9 @@ namespace mission
 		SetAngle( sDir );
 
 		m_CChaAttr.Init( sID );
-		setAttr(ATTR_CHATYPE, enumCHACTRL_NPC_EVENT);
+		setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::NPC_EVENT));
 
-		Square SShape = { { dwxPos, dwyPos }, m_pCChaRecord->sRadii };
+		Corsairs::Util::Square SShape = { { dwxPos, dwyPos }, m_pCChaRecord->sRadii };
 		if( !Submap.Enter( &SShape, this ) )
 		{
 			//LG( "entity_error", "CEventEntity::Create!" );

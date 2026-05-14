@@ -11,7 +11,7 @@
 //     Win32 API ( )
 void SetThreadName(const std::string& name);
 
-namespace TalesOfPirate::Utils::Crush {
+namespace Corsairs::Util::Crush {
 	//       
 	void SetupDumpSetting(const std::string& dumpPath);
 	void SetupDumpSetting(const std::string& dumpPath, const std::function<void()>& function);

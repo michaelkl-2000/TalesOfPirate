@@ -10,88 +10,69 @@ using namespace Corsairs::Common::Localization;
 #include "EffectObj.h"
 #include "Item/ItemRecord.h"
 #include "Character/CharacterRecord.h"
+#include "Character/WieldMode.h"
 #include "Localization/LitEntryStore.h"
 #include "RenderStateMgr.h"
 #include "GameApp.h"
 
-enum {
-	S_MELEE = 0, //  
-	S_MELEE2 = 1, //  
-	D_MELEE = 2, // 
-	D_WEAPON = 3, // 
-	S_GUN = 4, // 
-	D_BOW = 5, // 
-	S_DAGGER = 6, // 
-};
+using Corsairs::Common::Character::WieldMode;
 
 enum {
-	LINK_ITEM_NULL = 0, // 
-	LINK_ITEM_SWORD = 1, // 
-	LINK_ITEM_HUGESWORD = 2, // 
-	LINK_ITEM_BOW = 3, // 
-	LINK_ITEM_GUN = 4, // 
-	LINK_ITEM_BLADE = 5, // 
-	LINK_ITEM_GLOVE = 6, // 
-	LINK_ITEM_DAGGER = 7, // 
-	LINK_ITEM_BURSE = 8, // 
-	LINK_ITEM_STICK = 9, // 
-	LINK_ITEM_HAMMER = 10, // 
-	LINK_ITEM_SHIELD = 11, // 
-	LINK_ITEM_AX = 18, //
-	LINK_ITEM_SHOVEL = 19, //
+	LINK_ITEM_NULL = 0,
+	LINK_ITEM_SWORD = 1,
+	LINK_ITEM_HUGESWORD = 2,
+	LINK_ITEM_BOW = 3,
+	LINK_ITEM_GUN = 4,
+	LINK_ITEM_BLADE = 5,
+	LINK_ITEM_GLOVE = 6,
+	LINK_ITEM_DAGGER = 7,
+	LINK_ITEM_BURSE = 8,
+	LINK_ITEM_STICK = 9,
+	LINK_ITEM_HAMMER = 10,
+	LINK_ITEM_SHIELD = 11,
+	LINK_ITEM_AX = 18,
+	LINK_ITEM_SHOVEL = 19,
 };
 
 struct wield_state {
-	BYTE mode;
-	BYTE left;
-	BYTE right;
+	WieldMode    mode;
+	std::uint8_t left;
+	std::uint8_t right;
 
-	wield_state(BYTE m, BYTE l, BYTE r)
+	constexpr wield_state(WieldMode m, std::uint8_t l, std::uint8_t r)
 		: mode(m), left(l), right(r) {
 	}
 
-	inline int Check(BYTE l, BYTE r) const {
-		return (left == l && right == r);
+	[[nodiscard]] constexpr bool Check(std::uint8_t l, std::uint8_t r) const {
+		return left == l && right == r;
 	}
 };
 
-const static int __wield_state_num = 15;
-const static wield_state __wield_state[__wield_state_num] =
-{
-	wield_state(S_MELEE, LINK_ITEM_NULL, LINK_ITEM_BURSE),
-	wield_state(S_MELEE, LINK_ITEM_NULL, LINK_ITEM_GLOVE),
-	wield_state(S_MELEE, LINK_ITEM_SHIELD, LINK_ITEM_NULL),
+const static wield_state __wield_state[] = {
+	{WieldMode::SingleMelee,  LINK_ITEM_NULL,    LINK_ITEM_BURSE},
+	{WieldMode::SingleMelee,  LINK_ITEM_NULL,    LINK_ITEM_GLOVE},
+	{WieldMode::SingleMelee,  LINK_ITEM_SHIELD,  LINK_ITEM_NULL},
 
-	wield_state(S_MELEE2, LINK_ITEM_NULL, LINK_ITEM_SWORD),
-	wield_state(S_MELEE2, LINK_ITEM_NULL, LINK_ITEM_BLADE),
-	wield_state(S_MELEE2, LINK_ITEM_NULL, LINK_ITEM_STICK),
-	wield_state(S_MELEE2, LINK_ITEM_NULL, LINK_ITEM_HAMMER),
-	wield_state(S_MELEE2, LINK_ITEM_SHIELD, LINK_ITEM_SWORD),
+	{WieldMode::SingleMelee2, LINK_ITEM_NULL,    LINK_ITEM_SWORD},
+	{WieldMode::SingleMelee2, LINK_ITEM_NULL,    LINK_ITEM_BLADE},
+	{WieldMode::SingleMelee2, LINK_ITEM_NULL,    LINK_ITEM_STICK},
+	{WieldMode::SingleMelee2, LINK_ITEM_NULL,    LINK_ITEM_HAMMER},
+	{WieldMode::SingleMelee2, LINK_ITEM_SHIELD,  LINK_ITEM_SWORD},
 
-	wield_state(D_MELEE, LINK_ITEM_NULL, LINK_ITEM_HUGESWORD),
+	{WieldMode::DoubleMelee,  LINK_ITEM_NULL,    LINK_ITEM_HUGESWORD},
 
-	wield_state(D_WEAPON, LINK_ITEM_SWORD, LINK_ITEM_SWORD),
+	{WieldMode::DoubleWeapon, LINK_ITEM_SWORD,   LINK_ITEM_SWORD},
 
-	wield_state(D_BOW, LINK_ITEM_BOW, LINK_ITEM_NULL),
+	{WieldMode::DoubleBow,    LINK_ITEM_BOW,     LINK_ITEM_NULL},
 
-	wield_state(S_GUN, LINK_ITEM_NULL, LINK_ITEM_GUN),
+	{WieldMode::SingleGun,    LINK_ITEM_NULL,    LINK_ITEM_GUN},
 
-	wield_state(S_DAGGER, LINK_ITEM_NULL, LINK_ITEM_DAGGER),
+	{WieldMode::SingleDagger, LINK_ITEM_NULL,    LINK_ITEM_DAGGER},
 
-	wield_state(S_MELEE2, LINK_ITEM_NULL, LINK_ITEM_AX),
-	wield_state(S_MELEE2, LINK_ITEM_NULL, LINK_ITEM_SHOVEL),
-
-	//wield_state( D_WEAPON, LINK_ITEM_SWORD, LINK_ITEM_BLADE ),
-	//wield_state( D_WEAPON, LINK_ITEM_SWORD, LINK_ITEM_DAGGER ),
-	//wield_state( D_WEAPON, LINK_ITEM_BLADE, LINK_ITEM_BLADE ),
-	//wield_state( D_WEAPON, LINK_ITEM_BLADE, LINK_ITEM_SWORD ),
-	//wield_state( D_WEAPON, LINK_ITEM_BLADE, LINK_ITEM_DAGGER ),
-	//wield_state( D_WEAPON, LINK_ITEM_DAGGER, LINK_ITEM_DAGGER ),
-	//wield_state( D_WEAPON, LINK_ITEM_DAGGER, LINK_ITEM_SWORD ),
-	//wield_state( D_WEAPON, LINK_ITEM_DAGGER, LINK_ITEM_BLADE ),
-
-
+	{WieldMode::SingleMelee2, LINK_ITEM_NULL,    LINK_ITEM_AX},
+	{WieldMode::SingleMelee2, LINK_ITEM_NULL,    LINK_ITEM_SHOVEL},
 };
+const static std::size_t __wield_state_num = std::size(__wield_state);
 
 inline void _SetItemScale(CCharacterModel* model, CSceneItem* item) {
 	item->SetScale(model->GetScale());
@@ -271,7 +252,7 @@ int CCharacterModel::ReCreate(DWORD type_id) {
 		return 0;
 
 
-	if (pInfo->chModalType == enumMODAL_MAIN_CHA) {
+	if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA)) {
 #if 1 // id
 		DWORD part_buf[5] =
 		{
@@ -315,7 +296,7 @@ int CCharacterModel::ReCreate(DWORD type_id) {
 		}
 #endif
 	}
-	else if (pInfo->chModalType == enumMODAL_BOAT) {
+	else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT)) {
 		DWORD part_buf[3] =
 		{
 			pInfo->sSkinInfo[0],
@@ -330,7 +311,7 @@ int CCharacterModel::ReCreate(DWORD type_id) {
 			return NULL;
 		}
 	}
-	else if (pInfo->chModalType == enumMODAL_EMPL) {
+	else if (pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) {
 		DWORD part_buf[5] =
 		{
 			pInfo->sSkinInfo[0],
@@ -613,56 +594,47 @@ int CCharacterModel::DestroyPart(DWORD id) {
 	return SUCCEEDED(MPCharacter::DestroyPart( id )) ? 1 : 0;
 }
 
-DWORD CCharacterModel::_BigPose2SmallPose(DWORD pose_id) {
-	DWORD p = 0;
+std::optional<DWORD> CCharacterModel::_BigPose2SmallPose(DWORD pose_id) {
 	_PoseType = pose_id;
 
-	CItemRecord* ir;
-
-	int iii = 0;
-	CPoseInfo* info = ::GetPoseInfo((short)pose_id);
-	if (info == NULL) {
+	PoseInfo* info = ::GetPoseInfo((short)pose_id);
+	if (info == nullptr) {
 		g_logManager.InternalLog(LogLevel::Debug, "common", SafeVFormat(GetLanguageString(28), pose_id));
-		return -1;
+		return std::nullopt;
 	}
 
-	CSceneItem* left_item = GetLinkItem(LINK_ID_LEFTHAND);
+	CSceneItem* left_item  = GetLinkItem(LINK_ID_LEFTHAND);
 	CSceneItem* right_item = GetLinkItem(LINK_ID_RIGHTHAND);
 
-	BYTE l = 0;
-	BYTE r = 0;
-
+	std::uint8_t l = 0;
+	std::uint8_t r = 0;
 	if (left_item) {
-		ir = left_item->GetItemInfo();
-		l = (BYTE)ir->sType;
+		l = static_cast<std::uint8_t>(left_item->GetItemInfo()->sType);
 	}
 	if (right_item) {
-		ir = right_item->GetItemInfo();
-		r = (BYTE)ir->sType;
+		r = static_cast<std::uint8_t>(right_item->GetItemInfo()->sType);
 	}
 
-	for (DWORD i = 0; i < __wield_state_num; i++) {
-		if (__wield_state[i].Check(l, r) == 1) {
-			iii = __wield_state[i].mode;
+	WieldMode wieldMode = WieldMode::SingleMelee;
+	for (std::size_t i = 0; i < __wield_state_num; ++i) {
+		if (__wield_state[i].Check(l, r)) {
+			wieldMode = __wield_state[i].mode;
 			break;
 		}
 	}
 
-	p = info->sRealPoseID[iii];
-
-	return p;
+	return static_cast<DWORD>(info->GetRealPoseId(wieldMode));
 }
 
 void CCharacterModel::PlayPose(DWORD pose, DWORD type, int time, int fps, DWORD blend_flag, DWORD blend_src_num,
 							   bool IsGlitched) {
-	DWORD p = 0;
 	_PoseType = pose;
 
-	p = _BigPose2SmallPose(pose);
-
-	if (p == -1)
+	const auto smallPose = _BigPose2SmallPose(pose);
+	if (!smallPose) {
 		return;
-
+	}
+	const DWORD p = *smallPose;
 	_SmallPoseID = p;
 
 	MPIPoseCtrl* c = GetPoseCtrl();
@@ -1192,16 +1164,17 @@ MPPoseInfo* CCharacterModel::GetPoseInfo(DWORD pose_id) {
 }
 
 MPPoseInfo* CCharacterModel::GetPoseInfoBig(DWORD big_pose_id) {
-	DWORD p;
-	p = _BigPose2SmallPose(big_pose_id);
-	if (p == -1)
-		return NULL;
+	const auto smallPose = _BigPose2SmallPose(big_pose_id);
+	if (!smallPose) {
+		return nullptr;
+	}
 
 	MPIPoseCtrl* pose_ctrl = GetPoseCtrl();
-	if (pose_ctrl == 0)
-		return 0;
+	if (pose_ctrl == nullptr) {
+		return nullptr;
+	}
 
-	return pose_ctrl->GetPoseInfo(p);
+	return pose_ctrl->GetPoseInfo(*smallPose);
 }
 
 int CCharacterModel::Unlit(DWORD part_id) {
@@ -1293,7 +1266,7 @@ BOOL CCharacterModel::Cull() {
 	lwIViewFrustum* vf = scn_mgr->GetViewFrustum();
 
 	DWORD i;
-	if (pInfo->chModalType == enumMODAL_MAIN_CHA || pInfo->chModalType == enumMODAL_OTHER) // character
+	if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA) || pInfo->chModalType == static_cast<char>(EChaModalType::OTHER)) // character
 	{
 		lwSphere s;
 
@@ -1307,7 +1280,7 @@ BOOL CCharacterModel::Cull() {
 
 		return !vf->IsSphereInFrustum(&s);
 	}
-	else if (pInfo->chModalType == enumMODAL_BOAT || pInfo->chModalType == enumMODAL_EMPL) // ship
+	else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT) || pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) // ship
 	{
 		MPIPhysique* p = GetPhysique();
 

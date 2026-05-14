@@ -73,7 +73,7 @@ class CActionState;
 //                          Client To Server Protocol
 //---------------------------------------------------------------------------------
 // C->S : ,truefalseGetConnStat
-extern bool CS_Connect(cChar* hostname, uint16_t port, uint32_t timeout);
+extern bool CS_Connect(std::string_view hostname, uint16_t port, uint32_t timeout);
 // C->S : ,ShutDown,Disconnect;
 extern void CS_Disconnect(int reason);
 
@@ -261,8 +261,8 @@ extern void CS_CaptainConfirmAsr(short sRet, DWORD dwTeamID);
 //
 extern void CS_MasterInvite(const char* szName, DWORD dwCharID);
 extern void CS_MasterAsr(short sRet, const char* szName, DWORD dwCharID);
-extern void CS_MasterDel(const char* szName, uLong ulChaID);
-extern void CS_PrenticeDel(const char* szName, uLong ulChaID);
+extern void CS_MasterDel(const char* szName, std::uint32_t ulChaID);
+extern void CS_PrenticeDel(const char* szName, std::uint32_t ulChaID);
 extern void CP_Master_Refresh_Info(unsigned long chaid);
 extern void CP_Prentice_Refresh_Info(unsigned long chaid);
 extern void CS_PrenticeInvite(const char* szName, DWORD dwCharID);
@@ -284,9 +284,9 @@ extern void CS_GMRecv(DWORD dwNPCID);
 
 //extern void CS_PKCtrl(bool bCanPK);
 
-extern void CS_CheatCheck(cChar* answer);
+extern void CS_CheatCheck(std::string_view answer);
 //add by ALLEN 2007-10-19
-extern void CS_AutionBidup(DWORD dwNPCID, short sItemID, uLong price);
+extern void CS_AutionBidup(DWORD dwNPCID, short sItemID, std::uint32_t price);
 
 extern void CS_AntiIndulgence_Close();
 
@@ -295,7 +295,7 @@ extern void CS_DropLock(int slot);
 extern void CS_UnlockItem(const char szPassword[], int slot);
 
 
-extern void CS_SetGuildPerms(DWORD ID, uLong Perms);
+extern void CS_SetGuildPerms(DWORD ID, std::uint32_t Perms);
 
 extern void CS_SendGameRequest(const char szPassword[]);
 //---------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿#include "Core/stdafx.h"
+#include "Core/stdafx.h"
 #include "App/GameApp.h"
 #include "App/GameAppNet.h"
 #include "CommandMessages.h"
@@ -65,7 +65,7 @@ void CGameApp::OnGateDisconnect(GateServer* pGate, Corsairs::Net::RPacket& pkt) 
 // ?????????????
 void CGameApp::ProcessPacket(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
 	CPlayer* l_player = nullptr;
-	uShort cmd = pkt.ReadCmd();
+	std::uint16_t cmd = pkt.ReadCmd();
 
 	switch (cmd) {
 	case CMD_TM_LOGIN_ACK: {
@@ -166,7 +166,7 @@ void CGameApp::ProcessPacket(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
 	case CMD_TM_GOOUTMAP: {
 		Corsairs::Net::Msg::TmGoOutMapMessage goOutMsg;
 		Corsairs::Net::Msg::deserialize(pkt, goOutMsg);
-		l_player = ToPointer<CPlayer>(goOutMsg.playerPtr);
+		l_player = Corsairs::Util::ToPointer<CPlayer>(goOutMsg.playerPtr);
 		DWORD l_gateaddr = static_cast<DWORD>(goOutMsg.gateAddr);
 
 		if (!l_player)
@@ -220,7 +220,7 @@ void CGameApp::ProcessPacket(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
 	case CMD_PM_SAY2ALL: {
 		Corsairs::Net::Msg::PmSay2AllMessage say2AllMsg;
 		Corsairs::Net::Msg::deserialize(pkt, say2AllMsg);
-		uLong ulChaID = static_cast<uLong>(say2AllMsg.chaId);
+		std::uint32_t ulChaID = static_cast<std::uint32_t>(say2AllMsg.chaId);
 		std::string szContent = say2AllMsg.content;
 		long lChatMoney = static_cast<long>(say2AllMsg.money);
 
@@ -251,7 +251,7 @@ void CGameApp::ProcessPacket(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
 	case CMD_PM_SAY2TRADE: {
 		Corsairs::Net::Msg::PmSay2TradeMessage say2TradeMsg;
 		Corsairs::Net::Msg::deserialize(pkt, say2TradeMsg);
-		uLong ulChaID = static_cast<uLong>(say2TradeMsg.chaId);
+		std::uint32_t ulChaID = static_cast<std::uint32_t>(say2TradeMsg.chaId);
 		std::string szContent = say2TradeMsg.content;
 		long lChatMoney = static_cast<long>(say2TradeMsg.money);
 
@@ -343,8 +343,8 @@ void CGameApp::ProcessPacket(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
 		//  ??????
 		Corsairs::Net::Msg::PmExpScaleMessage expMsg;
 		Corsairs::Net::Msg::deserialize(pkt, expMsg);
-		uLong ulChaID = static_cast<uLong>(expMsg.chaId);
-		uLong ulTime = static_cast<uLong>(expMsg.time);
+		std::uint32_t ulChaID = static_cast<std::uint32_t>(expMsg.chaId);
+		std::uint32_t ulTime = static_cast<std::uint32_t>(expMsg.time);
 
 		CPlayer* pPlayer = g_pGameApp->GetPlayerByDBID(ulChaID);
 
@@ -476,7 +476,7 @@ void CGameApp::ProcessPacket(GateServer* pGate, Corsairs::Net::RPacket& pkt) {
 			ProcessInterGameMsg(cmd, pGate, pkt);
 		}
 		else {
-			l_player = ToPointer<CPlayer>(pkt.ReverseReadInt64());
+			l_player = Corsairs::Util::ToPointer<CPlayer>(pkt.ReverseReadInt64());
 			assert(GamePool::Instance().IsValidPlayerPtr(l_player));
 
 			if (cmd / 500 == CMD_PM_BASE / 500 && !l_player) {
@@ -681,7 +681,7 @@ void CGameApp::ProcessTeamMsg(GateServer* pGate, const Corsairs::Net::Msg::PmTea
 
 				CSkillState& leader_states = leaderCha->m_CSkillState;
 
-				//if (ulCurTick - pSStateUnit->ulStartTick >= (unsigned long)pSStateUnit->lOnTick * 1000) // 
+				//if (ulCurTick - pSStateUnit->ulStartTick >= (unsigned long)pSStateUnit->lOnTick * 1000) //
 				if (leader_states.HasState(217)) {
 					const auto& state = leader_states.GetSStateByID(217);
 					const auto use_duration = state->lOnTick * 1000;
@@ -967,7 +967,7 @@ void CGameApp::ProcessInterGameMsg(unsigned short usCmd, GateServer* pGate, Cors
 		Corsairs::Net::Msg::MmGuildMottoMessage mottoMsg;
 		mottoMsg.guildId = lSrcID;
 		mottoMsg.motto = pkt.ReadString();
-		uLong l_gldid = static_cast<uLong>(mottoMsg.guildId);
+		std::uint32_t l_gldid = static_cast<std::uint32_t>(mottoMsg.guildId);
 		const std::string& pszMotto = mottoMsg.motto;
 		{
 			//  FindPlayerChaByID
@@ -989,7 +989,7 @@ void CGameApp::ProcessInterGameMsg(unsigned short usCmd, GateServer* pGate, Cors
 	}
 	break;
 	case CMD_MM_GUILD_DISBAND: {
-		uLong l_gldid = lSrcID;
+		std::uint32_t l_gldid = lSrcID;
 		{
 			//  FindPlayerChaByID
 			BEGINGETGATE();
@@ -1021,7 +1021,7 @@ void CGameApp::ProcessInterGameMsg(unsigned short usCmd, GateServer* pGate, Cors
 		Corsairs::Net::Msg::MmGuildKickMessage kickMsg;
 		kickMsg.srcId = lSrcID;
 		kickMsg.guildName = pkt.ReadString();
-		uLong l_chaid = static_cast<uLong>(kickMsg.srcId);
+		std::uint32_t l_chaid = static_cast<std::uint32_t>(kickMsg.srcId);
 		CCharacter* pCha = FindMainPlayerChaByID(l_chaid);
 		if (pCha) {
 			pCha->SetGuildName("");
@@ -1048,7 +1048,7 @@ void CGameApp::ProcessInterGameMsg(unsigned short usCmd, GateServer* pGate, Cors
 		Corsairs::Net::Msg::MmGuildRejectMessage rejectMsg;
 		rejectMsg.srcId = lSrcID;
 		rejectMsg.guildName = pkt.ReadString();
-		uLong l_chaid = static_cast<uLong>(rejectMsg.srcId);
+		std::uint32_t l_chaid = static_cast<std::uint32_t>(rejectMsg.srcId);
 		CCharacter* pCha = FindMainPlayerChaByID(l_chaid);
 		if (pCha) {
 			pCha->SetGuildID(0);
@@ -1071,7 +1071,7 @@ void CGameApp::ProcessInterGameMsg(unsigned short usCmd, GateServer* pGate, Cors
 
 		//  :  +  trailer
 		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McPingMessage{
-			(int64_t)GetTickCount(), (int64_t)ToAddress(pGate), lSrcID, lGatePlayerID, lGatePlayerAddr
+			(int64_t)GetTickCount(), (int64_t)Corsairs::Util::ToAddress(pGate), lSrcID, lGatePlayerID, lGatePlayerAddr
 		});
 		WtPk.WriteInt64(1);
 		pCCha->ReflectINFof(pCCha, WtPk);
@@ -1089,8 +1089,8 @@ void CGameApp::ProcessInterGameMsg(unsigned short usCmd, GateServer* pGate, Cors
 
 		//  :      +  trailer
 		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McQueryChaMessage{
-			lSrcID, pCCha->GetName(), pCCha->GetSubMap()->GetName(), (int64_t)pCCha->GetPos().x,
-			(int64_t)pCCha->GetPos().y, pCCha->GetID()
+			lSrcID, pCCha->GetName(), pCCha->GetSubMap()->GetName(), (int64_t)pCCha->GetPos().X,
+			(int64_t)pCCha->GetPos().Y, pCCha->GetID()
 		});
 		WtPk.WriteInt64(lGatePlayerID);
 		WtPk.WriteInt64(lGatePlayerAddr);
@@ -1281,7 +1281,7 @@ void CGameApp::Handle_GotoCha(GateServer* pGate, long lGatePlayerID, long lGateP
 	case 1: {
 		auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::MmGotoChaMessage{
 			msg.srcId, msg.srcName, 2, {}, pCCha->IsBoat() ? 1LL : 0LL, pCCha->GetSubMap()->GetName(),
-			(int64_t)pCCha->GetPos().x, (int64_t)pCCha->GetPos().y, (int64_t)pCCha->GetSubMap()->GetCopyNO()
+			(int64_t)pCCha->GetPos().X, (int64_t)pCCha->GetPos().Y, (int64_t)pCCha->GetSubMap()->GetCopyNO()
 		});
 		WtPk.WriteInt64(lGatePlayerID);
 		WtPk.WriteInt64(lGatePlayerAddr);
@@ -1293,8 +1293,8 @@ void CGameApp::Handle_GotoCha(GateServer* pGate, long lGatePlayerID, long lGateP
 		if ((msg.isBoat != 0) != pCCha->IsBoat())
 			break;
 		pCCha->SwitchMap(pCCha->GetSubMap(), msg.mapName.c_str(),
-						 static_cast<Long>(msg.posX), static_cast<Long>(msg.posY), true, enumSWITCHMAP_CARRY,
-						 static_cast<Long>(msg.copyNo));
+						 static_cast<std::int32_t>(msg.posX), static_cast<std::int32_t>(msg.posY), true, enumSWITCHMAP_CARRY,
+						 static_cast<std::int32_t>(msg.copyNo));
 		break;
 	}
 	}
@@ -1307,12 +1307,12 @@ void CGameApp::Handle_CallCha(const Corsairs::Net::Msg::MmCallChaMessage& msg) {
 	if ((msg.isBoat != 0) != pCCha->IsBoat())
 		return;
 	pCCha->SwitchMap(pCCha->GetSubMap(), msg.mapName.c_str(),
-					 static_cast<Long>(msg.posX), static_cast<Long>(msg.posY), true, enumSWITCHMAP_CARRY,
-					 static_cast<Long>(msg.copyNo));
+					 static_cast<std::int32_t>(msg.posX), static_cast<std::int32_t>(msg.posY), true, enumSWITCHMAP_CARRY,
+					 static_cast<std::int32_t>(msg.copyNo));
 }
 
 void CGameApp::Handle_GuildApprove(const Corsairs::Net::Msg::MmGuildApproveMessage& msg) {
-	CCharacter* pCha = FindMainPlayerChaByID(static_cast<uLong>(msg.srcId));
+	CCharacter* pCha = FindMainPlayerChaByID(static_cast<std::uint32_t>(msg.srcId));
 	if (pCha) {
 		pCha->SetGuildID(static_cast<int>(msg.guildId));
 		pCha->SetGuildState(0);
@@ -1357,10 +1357,10 @@ void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::M
 			break;
 		}
 		pCMap = pCMapRes->GetCopy();
-		Long lPosX = static_cast<Long>(mapMsg.posX);
-		Long lPosY = static_cast<Long>(mapMsg.posY);
-		Short sMapCopyNum = static_cast<Short>(mapMsg.mapCopyNum);
-		Short sCopyPlyNum = static_cast<Short>(mapMsg.copyPlayerNum);
+		std::int32_t lPosX = static_cast<std::int32_t>(mapMsg.posX);
+		std::int32_t lPosY = static_cast<std::int32_t>(mapMsg.posY);
+		int16_t sMapCopyNum = static_cast<int16_t>(mapMsg.mapCopyNum);
+		int16_t sCopyPlyNum = static_cast<int16_t>(mapMsg.copyPlayerNum);
 		CDynMapEntryCell CEntryCell;
 		CEntryCell.SetMapName(szTarMapN.c_str());
 		CEntryCell.SetTMapName(szSrcMapN.c_str());
@@ -1370,7 +1370,7 @@ void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::M
 			pCEntry->SetCopyNum(sMapCopyNum);
 			pCEntry->SetCopyPlyNum(sCopyPlyNum);
 			string strScript;
-			Short sLineNum = static_cast<Short>(mapMsg.luaScriptLines.size());
+			int16_t sLineNum = static_cast<int16_t>(mapMsg.luaScriptLines.size());
 			if (g_cchLogMapEntry)
 				//LG("??????????", "????????????????? %s --> %s[%u, %u]????????? %d\n", szSrcMapN, szTarMapN, lPosX, lPosY, sLineNum);
 				ToLogService("common", "receive request to create entry??position {} --> {}[{}, {}]??script line {}",
@@ -1384,7 +1384,7 @@ void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::M
 
 			if (pCEntry->GetEntiID() > 0) {
 				SItemGrid SItemCont;
-				SItemCont.sID = (Short)pCEntry->GetEntiID();
+				SItemCont.sID = (int16_t)pCEntry->GetEntiID();
 				SItemCont.sNum = 1;
 				SItemCont.SetDBParam(-1, 0);
 				SItemCont.chForgeLv = 0;
@@ -1426,8 +1426,8 @@ void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::M
 	}
 	break;
 	case enumMAPENTRY_SUBPLAYER: {
-		Short sCopyNO = static_cast<Short>(mapMsg.copyNo);
-		Short sSubNum = static_cast<Short>(mapMsg.numPlayers);
+		int16_t sCopyNO = static_cast<int16_t>(mapMsg.copyNo);
+		int16_t sSubNum = static_cast<int16_t>(mapMsg.numPlayers);
 
 		CDynMapEntryCell* pCEntry = g_CDMapEntry.GetEntry(szSrcMapN.c_str());
 		if (pCEntry) {
@@ -1438,7 +1438,7 @@ void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::M
 	}
 	break;
 	case enumMAPENTRY_SUBCOPY: {
-		Short sCopyNO = static_cast<Short>(mapMsg.copyNo);
+		int16_t sCopyNO = static_cast<int16_t>(mapMsg.copyNo);
 
 		CDynMapEntryCell* pCEntry = g_CDMapEntry.GetEntry(szSrcMapN.c_str());
 		if (pCEntry) {
@@ -1497,11 +1497,11 @@ void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::M
 		pCMapRes = FindMapByName(szTarMapN.c_str());
 		if (!pCMapRes)
 			break;
-		pCMap = pCMapRes->GetCopy(static_cast<Short>(mapMsg.copyId));
+		pCMap = pCMapRes->GetCopy(static_cast<int16_t>(mapMsg.copyId));
 		if (!pCMap)
 			break;
-		for (dbc::Char i = 0; i < defMAPCOPY_INFO_PARAM_NUM; i++)
-			pCMap->SetInfoParam(i, static_cast<Long>(mapMsg.params[i]));
+		for (char i = 0; i < defMAPCOPY_INFO_PARAM_NUM; i++)
+			pCMap->SetInfoParam(i, static_cast<std::int32_t>(mapMsg.params[i]));
 	}
 	break;
 	case enumMAPENTRY_COPYRUN: {
@@ -1510,12 +1510,12 @@ void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::M
 		pCMapRes = FindMapByName(szTarMapN.c_str());
 		if (!pCMapRes)
 			break;
-		pCMap = pCMapRes->GetCopy(static_cast<Short>(mapMsg.copyId));
+		pCMap = pCMapRes->GetCopy(static_cast<int16_t>(mapMsg.copyId));
 		if (!pCMap)
 			break;
 
-		Char chType = static_cast<Char>(mapMsg.condType);
-		Long lVal = static_cast<Long>(mapMsg.condValue);
+		char chType = static_cast<char>(mapMsg.condType);
+		std::int32_t lVal = static_cast<std::int32_t>(mapMsg.condValue);
 		pCMapRes->SetCopyStartCondition(chType, lVal);
 	}
 	break;
@@ -1541,7 +1541,7 @@ void CGameApp::ProcessDynMapEntry(GateServer* pGate, const Corsairs::Net::Msg::M
 		}
 		break;
 		case enumMAPENTRYO_COPY_CLOSE_SUC: {
-			pCMap->CopyClose(static_cast<Short>(mapMsg.returnCopyNo));
+			pCMap->CopyClose(static_cast<int16_t>(mapMsg.returnCopyNo));
 		}
 		break;
 		default:

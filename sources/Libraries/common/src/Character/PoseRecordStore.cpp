@@ -1,62 +1,78 @@
 #include "Character/PoseRecordStore.h"
-#include <sstream>
+
+#include <charconv>
+#include <climits>
+#include <cstdint>
+#include <string_view>
 
 
 namespace Corsairs::Common::Character {
 
-GameRecordset<CPoseInfo>::RecordEntry PoseRecordStore::ReadRecord(SqliteStatement& stmt) {
-	CPoseInfo record{};
+std::int16_t PoseInfo::GetRealPoseId(WieldMode mode, const std::source_location& loc) const {
+	return GetRealPoseId(static_cast<std::size_t>(mode), loc);
+}
+
+std::int16_t PoseInfo::GetRealPoseId(std::size_t variant, const std::source_location& loc) const {
+	if (variant >= kPoseVariantCount) {
+		ToLogService("errors", LogLevel::Warning,
+			"CPoseInfo::GetRealPoseId(id={}) variant={} out of range [0,{}) at {}:{}",
+			Id, variant, kPoseVariantCount, loc.file_name(), loc.line());
+		return 0;
+	}
+	return RealPoseId[variant];
+}
+
+GameRecordset<PoseInfo>::RecordEntry PoseRecordStore::ReadRecord(SqliteStatement& stmt) {
+	PoseInfo record{};
 	int col = 0;
 
-	record.Id    = stmt.GetInt(col++);
-
-	{
-		auto name = stmt.GetText(col++);
-		record.DataName = name;
-	}
+	record.Id       = stmt.GetInt(col++);
+	record.DataName = stmt.GetText(col++);
 
 	// pose_ids — "p0,p1,p2,p3,p4,p5,p6"
-	{
-		std::string text(stmt.GetText(col++));
-		std::istringstream ss(text);
-		std::string token;
-		for (int i = 0; i < 7; i++) {
-			record.sRealPoseID[i] = 0;
-			if (std::getline(ss, token, ','))
-				record.sRealPoseID[i] = static_cast<short>(std::stoi(token));
+	const std::string_view text = stmt.GetText(col++);
+	std::size_t pos = 0;
+	std::size_t parsed = 0;
+	while (pos <= text.size() && parsed < kPoseVariantCount) {
+		const std::size_t commaPos = text.find(',', pos);
+		const std::size_t end = (commaPos == std::string_view::npos) ? text.size() : commaPos;
+		const std::string_view tok = text.substr(pos, end - pos);
+
+		int value = 0;
+		const auto* first = tok.data();
+		const auto* last  = tok.data() + tok.size();
+		auto [ptr, ec] = std::from_chars(first, last, value);
+		if (ec != std::errc{} || ptr != last) {
+			ToLogService("errors", LogLevel::Warning,
+				"poses.id={} pose_ids[{}] token='{}' is not a valid integer; using 0",
+				record.Id, parsed, tok);
+			value = 0;
+		} else if (value < INT16_MIN || value > INT16_MAX) {
+			ToLogService("errors", LogLevel::Warning,
+				"poses.id={} pose_ids[{}]={} out of int16 range; clamping",
+				record.Id, parsed, value);
+			value = (value < INT16_MIN) ? INT16_MIN : INT16_MAX;
 		}
+		record.RealPoseId[parsed++] = static_cast<std::int16_t>(value);
+
+		if (commaPos == std::string_view::npos) {
+			break;
+		}
+		pos = commaPos + 1;
+	}
+
+	if (parsed != kPoseVariantCount) {
+		ToLogService("errors", LogLevel::Warning,
+			"poses.id={} pose_ids has {} tokens, expected {}; missing filled with 0",
+			record.Id, parsed, kPoseVariantCount);
 	}
 
 	std::string name(record.DataName);
 	return {record.Id, std::move(name), std::move(record)};
 }
 
-void PoseRecordStore::Insert(SqliteDatabase& db, const CPoseInfo& r) {
-	try {
-		EnsureCreated(db, TABLE_NAME, CREATE_TABLE_SQL);
-		std::string ids;
-		for (int i = 0; i < 7; i++) {
-			if (i > 0) ids += ',';
-			ids += std::to_string(r.sRealPoseID[i]);
-		}
-		auto stmt = db.Prepare("INSERT OR REPLACE INTO poses (id, name, pose_ids) VALUES (?, ?, ?)");
-		stmt.Bind(1, r.Id);
-		stmt.Bind(2, std::string_view(r.DataName));
-		stmt.Bind(3, ids);
-		stmt.Step();
-	} catch (const std::exception& e) {
-		ToLogService("errors", LogLevel::Error, "PoseRecordStore::Insert(id={}) failed: {}", r.Id, e.what());
-	}
-}
-
-CPoseInfo* GetPoseInfo(short sPoseID, const std::source_location& loc) {
+PoseInfo* GetPoseInfo(short sPoseID, const std::source_location& loc) {
 	return PoseRecordStore::Instance()->Get(sPoseID, loc);
 }
 
-short GetRealPoseID(short sPoseID, short sPoseType) {
-	CPoseInfo* pInfo = GetPoseInfo(sPoseID);
-	return pInfo ? pInfo->sRealPoseID[sPoseType] : 0;
-}
-
 } // namespace Corsairs::Common::Character
-

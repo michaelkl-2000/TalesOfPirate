@@ -45,7 +45,7 @@ struct FileCloser {
 };
 using UniqueFile = std::unique_ptr<std::FILE, FileCloser>;
 
-// Поддерживаемые значения header.nMapFlag. Файл с MP_MAP_FLAG+1 — это незавершённый
+// Поддерживаемые значения header.MapFlag. Файл с kMapFlagBase+1 — это незавершённый
 // MapTool-файл (см. MPMap::Load в MPMapData.cpp), он явно отвергается.
 [[nodiscard]] constexpr bool IsKnownMapFlag(std::int32_t flag) noexcept {
     return flag == MapLoader::kCurrentMapFlag || flag == MapLoader::kLegacyMapFlag;
@@ -59,37 +59,28 @@ using UniqueFile = std::unique_ptr<std::FILE, FileCloser>;
 // загружаются). Если бы мы reject'или такие файлы, тест бы их пометил
 // невалидными — но MPMap их грузит.
 [[nodiscard]] bool DimensionsValid(const MPMapFileHeader& h) noexcept {
-    if (h.nWidth <= 0 || h.nHeight <= 0) {
+    if (h.Width <= 0 || h.Height <= 0) {
         return false;
     }
-    if (h.nSectionWidth <= 0 || h.nSectionHeight <= 0) {
+    if (h.SectionWidth <= 0 || h.SectionHeight <= 0) {
         return false;
     }
-    if (h.nSectionWidth > h.nWidth || h.nSectionHeight > h.nHeight) {
+    if (h.SectionWidth > h.Width || h.SectionHeight > h.Height) {
         return false;
     }
     return true;
 }
 
 [[nodiscard]] std::size_t SectionCount(const MPMapFileHeader& h) noexcept {
-    const std::size_t cntX = static_cast<std::size_t>(h.nWidth / h.nSectionWidth);
-    const std::size_t cntY = static_cast<std::size_t>(h.nHeight / h.nSectionHeight);
+    const std::size_t cntX = static_cast<std::size_t>(h.Width / h.SectionWidth);
+    const std::size_t cntY = static_cast<std::size_t>(h.Height / h.SectionHeight);
     return cntX * cntY;
 }
 
-// Размер одной секции в байтах. Зависит от того, какая раскладка SFileTile
-// активна на данный момент. NEW_VERSION ON в MPMapDef.h → SNewFileTile = 15 байт.
-// Сохраняем формулу как функцию, чтобы при включении legacy-сборки (#undef
-// NEW_VERSION) она автоматически подхватила SFileTile.
 [[nodiscard]] std::size_t TileBytesPerSection(const MPMapFileHeader& h) noexcept {
-#ifdef NEW_VERSION
-    constexpr std::size_t kTileSize = sizeof(SNewFileTile);
-#else
-    constexpr std::size_t kTileSize = sizeof(SFileTile);
-#endif
-    return static_cast<std::size_t>(h.nSectionWidth) *
-           static_cast<std::size_t>(h.nSectionHeight) *
-           kTileSize;
+    return static_cast<std::size_t>(h.SectionWidth) *
+           static_cast<std::size_t>(h.SectionHeight) *
+           sizeof(SNewFileTile);
 }
 
 [[nodiscard]] std::int64_t FileSize(std::FILE* fp) noexcept {
@@ -157,12 +148,12 @@ LW_RESULT MapLoader::LoadEx(MapInfo& info, std::string_view file,
         LogLoadFailure(file, diag);
         return LW_RET_FAILED;
     }
-    diag.mapFlag = info.header.nMapFlag;
+    diag.mapFlag = info.header.MapFlag;
 
-    if (!IsKnownMapFlag(info.header.nMapFlag)) {
+    if (!IsKnownMapFlag(info.header.MapFlag)) {
         diag.status = MapLoadStatus::BadMagic;
-        diag.detail = std::format("nMapFlag={} (expected {} или {})",
-                                   info.header.nMapFlag,
+        diag.detail = std::format("MapFlag={} (expected {} или {})",
+                                   info.header.MapFlag,
                                    kCurrentMapFlag, kLegacyMapFlag);
         LogLoadFailure(file, diag);
         return LW_RET_FAILED;
@@ -172,8 +163,8 @@ LW_RESULT MapLoader::LoadEx(MapInfo& info, std::string_view file,
         diag.status = MapLoadStatus::InconsistentDimensions;
         diag.detail = std::format(
             "width={}, height={}, sectionWidth={}, sectionHeight={}",
-            info.header.nWidth, info.header.nHeight,
-            info.header.nSectionWidth, info.header.nSectionHeight);
+            info.header.Width, info.header.Height,
+            info.header.SectionWidth, info.header.SectionHeight);
         LogLoadFailure(file, diag);
         return LW_RET_FAILED;
     }
@@ -337,39 +328,30 @@ void MapStream::Close() noexcept {
 
 namespace {
 
-// Размер одной секции на диске (в байтах). NEW_VERSION ON в MPMapDef.h →
-// SNewFileTile (15 байт). Дублируется как функция, а не constexpr, чтобы
-// при возможной legacy-сборке (#undef NEW_VERSION) автоматом подхватить
-// SFileTile-раскладку.
-[[nodiscard]] std::size_t TileSizeOnDisk() noexcept {
-#ifdef NEW_VERSION
-    return sizeof(SNewFileTile);
-#else
-    return sizeof(SFileTile);
-#endif
-}
+using ::Corsairs::Util::Map::TileInfo_Pack;
+using ::Corsairs::Util::Map::TileInfo_Unpack;
 
 void DecodeTile(const SNewFileTile& src, ::MPTile& dst) {
     dst.Init();
-    TileInfo_5To8(src.dwTileInfo, src.btTileInfo,
-                  reinterpret_cast<BYTE*>(&dst.TexLayer[0]));
-    dst.dwColor = LW_RGB565TODWORD(src.sColor);
+    TileInfo_Unpack(src.TileInfo, src.BaseTex,
+                    reinterpret_cast<std::uint8_t*>(&dst.TexLayer[0]));
+    dst.dwColor = LW_RGB565TODWORD(src.Color);
     dst.dwColor |= 0xff000000;
-    dst.fHeight = static_cast<float>(src.cHeight * 10) / 100.0f;
-    dst.btIsland = src.btIsland;
-    dst.sRegion = src.sRegion;
-    std::memcpy(&dst.btBlock[0], &src.btBlock[0], 4);
+    dst.fHeight = static_cast<float>(src.Height * 10) / 100.0f;
+    dst.btIsland = src.Island;
+    dst.sRegion = src.Region;
+    std::memcpy(&dst.btBlock[0], &src.Block[0], 4);
 }
 
 void EncodeTile(const ::MPTile& src, SNewFileTile& dst) {
-    dst = SNewFileTile{};  // занулить хвостовые поля (sRegion/btIsland/btBlock — ctor)
-    TileInfo_8To5(reinterpret_cast<BYTE*>(const_cast<MPTileTex*>(&src.TexLayer[0])),
-                  dst.dwTileInfo, dst.btTileInfo);
-    dst.cHeight = static_cast<char>(src.fHeight * 100 / 10);
-    dst.sColor  = static_cast<short>(LW_RGBDWORDTO565(src.dwColor));
-    dst.sRegion = src.sRegion;
-    dst.btIsland = src.btIsland;
-    std::memcpy(&dst.btBlock[0], &src.btBlock[0], 4);
+    dst = SNewFileTile{};  // занулить хвостовые поля (Region/Island/Block — через default-инициализаторы)
+    TileInfo_Pack(reinterpret_cast<const std::uint8_t*>(&src.TexLayer[0]),
+                  dst.TileInfo, dst.BaseTex);
+    dst.Height = static_cast<std::int8_t>(src.fHeight * 100 / 10);
+    dst.Color  = static_cast<std::int16_t>(LW_RGBDWORDTO565(src.dwColor));
+    dst.Region = src.sRegion;
+    dst.Island = src.btIsland;
+    std::memcpy(&dst.Block[0], &src.btBlock[0], 4);
 }
 
 } // namespace
@@ -403,12 +385,12 @@ LW_RESULT MapLoader::OpenStream(MapStream& stream, std::string_view file,
         LogLoadFailure(file, diag);
         return LW_RET_FAILED;
     }
-    diag.mapFlag = header.nMapFlag;
+    diag.mapFlag = header.MapFlag;
 
-    if (!IsKnownMapFlag(header.nMapFlag)) {
+    if (!IsKnownMapFlag(header.MapFlag)) {
         diag.status = MapLoadStatus::BadMagic;
-        diag.detail = std::format("nMapFlag={} (expected {} или {})",
-                                   header.nMapFlag,
+        diag.detail = std::format("MapFlag={} (expected {} или {})",
+                                   header.MapFlag,
                                    MapLoader::kCurrentMapFlag,
                                    MapLoader::kLegacyMapFlag);
         LogLoadFailure(file, diag);
@@ -418,14 +400,14 @@ LW_RESULT MapLoader::OpenStream(MapStream& stream, std::string_view file,
         diag.status = MapLoadStatus::InconsistentDimensions;
         diag.detail = std::format(
             "width={}, height={}, sectionWidth={}, sectionHeight={}",
-            header.nWidth, header.nHeight,
-            header.nSectionWidth, header.nSectionHeight);
+            header.Width, header.Height,
+            header.SectionWidth, header.SectionHeight);
         LogLoadFailure(file, diag);
         return LW_RET_FAILED;
     }
 
-    const std::int32_t cntX = header.nWidth / header.nSectionWidth;
-    const std::int32_t cntY = header.nHeight / header.nSectionHeight;
+    const std::int32_t cntX = header.Width / header.SectionWidth;
+    const std::int32_t cntY = header.Height / header.SectionHeight;
     const std::size_t sectionCount = static_cast<std::size_t>(cntX) * cntY;
     const std::size_t offsetTableBytes = sectionCount * sizeof(std::uint32_t);
     const std::size_t prefixBytes = sizeof(MPMapFileHeader) + offsetTableBytes;
@@ -485,9 +467,9 @@ LW_RESULT MapLoader::ReadSection(const MapStream& stream,
         return LW_RET_FAILED;
     }
 
-    const std::size_t tileSize = TileSizeOnDisk();
-    const std::int32_t sw = stream.Header().nSectionWidth;
-    const std::int32_t sh = stream.Header().nSectionHeight;
+    constexpr std::size_t tileSize = sizeof(SNewFileTile);
+    const std::int32_t sw = stream.Header().SectionWidth;
+    const std::int32_t sh = stream.Header().SectionHeight;
 
     SNewFileTile fileTile{};
 
@@ -547,9 +529,9 @@ LW_RESULT MapLoader::WriteSection(MapStream& stream,
         return LW_RET_FAILED;
     }
 
-    const std::size_t tileSize = TileSizeOnDisk();
-    const std::int32_t sw = stream._header.nSectionWidth;
-    const std::int32_t sh = stream._header.nSectionHeight;
+    constexpr std::size_t tileSize = sizeof(SNewFileTile);
+    const std::int32_t sw = stream._header.SectionWidth;
+    const std::int32_t sh = stream._header.SectionHeight;
     const std::size_t idx = static_cast<std::size_t>(sectionY) * stream._sectionCntX + sectionX;
 
     std::uint32_t off = stream._offsets[idx];
@@ -606,15 +588,15 @@ LW_RESULT MapLoader::ReadSectionBlockData(const MapStream& stream,
         return LW_RET_FAILED;
     }
 
-    const std::size_t tileSize = TileSizeOnDisk();
-    const std::int32_t sw = stream.Header().nSectionWidth;
-    const std::int32_t sh = stream.Header().nSectionHeight;
+    constexpr std::size_t tileSize = sizeof(SNewFileTile);
+    const std::int32_t sw = stream.Header().SectionWidth;
+    const std::int32_t sh = stream.Header().SectionHeight;
 
     SNewFileTile fileTile{};
 
     auto Apply = [&](::ZRBlockData* dst, const SNewFileTile& src) {
-        dst->sRegion = src.sRegion;
-        std::memcpy(&dst->btBlock[0], &src.btBlock[0], 4);
+        dst->sRegion = src.Region;
+        std::memcpy(&dst->btBlock[0], &src.Block[0], 4);
     };
 
     if (stream._edit) {

@@ -263,8 +263,8 @@ CCharacter::CCharacter()
 	  _pszWhoopMusic(NULL),
 	  _fMaxOpacity(1.0f),
 	  _pNpcStateItem(NULL),
-	  _eChaModalType(enumMODAL_MAIN_CHA),
-	  _eChaCtrlType(enumCHACTRL_PLAYER),
+	  _eChaModalType(EChaModalType::MAIN_CHA),
+	  _eChaCtrlType(EChaCtrlType::PLAYER),
 	  _IsForUI(false),
 	  _pDefaultChaInfo(NULL),
 	  _bShowSecondName(TRUE),
@@ -504,7 +504,7 @@ void CCharacter::FrameMove(DWORD dwTimeParam) {
 	_pActor->FrameMove(dwTimeParam);
 
 	if (_Special.IsAny()) {
-		static long x, y;
+		static std::int32_t x, y;
 		static float f = 0.0f;
 
 		if (_Special.IsTrue(enumDrop)) {
@@ -543,7 +543,7 @@ void CCharacter::FrameMove(DWORD dwTimeParam) {
 		if (_Special.IsTrue(enumHelixOut)) {
 			_nHelixAngle += 13;
 			_nHelixRadii += 20;
-			::eddy(_nHelixCenterX, _nHelixCenterY, _nHelixAngle, _nHelixRadii, x, y);
+			Corsairs::Util::Eddy(_nHelixCenterX, _nHelixCenterY, _nHelixAngle, _nHelixRadii, x, y);
 			_nCurX = x;
 			_nCurY = y;
 		}
@@ -551,7 +551,7 @@ void CCharacter::FrameMove(DWORD dwTimeParam) {
 			_nHelixAngle += 13;
 			_nHelixRadii -= 20;
 			if (_nHelixRadii > 0) {
-				::eddy(_nHelixCenterX, _nHelixCenterY, _nHelixAngle, _nHelixRadii, x, y);
+				Corsairs::Util::Eddy(_nHelixCenterX, _nHelixCenterY, _nHelixAngle, _nHelixRadii, x, y);
 				_nCurX = x;
 				_nCurY = y;
 			}
@@ -566,13 +566,13 @@ void CCharacter::FrameMove(DWORD dwTimeParam) {
 		}
 		if (_Special.IsTrue(enumHelixPos)) {
 			_nHelixAngle += 13;
-			::eddy(_nHelixCenterX, _nHelixCenterY, _nHelixAngle, 200, x, y);
+			Corsairs::Util::Eddy(_nHelixCenterX, _nHelixCenterY, _nHelixAngle, 200, x, y);
 			_nCurX = x;
 			_nCurY = y;
 		}
 		if (_Special.IsTrue(enumCyclone)) {
 			_nHelixAngle += 13;
-			::eddy(_nHelixCenterX, _nHelixCenterY, _nHelixAngle, _nHelixRadii, x, y);
+			Corsairs::Util::Eddy(_nHelixCenterX, _nHelixCenterY, _nHelixAngle, _nHelixRadii, x, y);
 			_nCurX = x;
 			_nCurY = y;
 
@@ -1216,7 +1216,7 @@ void CCharacter::ActionKeyFrame(DWORD key_id) {
 
 	GetActor()->ActionKeyFrame(GetCurPoseType(), key_id);
 
-	if (_IsShowShadow && _eChaCtrlType == enumCHACTRL_PLAYER && !IsBoat() && GetScene()->GetTileTexAttr(
+	if (_IsShowShadow && _eChaCtrlType == EChaCtrlType::PLAYER && !IsBoat() && GetScene()->GetTileTexAttr(
 		(int)GetPos().x, (int)GetPos().y) == 1) {
 		GetScene()->GetPugMgr()->NewPug(&GetPos(), (float)getYaw() * 0.01745329f + D3DX_PI);
 	}
@@ -1321,7 +1321,7 @@ bool CCharacter::PlayPose(DWORD pose, DWORD type, int time, int fps, bool isBlen
 		else CCharacterModel::PlayPose(pose, type, time, fps, 1);
 	}
 	else {
-		if (enumMODAL_MAIN_CHA == _eChaModalType && pose > POSE_WAITING && pose < POSE_ATTACK) {
+		if (EChaModalType::MAIN_CHA == _eChaModalType && pose > POSE_WAITING && pose < POSE_ATTACK) {
 			if (IsGlitched)
 				CCharacterModel::PlayPose(pose, type, time, fps, 1, 5, IsGlitched);
 			else CCharacterModel::PlayPose(pose, type, time, fps, 1);
@@ -1544,7 +1544,7 @@ bool CCharacter::SpawnMount(int mountID) {
 			chaMount->GetActor()->InitState();
 			chaMount->SetMountOwner(this);
 			chaMount->EnableAI(FALSE);
-			chaMount->setChaCtrlType(enumCHACTRL_PLAYER);
+			chaMount->setChaCtrlType(static_cast<char>(EChaCtrlType::PLAYER));
 		}
 		else {
 			return false;
@@ -1582,7 +1582,7 @@ bool CCharacter::DespawnMount() {
 
 
 bool CCharacter::UpdataItem(int nItem, DWORD nLink) {
-	if (enumMODAL_MAIN_CHA != _eChaModalType) return false;
+	if (EChaModalType::MAIN_CHA != _eChaModalType) return false;
 	switch (nLink) {
 	case enumEQUIP_MOUNT: {
 		const auto ShowMounts = g_stUISystem.m_sysProp.m_gameOption.bShowMounts;
@@ -2770,30 +2770,30 @@ void CCharacter::StopAni() {
 void CCharacter::setChaCtrlType(int type) {
 	_eChaCtrlType = (EChaCtrlType)type;
 	switch (type) {
-	case enumCHACTRL_NONE: _nDanger = 0;
+	case static_cast<char>(EChaCtrlType::NONE): _nDanger = 0;
 		break;
-	case enumCHACTRL_PLAYER: _nDanger = 1;
+	case static_cast<char>(EChaCtrlType::PLAYER): _nDanger = 1;
 		break;
-	case enumCHACTRL_NPC: _nDanger = 2;
-		break;
-
-	case enumCHACTRL_NPC_EVENT: _nDanger = 7;
-		break;
-	case enumCHACTRL_MONS_TREE: _nDanger = 7;
-		break;
-	case enumCHACTRL_MONS_MINE: _nDanger = 7;
-		break;
-	case enumCHACTRL_MONS_FISH: _nDanger = 7;
-		break;
-	case enumCHACTRL_MONS_DBOAT: _nDanger = 7;
+	case static_cast<char>(EChaCtrlType::NPC): _nDanger = 2;
 		break;
 
-	case enumCHACTRL_PLAYER_PET: _nDanger = 8;
+	case static_cast<char>(EChaCtrlType::NPC_EVENT): _nDanger = 7;
 		break;
-	case enumCHACTRL_MONS_REPAIRABLE: _nDanger = 9;
+	case static_cast<char>(EChaCtrlType::MONS_TREE): _nDanger = 7;
+		break;
+	case static_cast<char>(EChaCtrlType::MONS_MINE): _nDanger = 7;
+		break;
+	case static_cast<char>(EChaCtrlType::MONS_FISH): _nDanger = 7;
+		break;
+	case static_cast<char>(EChaCtrlType::MONS_DBOAT): _nDanger = 7;
 		break;
 
-	case enumCHACTRL_MONS: _nDanger = 10;
+	case static_cast<char>(EChaCtrlType::PLAYER_PET): _nDanger = 8;
+		break;
+	case static_cast<char>(EChaCtrlType::MONS_REPAIRABLE): _nDanger = 9;
+		break;
+
+	case static_cast<char>(EChaCtrlType::MONS): _nDanger = 10;
 		break;
 	default: _nDanger = 0;
 		break;

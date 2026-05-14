@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <io.h>
 #include "UIText.h"
 #include "smallmap.h"
 #include "EffectObj.h"
@@ -774,14 +775,16 @@ void CSMallMap2D::RenderScene() {
 					_Cha.setAngle(pCha->getYaw());
 
 					switch (pCha->getChaCtrlType()) {
-					case enumCHACTRL_PLAYER:
+					case EChaCtrlType::PLAYER:
 						_Cha.setColor(0xff0000ff);
 						break;
-					case enumCHACTRL_NPC:
+					case EChaCtrlType::NPC:
 						_Cha.setColor(0xffffff00);
 						break;
-					case enumCHACTRL_MONS:
+					case EChaCtrlType::MONS:
 						_Cha.setColor(0xffff0000);
+						break;
+					default:
 						break;
 					}
 
@@ -1401,7 +1404,7 @@ void CCharacter2D::LoadCha(DWORD dwID, bool IsMonster) {
 	pCha->Destroy();
 
 
-	if (pInfo->chModalType == enumMODAL_MAIN_CHA) {
+	if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA)) {
 		DWORD part_buf[5] =
 		{
 			pInfo->sSkinInfo[0],
@@ -1415,7 +1418,7 @@ void CCharacter2D::LoadCha(DWORD dwID, bool IsMonster) {
 			return;
 		}
 	}
-	else if (pInfo->chModalType == enumMODAL_BOAT) {
+	else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT)) {
 		DWORD part_buf[3] =
 		{
 			pInfo->sSkinInfo[0],
@@ -1427,7 +1430,7 @@ void CCharacter2D::LoadCha(DWORD dwID, bool IsMonster) {
 			return;
 		}
 	}
-	else if (pInfo->chModalType == enumMODAL_EMPL) {
+	else if (pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) {
 		DWORD part_buf[5] =
 		{
 			pInfo->sSkinInfo[0],

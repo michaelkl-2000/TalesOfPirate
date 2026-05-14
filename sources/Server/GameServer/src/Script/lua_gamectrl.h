@@ -12,7 +12,7 @@
 //    Lua-
 #define MAP_NULL_ERROR     { ToLogService("lua", LogLevel::Error, "[{}] map is null at {}:{}", __FUNCTION__, __FILE__, __LINE__); }
 #define CHECK_MAP          { if(g_pScriptMap==NULL) { MAP_NULL_ERROR return 0; }				    }
-#define PARAM_LG_ERROR		 THROW_EXCP( excp, RES_STRING(GM_LUA_GAMECTRL_H_00001) );
+#define PARAM_LG_ERROR		 ThrowRuntimeError(RES_STRING(GM_LUA_GAMECTRL_H_00001));
 
 // Названия типов Lua для диагностики
 const char* LuaTypeName(int type);

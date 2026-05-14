@@ -224,8 +224,6 @@
         <ClCompile Include="src\Net\Protocol\NetProtocol.cpp"/>
         <ClCompile Include="src\Gui\Forms\Mission\NPCHelper.cpp"/>
         <ClCompile Include="src\Net\Protocol\PacketCmd_CS.cpp"/>
-        <ClCompile Include="src\Tools\Point.cpp">
-        </ClCompile>
         <ClCompile Include="src\Net\Protocol\PacketCmd_SC.cpp"/>
         <ClCompile Include="src\Tools\PackFile.cpp"/>
         <ClCompile Include="src\Net\Transport\ProCirculateCC.cpp"/>
@@ -440,7 +438,6 @@
         <ClInclude Include="src\Script\Tables\notifyset.h"/>
         <ClInclude Include="src\Gui\Forms\Mission\NPCHelper.h"/>
         <ClInclude Include="src\Net\Protocol\PacketCmd.h"/>
-        <ClInclude Include="src\Tools\Point.h"/>
         <ClInclude Include="src\Tools\PackFile.h"/>
         <ClInclude Include="src\Net\Transport\ProCirculate.h"/>
         <ClInclude Include="src\Tools\publicfun.h"/>

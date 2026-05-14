@@ -1,4 +1,4 @@
-﻿// CharBoat.cpp created by knight 2005.4.18
+// CharBoat.cpp created by knight 2005.4.18
 //---------------------------------------------------------
 #include "Core/stdafx.h"
 namespace Corsairs::Common::Mount {}
@@ -122,7 +122,7 @@ namespace mission {
 		return TRUE;
 	}
 
-	BOOL CCharBoat::SyncAttr(CCharacter& owner, DWORD dwBoatID, USHORT sCmd, USHORT sBerthID,
+	BOOL CCharBoat::SyncAttr(CCharacter& owner, std::uint32_t dwBoatID, USHORT sCmd, USHORT sBerthID,
 							 const BOAT_SYNC_ATTR& AttrInfo) {
 		xShipInfo* pInfo = ShipRecordStore::Instance()->Get(AttrInfo.sBoatID);
 		if (pInfo == NULL) {
@@ -423,7 +423,7 @@ namespace mission {
 		return TRUE;
 	}
 
-	BOOL CCharBoat::GetBoatInfo(CCharacter& owner, DWORD dwBoatID) {
+	BOOL CCharBoat::GetBoatInfo(CCharacter& owner, std::uint32_t dwBoatID) {
 		CPlayer* pPlayer = owner.GetPlayer();
 		if (!pPlayer) {
 			return FALSE;
@@ -449,7 +449,7 @@ namespace mission {
 		return SyncAttr(owner, pBoat->GetID(), CMD_MC_BOATINFO, sBerthID, AttrInfo);
 	}
 
-	BOOL CCharBoat::GetTradeBoatInfo(CCharacter& viewer, CCharacter& owner, DWORD dwBoatID) {
+	BOOL CCharBoat::GetTradeBoatInfo(CCharacter& viewer, CCharacter& owner, std::uint32_t dwBoatID) {
 		CPlayer* pPlayer = owner.GetPlayer();
 		if (!pPlayer) {
 			return FALSE;
@@ -788,8 +788,8 @@ namespace mission {
 
 		//
 		owner.m_CKitbag.SetChangeFlag(false);
-		Short sPushPos = defKITBAG_DEFPUSH_POS;
-		Short sPushRet = owner.KbPushItem(false, false, &SGridCont, sPushPos);
+		int16_t sPushPos = defKITBAG_DEFPUSH_POS;
+		int16_t sPushRet = owner.KbPushItem(false, false, &SGridCont, sPushPos);
 		if (sPushRet == enumKBACT_ERROR_LOCK) //
 		{
 			pBoat->Free();
@@ -816,7 +816,7 @@ namespace mission {
 		}
 
 		// ID
-		pBoat->setAttr(ATTR_CHATYPE, enumCHACTRL_PLAYER);
+		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
 		pBoat->setAttr(ATTR_BOAT_DBID, SGridCont.lDBParam[enumITEMDBP_INST_ID]);
 		pBoat->setAttr(ATTR_BOAT_DIECOUNT, 0);
 		pBoat->setAttr(ATTR_BOAT_ISDEAD, 0);
@@ -845,7 +845,7 @@ namespace mission {
 		pBoat->SetID(g_pGameApp->m_Ident.GetID());
 		pBoat->SetRadius(pBoat->m_pCChaRecord->sRadii);
 		pBoat->SetShip(g_pGameApp->m_CabinPool.Get());
-		pBoat->setAttr(ATTR_CHATYPE, enumCHACTRL_PLAYER);
+		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
 		pBoat->EnrichSkillBag();
 
 		if (!SetPartData(*pBoat, pInfo->sCharID, Data)) {
@@ -886,7 +886,7 @@ namespace mission {
 		//
 		owner.SetBoat(NULL);
 
-		Char szLogName[defLOG_NAME_LEN] = "";
+		char szLogName[defLOG_NAME_LEN] = "";
 		{
 			auto _s = std::format("Cha-{}+{}", pBoat->GetName(), pBoat->GetID());
 			std::strncpy(szLogName, _s.c_str(), sizeof(szLogName) - 1);
@@ -1014,7 +1014,7 @@ namespace mission {
 		}
 
 		pBoat->setAttr(ATTR_BOAT_DBID, -1);
-		pBoat->setAttr(ATTR_CHATYPE, enumCHACTRL_MONS);
+		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::MONS));
 
 		BOAT_DATA Info;
 		memset(&Info, 0, sizeof(BOAT_DATA));
@@ -1118,7 +1118,7 @@ namespace mission {
 	}
 
 	// chType012
-	BOOL CCharBoat::CreateBoat(CCharacter& owner, DWORD dwBoatID, char chType) {
+	BOOL CCharBoat::CreateBoat(CCharacter& owner, std::uint32_t dwBoatID, char chType) {
 		CCharacter* pBoat = g_pGameApp->GetNewCharacter();
 		if (pBoat == NULL) {
 			//owner.SystemNotice( "!" );
@@ -1130,7 +1130,7 @@ namespace mission {
 			return FALSE;
 		}
 		pBoat->setAttr(ATTR_BOAT_DBID, dwBoatID);
-		pBoat->setAttr(ATTR_CHATYPE, enumCHACTRL_PLAYER);
+		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
 
 		if (!game_db.GetBoat(*pBoat)) {
 			pBoat->Free();
@@ -1180,7 +1180,7 @@ namespace mission {
 		pBoat->SetID(g_pGameApp->m_Ident.GetID());
 		pBoat->SetRadius(pBoat->m_pCChaRecord->sRadii);
 		pBoat->SetShip(g_pGameApp->m_CabinPool.Get());
-		pBoat->setAttr(ATTR_CHATYPE, enumCHACTRL_PLAYER);
+		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
 		pBoat->EnrichSkillBag();
 
 		if (!SetPartData(*pBoat, pInfo->sCharID, Info)) {
@@ -1226,7 +1226,7 @@ namespace mission {
 		owner.SystemNotice(RES_STRING(GM_CHARBOAT_CPP_00037), owner.GetPlayer()->GetNumBoat(),
 						   pBoat->GetName());
 
-		Char szLogName[defLOG_NAME_LEN] = "";
+		char szLogName[defLOG_NAME_LEN] = "";
 		{
 			auto _s = std::format("Cha-{}+{}", pBoat->GetName(), pBoat->GetID());
 			std::strncpy(szLogName, _s.c_str(), sizeof(szLogName) - 1);

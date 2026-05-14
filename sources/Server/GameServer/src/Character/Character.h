@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: Character.h
 // Creater: ZhangXuedong
 // Date: 2004.10.19
@@ -36,19 +36,19 @@ extern CCharacter*		g_pCSystemCha;		//
 
 struct SLean // 
 {
-	dbc::uLong	ulPacketID; // ID
-	dbc::Char	chState;	// 0.1
-	dbc::Long	lPose;
-	dbc::Long	lAngle;
-	dbc::Long	lPosX, lPosY;
-	dbc::Long	lHeight;
+	std::uint32_t	ulPacketID; // ID
+	char	chState;	// 0.1
+	std::int32_t	lPose;
+	std::int32_t	lAngle;
+	std::int32_t	lPosX, lPosY;
+	std::int32_t	lHeight;
 };
 
 struct SSeat
 {
-	dbc::Char	chIsSeat;
-	dbc::Short	sAngle;
-	dbc::Short	sPose;
+	char	chIsSeat;
+	int16_t	sAngle;
+	int16_t	sPose;
 };
 
 struct STempChaPart
@@ -59,11 +59,11 @@ struct STempChaPart
 
 struct SCheatX
 {
-	uInt Xtype;			//1: 2:
-	uInt Xerror;		//
-	uInt Xright;		//
-	uInt Xcount;		//
-	uInt Xn;
+	std::uint32_t Xtype;			//1: 2:
+	std::uint32_t Xerror;		//
+	std::uint32_t Xright;		//
+	std::uint32_t Xcount;		//
+	std::uint32_t Xn;
 	DWORD dwLastTime;	//
 	DWORD dwInterval;	//
 	std::string Xnum;		//X number
@@ -132,16 +132,16 @@ public:
 	void ItemUnlockRequest(const Corsairs::Net::Msg::CmItemUnlockAskMessage& msg);
 
 	void	WriteInt64PartInfo(Corsairs::Net::WPacket& packet);
-	void	SwitchMap(SubMap *pCSrcMap, cChar *szTarMapName, Long lTarX, Long lTarY, bool bNeedOutSrcMap = true, Char chSwitchType = enumSWITCHMAP_CARRY, Long lTMapCpyNO = -1);
+	void	SwitchMap(SubMap *pCSrcMap, const char *szTarMapName, std::int32_t lTarX, std::int32_t lTarY, bool bNeedOutSrcMap = true, char chSwitchType = enumSWITCHMAP_CARRY, std::int32_t lTMapCpyNO = -1);
 
-	virtual void	ProcessPacket(uShort usCmd, Corsairs::Net::RPacket& pk);
+	virtual void	ProcessPacket(std::uint16_t usCmd, Corsairs::Net::RPacket& pk);
 
 	//    (  ProcessPacket) 
 	void Handle_GuildBankCmd(const Corsairs::Net::Msg::PmGuildBankMessage& msg);
 	void Handle_PushToGuildBank(const std::string& strItem);
 	void Handle_Ping(const Corsairs::Net::Msg::CmPingResponseMessage& msg);
 	void Handle_Say(const Corsairs::Net::Msg::CmSayMessage& msg);
-	void Handle_RequestTalk(uLong npcId, Corsairs::Net::RPacket& pk);
+	void Handle_RequestTalk(std::uint32_t npcId, Corsairs::Net::RPacket& pk);
 	void Handle_DailyBuffRequest();
 	void Handle_RefreshData(const Corsairs::Net::Msg::CmRefreshDataMessage& msg);
 	void Handle_MapMask();
@@ -149,7 +149,7 @@ public:
 	void Handle_ItemLotteryAsk(const Corsairs::Net::Msg::CmItemLotteryGroupAskMessage& msg);
 	void Handle_LifeSkillAsk(const Corsairs::Net::Msg::CmLifeSkillCraftMessage& msg);
 	void Handle_LifeSkillAsr(const Corsairs::Net::Msg::CmLifeSkillCraftMessage& msg);
-	void Handle_StoreCommand(uShort usCmd, Corsairs::Net::RPacket& pk);
+	void Handle_StoreCommand(std::uint16_t usCmd, Corsairs::Net::RPacket& pk);
 	void Handle_TigerStart(const Corsairs::Net::Msg::CmTigerStartMessage& msg);
 	void Handle_TigerStop(const Corsairs::Net::Msg::CmTigerStopMessage& msg);
 	void Handle_VolunteerOpen(const Corsairs::Net::Msg::CmVolunteerOpenMessage& msg);
@@ -164,7 +164,7 @@ public:
 	void Handle_MasterDel(const Corsairs::Net::Msg::CmMasterDelMessage& msg);
 	void Handle_PrenticeDel(const Corsairs::Net::Msg::CmPrenticeDelMessage& msg);
 
-	virtual void	Run(uLong ulCurTick);
+	virtual void	Run(std::uint32_t ulCurTick);
 	virtual	void	RunEnd( DWORD dwCurTime );
 	virtual void	OnScriptTimer(DWORD dwExecTime, bool bNotice = false);
 	virtual void	StartExit();
@@ -172,49 +172,49 @@ public:
 	virtual void	Exit();
 
 	void	CheatRun(DWORD dwCurTime);
-	void	CheatCheck(cChar *answer);
+	void	CheatCheck(const char *answer);
 	void	CheatConfirm();
 	void	InitCheatX();
 	DWORD	GetCheatInterval(int state);
 
 	// 
-	bool		Cmd_EnterMap(dbc::cChar* l_map, dbc::Long lMapCopyNO, dbc::uLong l_x, dbc::uLong l_y, dbc::Char chLogin = 1);
-	void		Cmd_BeginMove(dbc::Short sPing, Point *pPath, dbc::Char chPointNum, dbc::Char chStopState = enumEXISTS_WAITING);
+	bool		Cmd_EnterMap(const char* l_map, std::int32_t lMapCopyNO, std::uint32_t l_x, std::uint32_t l_y, char chLogin = 1);
+	void		Cmd_BeginMove(int16_t sPing, Corsairs::Util::Point *pPath, char chPointNum, char chStopState = enumEXISTS_WAITING);
 	void		Cmd_BeginMoveDirect(Entity *pTar);
-	void		Cmd_BeginSkill(dbc::Short sPing, Point *pPath, dbc::Char chPointNum,
-				CSkillRecord *pSkill, dbc::Long lSkillLv, dbc::Long lTarInfo1, dbc::Long lTarInfo2, dbc::Char chStopState = enumEXISTS_WAITING);
-	void		Cmd_BeginSkillDirect(dbc::Long lSkillNo, Entity *pTar, bool bIntelligent = true);
-	void		Cmd_BeginSkillDirect2(dbc::Long lSkillNo, dbc::Long lSkillLv, dbc::Long lPosX, dbc::Long lPosY);
-	dbc::Short	Cmd_UseItem(dbc::Short sSrcKbPage, dbc::Short sSrcKbGrid, dbc::Short sTarKbPage, dbc::Short sTarKbGrid);
-	dbc::Short	Cmd_UseEquipItem(dbc::Short sKbPage, dbc::Short sKbGrid, bool bRefresh = true,bool rightHand = false);
-	dbc::Short	Cmd_UseExpendItem(dbc::Short sSrcKbPage, dbc::Short sSrcKbGrid, dbc::Short sTarKbPage, dbc::Short sTarKbGrid, bool bRefresh = true);
-	dbc::Short	Cmd_UnfixItem(dbc::Char chLinkID, dbc::Short *psItemNum, dbc::Char chDir, dbc::Long lParam1, dbc::Long lParam2, bool bPriority = true, bool bRefresh = true, bool bForcible = false);
-	dbc::Short	Cmd_PickupItem(dbc::uLong ulID, dbc::Long lHandle);
-	dbc::Short	Cmd_ThrowItem(dbc::Short sKbPage, dbc::Short sKbGrid, dbc::Short *psThrowNum, dbc::Long lPosX, dbc::Long lPosY, bool bRefresh = true, bool bForcible = false);
-	dbc::Short	Cmd_ItemSwitchPos(dbc::Short sKbPage, dbc::Short sSrcGrid, dbc::Short sSrcNum, dbc::Short sTarGrid);
-	dbc::Short	Cmd_DelItem(dbc::Short sKbPage, dbc::Short sKbGrid, dbc::Short *psThrowNum, bool bRefresh = true, bool bForcible = false);
-	dbc::Short	Cmd_BankOper(dbc::Char chSrcType, dbc::Short sSrcGridID, dbc::Short sSrcNum, dbc::Char chTarType, dbc::Short sTarGridID);
-	dbc::Short	Cmd_GuildBankOper(dbc::Char chSrcType, dbc::Short sSrcGridID, dbc::Short sSrcNum, dbc::Char chTarType, dbc::Short sTarGridID);
+	void		Cmd_BeginSkill(int16_t sPing, Corsairs::Util::Point *pPath, char chPointNum,
+				CSkillRecord *pSkill, std::int32_t lSkillLv, std::int32_t lTarInfo1, std::int32_t lTarInfo2, char chStopState = enumEXISTS_WAITING);
+	void		Cmd_BeginSkillDirect(std::int32_t lSkillNo, Entity *pTar, bool bIntelligent = true);
+	void		Cmd_BeginSkillDirect2(std::int32_t lSkillNo, std::int32_t lSkillLv, std::int32_t lPosX, std::int32_t lPosY);
+	int16_t	Cmd_UseItem(int16_t sSrcKbPage, int16_t sSrcKbGrid, int16_t sTarKbPage, int16_t sTarKbGrid);
+	int16_t	Cmd_UseEquipItem(int16_t sKbPage, int16_t sKbGrid, bool bRefresh = true,bool rightHand = false);
+	int16_t	Cmd_UseExpendItem(int16_t sSrcKbPage, int16_t sSrcKbGrid, int16_t sTarKbPage, int16_t sTarKbGrid, bool bRefresh = true);
+	int16_t	Cmd_UnfixItem(char chLinkID, int16_t *psItemNum, char chDir, std::int32_t lParam1, std::int32_t lParam2, bool bPriority = true, bool bRefresh = true, bool bForcible = false);
+	int16_t	Cmd_PickupItem(std::uint32_t ulID, std::int32_t lHandle);
+	int16_t	Cmd_ThrowItem(int16_t sKbPage, int16_t sKbGrid, int16_t *psThrowNum, std::int32_t lPosX, std::int32_t lPosY, bool bRefresh = true, bool bForcible = false);
+	int16_t	Cmd_ItemSwitchPos(int16_t sKbPage, int16_t sSrcGrid, int16_t sSrcNum, int16_t sTarGrid);
+	int16_t	Cmd_DelItem(int16_t sKbPage, int16_t sKbGrid, int16_t *psThrowNum, bool bRefresh = true, bool bForcible = false);
+	int16_t	Cmd_BankOper(char chSrcType, int16_t sSrcGridID, int16_t sSrcNum, char chTarType, int16_t sTarGridID);
+	int16_t	Cmd_GuildBankOper(char chSrcType, int16_t sSrcGridID, int16_t sSrcNum, char chTarType, int16_t sTarGridID);
 	
     //(sSrcGrid:   sSrcNum:   sTarGrid:)
-    dbc::Short  Cmd_DragItem(dbc::Short sSrcGrid, dbc::Short sSrcNum, dbc::Short sTarGrid);
+    int16_t  Cmd_DragItem(int16_t sSrcGrid, int16_t sSrcNum, int16_t sTarGrid);
     
 	void Cmd_SetInPK(bool bInPK = true);
 	void Cmd_SetInGymkhana(bool bInGymkhana = true);
 	void Cmd_SetPKGuild(bool v);
 
 	void		Cmd_ReassignAttr(const Corsairs::Net::Msg::CmSynAttrMessage& msg);
-	dbc::Short	Cmd_RemoveItem(dbc::Long lItemID, dbc::Long lItemNum, dbc::Char chFromType, dbc::Short sFromID, dbc::Char chToType, dbc::Short sToID, bool bRefresh = true, bool bForcible = true);
+	int16_t	Cmd_RemoveItem(std::int32_t lItemID, std::int32_t lItemNum, char chFromType, int16_t sFromID, char chToType, int16_t sToID, bool bRefresh = true, bool bForcible = true);
 
 	void		Cmd_ChangeHair(Corsairs::Net::RPacket& pk);											// 
 	void		Prl_ChangeHairResult(int nScriptID, const char* szReason, BOOL bNoticeAll = FALSE); // 
 	void		Prl_OpenHair();															// 	
 
-	void		Cmd_FightAsk(dbc::Char chType, dbc::Long lTarID, dbc::Long lTarHandle);
+	void		Cmd_FightAsk(char chType, std::int32_t lTarID, std::int32_t lTarHandle);
 	void		Cmd_FightAnswer(bool bFight);
-	void		Cmd_ItemRepairAsk(dbc::Char chPosType, dbc::Char chPosID);
+	void		Cmd_ItemRepairAsk(char chPosType, char chPosID);
 	void		Cmd_ItemRepairAnswer(bool bRepair);
-	void		Cmd_ItemForgeAsk(dbc::Char chType, SForgeItem *pSItem);
+	void		Cmd_ItemForgeAsk(char chType, SForgeItem *pSItem);
 	void		Cmd_ItemForgeAnswer(bool bForge);
 
 	// ADd by lark.li 20080515 begin
@@ -226,13 +226,13 @@ public:
 	void		Cmd_Garner2_Reorder(short index);
 
 	//
-	void		Cmd_LifeSkillItemAsk(long dwType, SLifeSkillItem *pSItem);
-	void		Cmd_LifeSkillItemAsR(long dwType,SLifeSkillItem *pSItem);
+	void		Cmd_LifeSkillItemAsk(std::int32_t dwType, SLifeSkillItem *pSItem);
+	void		Cmd_LifeSkillItemAsR(std::int32_t dwType,SLifeSkillItem *pSItem);
     //
     void        Cmd_LockKitbag();
     void        Cmd_UnlockKitbag(const char szPassword[]);
     void        Cmd_CheckKitbagState();
-    void        Cmd_SetKitbagAutoLock(Char cAuto);
+    void        Cmd_SetKitbagAutoLock(char cAuto);
 
 	//
 	BOOL		Cmd_AddVolunteer();
@@ -279,7 +279,7 @@ public:
 
 	BOOL	ExchangeReq(short sSrcID, short sSrcNum, short sTarID, short sTarNum);
 
-	bool	SetNarmalSkillState(bool bAdd = true, dbc::uChar uchStateID = 1, dbc::uChar uchStateLv = 1);
+	bool	SetNarmalSkillState(bool bAdd = true, std::uint8_t uchStateID = 1, std::uint8_t uchStateLv = 1);
 	bool	HasTradeAction(void);
 	//
 	BOOL	SetMissionPage( DWORD dwNpcID, BYTE byPrev, BYTE byNext, BYTE byState );
@@ -371,7 +371,7 @@ public:
 	BOOL	HasMoney( DWORD dwMoney );
 	BOOL	AddItem( USHORT sItemID, USHORT sCount, const char szName[], BYTE byAddType = enumITEM_INST_TASK, BYTE bySoundType = enumSYN_KITBAG_FROM_NPC, BOOL isTradable = true, LONG expiration = 0, short* posID = NULL);
 	BOOL	TakeItem( USHORT sItemID, USHORT sCount, const char szName[] );
-	BOOL	GiveItem( USHORT sItemID, USHORT sCount, BYTE byAddType, BYTE bySoundType, BOOL isTradable = true, LONG expiration = 0, Short* posID = NULL);
+	BOOL	GiveItem( USHORT sItemID, USHORT sCount, BYTE byAddType, BYTE bySoundType, BOOL isTradable = true, LONG expiration = 0, int16_t* posID = NULL);
 	int		GiveItemReturnPosition(USHORT sItemID, USHORT sCount, BYTE byAddType, BYTE bySoundType);
 	BOOL	MakeItem( USHORT sItemID, USHORT sCount, USHORT& sItemPos, BYTE byAddType = enumITEM_INST_TASK, BYTE bySoundType = enumSYN_KITBAG_FROM_NPC );
 	BOOL	HasItem( USHORT sItemID, USHORT sCount );
@@ -400,10 +400,10 @@ public:
 	// 
 	BOOL	SetProfession( BYTE byPf );
 
-	bool	LearnSkill(dbc::Short sSkillID, dbc::Char chLv, bool bSetLv = true, bool bUsePoint = true, bool bLimit = true); // 
-	bool	AddSkillState(dbc::uChar uchFightID, dbc::uLong ulSrcWorldID, dbc::Long lSrcHandle, dbc::Char chObjType, dbc::Char chObjHabitat, dbc::Char chEffType,
-			dbc::uChar uchStateID, dbc::uChar uchStateLv, dbc::Long lOnTick, dbc::Char chType = enumSSTATE_ADD_UNDEFINED, bool bNotice = true); // 
-	bool	DelSkillState(dbc::uChar uchStateID, bool bNotice = true); // 
+	bool	LearnSkill(int16_t sSkillID, char chLv, bool bSetLv = true, bool bUsePoint = true, bool bLimit = true); // 
+	bool	AddSkillState(std::uint8_t uchFightID, std::uint32_t ulSrcWorldID, std::int32_t lSrcHandle, char chObjType, char chObjHabitat, char chEffType,
+			std::uint8_t uchStateID, std::uint8_t uchStateLv, std::int32_t lOnTick, char chType = enumSSTATE_ADD_UNDEFINED, bool bNotice = true); //
+	bool	DelSkillState(std::uint8_t uchStateID, bool bNotice = true); //
 
 	//
 	bool	GetActControl(Corsairs::Common::Character::ActControl ctrlType) const;
@@ -419,24 +419,24 @@ public:
 
 	BOOL	ViewItemInfo( const Corsairs::Net::Msg::CmActionViewItemData& msg );
 
-	BOOL	AddAttr( int nIndex, DWORD dwValue, dbc::Short sNotiType = enumATTRSYN_TASK ); // ATTR_CEXPCFightAble::AddExp
-	BOOL	TakeAttr( int nIndex, DWORD dwValue, dbc::Short sNotiType = enumATTRSYN_TASK );
+	BOOL	AddAttr( int nIndex, DWORD dwValue, int16_t sNotiType = enumATTRSYN_TASK ); // ATTR_CEXPCFightAble::AddExp
+	BOOL	TakeAttr( int nIndex, DWORD dwValue, int16_t sNotiType = enumATTRSYN_TASK );
 
 	bool	    IsInPK(void);
 	bool	    IsInGymkhana(void);
-	void	    SetPKCtrl(dbc::Char chCtrl);
-	dbc::Char   GetPKCtrl(void);
+	void	    SetPKCtrl(char chCtrl);
+	char   GetPKCtrl(void);
 	bool	    CanPK(void);
-	bool	    IsInArea(dbc::Short sAreaMask);
-	void	SetRelive(Char chType = enumEPLAYER_RELIVE_ORIGIN, Char chLv = 0, cChar *szInfo = 0);
+	bool	    IsInArea(int16_t sAreaMask);
+	void	SetRelive(char chType = enumEPLAYER_RELIVE_ORIGIN, char chLv = 0, const char *szInfo = 0);
 	void	Reset(void);
 
 	virtual void BreakAction(Corsairs::Net::RPacket* pk = nullptr);
 	virtual void EndAction(Corsairs::Net::RPacket* pk = nullptr);
 	// 
 	virtual void AfterObjDie(CCharacter *pCAtk, CCharacter *pCDead);
-	virtual void AfterPeekItem(dbc::Short sItemID, dbc::Short sNum);
-	virtual void AfterEquipItem(dbc::Short sItemID, dbc::uShort sTriID);
+	virtual void AfterPeekItem(int16_t sItemID, int16_t sNum);
+	virtual void AfterEquipItem(int16_t sItemID, std::uint16_t sTriID);
 	virtual void EntryMapUnit( BYTE byMapID, WORD wxPos, WORD wyPos );
 	virtual void OnMissionTime(); // 
 	virtual void OnLevelUp( USHORT sLevel );
@@ -478,13 +478,13 @@ public:
 	BOOL	PackBag( CCharacter& boat, BYTE byType, BYTE byLevel );
 	BOOL	PackBag( CCharacter& Boat, USHORT sItemID, USHORT sCount, USHORT sPileID, USHORT& sNumPack );
 	void	SetBoatAttrChangeFlag(bool bSet = true);
-	void	SyncBoatAttr( dbc::Short sSynType, bool bAllBoat = true ); // 
+	void	SyncBoatAttr( int16_t sSynType, bool bAllBoat = true ); // 
 
 	// 
 	BOOL	BoatAdd( CCharacter& Boat );
 	BOOL	BoatClear( CCharacter& Boat );
-	BOOL	BoatAdd( DWORD dwDBID );
-	BOOL	BoatClear( DWORD dwDBID );
+	BOOL	BoatAdd( std::uint32_t dwDBID );
+	BOOL	BoatClear( std::uint32_t dwDBID );
 
 	// 
 	BOOL	SetEntityState( DWORD dwEntityID, BYTE byState );
@@ -506,7 +506,7 @@ public:
 
 
 	// 
-	void	ChangeItem(bool bEquip, SItemGrid *pItemCont, dbc::Char chLinkID); // 
+	void	ChangeItem(bool bEquip, SItemGrid *pItemCont, char chLinkID); // 
 	void	SkillRefresh(); // 
 	// 
 	void	NewChaInit(void);
@@ -515,13 +515,13 @@ public:
 	void	ResetBirthInfo(void);
 
 	// 
-	void	SynKitbagNew(dbc::Char chType); // 
-	void    SynKitbagTmpNew(dbc::Char chType); // 
+	void	SynKitbagNew(char chType); // 
+	void    SynKitbagTmpNew(char chType); // 
 	void	SynShortcut(); // 
-	void	SynLook(dbc::Char chSynType = enumSYN_LOOK_SWITCH); // 
-	void	SynLook(dbc::Char chLookType, bool verbose);
-	bool	ItemForge(SItemGrid *pItem, dbc::Char chAddLv = 1); // 
-	void	SynSkillBag(dbc::Char chType); // 
+	void	SynLook(char chSynType = enumSYN_LOOK_SWITCH); // 
+	void	SynLook(char chLookType, bool verbose);
+	bool	ItemForge(SItemGrid *pItem, char chAddLv = 1); // 
+	void	SynSkillBag(char chType); // 
 	void	SynPKCtrl(void); // PK
 	void	SynAddItemCha(CCharacter *pCItemCha);
 	void	SynDelItemCha(CCharacter *pCItemCha);
@@ -545,29 +545,29 @@ public:
 	void	SynBeginGetStone();
 	void	SynBeginTiger();
 	void	SynAppendLook(void);
-	void	SynItemUseSuc(dbc::Short sItemID);
+	void	SynItemUseSuc(int16_t sItemID);
 	void	SynKitbagCapacity(void);
 	void	SynEspeItem(void);
 	void	SynVolunteerState(BOOL bState);
-	void	SynTigerString(cChar *szString);
+	void	SynTigerString(const char *szString);
 
 	//
 
 	// 
-	void	WriteBaseInfo(Corsairs::Net::WPacket &pk, dbc::Char chLookType = LOOK_SELF);
+	void	WriteBaseInfo(Corsairs::Net::WPacket &pk, char chLookType = LOOK_SELF);
 	void	WritePKCtrl(Corsairs::Net::WPacket &pk);
 	void	WriteSkillbag(Corsairs::Net::WPacket &pk, int nSynType);
 	void	WriteKitbag(CKitbag &CKb, Corsairs::Net::WPacket &pk, int nSynType);
 	Corsairs::Net::Msg::ChaKitbagInfo BuildKitbagInfo(CKitbag &CKb, int nSynType);
-	void	WriteLookData(Corsairs::Net::WPacket &pk, dbc::Char chLookType = LOOK_SELF, dbc::Char chSynType = enumSYN_LOOK_SWITCH);
-	Corsairs::Net::Msg::ChaLookInfo BuildLookInfo(dbc::Char chLookType = LOOK_SELF, dbc::Char chSynType = enumSYN_LOOK_SWITCH);
+	void	WriteLookData(Corsairs::Net::WPacket &pk, char chLookType = LOOK_SELF, char chSynType = enumSYN_LOOK_SWITCH);
+	Corsairs::Net::Msg::ChaLookInfo BuildLookInfo(char chLookType = LOOK_SELF, char chSynType = enumSYN_LOOK_SWITCH);
 	bool	WriteAppendLook(CKitbag &CKb, Corsairs::Net::WPacket &pk, bool bInit = false);
 	void	WriteInt64cut(Corsairs::Net::WPacket &pk);
 	void	WriteBoat(Corsairs::Net::WPacket &pk);
 	void	WriteItemChaBoat(Corsairs::Net::WPacket &pk, CCharacter *pCBoat);
 	void	WriteSideInfo(Corsairs::Net::WPacket &pk);
 	// Fill*     (CommandMessages.h)
-	void	FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, dbc::Char chLookType = LOOK_SELF);
+	void	FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, char chLookType = LOOK_SELF);
 	void	FillSkillBag(Corsairs::Net::Msg::ChaSkillBagInfo &s, int nSynType);
 	void	FillKitbag(Corsairs::Net::Msg::ChaKitbagInfo &k, CKitbag &CKb, int nSynType);
 	void	FillShortcut(Corsairs::Net::Msg::ChaShortcutInfo &s);
@@ -575,78 +575,78 @@ public:
 	//
 
 	// 
-	void	FailedActionNoti(dbc::Char chType, dbc::Char chReason);
+	void	FailedActionNoti(char chType, char chReason);
 	// 
-	void	TerminalMessage(dbc::Long lMessageID);
+	void	TerminalMessage(std::int32_t lMessageID);
 	// 
-	void	ItemOprateFailed(dbc::Short sFailedID);
+	void	ItemOprateFailed(int16_t sFailedID);
 
-	void		SetMotto(dbc::cChar *szMotto);
-	dbc::cChar*	GetMotto(void);
-	void		SetIcon(dbc::uShort usIcon);
-	dbc::uShort	GetIcon(void);
-	void		SetGuildName(dbc::cChar *szGuildName);
-	dbc::cChar*	GetGuildName(void);
-	dbc::cChar*	GetValidGuildName(void);
-	void		SetGuildMotto(dbc::cChar *szGuildMotto);
-	dbc::cChar*	GetGuildMotto(void);
-	dbc::cChar*	GetValidGuildMotto(void) ;
+	void		SetMotto(const char *szMotto);
+	const char*	GetMotto(void);
+	void		SetIcon(std::uint16_t usIcon);
+	std::uint16_t	GetIcon(void);
+	void		SetGuildName(const char *szGuildName);
+	const char*	GetGuildName(void);
+	const char*	GetValidGuildName(void);
+	void		SetGuildMotto(const char *szGuildMotto);
+	const char*	GetGuildMotto(void);
+	const char*	GetValidGuildMotto(void) ;
 	void		SetGuildID( DWORD dwGuildID );
 	DWORD		GetGuildID();
 	DWORD		GetValidGuildID();
-	void		SetGuildState( uLong lState );
-	uLong		GetGuildState();
+	void		SetGuildState( std::uint32_t lState );
+	std::uint32_t		GetGuildState();
 	void		SetEnterGymkhana(bool bEnter = true);
 	void		SyncGuildInfo();
-	void		SetStallName(dbc::cChar *szStallName);
-	dbc::cChar*	GetStallName(void);
+	void		SetStallName(const char *szStallName);
+	const char*	GetStallName(void);
 	void		SynStallName(void);
 
 	void			AddBlockCnt();
 	BYTE			GetBlockCnt();
 	void			SetBlockCnt(BYTE cnt);
 
-	virtual void	AfterAttrChange(int nIdx, dbc::Long lOldVal, dbc::Long lNewVal);
+	virtual void	AfterAttrChange(int nIdx, std::int32_t lOldVal, std::int32_t lNewVal);
 	virtual void	Die();	// 
 	void			JustDie(CCharacter *pCSrcCha);	// 
-	void			MoveCity(dbc::cChar *szCityName, Long lMapCpyNO = -1, Char chSwitchType = enumSWITCHMAP_CARRY);
-	void			BackToCity(bool Die = false, cChar *szCityName = 0, Long lMapCpyNO = -1, Char chSwitchType = enumSWITCHMAP_DIE);
-	void			BackToCityEx(bool Die = false, cChar *szCityName = 0, Long lMapCpyNO = -1, Char chSwitchType = enumSWITCHMAP_DIE);
+	void			MoveCity(const char *szCityName, std::int32_t lMapCpyNO = -1, char chSwitchType = enumSWITCHMAP_CARRY);
+	void			BackToCity(bool Die = false, const char *szCityName = 0, std::int32_t lMapCpyNO = -1, char chSwitchType = enumSWITCHMAP_DIE);
+	void			BackToCityEx(bool Die = false, const char *szCityName = 0, std::int32_t lMapCpyNO = -1, char chSwitchType = enumSWITCHMAP_DIE);
 	void			SetToMainCha(bool bBoatDie = false);
 	bool			CanSeen(CCharacter *pCCha);
 	bool			CanSeen(CCharacter *pCCha, bool bThisEyeshot, bool bThisNoHide, bool bThisNoShow);
 	bool			IsHide();
-	SItemGrid*		GetEquipItem(dbc::Char chPart);
+	SItemGrid*		GetEquipItem(char chPart);
 	DWORD			GetTeamID();
 	bool			IsTeamLeader();
-	dbc::Long		GetSideID();
-	void			SetSideID(dbc::Long lSideID);
-	SItemGrid*		GetItem(dbc::Char chPosType, dbc::Long lItemID);
-	SItemGrid*		GetItem2(dbc::Char chPosType, dbc::Long lPosID);
-	bool			SetEquipValid(dbc::Char chEquipPos, bool bValid, bool bSyn = true);
-	bool			SetKitbagItemValid(dbc::Short sPosID, bool bValid, bool bRecheckAttr = true, bool bSyn = true);
+	std::int32_t		GetSideID();
+	void			SetSideID(std::int32_t lSideID);
+	SItemGrid*		GetItem(char chPosType, std::int32_t lItemID);
+	SItemGrid*		GetItem2(char chPosType, std::int32_t lPosID);
+	bool			SetEquipValid(char chEquipPos, bool bValid, bool bSyn = true);
+	bool			SetKitbagItemValid(int16_t sPosID, bool bValid, bool bRecheckAttr = true, bool bSyn = true);
 	bool			SetKitbagItemValid(SItemGrid* pSItem, bool bValid, bool bRecheckAttr = true, bool bSyn = true);
 	bool			ItemIsAppendLook(SItemGrid* pSItem);
 	void			SetLookChangeFlag(bool bChange = false);
 	void			SetEspeItemChangeFlag(bool bChange = false);
-	dbc::Char		GetLookChangeNum(void);
+	char		GetLookChangeNum(void);
 	bool			CheckForgeItem(SForgeItem *pSItem = NULL);
-	bool			DoForgeLikeScript(dbc::cChar *cszFunc, dbc::Long &lRet);
-	bool			DoLifeSkillcript(dbc::cChar *cszFunc, dbc::Long &lRet);
-	bool			DoTigerScript(dbc::cChar *cszFunc);
+	bool			DoForgeLikeScript(const char *cszFunc, std::int32_t &lRet);
+	bool			DoLifeSkillcript(const char *cszFunc, std::int32_t &lRet);
+	bool			DoTigerScript(const char *cszFunc);
 	void			SetInOutMapQueue(bool bOutMap = true);
 	bool			InOutMapQueue(void);
-	bool			AddKitbagCapacity(dbc::Short sAddVal);
+	bool			AddKitbagCapacity(int16_t sAddVal);
 	void			CheckItemValid(SItemGrid* pCItem);
 	void			CheckEspeItemGrid(void);
-	dbc::Short		KbPushItem(bool bRecheckAttr, bool bSynAttr, SItemGrid *pGrid, dbc::Short &sPosID, dbc::Short sType = 0, bool bCommit = true, bool bSureOpr = false);
-	dbc::Short		KbPopItem(bool bRecheckAttr, bool bSynAttr, SItemGrid *pGrid, dbc::Short sPosID, dbc::Short sType = 0, bool bCommit = true);
-	dbc::Short		KbClearItem(bool bRecheckAttr, bool bSynAttr, dbc::Short sPosID, dbc::Short sType = 0);
-	dbc::Short		KbClearItem(bool bRecheckAttr, bool bSynAttr, SItemGrid *pGrid, dbc::Short sNum = 0);
-	dbc::Short		KbRegroupItem(bool bRecheckAttr, bool bSynAttr, dbc::Short sSrcPosID, dbc::Short sSrcNum, dbc::Short sTarPosID, dbc::Short sType = 0);
+	int16_t		KbPushItem(bool bRecheckAttr, bool bSynAttr, SItemGrid *pGrid, int16_t &sPosID, int16_t sType = 0, bool bCommit = true, bool bSureOpr = false);
+	int16_t		KbPopItem(bool bRecheckAttr, bool bSynAttr, SItemGrid *pGrid, int16_t sPosID, int16_t sType = 0, bool bCommit = true);
+	int16_t		KbClearItem(bool bRecheckAttr, bool bSynAttr, int16_t sPosID, int16_t sType = 0);
+	int16_t		KbClearItem(bool bRecheckAttr, bool bSynAttr, SItemGrid *pGrid, int16_t sNum = 0);
+	int16_t		KbRegroupItem(bool bRecheckAttr, bool bSynAttr, int16_t sSrcPosID, int16_t sSrcNum, int16_t sTarPosID, int16_t sType = 0);
 	void			ResetScriptParam(void);
-	dbc::Long		GetScriptParam(dbc::Char chID);
-	bool			SetScriptParam(dbc::Char chID, dbc::Long lVal);
+	std::int32_t		GetScriptParam(char chID);
+	bool			SetScriptParam(char chID, std::int32_t lVal);
 	void			CheckBagItemValid(CKitbag* pCBag);
 	void			CheckLookItemValid(void);
 	bool			String2LookDate(std::string &strData);
@@ -654,21 +654,21 @@ public:
     bool            String2KitbagTmpData(std::string &strData);
 
 
-	void	SetKitbagRecDBID(long lDBID);
-	long	GetKitbagRecDBID(void);
+	void	SetKitbagRecDBID(std::int32_t lDBID);
+	std::int32_t	GetKitbagRecDBID(void);
 
     //ID
-    void	SetKitbagTmpRecDBID(long lDBID);
-	long	GetKitbagTmpRecDBID(void);
+    void	SetKitbagTmpRecDBID(std::int32_t lDBID);
+	std::int32_t	GetKitbagTmpRecDBID(void);
 
-	void	LogAssets(dbc::Char chLType);
+	void	LogAssets(char chLType);
 	bool	SaveAssets(void);
-	bool	IsRangePoint(dbc::Long lPosX, dbc::Long lPosY, dbc::Long lDist);
-	bool	IsRangePoint(const Point &SPos, dbc::Long lDist);
-	bool	IsRangePoint2(dbc::Long lPosX, dbc::Long lPosY, dbc::Long lDist2);
-	bool	IsRangePoint2(const Point &SPos, dbc::Long lDist2);
-	void	SetDBSaveInterval(long lIntl);
-	long	GetDBSaveInterval(void);
+	bool	IsRangePoint(std::int32_t lPosX, std::int32_t lPosY, std::int32_t lDist);
+	bool	IsRangePoint(const Corsairs::Util::Point &SPos, std::int32_t lDist);
+	bool	IsRangePoint2(std::int32_t lPosX, std::int32_t lPosY, std::int32_t lDist2);
+	bool	IsRangePoint2(const Corsairs::Util::Point &SPos, std::int32_t lDist2);
+	void	SetDBSaveInterval(std::int32_t lIntl);
+	std::int32_t	GetDBSaveInterval(void);
 	void	ResetPosState(void);
 
 	int		GetLotteryIssue();
@@ -700,13 +700,13 @@ public:
 	void		SetInvited(BOOL bInvited);
 	BOOL		IsInvited();
 
-	void		SetCredit(long lCredit);
-	dbc::Long	GetCredit();
-	void			AddMasterCredit(long lCredit);
-	unsigned long	GetMasterDBID();
+	void		SetCredit(std::int32_t lCredit);
+	std::int32_t	GetCredit();
+	void			AddMasterCredit(std::int32_t lCredit);
+	std::uint32_t	GetMasterDBID();
 
-	long			GetStoreItemID();
-	void			SetStoreItemID(long lStoreItemID);
+	std::int32_t			GetStoreItemID();
+	void			SetStoreItemID(std::int32_t lStoreItemID);
 	bool			IsStoreBuy();
 	void			SetStoreBuy(bool bValue);
 	int				GetPetNum();
@@ -753,32 +753,32 @@ public:
 	virtual void SubsequenceMove();
 
 	void	OnDie(DWORD dwCurTime);
-	void	SrcFightTar(CFightAble *pTar, dbc::Short sSkillID);
+	void	SrcFightTar(CFightAble *pTar, int16_t sSkillID);
 	
-	void	DoCommand(dbc::cChar *cszCommand, dbc::uLong ulLen);
+	void	DoCommand(const char *cszCommand, std::uint32_t ulLen);
 	BOOL	DoGMCommand(const char *pszCmd, const char *pszParam);
-	void	DoCommand_CheckStatus(dbc::cChar *pszCommand, dbc::uLong ulLen);
-	void	HandleHelp(dbc::cChar *pszCommand, dbc::uLong ulLen);
+	void	DoCommand_CheckStatus(const char *pszCommand, std::uint32_t ulLen);
+	void	HandleHelp(const char *pszCommand, std::uint32_t ulLen);
 
-	long	ExecuteEvent(Entity *pCObj, dbc::uShort usEventID);
+	std::int32_t	ExecuteEvent(Entity *pCObj, std::uint16_t usEventID);
 
 	void	SetActControl(Corsairs::Common::Character::ActControl ctrlType, bool set = true);
 
-	bool		CanLearnSkill(CSkillRecord *pCSkill, dbc::Char chToLv);
-	dbc::Short	CanEquipItem(dbc::Short sItemID);
-	dbc::Short	CanEquipItemNew(dbc::Short sItemID1, dbc::Short sItemID2 = 0);
+	bool		CanLearnSkill(CSkillRecord *pCSkill, char chToLv);
+	int16_t	CanEquipItem(int16_t sItemID);
+	int16_t	CanEquipItemNew(int16_t sItemID1, int16_t sItemID2 = 0);
 
-	dbc::Short	CanEquipItem(SItemGrid* pSEquipIt);
+	int16_t	CanEquipItem(SItemGrid* pSEquipIt);
 
-	dbc::Short	IsItemExpired(SItemGrid* pSEquipIt);
+	int16_t	IsItemExpired(SItemGrid* pSEquipIt);
 
 public:
 	CKitbag				m_CKitbag;			// 
 	CKitbag				*m_pCKitbagTmp;       // 
 	stNetShortCut		m_CShortcut;		// 
-	long				m_lKbRecDBID;		// ID
-	long				m_lKbTmpRecDBID;	// ID
-	long				m_lStoreItemID;
+	std::int32_t				m_lKbRecDBID;		// ID
+	std::int32_t				m_lKbTmpRecDBID;	// ID
+	std::int32_t				m_lStoreItemID;
 	bool				m_bStoreBuy;
 	DWORD				m_dwStoreTime;
 	bool				m_bStoreEnable;
@@ -803,8 +803,8 @@ public:
 	// 
 	struct
 	{
-		Char	m_chSelRelive;	// 
-		Char	m_chReliveLv;	// 0.
+		char	m_chSelRelive;	// 
+		char	m_chReliveLv;	// 0.
 	};
 
 	CActionCache		m_CActCache;
@@ -817,8 +817,8 @@ public:
 private:
 	BOOL BoatEnterMap( CCharacter& Boat, DWORD dwxPos, DWORD dwyPos, USHORT sDir );
 
-	dbc::Char			m_szMotto[defMOTTO_LEN];
-	dbc::uShort			m_usIcon;
+	char			m_szMotto[defMOTTO_LEN];
+	std::uint16_t			m_usIcon;
 
     bool m_expFlag;
     DWORD m_ExpScale;       //  
@@ -868,12 +868,12 @@ private:
 	struct
 	{
 		CTimer			m_timerPing;
-		dbc::uLong		m_ulPingDataLen;
+		std::uint32_t		m_ulPingDataLen;
 	};
 
 	std::bitset<8>		m_chPKCtrl;
 
-	dbc::Long			m_lSideID;				// 
+	std::int32_t			m_lSideID;				//
 	bool				m_bInOutMapQueue;
 	struct // Ping
 	{
@@ -884,11 +884,11 @@ private:
 
 	struct // for test net state
 	{
-		dbc::uLong	m_ulNetSendLen;
+		std::uint32_t	m_ulNetSendLen;
 		CTimer		m_timerNetSendFreq;
 	};
 
-	dbc::Long	m_lScriptParam[defCHA_SCRIPT_PARAM_NUM];
+	std::int32_t	m_lScriptParam[defCHA_SCRIPT_PARAM_NUM];
 
 protected:
 
@@ -912,13 +912,13 @@ public:
 	bool	appCheck[Corsairs::Common::Network::enumEQUIP_NUM];
 
 	BYTE	requestType;
-	Square	requestPos; // must check if player is in same position
+	Corsairs::Util::Square	requestPos; // must check if player is in same position
 
 	bool    IsReqPosEqualRealPos();
 };
 
 // 
-extern Point		g_SSkillPoint;
+extern Corsairs::Util::Point		g_SSkillPoint;
 extern bool			g_bBeatBack;
 extern unsigned char	g_uchFightID;
 extern char			g_chUseItemFailed[2];

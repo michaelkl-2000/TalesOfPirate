@@ -7,13 +7,12 @@ using namespace std;
 
 GameConfig GlobalAppConfig;
 
-static float IniGetFloat(dbc::IniSection& sec, std::string_view key, float def = 0.0f) {
+static float IniGetFloat(Corsairs::Util::Ini::IniSection& sec, std::string_view key, float def = 0.0f) {
 	auto s = sec.GetString(key);
-	return s.empty() ? def : Str2Float(s);
+	return s.empty() ? def : Corsairs::Util::Str2Float(s);
 }
 
 GameConfig::GameConfig() {
-	g_bBinaryTable = TRUE;
 	SetDefault();
 }
 
@@ -108,10 +107,10 @@ void GameConfig::Load() {
 		auto chaStr = sec.GetString("cha");
 		if (!chaStr.empty()) {
 			string strCha[3];
-			if (Util_ResolveTextLine(chaStr.c_str(), strCha, 3, ',') == 3 && _chaCnt < 20) {
-				_chaList[_chaCnt].nTypeID = Str2Int(strCha[0]);
-				_chaList[_chaCnt].nX = Str2Int(strCha[1]);
-				_chaList[_chaCnt].nY = Str2Int(strCha[2]);
+			if (Corsairs::Util::ResolveTextLine(chaStr.c_str(), strCha, 3, ',') == 3 && _chaCnt < 20) {
+				_chaList[_chaCnt].nTypeID = Corsairs::Util::Str2Int(strCha[0]);
+				_chaList[_chaCnt].nX = Corsairs::Util::Str2Int(strCha[1]);
+				_chaList[_chaCnt].nY = Corsairs::Util::Str2Int(strCha[2]);
 				_chaCnt++;
 			}
 		}
@@ -134,30 +133,30 @@ void GameConfig::Load() {
 		auto lightDir = sec.GetString("light_dir");
 		if (!lightDir.empty()) {
 			string parts[3];
-			if (Util_ResolveTextLine(lightDir.c_str(), parts, 3, ',') == 3) {
-				_lightDir[0] = Str2Float(parts[0]);
-				_lightDir[1] = Str2Float(parts[1]);
-				_lightDir[2] = Str2Float(parts[2]);
+			if (Corsairs::Util::ResolveTextLine(lightDir.c_str(), parts, 3, ',') == 3) {
+				_lightDir[0] = Corsairs::Util::Str2Float(parts[0]);
+				_lightDir[1] = Corsairs::Util::Str2Float(parts[1]);
+				_lightDir[2] = Corsairs::Util::Str2Float(parts[2]);
 			}
 		}
 		auto lightColor = sec.GetString("light_color");
 		if (!lightColor.empty()) {
 			string parts[3];
-			if (Util_ResolveTextLine(lightColor.c_str(), parts, 3, ',') == 3) {
-				_lightColor[0] = Str2Float(parts[0]);
-				_lightColor[1] = Str2Float(parts[1]);
-				_lightColor[2] = Str2Float(parts[2]);
+			if (Corsairs::Util::ResolveTextLine(lightColor.c_str(), parts, 3, ',') == 3) {
+				_lightColor[0] = Corsairs::Util::Str2Float(parts[0]);
+				_lightColor[1] = Corsairs::Util::Str2Float(parts[1]);
+				_lightColor[2] = Corsairs::Util::Str2Float(parts[2]);
 			}
 		}
 		auto bkColor = sec.GetString("lgt_bkcolor");
 		if (!bkColor.empty()) {
 			string parts[3];
-			if (Util_ResolveTextLine(bkColor.c_str(), parts, 3, ',') == 3) {
+			if (Corsairs::Util::ResolveTextLine(bkColor.c_str(), parts, 3, ',') == 3) {
 				lwDwordByte4 c;
 				c.b[3] = 0xff;
-				c.b[2] = Str2Int(parts[0]);
-				c.b[1] = Str2Int(parts[1]);
-				c.b[0] = Str2Int(parts[2]);
+				c.b[2] = Corsairs::Util::Str2Int(parts[0]);
+				c.b[1] = Corsairs::Util::Str2Int(parts[1]);
+				c.b[0] = Corsairs::Util::Str2Int(parts[2]);
 				_lgtBkColor = c.d;
 			}
 		}

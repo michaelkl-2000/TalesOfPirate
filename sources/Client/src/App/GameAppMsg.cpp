@@ -1,4 +1,5 @@
 #include "Stdafx.h"
+#include <filesystem>
 namespace Corsairs::Common::Effect {}
 using namespace Corsairs::Common::Effect;
 namespace Corsairs::Common::Misc {}
@@ -926,23 +927,23 @@ const char* HandleMonsterCommand(string& strCmd, string& p1, string& p2) {
 			in.getline(szCha, 255);
 			if (szCha[0] == '\0') break;
 
-			Util_ResolveTextLine(szCha, strList, 2, '('); // Strip left parenthesis
+			Corsairs::Util::ResolveTextLine(szCha, strList, 2, '('); // Strip left parenthesis
 			string strRight = strList[1];
-			Util_ResolveTextLine(strRight.c_str(), strList, 2, ')');
+			Corsairs::Util::ResolveTextLine(strRight.c_str(), strList, 2, ')');
 			string strValue = strList[0]; // Strip right parenthesis
-			int n = Util_ResolveTextLine(strValue.c_str(), strList, 8, ',');
+			int n = Corsairs::Util::ResolveTextLine(strValue.c_str(), strList, 8, ',');
 
-			int nChaID = Str2Int(strList[0]);
-			int x = Str2Int(strList[1]);
-			int y = Str2Int(strList[2]);
-			int angle = Str2Int(strList[3]);
-			int time = Str2Int(strList[4]);
+			int nChaID = Corsairs::Util::Str2Int(strList[0]);
+			int x = Corsairs::Util::Str2Int(strList[1]);
+			int y = Corsairs::Util::Str2Int(strList[2]);
+			int angle = Corsairs::Util::Str2Int(strList[3]);
+			int time = Corsairs::Util::Str2Int(strList[4]);
 
 			int px = 0, py = 0;
 			if (n > 5) // Contains patrol waypoint data
 			{
-				px = Str2Int(strList[5]);
-				py = Str2Int(strList[6]);
+				px = Corsairs::Util::Str2Int(strList[5]);
+				py = Corsairs::Util::Str2Int(strList[6]);
 			}
 
 			CCharacter* pCha = pScene->AddCharacter(nChaID);
@@ -962,14 +963,14 @@ const char* HandleMonsterCommand(string& strCmd, string& p1, string& p2) {
 	else if (strCmd == "save") // Save monster placement records
 	{
 		if (p1 == "") return GetLanguageString(110).c_str();
-		Util_MakeDir("monster");
+		std::filesystem::create_directories("monster");
 		string strFileName = p1 + ".lua";
 
 		strFileName = "monster/" + strFileName;
 
 		DWORD dwTime = 0;
 
-		if (p2 != "") dwTime = Str2Int(p2); // Write all placed characters to a text file
+		if (p2 != "") dwTime = Corsairs::Util::Str2Int(p2); // Write all placed characters to a text file
 
 		// Write all placed characters to a text file
 		FILE* fp = fopen(strFileName.c_str(), "wt");
@@ -999,7 +1000,7 @@ const char* HandleMonsterCommand(string& strCmd, string& p1, string& p2) {
 	else if (strCmd == "seek") // Find a monster by script ID
 	{
 		if (p1 == "") return GetLanguageString(110).c_str();
-		int nScriptID = Str2Int(p1);
+		int nScriptID = Corsairs::Util::Str2Int(p1);
 
 		for (int i = 0; i < pScene->GetChaCnt(); i++) {
 			CCharacter* pCha = pScene->GetCha(i);
@@ -1072,7 +1073,7 @@ void CheckSkillEffect(CSkillRecord* pSkill, int nEffectID) {
 const char* ConsoleCallback(const char* pszCmd) {
 	string strInput = pszCmd;
 	string strList[80];
-	int n = Util_ResolveTextLine(pszCmd, strList, 80, ' ');
+	int n = Corsairs::Util::ResolveTextLine(pszCmd, strList, 80, ' ');
 
 	string strCmd = strList[0];
 	string strRes = GetLanguageString(120);
@@ -1119,7 +1120,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 	else if (strCmd == "savemap") {
 	}
 	else if (strCmd == "brushheight") {
-		g_Editor.m_nBrushHeight = Str2Int(strList[1]);
+		g_Editor.m_nBrushHeight = Corsairs::Util::Str2Int(strList[1]);
 	}
 	else if (strCmd == "delobj") {
 	}
@@ -1130,24 +1131,24 @@ const char* ConsoleCallback(const char* pszCmd) {
 	else if (strCmd == "cha_color") {
 	}
 	else if (strCmd == "light_dir") {
-		float fX = Str2Float(p1);
-		float fY = Str2Float(p2);
-		float fZ = Str2Float(p3);
+		float fX = Corsairs::Util::Str2Float(p1);
+		float fY = Corsairs::Util::Str2Float(p2);
+		float fZ = Corsairs::Util::Str2Float(p3);
 		g_Render.SetDirectLightDir(fX, fY, fZ);
 	}
 	else if (strCmd == "light_color") {
-		float r = Str2Float(p1);
-		float g = Str2Float(p2);
-		float b = Str2Float(p3);
+		float r = Corsairs::Util::Str2Float(p1);
+		float g = Corsairs::Util::Str2Float(p2);
+		float b = Corsairs::Util::Str2Float(p3);
 		g_Render.SetDirectLightColor(r, g, b, 1.0f);
 	}
 	else if (strCmd == "freefps") {
 		auto& steady = Corsairs::Client::Frame::SteadyFrameSync::Instance();
-		const int nFree = Str2Int(p1);
+		const int nFree = Corsairs::Util::Str2Int(p1);
 		steady.SetFps(nFree > 0 ? static_cast<std::uint32_t>(nFree) : 40u);
 	}
 	else if (strCmd == "perf") {
-		const bool bPerf = Str2Int(p1) != 0;
+		const bool bPerf = Corsairs::Util::Str2Int(p1) != 0;
 		DebugStateSystem::Instance().SetEnabled(DebugStateSystem::Category::Performance, bPerf);
 	}
 	else if (strCmd == "ui") // Show UI debug info; 0=off, 1=on  -added by Arcol
@@ -1211,7 +1212,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 	{
 		CCharacter* pCha = CGameScene::GetMainCha();
 		if (pCha && pCha->GetStateMgr()->GetSkillStateNum() > 0) {
-			int nState = 43; //Str2Int( p1 );
+			int nState = 43; //Corsairs::Util::Str2Int( p1 );
 			CS_BeginAction(pCha, enumACTION_STOP_STATE, &nState);
 		}
 	}
@@ -1219,14 +1220,14 @@ const char* ConsoleCallback(const char* pszCmd) {
 	{
 		CCharacter* pCha = CGameScene::GetMainCha();
 		if (pCha && pCha->GetStateMgr()->GetSkillStateNum() > 0) {
-			int nState = 83; // Str2Int( p1 );
+			int nState = 83; // Corsairs::Util::Str2Int( p1 );
 			CS_BeginAction(pCha, enumACTION_STOP_STATE, &nState);
 		}
 	}
 	else if (strCmd == "unstate" && g_pGameApp->IsEnableSuperKey()) {
 		CCharacter* pCha = CGameScene::GetMainCha();
 		if (pCha && pCha->GetStateMgr()->GetSkillStateNum() > 0) {
-			int nState = Str2Int(p1);
+			int nState = Corsairs::Util::Str2Int(p1);
 			CS_BeginAction(pCha, enumACTION_STOP_STATE, &nState);
 		}
 	}
@@ -1290,9 +1291,9 @@ const char* ConsoleCallback(const char* pszCmd) {
 				pItem = pMain->GetHandItem(enumEQUIP_RHAND);
 			}
 			if (pItem) {
-				int RefineID = Str2Int(p2);
-				int Level = Str2Int(p3);
-				float EffectScale = Str2Float(p4);
+				int RefineID = Corsairs::Util::Str2Int(p2);
+				int Level = Corsairs::Util::Str2Int(p3);
+				float EffectScale = Corsairs::Util::Str2Float(p4);
 				if (RefineID == 0) {
 					pItem->LitUnresetTexture();
 
@@ -1377,14 +1378,14 @@ const char* ConsoleCallback(const char* pszCmd) {
 			}
 
 			if (pItem) {
-				int nForge = Str2Int(p2);
+				int nForge = Corsairs::Util::Str2Int(p2);
 				pItem->SetForgeEffect(nForge, pMain->getTypeID());
 			}
 		}
 	}
 	else if (GlobalAppConfig.IsEditor() && strCmd == "take") {
 		CCharacter* pMain = CGameScene::GetMainCha();
-		int nItemID = Str2Int(p2);
+		int nItemID = Corsairs::Util::Str2Int(p2);
 		if (pMain) {
 			if (p1 == "left") {
 				pMain->UpdataItem(nItemID, enumEQUIP_LHAND);
@@ -1426,15 +1427,15 @@ const char* ConsoleCallback(const char* pszCmd) {
 	}
 	else if (strCmd == "move") {
 		extern int MOVE_LENGTH;
-		MOVE_LENGTH = Str2Int(p1);
+		MOVE_LENGTH = Corsairs::Util::Str2Int(p1);
 	}
 	else if (strCmd == "luaGetStoneHint") {
-		string hint = g_pGameApp->GetScriptMgr()->GetStoneHint(p1.c_str(), Str2Int(p2));
+		string hint = g_pGameApp->GetScriptMgr()->GetStoneHint(p1.c_str(), Corsairs::Util::Str2Int(p2));
 		g_pGameApp->SysInfo(std::format("Hint:{}", hint));
 	}
 	else if (strCmd == "luaFunc") {
 		string str;
-		if (g_pGameApp->GetScriptMgr()->DoString(p1.c_str(), "d-s", Str2Int(p2), &str)) {
+		if (g_pGameApp->GetScriptMgr()->DoString(p1.c_str(), "d-s", Corsairs::Util::Str2Int(p2), &str)) {
 			g_pGameApp->SysInfo(std::format("return:{}", str));
 		}
 	}
@@ -1462,9 +1463,9 @@ const char* ConsoleCallback(const char* pszCmd) {
 			nTestY = CGameScene::GetMainCha()->GetCurY();
 		}
 
-		int nStart = Str2Int(p1);
-		int nEnd = Str2Int(p2);
-		int nTestCount = Str2Int(p3);
+		int nStart = Corsairs::Util::Str2Int(p1);
+		int nEnd = Corsairs::Util::Str2Int(p2);
+		int nTestCount = Corsairs::Util::Str2Int(p3);
 		if (nTestCount <= 0) nTestCount = 1;
 		g_pGameApp->AutoTestInfo(SafeVFormat(GetLanguageString(132), nStart, nEnd, nTestCount));
 
@@ -1571,9 +1572,9 @@ const char* ConsoleCallback(const char* pszCmd) {
 			return "";
 		}
 
-		int nStart = Str2Int(p1);
-		int nEnd = Str2Int(p2);
-		int nTestCount = Str2Int(p3);
+		int nStart = Corsairs::Util::Str2Int(p1);
+		int nEnd = Corsairs::Util::Str2Int(p2);
+		int nTestCount = Corsairs::Util::Str2Int(p3);
 		if (nTestCount <= 0) nTestCount = 1;
 		g_pGameApp->AutoTestInfo(SafeVFormat(GetLanguageString(133), nStart, nEnd, nTestCount));
 
@@ -1668,10 +1669,10 @@ const char* ConsoleCallback(const char* pszCmd) {
 		CCharacter* pMain = CGameScene::GetMainCha();
 		if (!pMain) return strRes.c_str();
 
-		int nEffectID = Str2Int(p1);
+		int nEffectID = Corsairs::Util::Str2Int(p1);
 		if (nEffectID <= 0) return strRes.c_str();
 
-		int nDummy = Str2Int(p2);
+		int nDummy = Corsairs::Util::Str2Int(p2);
 
 		CEffectObj* pEffect = pMain->GetScene()->GetFirstInvalidEffObj();
 		if (!pEffect) return strRes.c_str();;
@@ -1699,7 +1700,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 			return strRes.c_str();
 
 		CCharacter* pMain = CGameScene::GetMainCha();
-		int n = Str2Int(p1);
+		int n = Corsairs::Util::Str2Int(p1);
 		if (n <= 0) n = 1;
 		CGameScene* pScene = CGameApp::GetCurScene();
 
@@ -1837,13 +1838,13 @@ const char* ConsoleCallback(const char* pszCmd) {
 		if (!pMain) return strRes.c_str();
 
 		int nListID = 1;
-		int nPoseCount = Str2Int(strList[nListID++]);
+		int nPoseCount = Corsairs::Util::Str2Int(strList[nListID++]);
 		int pose[100] = {0};
 		char szBuf[50] = {0};
 		for (int i = 0; i < nPoseCount; i++) {
-			pose[i] = Str2Int(strList[nListID++]);
+			pose[i] = Corsairs::Util::Str2Int(strList[nListID++]);
 		}
-		float fPoseSpeed = Str2Float(strList[nListID++]);
+		float fPoseSpeed = Corsairs::Util::Str2Float(strList[nListID++]);
 
 		CHitAttackState* pState = new CHitAttackState(pMain->GetActor());
 		pState->SetPose(pose, nPoseCount);
@@ -1854,8 +1855,8 @@ const char* ConsoleCallback(const char* pszCmd) {
 		CCharacter* pMain = CGameScene::GetMainCha();
 		if (!pMain) return strRes.c_str();
 
-		int nStart = Str2Int(p1);
-		int nEnd = Str2Int(p2);
+		int nStart = Corsairs::Util::Str2Int(p1);
+		int nEnd = Corsairs::Util::Str2Int(p2);
 
 		CAllPoseState* pState = new CAllPoseState(pMain->GetActor());
 		if (nStart == 0 || nEnd == 0) {
@@ -1880,17 +1881,17 @@ const char* ConsoleCallback(const char* pszCmd) {
 			pMain->GetActor()->GetCurState()->PopState();
 	}
 	else if (strCmd == "exit") {
-		exit(Str2Int(p1));
+		exit(Corsairs::Util::Str2Int(p1));
 	}
 	else if (strCmd == "showpath") {
-		g_pGameApp->GetDrawPoints()->SetMaxCount(Str2Int(p1));
+		g_pGameApp->GetDrawPoints()->SetMaxCount(Corsairs::Util::Str2Int(p1));
 	}
 	else if (strCmd == "client_move") {
-		GlobalAppConfig.SetMoveClient(Str2Int(p1) != 0);
+		GlobalAppConfig.SetMoveClient(Corsairs::Util::Str2Int(p1) != 0);
 	}
 	else if (strCmd == "createcha") {
-		int nStart = Str2Int(p1);
-		int nEnd = Str2Int(p2);
+		int nStart = Corsairs::Util::Str2Int(p1);
+		int nEnd = Corsairs::Util::Str2Int(p2);
 		DWORD dwStart = ::GetTickCount();
 		int nTestX = 0;
 		int nTestY = 0;
@@ -1928,7 +1929,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 			pCha->Destroy();
 			pCha->setTypeID(nScriptID);
 			pCha->SetDefaultChaInfo(pInfo);
-			if (pInfo->chModalType == enumMODAL_MAIN_CHA) {
+			if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA)) {
 				// save loading res mt flag
 				res_bs = g_Render.GetInterfaceMgr()->res_mgr->GetByteSet();
 				loadtex_flag = res_bs->GetValue(OPT_RESMGR_LOADTEXTURE_MT);
@@ -1965,7 +1966,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 					continue;
 				}
 			}
-			else if (pInfo->chModalType == enumMODAL_BOAT) {
+			else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT)) {
 				DWORD part_buf[3] =
 				{
 					pInfo->sSkinInfo[0],
@@ -1983,7 +1984,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 					continue;
 				}
 			}
-			else if (pInfo->chModalType == enumMODAL_EMPL) {
+			else if (pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) {
 				DWORD part_buf[5] =
 				{
 					pInfo->sSkinInfo[0],
@@ -2001,7 +2002,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 					continue;
 				}
 			}
-			else if (pInfo->chModalType == enumMODAL_OTHER) {
+			else if (pInfo->chModalType == static_cast<char>(EChaModalType::OTHER)) {
 				// This is the main window
 				MPChaLoadInfo load_info;
 

@@ -30,7 +30,7 @@ public:
     ~CChaAttr() = default;
 
     void           Clear();
-    void           Init(std::int32_t id, bool fromFile = true);
+    void           Init(std::int32_t id, bool applyProgressionDefaults = true);
 
     [[nodiscard]] std::int32_t GetAttr(std::int32_t no) const;
     std::int32_t   SetAttr(std::int32_t no, std::int32_t val);

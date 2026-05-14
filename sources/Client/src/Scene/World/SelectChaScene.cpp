@@ -118,7 +118,7 @@ bool CSelectChaScene::_Init() {
 	}
 
 	_bEnableCamDrag = TRUE;
-	MPTimer tInit;
+	Corsairs::Util::MPTimer tInit;
 	tInit.Begin();
 
 	// Init Once
@@ -282,7 +282,7 @@ void CSelectChaScene::_Render() {
 		if(pObj == 0)
 			return;
 	*/
-	MPTimer mpt;
+	Corsairs::Util::MPTimer mpt;
 	mpt.Begin();
 	//CGameScene::_Render();
 	MPIDeviceObject* dev_obj = g_Render.GetInterfaceMgr()->dev_obj;
@@ -519,7 +519,7 @@ void CSelectChaScene::LoadingCall() // Called during loading, refresh
 	//CGuildData::SetGuildName("");
 	//if(g_stUIChat.GetGuildNode()) g_stUIChat.GetGuildNode()->Clear();
 
-	NetPC_GUILD_START_BEGIN(0, 0, 0);
+	NetPC_GUILD_START_BEGIN(0, std::string_view{}, 0);
 	NetPC_GUILD_START_END();
 
 	static bool bLoadRes2 = false;

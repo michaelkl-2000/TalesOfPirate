@@ -36,7 +36,7 @@ void CGameScene::_FrameMove(DWORD dwTimeParam) {
 	DebugStateSystem::Instance().Clear(DebugStateSystem::Category::Game);
 
 	if (_pTerrain) {
-		MPTimer tMap;
+		Corsairs::Util::MPTimer tMap;
 		tMap.Begin();
 		_pTerrain->DynamicLoading(GetTickCount());
 

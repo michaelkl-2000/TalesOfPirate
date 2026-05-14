@@ -319,14 +319,14 @@ inline bool String2SkillBagData(CSkillBag *pSkillBag, std::string &strData)
 	int nCount = 0;
 	std::string strList[defMAX_SKILL_NO + 1];
 	std::string strSubList[2];
-	Util_ResolveTextLine(strData.c_str(), strList, defMAX_SKILL_NO + 1, ';');
-	const auto sSkillNum = Str2Int(strList[nCount++]);
+	Corsairs::Util::ResolveTextLine(strData.c_str(), strList, defMAX_SKILL_NO + 1, ';');
+	const auto sSkillNum = Corsairs::Util::Str2Int(strList[nCount++]);
 	SSkillGrid SGridCont;
 	for (int j = 0; j < sSkillNum; j++)
 	{
-		Util_ResolveTextLine(strList[nCount++].c_str(), strSubList, 3, ',');
-		SGridCont.sID = Str2Int(strSubList[0]);
-		SGridCont.chLv = Str2Int(strSubList[1]);
+		Corsairs::Util::ResolveTextLine(strList[nCount++].c_str(), strSubList, 3, ',');
+		SGridCont.sID = Corsairs::Util::Str2Int(strSubList[0]);
+		SGridCont.chLv = Corsairs::Util::Str2Int(strSubList[1]);
 
 		SGridCont.chState = Network::enumSUSTATE_INACTIVE;
 		pSkillBag->Add(&SGridCont);

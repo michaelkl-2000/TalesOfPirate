@@ -14,7 +14,6 @@ using namespace Corsairs::Common::NPC;
 #include "World/AreaRecordStore.h"
 #include "Script/lua_gamectrl.h"
 //---------------------------------------------------------
-_DBC_USING
 using namespace mission;
 
 //   trade- (   MsgProc )
@@ -910,9 +909,9 @@ int MoveCity_raw(lua_State* L)
 	if (!pCharResult) { PARAM_ERROR return 0; }
 	CCharacter* pChar = *pCharResult;
 	const char* pszData = lua_tostring(L, 2);
-	Long lMapCpyNO = 0;
+	std::int32_t lMapCpyNO = 0;
 	if (nParamNum == 3)
-		lMapCpyNO = (Long)lua_tonumber(L, 3);
+		lMapCpyNO = (std::int32_t)lua_tonumber(L, 3);
 	lMapCpyNO -= 1;
 
 	pChar->MoveCity(pszData, lMapCpyNO);
@@ -1068,9 +1067,9 @@ int IsInMap(CCharacter* pChar, const std::string& pszMap, int dwxPos, int dwyPos
 	BOOL bRet = strcmp(pszMap.c_str(), pChar->GetSubMap()->GetName()) == 0;
 	if (bRet)
 	{
-		const Point& pt = pChar->GetPos();
-		if ((DWORD)pt.x > (DWORD)dwxPos && (DWORD)pt.y > (DWORD)dwyPos &&
-			(DWORD)pt.x < (DWORD)dwxPos + (WORD)wWith && (DWORD)pt.y < (DWORD)dwyPos + (WORD)wHeight)
+		const Corsairs::Util::Point& pt = pChar->GetPos();
+		if ((DWORD)pt.X > (DWORD)dwxPos && (DWORD)pt.Y > (DWORD)dwyPos &&
+			(DWORD)pt.X < (DWORD)dwxPos + (WORD)wWith && (DWORD)pt.Y < (DWORD)dwyPos + (WORD)wHeight)
 			bRet = TRUE;
 	}
 	return bRet ? LUA_TRUE : LUA_FALSE;

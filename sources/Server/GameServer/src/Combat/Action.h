@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: Action.h
 // Creater: ZhangXuedong
 // Date: 2004.10.08
@@ -21,29 +21,29 @@ class CAction
 public:
 	struct SActionQueue
 	{
-		dbc::Short	sType;
+		int16_t	sType;
 		void		*pInit;
 	};
 
 public:
 	CAction(Entity *);
 
-	bool Add(dbc::Short sActionType, void *pActionData);
-	bool DoNext(dbc::Short sActionType = 0, dbc::Short sActionState = 0);
+	bool Add(int16_t sActionType, void *pActionData);
+	bool DoNext(int16_t sActionType = 0, int16_t sActionState = 0);
 	void End();
 	void Interrupt();
 
-	dbc::Short GetActionNum() {return m_sActionNum;}
-	dbc::Short GetCurActionNo() {return m_sCurAction;}
-	bool Has(dbc::Short sActionType, void *pActionData);
+	int16_t GetActionNum() {return m_sActionNum;}
+	int16_t GetCurActionNo() {return m_sCurAction;}
+	bool Has(int16_t sActionType, void *pActionData);
 
 protected:
 
 private:
 	Entity			*m_pCEntity;
 	SActionQueue	m_SAction[defMAX_ACTION_NUM];
-	dbc::Short		m_sActionNum;
-	dbc::Short		m_sCurAction;
+	int16_t		m_sActionNum;
+	int16_t		m_sCurAction;
 
 	CMoveAble::SMoveInit m_SMoveInit;
 	SFightInit			 m_SFightInit;
@@ -65,9 +65,9 @@ class CActionCache
 public:
 	struct SAction
 	{
-		dbc::Short	sCommand;
-		dbc::Char	szParam[defMAX_CACHE_ACTION_PARAM_LEN];
-		dbc::Char	chParamPos;
+		int16_t	sCommand;
+		char	szParam[defMAX_CACHE_ACTION_PARAM_LEN];
+		char	chParamPos;
 
 		SAction	*pSNext;
 	};
@@ -75,8 +75,8 @@ public:
 	CActionCache(CCharacter *pCOwn);
 	~CActionCache();
 
-	void	AddCommand(dbc::Short sCommand);
-	void	PushParam(void *pParam, dbc::Char chSize);
+	void	AddCommand(int16_t sCommand);
+	void	PushParam(void *pParam, char chSize);
 	void	Run(void);
 	void	ExecAction(SAction *pSCarrier);
 

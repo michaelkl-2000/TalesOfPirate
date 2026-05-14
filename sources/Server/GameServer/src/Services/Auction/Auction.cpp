@@ -21,7 +21,7 @@ CAuctionSystem::~CAuctionSystem()
 	m_mapItemList.clear();
 }
 
-BOOL CAuctionSystem::StartAuction(short sItemID, const string& strName, short sCount, uInt nBasePrice, uInt nMinBid)
+BOOL CAuctionSystem::StartAuction(short sItemID, const string& strName, short sCount, std::uint32_t nBasePrice, std::uint32_t nMinBid)
 {
 	map<short, CAuctionItem *>::iterator it = m_mapItemList.find(sItemID);
 	if(it != m_mapItemList.end())
@@ -147,7 +147,7 @@ void CAuctionSystem::NotifyAuction( CCharacter* pCha, CCharacter* pNpc )
 	pNpc->NotiChgToEyeshot(l_wpk, false);
 }
 
-BOOL CAuctionSystem::BidUp(CCharacter *pCha, short sItemID, uInt price)
+BOOL CAuctionSystem::BidUp(CCharacter *pCha, short sItemID, std::uint32_t price)
 {
 	map<short, CAuctionItem *>::iterator it = m_mapItemList.find(sItemID);
 	if(it == m_mapItemList.end())

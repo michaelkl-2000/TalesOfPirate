@@ -10,7 +10,7 @@
 #include <utility>
 
 #include <logutil.h>
-#include <util2.h>
+#include <util.h>
 
 
 namespace Corsairs::Common::NPC {
@@ -74,7 +74,7 @@ bool NpcRecordStore::Load(const char* txtPath) {
 			strLine.resize(pos);
 		}
 
-		int n = Util_ResolveTextLine(strLine.c_str(), fields.get(), MAX_FIELDS + 1, '\t');
+		int n = Corsairs::Util::ResolveTextLine(strLine.c_str(), fields.get(), MAX_FIELDS + 1, '\t');
 		if (n < 2) {
 			continue;
 		}
@@ -94,15 +94,15 @@ bool NpcRecordStore::Load(const char* txtPath) {
 		// [11] szMsgProc
 		// [12] szMisProc
 		CNpcRecord r{};
-		r.Id = Str2Int(fields[0]);
-		Util_TrimTabString(fields[1]);
+		r.Id = Corsairs::Util::Str2Int(fields[0]);
+		std::erase(fields[1], '\t');
 
 		r.DataName = fields[1];
 		CopyFixed(r.szName, std::string_view{fields[1]});
 
-		r.sNpcType   = n >  2 ? static_cast<USHORT>(Str2Int(fields[2])) : 0;
-		r.sCharID    = n >  3 ? static_cast<USHORT>(Str2Int(fields[3])) : 0;
-		r.byShowType = n >  4 ? static_cast<BYTE>(Str2Int(fields[4])) : 0;
+		r.sNpcType   = n >  2 ? static_cast<USHORT>(Corsairs::Util::Str2Int(fields[2])) : 0;
+		r.sCharID    = n >  3 ? static_cast<USHORT>(Corsairs::Util::Str2Int(fields[3])) : 0;
+		r.byShowType = n >  4 ? static_cast<BYTE>(Corsairs::Util::Str2Int(fields[4])) : 0;
 
 		auto [x0, y0] = n > 5 ? ParseXY(fields[5]) : std::pair<int, int>{0, 0};
 		auto [x1, y1] = n > 6 ? ParseXY(fields[6]) : std::pair<int, int>{0, 0};
@@ -111,9 +111,9 @@ bool NpcRecordStore::Load(const char* txtPath) {
 		r.dwxPos1 = static_cast<DWORD>(x1);
 		r.dwyPos1 = static_cast<DWORD>(y1);
 
-		r.sDir    = n >  7 ? static_cast<USHORT>(Str2Int(fields[7])) : 0;
-		r.sParam1 = n >  8 ? static_cast<USHORT>(Str2Int(fields[8])) : 0;
-		r.sParam2 = n >  9 ? static_cast<USHORT>(Str2Int(fields[9])) : 0;
+		r.sDir    = n >  7 ? static_cast<USHORT>(Corsairs::Util::Str2Int(fields[7])) : 0;
+		r.sParam1 = n >  8 ? static_cast<USHORT>(Corsairs::Util::Str2Int(fields[8])) : 0;
+		r.sParam2 = n >  9 ? static_cast<USHORT>(Corsairs::Util::Str2Int(fields[9])) : 0;
 
 		if (n > 10) {
 			CopyFixed(r.szNpc, std::string_view{fields[10]});

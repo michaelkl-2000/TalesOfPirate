@@ -43,7 +43,7 @@ class CPlayer : public GatePlayer, public mission::CCharMission {
 public:
 	CPlayer();
 
-	void         Init(GateServer* pGate, dbc::uLong ulGtAddr);
+	void         Init(GateServer* pGate, std::uint32_t ulGtAddr);
 	bool         IsValidFlag();
 	void         SetPassword(const char szPassword[]);
 	const char*  GetPassword();
@@ -53,11 +53,11 @@ public:
 	void Initially();
 	void Finally();
 
-	void         SetID(dbc::Long lID);
-	dbc::Long    GetID(void);
+	void         SetID(std::int32_t lID);
+	std::int32_t    GetID(void);
 
-	void         SetHandle(dbc::Long lHandle);
-	dbc::Long    GetHandle(void);
+	void         SetHandle(std::int32_t lHandle);
+	std::int32_t    GetHandle(void);
 
 	bool         IsPlayer(void);
 
@@ -71,11 +71,11 @@ public:
 	void         SetDBActId(DWORD dwDBActId);
 	DWORD        GetDBActId(void);
 
-	void         SetActName(dbc::cChar* szActName);
-	dbc::cChar*  GetActName(void);
+	void         SetActName(const char* szActName);
+	const char*  GetActName(void);
 
-	void         SetGMLev(dbc::Char chGMLev);
-	dbc::uChar   GetGMLev(void);
+	void         SetGMLev(char chGMLev);
+	std::uint8_t   GetGMLev(void);
 
 	void         SetBankDBID(long lID, char chBankNO);
 	long         GetBankDBID(char chBankNO);
@@ -86,9 +86,9 @@ public:
 
 	long m_lIMP;
 
-	void         SetLoginCha(dbc::uLong ulType, dbc::uLong ulID);
-	dbc::uLong   GetLoginChaType(void);
-	dbc::uLong   GetLoginChaID(void);
+	void         SetLoginCha(std::uint32_t ulType, std::uint32_t ulID);
+	std::uint32_t   GetLoginChaType(void);
+	std::uint32_t   GetLoginChaID(void);
 
 	//mission::CCharMission& GetMission() { return *(mission::CCharMission*)this; }
 
@@ -119,11 +119,11 @@ public:
 
 	CPlayer* GetNextTeamPly(void);
 
-	void         SetChallengeType(dbc::Char chType);
-	dbc::Char    GetChallengeType(void);
+	void         SetChallengeType(char chType);
+	char    GetChallengeType(void);
 
-	bool SetChallengeParam(dbc::Char chParamID, dbc::Long lParamVal);
-	dbc::Long GetChallengeParam(dbc::Char chParamID);
+	bool SetChallengeParam(char chParamID, std::int32_t lParamVal);
+	std::int32_t GetChallengeParam(char chParamID);
 	bool HasChallengeObj(void);
 	void ClearChallengeObj(bool bAll = true);
 
@@ -133,12 +133,12 @@ public:
 
 	CCharacter*  GetRepairman(void);
 
-	bool SetRepairPosInfo(dbc::Char chPosType, dbc::Char chPosID);
+	bool SetRepairPosInfo(char chPosType, char chPosID);
 
 	SItemGrid*   GetRepairItem(void);
 	bool         CheckRepairItem(void);
 	bool         IsRepairEquipPos(void);
-	dbc::Char    GetRepairPosID(void);
+	char    GetRepairPosID(void);
 	bool         IsInRepair(void);
 	void         SetInRepair(bool bInR = true);
 
@@ -163,9 +163,9 @@ public:
 	bool         IsInLifeSkill(void);
 	void         SetInForge(bool bInForge = true);
 	void         SetInLifeSkill(bool bInLiftSkill = true);
-	void         SetForgeInfo(dbc::Char chType, SForgeItem* pSItem);
+	void         SetForgeInfo(char chType, SForgeItem* pSItem);
 	void         SetLifeSkillInfo(long lType, SLifeSkillItem* pLifeSkill);
-	dbc::Char    GetForgeType(void);
+	char    GetForgeType(void);
 	SForgeItem*  GetForgeItem(void);
 	SLifeSkillItem* GetLifeSkillItem();
 
@@ -197,7 +197,8 @@ public:
 
 	CCharacter* GetBoat(BYTE byIndex);
 
-	CCharacter* GetBoat(DWORD dwBoatDBID);
+	CCharacter* GetBoat(std::uint32_t dwBoatDBID);
+	CCharacter* GetBoat(std::int32_t dwBoatDBID);
 	BYTE GetBoatIndexByDBID(DWORD dwBoatDBID);
 	BOOL AddBoat(CCharacter& Boat);
 	BOOL ClearBoat(DWORD dwBoatDBID);
@@ -266,17 +267,17 @@ public:
 
 	std::string& GetLifeSkillinfo();
 
-	dbc::Char m_szGuildName[defGUILD_NAME_LEN]; //ID0.
-	dbc::Char m_szGuildMotto[defGUILD_MOTTO_LEN];
-	dbc::Char m_szStallName[ROLE_MAXNUM_STALL_NUM];
+	char m_szGuildName[defGUILD_NAME_LEN]; //ID0.
+	char m_szGuildMotto[defGUILD_MOTTO_LEN];
+	char m_szStallName[ROLE_MAXNUM_STALL_NUM];
 	bool m_bIsGuildLeader; //0-;1-
 	struct {
 		uint32_t m_GuildState{}; //,:enum EGuildState
 
-		uLong m_GuildStatus; //
-		uLong m_lGuildID; //ID.
-		uLong m_lTempGuildID; //
-		dbc::Char m_szTempGuildName[defGUILD_NAME_LEN]; //.
+		std::uint32_t m_GuildStatus; //
+		std::uint32_t m_lGuildID; //ID.
+		std::uint32_t m_lTempGuildID; //
+		char m_szTempGuildName[defGUILD_NAME_LEN]; //.
 	};
 
 protected:
@@ -284,8 +285,8 @@ protected:
 	DWORD _dwTeamLeaderID;
 
 private:
-	dbc::Long m_lID;
-	dbc::Long m_lHandle;
+	std::int32_t m_lID;
+	std::int32_t m_lHandle;
 
 	bool bReceiveRequests{true};
 	bool bIsValid;
@@ -297,8 +298,8 @@ private:
 
 	DWORD m_dwLoginID; //  Account DB ID
 	DWORD m_dwDBActId; // ID
-	dbc::Char m_chGMLev; // GM
-	dbc::Char m_chActName[ACT_NAME_LEN]; //
+	char m_chGMLev; // GM
+	char m_chActName[ACT_NAME_LEN]; //
 
 	CCharacter* m_pCtrlCha; //
 
@@ -307,7 +308,7 @@ private:
 	BYTE m_byNumBoat; //
 	CCharacter* m_Boat[MAX_CHAR_BOAT];
 
-	dbc::uLong m_ulLoginCha[2]; // ID.0 1
+	std::uint32_t m_ulLoginCha[2]; // ID.0 1
 
 	//
 	struct {
@@ -342,16 +343,16 @@ private:
 
 	//
 	struct {
-		dbc::Char m_chChallengeType; //
-		dbc::Long m_lChallengeParam[2 + MAX_TEAM_MEMBER * 2 * 2]; //
+		char m_chChallengeType; //
+		std::int32_t m_lChallengeParam[2 + MAX_TEAM_MEMBER * 2 * 2]; //
 		CTimer m_timerChallenge; //
 	};
 
 	//
 	struct {
 		bool m_bInRepair;
-		dbc::Char m_chRepairPosType;
-		dbc::Char m_chRepairPosID;
+		char m_chRepairPosType;
+		char m_chRepairPosID;
 		SItemGrid m_SRepairItem;
 		SItemGrid* m_pSRepairItem;
 		CCharacter* m_pCRepairman;
@@ -360,7 +361,7 @@ private:
 	// /
 	struct {
 		bool m_bInForge;
-		dbc::Char m_chForgeType;
+		char m_chForgeType;
 		SForgeItem m_SForgeItem;
 		CCharacter* m_pCForgeman;
 	};
@@ -377,18 +378,18 @@ private:
 
 	struct {
 		bool m_bInLiftSkill;
-		dbc::Long m_lLifeSkillType;
+		std::int32_t m_lLifeSkillType;
 		SLifeSkillItem m_pSLifeSkillItem;
 		std::string m_strLifeSkillinfo;
 	};
 
-	dbc::Short m_sGetTeamPlyCount;
+	int16_t m_sGetTeamPlyCount;
 
 	DWORD m_dwValidFlag;
 	short m_sGarnerWiner;
 };
 
-extern CPlayer* CreatePlayer(GateServer* pGate, dbc::uLong ulGateAddr, dbc::uLong ulChaDBId);
+extern CPlayer* CreatePlayer(GateServer* pGate, std::uint32_t ulGateAddr, std::uint32_t ulChaDBId);
 extern void ReleasePlayer(CPlayer* pPlayer);
 
 #endif // PLAYER_H

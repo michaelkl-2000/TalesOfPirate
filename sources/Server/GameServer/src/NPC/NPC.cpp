@@ -193,7 +193,7 @@ namespace mission
 		strncpy( m_szMsgProc, recNpc.szMsgProc, ROLE_MAXSIZE_MSGPROC - 1 );
 
 		m_ID = g_pGameApp->m_Ident.GetID();
-		Char szLogName[defLOG_NAME_LEN] = "";
+		char szLogName[defLOG_NAME_LEN] = "";
 		{
 			auto _s = std::format("Cha-{}+{}", GetName(), GetID());
 			std::strncpy(szLogName, _s.c_str(), sizeof(szLogName) - 1);
@@ -207,7 +207,7 @@ namespace mission
 		SetAngle( recNpc.sDir );
 
 		m_CChaAttr.Init( recNpc.sCharID );
-		setAttr(ATTR_CHATYPE, enumCHACTRL_NPC);
+		setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::NPC));
 		
 		return TRUE;
 	}

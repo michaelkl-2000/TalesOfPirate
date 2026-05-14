@@ -1,4 +1,4 @@
-﻿#include "Core/stdafx.h"
+#include "Core/stdafx.h"
 #include "Character/Character.h"
 #include "Player/Player.h"
 #include "Db/GameDB.h"
@@ -220,11 +220,11 @@ bool PlayerStorage::ReadAllData(CPlayer& player, std::uint32_t atorID) {
 
 	// Логин-персонаж
 	std::string strList[2];
-	Util_ResolveTextLine(row->login_cha.c_str(), strList, 2, ',');
-	player.SetLoginCha(Str2Int(strList[0]), Str2Int(strList[1]));
+	Corsairs::Util::ResolveTextLine(row->login_cha.c_str(), strList, 2, ',');
+	player.SetLoginCha(Corsairs::Util::Str2Int(strList[0]), Corsairs::Util::Str2Int(strList[1]));
 
 	// Kitbag и ресурсы
-	pCha->SetKitbagRecDBID(Str2Int(row->kitbag));
+	pCha->SetKitbagRecDBID(Corsairs::Util::Str2Int(row->kitbag));
 	pCha->SetKitbagTmpRecDBID(row->kitbag_tmp);
 
 	// Карта и состояние. character.map_mask больше не используется (исторический legacy
@@ -367,7 +367,7 @@ bool PlayerStorage::SaveAllData(CPlayer& pPlayer, char chSaveType, bool bForceWi
 	row.hp = pCha->getAttr(ATTR_HP);
 	row.sp = pCha->getAttr(ATTR_SP);
 	row.exp = pCha->getAttr(ATTR_CEXP);
-	row.radius = pCha->GetShape().radius;
+	row.radius = pCha->GetShape().Radius;
 	row.angle = pCha->GetAngle();
 	row.pk_ctrl = pCha->IsInPK();
 	row.degree = pCha->getAttr(ATTR_LV);
@@ -406,8 +406,8 @@ bool PlayerStorage::SaveAllData(CPlayer& pPlayer, char chSaveType, bool bForceWi
 	if (bWithPos) {
 		row.map = pCCtrlCha->GetBirthMap();
 		row.main_map = pCha->GetBirthMap();
-		row.map_x = pCha->GetShape().centre.x;
-		row.map_y = pCha->GetShape().centre.y;
+		row.map_x = pCha->GetShape().Centre.X;
+		row.map_y = pCha->GetShape().Centre.Y;
 	}
 
 	int affected = _characters.Update(row);
@@ -433,8 +433,8 @@ bool PlayerStorage::SavePos(CPlayer& pPlayer) {
 		"UPDATE character SET map=?, main_map=?, map_x=?, map_y=?, angle=? WHERE atorID=?",
 		std::string_view(pCCtrlCha->GetBirthMap()),
 		std::string_view(pCha->GetBirthMap()),
-		static_cast<int>(pCha->GetPos().x),
-		static_cast<int>(pCha->GetPos().y),
+		static_cast<int>(pCha->GetPos().X),
+		static_cast<int>(pCha->GetPos().Y),
 		static_cast<int>(pCha->GetAngle()),
 		static_cast<int>(pPlayer.GetDBChaId()));
 	return true;
@@ -546,7 +546,7 @@ bool PlayerStorage::IsChaOnline(std::uint32_t atorID, bool& bOnline) {
 	return true;
 }
 
-Long PlayerStorage::GetChaAddr(std::uint32_t atorID) {
+std::int32_t PlayerStorage::GetChaAddr(std::uint32_t atorID) {
 	if (atorID == 0) {
 		return 0;
 	}
@@ -554,7 +554,7 @@ Long PlayerStorage::GetChaAddr(std::uint32_t atorID) {
 	if (!row) {
 		return 0;
 	}
-	return static_cast<Long>(row->endeMem);
+	return static_cast<std::int32_t>(row->endeMem);
 }
 
 bool PlayerStorage::SaveBankDBID(CPlayer& pPlayer) {
@@ -1032,9 +1032,9 @@ bool CTableBoat::GetBoat(CCharacter& Boat) {
 
 		SItemGrid* pGridCont = NULL;
 		CItemRecord* pItem = NULL;
-		Short sPos = 0;
+		int16_t sPos = 0;
 		int i = 0;
-		Short sUsedNum = Boat.m_CKitbag.GetUseGridNum();
+		int16_t sUsedNum = Boat.m_CKitbag.GetUseGridNum();
 		while (i < sUsedNum) {
 			pGridCont = Boat.m_CKitbag.GetGridContByNum(i);
 			if (pGridCont) {
@@ -1122,8 +1122,8 @@ bool CTableBoat::SaveBoat(CCharacter& Boat, std::int8_t chSaveType) {
 			   .SetParam(6, static_cast<int>(Boat.getAttr(ATTR_BMXSP)))
 			   .SetParam(7, std::string_view(skillState))
 			   .SetParam(8, std::string_view(Boat.GetBirthMap()))
-			   .SetParam(9, static_cast<int>(Boat.GetPos().x))
-			   .SetParam(10, static_cast<int>(Boat.GetPos().y))
+			   .SetParam(9, static_cast<int>(Boat.GetPos().X))
+			   .SetParam(10, static_cast<int>(Boat.GetPos().Y))
 			   .SetParam(11, static_cast<int>(Boat.GetAngle()))
 			   .SetParam(12, static_cast<int>(Boat.getAttr(ATTR_LV)))
 			   .SetParam(13, static_cast<int>(Boat.getAttr(ATTR_CEXP)))
@@ -1639,8 +1639,8 @@ std::int32_t CTableGuild::Create(CCharacter& pCha, const std::string& guildname,
 	// Уведомление GameServerGroup
 	auto l_wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmGuildCreateMessage{
 		static_cast<int64_t>(l_ret_guild_id), guildname,
-		g_GetJobName(uShort(pCha.getAttr(ATTR_JOB))),
-		static_cast<int64_t>(uShort(pCha.getAttr(ATTR_LV)))
+		g_GetJobName(std::uint16_t(pCha.getAttr(ATTR_JOB))),
+		static_cast<int64_t>(std::uint16_t(pCha.getAttr(ATTR_LV)))
 	});
 	pCha.ReflectINFof(&pCha, l_wpk);
 
@@ -1894,15 +1894,15 @@ std::vector<CTableGuild::BankLog> CTableGuild::GetGuildLog(std::uint32_t guildid
 		auto banklogStr = reader.GetString(0);
 		if (!banklogStr.empty()) {
 			string logList[1024];
-			int n = Util_ResolveTextLine(banklogStr.c_str(), logList, 1024, '-', ';');
+			int n = Corsairs::Util::ResolveTextLine(banklogStr.c_str(), logList, 1024, '-', ';');
 			int i = 0;
 			while (i < n) {
 				BankLog p;
-				p.type = Str2Int(logList[i].c_str());
-				p.time = Str2Int(logList[i + 1].c_str());
-				p.parameter = Str2Int(logList[i + 2].c_str());
-				p.quantity = Str2Int(logList[i + 3].c_str());
-				p.userID = Str2Int(logList[i + 4].c_str());
+				p.type = Corsairs::Util::Str2Int(logList[i].c_str());
+				p.time = Corsairs::Util::Str2Int(logList[i + 1].c_str());
+				p.parameter = Corsairs::Util::Str2Int(logList[i + 2].c_str());
+				p.quantity = Corsairs::Util::Str2Int(logList[i + 3].c_str());
+				p.userID = Corsairs::Util::Str2Int(logList[i + 4].c_str());
 				logs.push_back(p);
 				i += 5;
 			}
@@ -2971,7 +2971,7 @@ bool PlayerStorage::SetGuildPermission(std::int32_t atorID, std::uint32_t perm, 
 	return true;
 }
 
-bool PlayerStorage::SetChaAddr(std::uint32_t atorID, Long addr) {
+bool PlayerStorage::SetChaAddr(std::uint32_t atorID, std::int32_t addr) {
 	_characters.Execute(
 		"UPDATE character SET endeMem=? WHERE atorID=?",
 		static_cast<int>(addr),
@@ -3829,15 +3829,15 @@ bool CGameDB::IsChaOnline(std::uint32_t atorID, bool& bOnline) {
 	return _tab_cha.IsChaOnline(atorID, bOnline);
 }
 
-Long CGameDB::GetChaAddr(std::uint32_t atorID) {
+std::int32_t CGameDB::GetChaAddr(std::uint32_t atorID) {
 	return _tab_cha.GetChaAddr(atorID);
 }
 
-Long CGameDB::SetGuildPermission(std::int32_t atorID, std::uint32_t perm, std::int32_t guild_id) {
+std::int32_t CGameDB::SetGuildPermission(std::int32_t atorID, std::uint32_t perm, std::int32_t guild_id) {
 	return _tab_cha.SetGuildPermission(atorID, perm, guild_id);
 }
 
-Long CGameDB::SetChaAddr(std::uint32_t atorID, Long addr) {
+std::int32_t CGameDB::SetChaAddr(std::uint32_t atorID, std::int32_t addr) {
 	return _tab_cha.SetChaAddr(atorID, addr);
 }
 

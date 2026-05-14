@@ -61,7 +61,7 @@ protected:
 	CCharacter* _pCha;
 
 	static float _fMoveRate;
-	static unsigned long _ulPreMoveTime; // 
+	static unsigned long _ulPreMoveTime; //
 	static DWORD _dwPreMoveDis;
 
 private: // Ping

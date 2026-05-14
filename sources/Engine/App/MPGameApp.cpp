@@ -142,7 +142,7 @@ BOOL MPGameApp::LoadRes3() {
 static DWORD _time;
 
 void MPGameApp::FrameMove(DWORD dwTimeParam) {
-	MPTimer tUseTime;
+	Corsairs::Util::MPTimer tUseTime;
 	tUseTime.Begin();
 
 	_ReadKeyboardInput();
@@ -163,7 +163,7 @@ void MPGameApp::FrameMove(DWORD dwTimeParam) {
 }
 
 void MPGameApp::Render() {
-	MPTimer tRenderUse;
+	Corsairs::Util::MPTimer tRenderUse;
 	tRenderUse.Begin();
 
 	lwISceneMgr* sm = g_Render.GetInterfaceMgr()->sys_graphics->GetSceneMgr();

@@ -837,9 +837,6 @@
     <ClCompile Include="src\MPFont.cpp">
       <Filter>Source Files\Font</Filter>
     </ClCompile>
-    <ClCompile Include="Util\Singleton.cpp">
-      <Filter>Util</Filter>
-    </ClCompile>
     <ClCompile Include="Effect\EffectFile.cpp">
       <Filter>Effect</Filter>
     </ClCompile>

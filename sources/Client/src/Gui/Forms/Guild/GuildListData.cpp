@@ -14,7 +14,8 @@ CGuildListData::CGuildListData(void) {
 	m_i64Exp = 0;
 }
 
-CGuildListData::CGuildListData(DWORD dwID, std::string strName, std::string strMottoName, std::string strMasterName,
+CGuildListData::CGuildListData(DWORD dwID, std::string_view strName, std::string_view strMottoName,
+							   std::string_view strMasterName,
 							   DWORD dwMemberCount, __int64 i64Exp) {
 	SetGuildID(dwID);
 	SetGuildName(strName);

@@ -1,4 +1,4 @@
-﻿#include "Core/stdafx.h"
+#include "Core/stdafx.h"
 #include "World/SubMap.h"
 #include "App/GameApp.h"
 #include "App/GameAppNet.h"
@@ -19,9 +19,6 @@
 
 #include "Services/Auction/Auction.h"
 #include "CommandMessages.h"
-
-_DBC_USING
-
 extern std::string g_strLogName;
 
 //----------------------------------------------------------
@@ -41,7 +38,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 	case CMD_CM_STALLSEARCH: {
 		Corsairs::Net::Msg::CmStallSearchMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		g_StallSystem.SearchItem(*this, static_cast<Long>(msg.itemId));
+		g_StallSystem.SearchItem(*this, static_cast<std::int32_t>(msg.itemId));
 		break;
 	}
 	case CMD_PM_GUILDBANK: {
@@ -76,7 +73,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 	case CMD_CM_BEGINACTION: {
 		Corsairs::Net::Msg::CmBeginActionMessage actionMsg;
 		Corsairs::Net::Msg::deserialize(pk, actionMsg);
-		uLong ulWorldID = static_cast<uLong>(actionMsg.worldId);
+		std::uint32_t ulWorldID = static_cast<std::uint32_t>(actionMsg.worldId);
 
 		if (GetPlayer()) {
 			if (GetPlayer()->GetCtrlCha() && ulWorldID == GetPlayer()->GetCtrlCha()->GetID())
@@ -94,7 +91,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 	case CMD_CM_DIE_RETURN: {
 		Corsairs::Net::Msg::CmDieReturnMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		m_chSelRelive = static_cast<Char>(msg.reliveType);
+		m_chSelRelive = static_cast<char>(msg.reliveType);
 		GetPlyMainCha()->ResetChaRelive();
 		if (m_chSelRelive == enumEPLAYER_RELIVE_NORIGIN)
 			SetRelive(enumEPLAYER_RELIVE_ORIGIN, 0);
@@ -121,7 +118,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 			return;
 		}
 
-		uLong ulID = pk.ReadInt64();
+		std::uint32_t ulID = pk.ReadInt64();
 		ToLogService("trade", "REQUESTTALK/TRADE cha={} cmd={} npcId={}", GetLogName(), usCmd, ulID);
 		Handle_RequestTalk(ulID, pk);
 	}
@@ -243,7 +240,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		Corsairs::Net::Msg::CmBoatLaunchMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
 		DWORD dwNpcID = static_cast<DWORD>(msg.npcId);
-		CCharacter* pCha = m_submap->FindCharacter(dwNpcID, GetShape().centre);
+		CCharacter* pCha = m_submap->FindCharacter(dwNpcID, GetShape().Centre);
 		if (pCha == NULL) {
 			break;
 		}
@@ -263,7 +260,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		Corsairs::Net::Msg::CmSelectBoatListMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
 		DWORD dwNpcID = static_cast<DWORD>(msg.npcId);
-		CCharacter* pCha = m_submap->FindCharacter(dwNpcID, GetShape().centre);
+		CCharacter* pCha = m_submap->FindCharacter(dwNpcID, GetShape().Centre);
 		if (pCha == NULL) {
 			break;
 		}
@@ -280,7 +277,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		Corsairs::Net::Msg::deserialize(pk, msg);
 		DWORD dwNpcID = static_cast<DWORD>(msg.npcId);
 		if (dwNpcID) {
-			CCharacter* pCha = m_submap->FindCharacter(dwNpcID, GetShape().centre);
+			CCharacter* pCha = m_submap->FindCharacter(dwNpcID, GetShape().Centre);
 			if (pCha == NULL)
 				break;
 		}
@@ -290,7 +287,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 	break;
 	case CMD_CM_ENTITY_EVENT: {
 		DWORD dwEntityID = pk.ReadInt64();
-		CCharacter* pCha = m_submap->FindCharacter(dwEntityID, GetShape().centre);
+		CCharacter* pCha = m_submap->FindCharacter(dwEntityID, GetShape().Centre);
 		if (pCha == NULL) break;
 		mission::CEventEntity* pEntity = pCha->IsEvent();
 		if (pEntity) {
@@ -354,8 +351,8 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 	case CMD_CM_SKILLUPGRADE: {
 		Corsairs::Net::Msg::CmSkillUpgradeMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		Short sSkillID = static_cast<Short>(msg.skillId);
-		Char chAddGrade = static_cast<Char>(msg.addGrade);
+		int16_t sSkillID = static_cast<int16_t>(msg.skillId);
+		char chAddGrade = static_cast<char>(msg.addGrade);
 
 		// kong@pkodev.net 09.22.2017
 		chAddGrade = 1;
@@ -422,7 +419,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		Corsairs::Net::Msg::CmGuildPutNameMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
 		bool l_confirm = msg.confirm ? true : false;
-		if (!msg.guildName.empty() && Guild::IsValidGuildName(msg.guildName.c_str(), uShort(msg.guildName.length())) &&
+		if (!msg.guildName.empty() && Guild::IsValidGuildName(msg.guildName.c_str(), std::uint16_t(msg.guildName.length())) &&
 			!msg.passwd.empty() && !strchr(msg.passwd.c_str(), '\'')) {
 			Guild::cmd_CreateGuild(GetPlyMainCha(), l_confirm, msg.guildName.c_str(), msg.passwd.c_str());
 		}
@@ -531,7 +528,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 	{
 		Corsairs::Net::Msg::CmTeamFightAskMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		Cmd_FightAsk(static_cast<Char>(msg.type), static_cast<Long>(msg.worldId), static_cast<Long>(msg.handle));
+		Cmd_FightAsk(static_cast<char>(msg.type), static_cast<std::int32_t>(msg.worldId), static_cast<std::int32_t>(msg.handle));
 	}
 	break;
 	case CMD_CM_TEAM_FIGHT_ASR: // 
@@ -545,7 +542,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		Corsairs::Net::Msg::CmItemRepairAskMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
 
-		Cmd_ItemRepairAsk(static_cast<Char>(msg.posType), static_cast<Char>(msg.posId));
+		Cmd_ItemRepairAsk(static_cast<char>(msg.posType), static_cast<char>(msg.posId));
 	}
 	break;
 	case CMD_CM_ITEM_REPAIR_ASR: {
@@ -635,7 +632,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		}
 
 		CPlayer* pCply = pMainCha->GetPlayer();
-		cChar* szPwd2 = pCply->GetPassword();
+		const char* szPwd2 = pCply->GetPassword();
 
 		if ((szPwd2[0] == 0) || (!strcmp(szPwd.c_str(), szPwd2)) || g_Config.m_bInstantIGS) {
 			pMainCha->SetStoreEnable(true);
@@ -762,7 +759,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 			break;
 		}
 
-		CCharacter* pTarCha = pMainCha->GetSubMap()->FindCharacter(dwCharID, pMainCha->GetShape().centre);
+		CCharacter* pTarCha = pMainCha->GetSubMap()->FindCharacter(dwCharID, pMainCha->GetShape().Centre);
 		if (!pTarCha) {
 			//pMainCha->SystemNotice("%s !", szName);
 			pMainCha->SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00012), szName.c_str());
@@ -813,7 +810,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 			break;
 		}
 
-		CCharacter* pSrcCha = pMainCha->GetSubMap()->FindCharacter(dwCharID, pMainCha->GetShape().centre);
+		CCharacter* pSrcCha = pMainCha->GetSubMap()->FindCharacter(dwCharID, pMainCha->GetShape().Centre);
 		if (!pSrcCha) {
 			//pMainCha->SystemNotice("%s !", szName);
 			pMainCha->SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00012), szName.c_str());
@@ -915,7 +912,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		//
 		/*CCharacter *pMainCha = GetPlyMainCha();
 
-		cChar *answer = pk.ReadString();
+		const char *answer = pk.ReadString();
 		pMainCha->CheatCheck(answer);*/
 	}
 	break;
@@ -929,13 +926,13 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 				Corsairs::Net::Msg::CmBidUpMessage cmMsg;
 				Corsairs::Net::Msg::deserialize(pk, cmMsg);
 				DWORD dwNpcID = static_cast<DWORD>(cmMsg.npcId);
-				CCharacter* pNpc = m_submap->FindCharacter(dwNpcID, GetShape().centre);
+				CCharacter* pNpc = m_submap->FindCharacter(dwNpcID, GetShape().Centre);
 				if (pNpc == NULL) {
 					//SystemNotice( "NPCID%d", dwNpcID );
 					SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00034), dwNpcID);
 					break;
 				}
-				g_AuctionSystem.BidUp(pMainCha, static_cast<short>(cmMsg.itemId), static_cast<uInt>(cmMsg.price));
+				g_AuctionSystem.BidUp(pMainCha, static_cast<short>(cmMsg.itemId), static_cast<std::uint32_t>(cmMsg.price));
 				g_AuctionSystem.NotifyAuction(this, pNpc);
 			}
 		}
@@ -971,7 +968,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 //    (  ProcessPacket) 
 
 void CCharacter::Handle_GuildBankCmd(const Corsairs::Net::Msg::PmGuildBankMessage& msg) {
-	Char bankType = static_cast<Char>(msg.bankType);
+	char bankType = static_cast<char>(msg.bankType);
 
 	if (const DWORD COOLDOWN = GetTickCount(); GetPlyMainCha()->GuildBankCD > COOLDOWN) {
 		BickerNotice("Please calm down Don't spam! %ds left!", (GetPlyMainCha()->GuildBankCD - COOLDOWN) / 1000);
@@ -991,11 +988,11 @@ void CCharacter::Handle_GuildBankCmd(const Corsairs::Net::Msg::PmGuildBankMessag
 
 		if (bankType == 0 && std::holds_alternative<Corsairs::Net::Msg::PmGuildBankOperData>(msg.data)) {
 			auto& operData = std::get<Corsairs::Net::Msg::PmGuildBankOperData>(msg.data);
-			Char chSrcType = static_cast<Char>(operData.srcType);
-			Short sSrcGrid = static_cast<Short>(operData.srcGrid);
-			Short sSrcNum = static_cast<Short>(operData.srcNum);
-			Char chTarType = static_cast<Char>(operData.tarType);
-			Short sTarGrid = static_cast<Short>(operData.tarGrid);
+			char chSrcType = static_cast<char>(operData.srcType);
+			int16_t sSrcGrid = static_cast<int16_t>(operData.srcGrid);
+			int16_t sSrcNum = static_cast<int16_t>(operData.srcNum);
+			char chTarType = static_cast<char>(operData.tarType);
+			int16_t sTarGrid = static_cast<int16_t>(operData.tarGrid);
 			int guildID = GetGuildID();
 			std::vector<CTableGuild::BankLog> logs = game_db.GetGuildLog(guildID);
 
@@ -1018,7 +1015,7 @@ void CCharacter::Handle_GuildBankCmd(const Corsairs::Net::Msg::PmGuildBankMessag
 				l.parameter = bag.GetID(sSrcGrid);
 				logs.push_back(l);
 			}
-			Short sRet = Cmd_GuildBankOper(chSrcType, sSrcGrid, sSrcNum, chTarType, sTarGrid);
+			int16_t sRet = Cmd_GuildBankOper(chSrcType, sSrcGrid, sSrcNum, chTarType, sTarGrid);
 			if (sRet != enumITEMOPT_SUCCESS || !game_db.SetGuildLog(logs, guildID)) {
 				ItemOprateFailed(sRet);
 			}
@@ -1026,7 +1023,7 @@ void CCharacter::Handle_GuildBankCmd(const Corsairs::Net::Msg::PmGuildBankMessag
 		else if (bankType == 1 && std::holds_alternative<Corsairs::Net::Msg::PmGuildBankGoldData>(msg.data)) {
 			[&]() {
 				auto& goldData = std::get<Corsairs::Net::Msg::PmGuildBankGoldData>(msg.data);
-				Char action = static_cast<Char>(goldData.direction);
+				char action = static_cast<char>(goldData.direction);
 
 				int guildID = GetGuildID();
 				int gold = static_cast<int>(goldData.gold);
@@ -1128,17 +1125,17 @@ void CCharacter::Handle_PushToGuildBank(const std::string& strItem) {
 }
 
 void CCharacter::Handle_Ping(const Corsairs::Net::Msg::CmPingResponseMessage& msg) {
-	uLong ulPing = GetTickCount() - static_cast<uLong>(msg.v1);
-	Long lGateSvr = static_cast<Long>(msg.v2);
-	Long lSrcID = static_cast<Long>(msg.v3);
-	Long lGatePlayerID = static_cast<Long>(msg.v4);
-	Long lGatePlayerAddr = static_cast<Long>(msg.v5);
+	std::uint32_t ulPing = GetTickCount() - static_cast<std::uint32_t>(msg.v1);
+	std::int32_t lGateSvr = static_cast<std::int32_t>(msg.v2);
+	std::int32_t lSrcID = static_cast<std::int32_t>(msg.v3);
+	std::int32_t lGatePlayerID = static_cast<std::int32_t>(msg.v4);
+	std::int32_t lGatePlayerAddr = static_cast<std::int32_t>(msg.v5);
 
 	BEGINGETGATE();
 	GateServer* pNoGate;
 	GateServer* pGate = 0;
 	while (pNoGate = GETNEXTGATE()) {
-		if (ToAddress(pNoGate) == lGateSvr) {
+		if (Corsairs::Util::ToAddress(pNoGate) == lGateSvr) {
 			pGate = pNoGate;
 			break;
 		}
@@ -1168,14 +1165,14 @@ void CCharacter::Handle_Say(const Corsairs::Net::Msg::CmSayMessage& sayMsg) {
 	if (sayMsg.content.empty())
 		return;
 	else if (sayMsg.content[0] == '&') {
-		Char chGMLv = GetPlayer()->GetGMLev();
+		char chGMLv = GetPlayer()->GetGMLev();
 		if (chGMLv == 0 || chGMLv > 150)
 			SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00002));
 		else
-			DoCommand(sayMsg.content.c_str() + 1, static_cast<uLong>(sayMsg.content.size()));
+			DoCommand(sayMsg.content.c_str() + 1, static_cast<std::uint32_t>(sayMsg.content.size()));
 	}
 	else if (sayMsg.content.size() > 2 && sayMsg.content[0] == '$' && sayMsg.content[1] == '$') {
-		DoCommand_CheckStatus(sayMsg.content.c_str() + 3, static_cast<uLong>(sayMsg.content.size() - 2));
+		DoCommand_CheckStatus(sayMsg.content.c_str() + 3, static_cast<std::uint32_t>(sayMsg.content.size() - 2));
 	}
 	else {
 		auto chatRet = g_luaAPI.CallR<int>("HandleChat", static_cast<CCharacter*>(this), sayMsg.content.c_str());
@@ -1193,17 +1190,17 @@ void CCharacter::Handle_Say(const Corsairs::Net::Msg::CmSayMessage& sayMsg) {
 	}
 }
 
-void CCharacter::Handle_RequestTalk(uLong npcId, Corsairs::Net::RPacket& pk) {
+void CCharacter::Handle_RequestTalk(std::uint32_t npcId, Corsairs::Net::RPacket& pk) {
 	if (npcId == mission::g_WorldEudemon.GetID()) {
 		ToLogService("trade", "Handle_RequestTalk cha={} npcId={} -> WorldEudemon", GetLogName(), npcId);
 		mission::g_WorldEudemon.MsgProc(*this, pk);
 		return;
 	}
-	CCharacter* pCha = m_submap->FindCharacter(npcId, GetShape().centre);
+	CCharacter* pCha = m_submap->FindCharacter(npcId, GetShape().Centre);
 	if (pCha == NULL) {
 		ToLogService("trade", LogLevel::Error,
 			"Handle_RequestTalk cha={} npcId={} -> NPC not found on submap (pos {},{})",
-			GetLogName(), npcId, GetShape().centre.x, GetShape().centre.y);
+			GetLogName(), npcId, GetShape().Centre.X, GetShape().Centre.Y);
 		return;
 	}
 	mission::CNpc* pNpc = pCha->IsNpc();
@@ -1265,8 +1262,8 @@ void CCharacter::Handle_DailyBuffRequest() {
 }
 
 void CCharacter::Handle_RefreshData(const Corsairs::Net::Msg::CmRefreshDataMessage& msg) {
-	Long lWorldID = static_cast<Long>(msg.worldId);
-	Long lHandle = static_cast<Long>(msg.handle);
+	std::int32_t lWorldID = static_cast<std::int32_t>(msg.worldId);
+	std::int32_t lHandle = static_cast<std::int32_t>(msg.handle);
 	Entity* pCEnt = g_pGameApp->IsLiveingEntity(lWorldID, lHandle);
 	if (pCEnt) {
 		CCharacter* pCCha = pCEnt->IsCharacter();
@@ -1321,7 +1318,7 @@ void CCharacter::Handle_ItemForgeAsk(const Corsairs::Net::Msg::CmItemForgeGroupA
 			SFgeItem.SGroup[i].SGrid[j].sItemNum = static_cast<short>(msg.groups[i].cells[j].num);
 		}
 	}
-	Cmd_ItemForgeAsk(static_cast<Char>(msg.type), &SFgeItem);
+	Cmd_ItemForgeAsk(static_cast<char>(msg.type), &SFgeItem);
 }
 
 void CCharacter::Handle_ItemLotteryAsk(const Corsairs::Net::Msg::CmItemLotteryGroupAskMessage& msg) {
@@ -1360,7 +1357,7 @@ void CCharacter::Handle_LifeSkillAsk(const Corsairs::Net::Msg::CmLifeSkillCraftM
 	}
 	case 1: {
 		string strVer[2];
-		Util_ResolveTextLine(GetPlayer()->GetLifeSkillinfo().c_str(), strVer, 2, ',');
+		Corsairs::Util::ResolveTextLine(GetPlayer()->GetLifeSkillinfo().c_str(), strVer, 2, ',');
 		if (atoi(strVer[0].c_str()) > atoi(strVer[1].c_str()))
 			LifeSkillItem.sReturn = 1;
 		else
@@ -1370,7 +1367,7 @@ void CCharacter::Handle_LifeSkillAsk(const Corsairs::Net::Msg::CmLifeSkillCraftM
 	case 2: {
 		short sret = static_cast<short>(craftMsg.extraParam);
 		string strVer[3];
-		Util_ResolveTextLine(GetPlayer()->GetLifeSkillinfo().c_str(), strVer, 3, ',');
+		Corsairs::Util::ResolveTextLine(GetPlayer()->GetLifeSkillinfo().c_str(), strVer, 3, ',');
 		int count = atoi(strVer[0].c_str()) + atoi(strVer[1].c_str()) + atoi(strVer[2].c_str());
 		count -= 9;
 		if (count > 0)
@@ -1421,7 +1418,7 @@ void CCharacter::Handle_LifeSkillAsr(const Corsairs::Net::Msg::CmLifeSkillCraftM
 	Cmd_LifeSkillItemAsR(type, &LifeSkillItem);
 }
 
-void CCharacter::Handle_StoreCommand(uShort usCmd, Corsairs::Net::RPacket& pk) {
+void CCharacter::Handle_StoreCommand(std::uint16_t usCmd, Corsairs::Net::RPacket& pk) {
 	CCharacter* pMainCha = GetPlyMainCha();
 	if (!pMainCha->IsStoreEnable()) {
 		return;
@@ -1452,7 +1449,7 @@ void CCharacter::Handle_TigerStart(const Corsairs::Net::Msg::CmTigerStartMessage
 	m_sTigerSel[1] = (msg.sel2 > 0) ? 1 : 0;
 	m_sTigerSel[2] = (msg.sel3 > 0) ? 1 : 0;
 
-	CCharacter* pCha = m_submap->FindCharacter(static_cast<DWORD>(msg.npcId), GetShape().centre);
+	CCharacter* pCha = m_submap->FindCharacter(static_cast<DWORD>(msg.npcId), GetShape().Centre);
 	if (pCha == NULL)
 		return;
 
@@ -1461,7 +1458,7 @@ void CCharacter::Handle_TigerStart(const Corsairs::Net::Msg::CmTigerStartMessage
 }
 
 void CCharacter::Handle_TigerStop(const Corsairs::Net::Msg::CmTigerStopMessage& msg) {
-	CCharacter* pCha = m_submap->FindCharacter(static_cast<DWORD>(msg.npcId), GetShape().centre);
+	CCharacter* pCha = m_submap->FindCharacter(static_cast<DWORD>(msg.npcId), GetShape().Centre);
 	if (pCha == NULL)
 		return;
 
@@ -1639,7 +1636,7 @@ void CCharacter::Handle_ItemLockAsk(const Corsairs::Net::Msg::CmItemLockAskMessa
 			return;
 		}
 
-		dbc::Char chPosType = static_cast<dbc::Char>(cmMsg.slot);
+		char chPosType = static_cast<char>(cmMsg.slot);
 		SItemGrid* item = pMainCha->m_CKitbag.GetGridContByID(chPosType);
 		if (item) {
 			CItemRecord* pCItemRec = GetItemRecordInfo(item->sID);
@@ -1678,7 +1675,7 @@ void CCharacter::Handle_GameRequestPin(const Corsairs::Net::Msg::CmGameRequestPi
 		return;
 
 	CPlayer* pCply = pMainCha->GetPlayer();
-	cChar* szPwd2 = pCply->GetPassword();
+	const char* szPwd2 = pCply->GetPassword();
 	if ((szPwd2[0] == 0) || (!strcmp(szPwd.c_str(), szPwd2))) {
 		auto pinRet = g_luaAPI.CallR<int>("HandlePinRequest", static_cast<CCharacter*>(this), (int)requestType);
 		if (!pinRet.value_or(0))
@@ -1700,7 +1697,7 @@ void CCharacter::Handle_MasterInvite(const Corsairs::Net::Msg::CmMasterInviteMes
 		return;
 	}
 
-	CCharacter* pTarCha = pMainCha->GetSubMap()->FindCharacter(dwCharID, pMainCha->GetShape().centre);
+	CCharacter* pTarCha = pMainCha->GetSubMap()->FindCharacter(dwCharID, pMainCha->GetShape().Centre);
 	if (!pTarCha) {
 		//pMainCha->SystemNotice("%s !", szName);
 		pMainCha->SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00012), szName.c_str());
@@ -1756,7 +1753,7 @@ void CCharacter::Handle_MasterAsr(const Corsairs::Net::Msg::CmMasterAsrMessage& 
 		return;
 	}
 
-	CCharacter* pSrcCha = pMainCha->GetSubMap()->FindCharacter(dwCharID, pMainCha->GetShape().centre);
+	CCharacter* pSrcCha = pMainCha->GetSubMap()->FindCharacter(dwCharID, pMainCha->GetShape().Centre);
 	if (!pSrcCha) {
 		//pMainCha->SystemNotice("%s !", szName);
 		pMainCha->SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00012), szName.c_str());
@@ -1796,7 +1793,7 @@ void CCharacter::Handle_MasterAsr(const Corsairs::Net::Msg::CmMasterAsrMessage& 
 void CCharacter::Handle_MasterDel(const Corsairs::Net::Msg::CmMasterDelMessage& cmMsg) {
 	CCharacter* pMainCha = GetPlyMainCha();
 	std::string szName = cmMsg.name;
-	uLong ulChaID = static_cast<uLong>(cmMsg.chaId);
+	std::uint32_t ulChaID = static_cast<std::uint32_t>(cmMsg.chaId);
 
 	if (pMainCha->GetLevel() > 40) {
 		//pMainCha->SystemNotice("!");
@@ -1825,7 +1822,7 @@ void CCharacter::Handle_MasterDel(const Corsairs::Net::Msg::CmMasterDelMessage& 
 void CCharacter::Handle_PrenticeDel(const Corsairs::Net::Msg::CmPrenticeDelMessage& cmMsg) {
 	CCharacter* pMainCha = GetPlyMainCha();
 	std::string szName = cmMsg.name;
-	uLong ulChaID = static_cast<uLong>(cmMsg.chaId);
+	std::uint32_t ulChaID = static_cast<std::uint32_t>(cmMsg.chaId);
 
 	//long lDelMoney = 10000 * pMainCha->GetLevel();
 	//if(!pMainCha->HasMoney(lDelMoney))
@@ -1861,8 +1858,8 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 		return;
 	}
 
-	uLong ulPacketId = static_cast<uLong>(msg.packetId);
-	Char chActionType = static_cast<Char>(msg.actionType);
+	std::uint32_t ulPacketId = static_cast<std::uint32_t>(msg.packetId);
+	char chActionType = static_cast<char>(msg.actionType);
 
 
 	m_ulPacketID = ulPacketId;
@@ -1889,25 +1886,25 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 		ResetPosState();
 
 		const auto& moveData = std::get<Corsairs::Net::Msg::CmActionMoveInputData>(msg.data);
-		cChar* pData = moveData.pathData.data();
-		uShort ulTurnNum = static_cast<uShort>(moveData.pathData.size());
-		Point Path[defMOVE_INFLEXION_NUM];
-		Char chPointNum;
+		const char* pData = moveData.pathData.data();
+		std::uint16_t ulTurnNum = static_cast<std::uint16_t>(moveData.pathData.size());
+		Corsairs::Util::Point Path[defMOVE_INFLEXION_NUM];
+		char chPointNum;
 		if (!pData) {
 			FailedActionNoti(enumACTION_MOVE, enumFACTION_MOVEPATH);
 			//SystemNotice("\n");
 			SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00036));
 			break;
 		}
-		if ((chPointNum = Char(ulTurnNum / sizeof(Point))) > defMOVE_INFLEXION_NUM) {
+		if ((chPointNum = char(ulTurnNum / sizeof(Corsairs::Util::Point))) > defMOVE_INFLEXION_NUM) {
 			FailedActionNoti(enumACTION_MOVE, enumFACTION_MOVEPATH);
-			//SystemNotice("%d%d\n", ulTurnNum / sizeof(Point), defMOVE_INFLEXION_NUM);
-			SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00037), ulTurnNum / sizeof(Point), defMOVE_INFLEXION_NUM);
+			//SystemNotice("%d%d\n", ulTurnNum / sizeof(Corsairs::Util::Point), defMOVE_INFLEXION_NUM);
+			SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00037), ulTurnNum / sizeof(Corsairs::Util::Point), defMOVE_INFLEXION_NUM);
 			break;
 		}
-		memcpy(Path, pData, chPointNum * sizeof(Point));
+		memcpy(Path, pData, chPointNum * sizeof(Corsairs::Util::Point));
 
-		Cmd_BeginMove((Short)m_dwPing, Path, chPointNum);
+		Cmd_BeginMove((int16_t)m_dwPing, Path, chPointNum);
 	}
 	break;
 	case enumACTION_SKILL: {
@@ -1950,10 +1947,10 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 		if (chMove == 2) // 
 		{
 			// 
-			Point Path[defMOVE_INFLEXION_NUM];
-			Char chPointNum;
-			cChar* pData = skillData.pathData.data();
-			uShort ulTurnNum = static_cast<uShort>(skillData.pathData.size());
+			Corsairs::Util::Point Path[defMOVE_INFLEXION_NUM];
+			char chPointNum;
+			const char* pData = skillData.pathData.data();
+			std::uint16_t ulTurnNum = static_cast<std::uint16_t>(skillData.pathData.size());
 			if (!pData) {
 				FailedActionNoti(enumACTION_SKILL, enumFACTION_MOVEPATH);
 				//SystemNotice("\n");
@@ -1961,17 +1958,17 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 				break;
 			}
 
-			if ((chPointNum = Char(ulTurnNum / sizeof(Point))) > defMOVE_INFLEXION_NUM) {
+			if ((chPointNum = char(ulTurnNum / sizeof(Corsairs::Util::Point))) > defMOVE_INFLEXION_NUM) {
 				FailedActionNoti(enumACTION_SKILL, enumFACTION_MOVEPATH);
-				//SystemNotice("%d%d\n", ulTurnNum / sizeof(Point), defMOVE_INFLEXION_NUM);
-				SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00037), ulTurnNum / sizeof(Point), defMOVE_INFLEXION_NUM);
+				//SystemNotice("%d%d\n", ulTurnNum / sizeof(Corsairs::Util::Point), defMOVE_INFLEXION_NUM);
+				SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00037), ulTurnNum / sizeof(Corsairs::Util::Point), defMOVE_INFLEXION_NUM);
 				break;
 			}
-			memcpy(Path, pData, chPointNum * sizeof(Point));
+			memcpy(Path, pData, chPointNum * sizeof(Corsairs::Util::Point));
 			// 
-			dbc::uLong ulSkillID = static_cast<dbc::uLong>(skillData.skillId);
-			Long lTarInfo1 = static_cast<Long>(skillData.tarInfo1);
-			Long lTarInfo2 = static_cast<Long>(skillData.tarInfo2);
+			std::uint32_t ulSkillID = static_cast<std::uint32_t>(skillData.skillId);
+			std::int32_t lTarInfo1 = static_cast<std::int32_t>(skillData.tarInfo1);
+			std::int32_t lTarInfo2 = static_cast<std::int32_t>(skillData.tarInfo2);
 
 			CSkillRecord* pRec = GetSkillRecordInfo(ulSkillID);
 			if (!pRec) {
@@ -1986,7 +1983,7 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 				SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00040), ulSkillID);
 				break;
 			}
-			Cmd_BeginSkill((Short)m_dwPing, Path, chPointNum, pRec, 1, lTarInfo1, lTarInfo2);
+			Cmd_BeginSkill((int16_t)m_dwPing, Path, chPointNum, pRec, 1, lTarInfo1, lTarInfo2);
 		}
 		else {
 			//SystemNotice("");
@@ -2001,14 +1998,14 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 		}
 
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionStopStateData>(msg.data);
-		Short sStateID = static_cast<Short>(d.stateId);
+		int16_t sStateID = static_cast<int16_t>(d.stateId);
 
-		CSkillStateRecord* pSSkillState = GetCSkillStateRecordInfo((uChar)sStateID);
+		CSkillStateRecord* pSSkillState = GetCSkillStateRecordInfo((std::uint8_t)sStateID);
 		if (!pSSkillState)
 			break;
 		if (!pSSkillState->bCanCancel)
 			break;
-		DelSkillState((uChar)sStateID);
+		DelSkillState((std::uint8_t)sStateID);
 	}
 	break;
 	case enumACTION_LEAN: // 
@@ -2022,11 +2019,11 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 
 		m_SLean.ulPacketID = ulPacketId;
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionLeanData>(msg.data);
-		m_SLean.lPose = static_cast<Long>(d.pose);
-		m_SLean.lAngle = static_cast<Long>(d.angle);
-		m_SLean.lPosX = static_cast<Long>(d.posX);
-		m_SLean.lPosY = static_cast<Long>(d.posY);
-		m_SLean.lHeight = static_cast<Long>(d.height);
+		m_SLean.lPose = static_cast<std::int32_t>(d.pose);
+		m_SLean.lAngle = static_cast<std::int32_t>(d.angle);
+		m_SLean.lPosX = static_cast<std::int32_t>(d.posX);
+		m_SLean.lPosY = static_cast<std::int32_t>(d.posY);
+		m_SLean.lHeight = static_cast<std::int32_t>(d.height);
 		m_SLean.chState = 0;
 
 		//  : /  std::variant
@@ -2052,10 +2049,10 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	case enumACTION_ITEM_PICK: // 
 	{
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionItemPickData>(msg.data);
-		Long lWorldID = static_cast<Long>(d.worldId);
-		Long lHandle = static_cast<Long>(d.handle);
+		std::int32_t lWorldID = static_cast<std::int32_t>(d.worldId);
+		std::int32_t lHandle = static_cast<std::int32_t>(d.handle);
 
-		Short sRet = Cmd_PickupItem(lWorldID, lHandle);
+		int16_t sRet = Cmd_PickupItem(lWorldID, lHandle);
 		if (sRet != enumITEMOPT_SUCCESS)
 			ItemOprateFailed(sRet);
 	}
@@ -2063,12 +2060,12 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	case enumACTION_ITEM_THROW: // 
 	{
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionItemThrowData>(msg.data);
-		Short sGridID = static_cast<Short>(d.gridId);
-		Short sNum = static_cast<Short>(d.num);
-		Long lPosX = static_cast<Long>(d.posX);
-		Long lPosY = static_cast<Long>(d.posY);
+		int16_t sGridID = static_cast<int16_t>(d.gridId);
+		int16_t sNum = static_cast<int16_t>(d.num);
+		std::int32_t lPosX = static_cast<std::int32_t>(d.posX);
+		std::int32_t lPosY = static_cast<std::int32_t>(d.posY);
 
-		Short sRet = Cmd_ThrowItem(0, sGridID, &sNum, lPosX, lPosY);
+		int16_t sRet = Cmd_ThrowItem(0, sGridID, &sNum, lPosX, lPosY);
 		if (sRet != enumITEMOPT_SUCCESS)
 			ItemOprateFailed(sRet);
 	}
@@ -2076,10 +2073,10 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	case enumACTION_ITEM_USE: // 
 	{
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionItemUseData>(msg.data);
-		Short sFromGridID = static_cast<Short>(d.fromGridId);
-		Short sToGridID = static_cast<Short>(d.toGridId);
+		int16_t sFromGridID = static_cast<int16_t>(d.fromGridId);
+		int16_t sToGridID = static_cast<int16_t>(d.toGridId);
 
-		Short sRet = Cmd_UseItem(0, sFromGridID, 0, sToGridID);
+		int16_t sRet = Cmd_UseItem(0, sFromGridID, 0, sToGridID);
 		if (sRet != enumITEMOPT_SUCCESS)
 			ItemOprateFailed(sRet);
 	}
@@ -2088,17 +2085,17 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	{
 		m_CChaAttr.ResetChangeFlag();
 
-		Char chDir;
-		Long lParam1, lParam2;
+		char chDir;
+		std::int32_t lParam1, lParam2;
 
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionItemUnfixData>(msg.data);
-		Char chLinkID = static_cast<Char>(d.linkId);
-		Short sGridID = static_cast<Short>(d.gridId);
+		char chLinkID = static_cast<char>(d.linkId);
+		int16_t sGridID = static_cast<int16_t>(d.gridId);
 		if (sGridID == -2) // 
 		{
 			chDir = 0;
-			lParam1 = static_cast<Long>(d.param1);
-			lParam2 = static_cast<Long>(d.param2);
+			lParam1 = static_cast<std::int32_t>(d.param1);
+			lParam2 = static_cast<std::int32_t>(d.param2);
 		}
 		else if (sGridID == -1) // 
 		{
@@ -2114,8 +2111,8 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 		}
 
 
-		Short sUnfixNum = 0;
-		Short sRet = Cmd_UnfixItem(chLinkID, &sUnfixNum, chDir, lParam1, lParam2);
+		int16_t sUnfixNum = 0;
+		int16_t sRet = Cmd_UnfixItem(chLinkID, &sUnfixNum, chDir, lParam1, lParam2);
 		if (sRet != enumITEMOPT_SUCCESS)
 			ItemOprateFailed(sRet);
 	}
@@ -2123,11 +2120,11 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	case enumACTION_ITEM_POS: // 
 	{
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionItemPosData>(msg.data);
-		Short sSrcGrid = static_cast<Short>(d.srcGrid);
-		Short sSrcNum = static_cast<Short>(d.srcNum);
-		Short sTarGrid = static_cast<Short>(d.tarGrid);
+		int16_t sSrcGrid = static_cast<int16_t>(d.srcGrid);
+		int16_t sSrcNum = static_cast<int16_t>(d.srcNum);
+		int16_t sTarGrid = static_cast<int16_t>(d.tarGrid);
 
-		Short sRet = Cmd_ItemSwitchPos(0, sSrcGrid, sSrcNum, sTarGrid);
+		int16_t sRet = Cmd_ItemSwitchPos(0, sSrcGrid, sSrcNum, sTarGrid);
 		if (sRet != enumITEMOPT_SUCCESS)
 			ItemOprateFailed(sRet);
 	}
@@ -2135,11 +2132,11 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	case enumACTION_KITBAGTMP_DRAG: //
 	{
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionItemPosData>(msg.data);
-		Short sSrcGrid = static_cast<Short>(d.srcGrid);
-		Short sSrcNum = static_cast<Short>(d.srcNum);
-		Short sTarGrid = static_cast<Short>(d.tarGrid);
+		int16_t sSrcGrid = static_cast<int16_t>(d.srcGrid);
+		int16_t sSrcNum = static_cast<int16_t>(d.srcNum);
+		int16_t sTarGrid = static_cast<int16_t>(d.tarGrid);
 
-		Short sRet = Cmd_DragItem(sSrcGrid, sSrcNum, sTarGrid);
+		int16_t sRet = Cmd_DragItem(sSrcGrid, sSrcNum, sTarGrid);
 		if (sRet != enumITEMOPT_SUCCESS)
 			ItemOprateFailed(sRet);
 	}
@@ -2147,10 +2144,10 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	case enumACTION_ITEM_DELETE: // 
 	{
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionItemDeleteData>(msg.data);
-		Short sFromGridID = static_cast<Short>(d.fromGridId);
+		int16_t sFromGridID = static_cast<int16_t>(d.fromGridId);
 
-		Short sOptNum = 0;
-		Short sRet = Cmd_DelItem(0, sFromGridID, &sOptNum);
+		int16_t sOptNum = 0;
+		int16_t sRet = Cmd_DelItem(0, sFromGridID, &sOptNum);
 		if (sRet != enumITEMOPT_SUCCESS)
 			ItemOprateFailed(sRet);
 	}
@@ -2163,12 +2160,12 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	break;
 	case enumACTION_BANK: {
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionBankData>(msg.data);
-		Char chSrcType = static_cast<Char>(d.srcType);
-		Short sSrcGrid = static_cast<Short>(d.srcGrid);
-		Short sSrcNum = static_cast<Short>(d.srcNum);
-		Char chTarType = static_cast<Char>(d.tarType);
-		Short sTarGrid = static_cast<Short>(d.tarGrid);
-		Short sRet;
+		char chSrcType = static_cast<char>(d.srcType);
+		int16_t sSrcGrid = static_cast<int16_t>(d.srcGrid);
+		int16_t sSrcNum = static_cast<int16_t>(d.srcNum);
+		char chTarType = static_cast<char>(d.tarType);
+		int16_t sTarGrid = static_cast<int16_t>(d.tarGrid);
+		int16_t sRet;
 
 		sRet = Cmd_BankOper(chSrcType, sSrcGrid, sSrcNum, chTarType, sTarGrid);
 
@@ -2225,7 +2222,7 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 		std::vector<CTableGuild::BankLog> logs = game_db.GetGuildLog(guildID);
 
 		const auto& reqData = std::get<Corsairs::Net::Msg::CmActionRequestGuildLogsData>(msg.data);
-		uShort curSize = static_cast<uShort>(reqData.curSize);
+		std::uint16_t curSize = static_cast<std::uint16_t>(reqData.curSize);
 
 		Corsairs::Net::Msg::McRequestGuildLogsMessage respMsg;
 		respMsg.worldId = m_ID;
@@ -2299,20 +2296,20 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 	break;
 	case enumACTION_EVENT: {
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionEventData>(msg.data);
-		Long lID = static_cast<Long>(d.worldId);
-		Long lHandle = static_cast<Long>(d.handle);
+		std::int32_t lID = static_cast<std::int32_t>(d.worldId);
+		std::int32_t lHandle = static_cast<std::int32_t>(d.handle);
 		Entity* pCObj = g_pGameApp->IsLiveingEntity(lID, lHandle);
 		if (!pCObj) {
 			break;
 		}
-		uShort usEventID = static_cast<uShort>(d.eventId);
+		std::uint16_t usEventID = static_cast<std::uint16_t>(d.eventId);
 		ExecuteEvent(pCObj, usEventID);
 	}
 	break;
 	case enumACTION_FACE: {
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionFaceData>(msg.data);
-		Short sAngle = static_cast<Short>(d.angle);
-		Short sPose = static_cast<Short>(d.pose);
+		int16_t sAngle = static_cast<int16_t>(d.angle);
+		int16_t sPose = static_cast<int16_t>(d.pose);
 
 		//  :    std::variant
 		{
@@ -2337,8 +2334,8 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 			break;
 
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionFaceData>(msg.data);
-		Short sAngle = static_cast<Short>(d.angle);
-		Short sPose = static_cast<Short>(d.pose);
+		int16_t sAngle = static_cast<int16_t>(d.angle);
+		int16_t sPose = static_cast<int16_t>(d.pose);
 
 		//  :    std::variant
 		Corsairs::Net::Msg::McCharacterActionMessage actionMsg;
@@ -2354,7 +2351,7 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 			break;
 
 		// 
-		dbc::uLong ulSkillID = 202;
+		std::uint32_t ulSkillID = 202;
 		CSkillRecord* pCSkill = GetSkillRecordInfo(ulSkillID);
 		if (!pCSkill) {
 			break;
@@ -2415,7 +2412,7 @@ void CCharacter::Cmd_ChangeHair(Corsairs::Net::RPacket& pk) {
 		return;
 	}
 
-	CHairRecord* pHair = GetHairRecordInfo(sScriptID);
+	HairRecord* pHair = GetHairRecordInfo(sScriptID);
 	if (!pHair) {
 		std::snprintf(szRes, sizeof(szRes), RES_STRING(GM_CHARACTERPRL_CPP_00043), sScriptID);
 		Prl_ChangeHairResult(0, szRes);
@@ -2423,11 +2420,11 @@ void CCharacter::Cmd_ChangeHair(Corsairs::Net::RPacket& pk) {
 	}
 
 	short sValidCnt = 0;
-	short sValidGrid[defHAIR_MAX_ITEM][3];
+	short sValidGrid[Corsairs::Common::Character::kHairMaxNeedItems][3];
 	int gridIdx = 0;
 
-	for (short i = 0; i < defHAIR_MAX_ITEM; i++) {
-		short sNeedItemID = (short)(pHair->dwNeedItem[i][0]);
+	for (short i = 0; i < Corsairs::Common::Character::kHairMaxNeedItems; i++) {
+		short sNeedItemID = (short)(pHair->NeedItems[i].Id);
 		if (sNeedItemID > 0) {
 			BOOL bOK = TRUE;
 			short sGridLoc = (gridIdx < 4) ? static_cast<short>(gridLocs[gridIdx++]) : -1;
@@ -2448,7 +2445,7 @@ void CCharacter::Cmd_ChangeHair(Corsairs::Net::RPacket& pk) {
 			}
 			sValidGrid[sValidCnt][0] = sGridLoc;
 			sValidGrid[sValidCnt][1] = sNeedItemID;
-			sValidGrid[sValidCnt][2] = (short)(pHair->dwNeedItem[i][1]); // 
+			sValidGrid[sValidCnt][2] = (short)(pHair->NeedItems[i].Count); // 
 			sValidCnt++;
 		}
 	}
@@ -2456,12 +2453,12 @@ void CCharacter::Cmd_ChangeHair(Corsairs::Net::RPacket& pk) {
 
 	// , 
 	m_CKitbag.SetChangeFlag(false);
-	/*if(!TakeMoney("", pHair->dwMoney))
+	/*if(!TakeMoney("", pHair->Cost))
 	{
 		SystemNotice(", !");
 		return;
 	}*/
-	if (!TakeMoney(RES_STRING(GM_CHARACTERPRL_CPP_00045), pHair->dwMoney)) {
+	if (!TakeMoney(RES_STRING(GM_CHARACTERPRL_CPP_00045), pHair->Cost)) {
 		SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00046));
 		return;
 	}
@@ -2487,9 +2484,9 @@ void CCharacter::Cmd_ChangeHair(Corsairs::Net::RPacket& pk) {
 
 	SetLookChangeFlag(true);
 	// 10%
-	if (rand() % 100 < 10 && pHair->GetFailItemNum() > 0) {
-		int nRandFail = rand() % pHair->GetFailItemNum();
-		short sFailHair = (short)(pHair->dwFailItemID[nRandFail]);
+	if (rand() % 100 < 10 && pHair->GetFailItemCount() > 0) {
+		int nRandFail = rand() % pHair->GetFailItemCount();
+		short sFailHair = (short)(pHair->FailItemIds[nRandFail]);
 		m_SChaPart.sHairID = sFailHair;
 		//SystemNotice(", !");
 		SystemNotice(RES_STRING(GM_CHARACTERPRL_CPP_00048));
@@ -2497,7 +2494,7 @@ void CCharacter::Cmd_ChangeHair(Corsairs::Net::RPacket& pk) {
 	}
 	else {
 		// , 
-		m_SChaPart.sHairID = (short)(pHair->dwItemID); // 
+		m_SChaPart.sHairID = (short)(pHair->ResultItemId); // 
 		Prl_ChangeHairResult(sScriptID, "ok", true);
 	}
 

@@ -76,7 +76,7 @@ void CGameWG::SafeTerminateThread() {
 //
 UINT CALLBACK CGameWG::Run(void* param) {
 	::SetThreadName("game-wg");
-	TalesOfPirate::Utils::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
 	CGameWG* pGameWG = (CGameWG*)(param);
 
 	for (;;) {

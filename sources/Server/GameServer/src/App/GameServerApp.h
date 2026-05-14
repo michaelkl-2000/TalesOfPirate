@@ -2,7 +2,6 @@
 #pragma once
 
 #include <string>
-#include "DBCCommon.h"
 
 #include "Point.h"
 #include "Core/Identity.h"

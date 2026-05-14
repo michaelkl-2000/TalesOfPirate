@@ -31,7 +31,7 @@
 
 class CMPFont;
 
-namespace dbc {
+namespace Corsairs::Util::Ini {
 	class IniFile;
 }
 
@@ -61,7 +61,7 @@ public:
 
 	// Прочитать [Fonts] из ini. TTF-файлы регистрируются из Lua — здесь
 	// только резолвится семейство (IniKey → GDI family) и ставится fallback.
-	void Init(dbc::IniFile& ini);
+	void Init(Corsairs::Util::Ini::IniFile& ini);
 
 	// Экспортировать g_SystemFont в Lua. Вызывать ДО font_bootstrap.lua.
 	void PushToLua(lua_State* L) const;

@@ -5,7 +5,7 @@
 class MPEditor;
 
 extern MPEditor g_Editor;
-extern dbc::IniFile g_SystemIni;
+extern Corsairs::Util::Ini::IniFile g_SystemIni;
 
 #define TINY_RES_X 800
 #define TINY_RES_Y 600

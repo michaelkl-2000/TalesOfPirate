@@ -88,7 +88,7 @@ bool CIsSkillUse::IsAttack(CSkillRecord* pSkill, CCharacter* pSelf, CCharacter* 
 	_pSkill = pSkill;
 
 	if (enumSKILL_TYPE_PLAYER_DIE == pSkill->chApplyTarget) {
-		if (pTarget->getChaCtrlType() == enumCHACTRL_PLAYER && !pTarget->IsEnabled())
+		if (pTarget->getChaCtrlType() == EChaCtrlType::PLAYER && !pTarget->IsEnabled())
 			return true;
 
 		_eError = enumDie;
@@ -116,31 +116,31 @@ bool CIsSkillUse::IsAttack(CSkillRecord* pSkill, CCharacter* pSelf, CCharacter* 
 		_eError = enumOnlyTeam;
 		return false;
 	case enumSKILL_TYPE_TREE:
-		if (pTarget->getChaCtrlType() != enumCHACTRL_MONS_TREE) {
+		if (pTarget->getChaCtrlType() != EChaCtrlType::MONS_TREE) {
 			_eError = enumTree;
 			return false;
 		}
 		return true;
 	case enumSKILL_TYPE_MINE:
-		if (pTarget->getChaCtrlType() != enumCHACTRL_MONS_MINE) {
+		if (pTarget->getChaCtrlType() != EChaCtrlType::MONS_MINE) {
 			_eError = enumMine;
 			return false;
 		}
 		return true;
 	case enumSKILL_TYPE_FISH:
-		if (pTarget->getChaCtrlType() != enumCHACTRL_MONS_FISH) {
+		if (pTarget->getChaCtrlType() != EChaCtrlType::MONS_FISH) {
 			_eError = enumFish;
 			return false;
 		}
 		return true;
 	case enumSKILL_TYPE_SALVAGE:
-		if (pTarget->getChaCtrlType() != enumCHACTRL_MONS_DBOAT) {
+		if (pTarget->getChaCtrlType() != EChaCtrlType::MONS_DBOAT) {
 			_eError = enumDieBoat;
 			return false;
 		}
 		return true;
 	case enumSKILL_TYPE_REPAIR:
-		if (pTarget->getChaCtrlType() != enumCHACTRL_MONS_REPAIRABLE) {
+		if (pTarget->getChaCtrlType() != EChaCtrlType::MONS_REPAIRABLE) {
 			_eError = enumRepair;
 			return false;
 		}
@@ -154,7 +154,7 @@ bool CIsSkillUse::IsAttack(CSkillRecord* pSkill, CCharacter* pSelf, CCharacter* 
 	};
 
 	if (pSkill->GetIsHelpful()) {
-		if (pTarget->getChaCtrlType() == enumCHACTRL_MONS) {
+		if (pTarget->getChaCtrlType() == EChaCtrlType::MONS) {
 			_eError = enumHelpMons;
 			return false;
 		}
@@ -186,7 +186,7 @@ bool CIsSkillUse::IsAttack(CSkillRecord* pSkill, CCharacter* pSelf, CCharacter* 
 
 		return true;
 	}
-	else if (pTarget->getChaCtrlType() == enumCHACTRL_PLAYER) {
+	else if (pTarget->getChaCtrlType() == EChaCtrlType::PLAYER) {
 		_eError = enumAttackPlayer;
 		return false;
 	}

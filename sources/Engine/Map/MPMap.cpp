@@ -123,7 +123,7 @@ void MPMap::Render() {
 		return;
 	}
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 
 	g_Render.EnableMipmap(FALSE);
@@ -504,7 +504,7 @@ void MPMap::RenderSea() {
 		return;
 	}
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 
 	g_Render.ResetWorldTransform();
@@ -949,7 +949,7 @@ void MPMap::_GenerateTerrainGroup(int nTileStartX, int nTileStartY) {
 	}
 	nRenderGroupCnt = 0;
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 
 	nRenderTileCnt = 0;
@@ -1087,7 +1087,7 @@ void MPMap::_FillVB() {
 		return;
 	}
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 
 	MPTileVertex* pCurVertex = NULL;

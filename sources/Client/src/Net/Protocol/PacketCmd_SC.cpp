@@ -55,7 +55,7 @@ using Corsairs::Client::Diagnostic::GameDiagnostic;
 #include "Scene.h"
 #include "CommandMessages.h"
 
-//  uChar, uShort, uLong, cChar   NetIF.h
+//  std::uint8_t, std::uint16_t, std::uint32_t, cChar   NetIF.h
 
 
 //--------------------------------------------------
@@ -109,7 +109,7 @@ BOOL SC_ShowRanking(LPRPACKET pk) {
 	for (size_t i = 0; i < msg.entries.size(); ++i) {
 		auto& e = msg.entries[i];
 		const std::string buf = std::format("{:03}>", static_cast<int>(i + 1));
-		NetMC_LISTGUILD(i + 1, buf.c_str(), e.name.c_str(), e.guild.c_str(), (uShort)e.level, e.score);
+		NetMC_LISTGUILD(i + 1, buf.c_str(), e.name.c_str(), e.guild.c_str(), (std::uint16_t)e.level, e.score);
 	}
 	NetMC_LISTGUILD_END();
 	return TRUE;
@@ -128,7 +128,7 @@ typedef BOOL (WINAPI *PFN_CryptImportPublicKeyInfoEx2)(
 
 BOOL SC_SendPublicKey(LPRPACKET pk) {
 	//  SPKI DER     (WriteSequence = [uint16 len][data])
-	uShort keySize = 0;
+	std::uint16_t keySize = 0;
 	const char* keyData = pk.ReadSequence(keySize);
 	if (keySize == 0) {
 		//        RSA/AES
@@ -148,7 +148,7 @@ BOOL SC_SendPublicKey(LPRPACKET pk) {
 	{
 		std::string hex;
 		hex.reserve(keySize * 2);
-		for (uShort i = 0; i < keySize; i++) {
+		for (std::uint16_t i = 0; i < keySize; i++) {
 			std::format_to(std::back_inserter(hex), "{:02x}", static_cast<unsigned char>(keyData[i]));
 		}
 		ToLogService("connections", "SC_SendPublicKey: received SPKI DER key ({} bytes): {}", keySize, hex);
@@ -217,7 +217,7 @@ BOOL SC_Login(LPRPACKET pk) {
 	Corsairs::Net::Msg::deserialize(pk, resp);
 
 	if (!resp.data.has_value()) {
-		NetLoginFailure(static_cast<uShort>(resp.errCode));
+		NetLoginFailure(static_cast<std::uint16_t>(resp.errCode));
 	}
 	else {
 		const auto& d = resp.data.value();
@@ -276,9 +276,9 @@ static void convertBaseInfo(const Corsairs::Net::Msg::ChaBaseInfo& src, stNetAct
 	dst.chGuildPermission = static_cast<int>(src.guildPermission);
 	dst.strStallName = src.stallName;
 	dst.sState = static_cast<short>(src.state);
-	dst.SArea.centre.x = static_cast<long>(src.posX);
-	dst.SArea.centre.y = static_cast<long>(src.posY);
-	dst.SArea.radius = static_cast<long>(src.radius);
+	dst.SArea.Centre.X = static_cast<long>(src.posX);
+	dst.SArea.Centre.Y = static_cast<long>(src.posY);
+	dst.SArea.Radius = static_cast<long>(src.radius);
 	dst.sAngle = static_cast<short>(src.angle);
 	dst.ulTLeaderID = static_cast<unsigned long>(src.teamLeaderId);
 	dst.chIsPlayer = static_cast<int>(src.isPlayer);
@@ -679,7 +679,7 @@ BOOL SC_Say(LPRPACKET pk) {
 	ToLogService("net", "SC_Say src={} bytes[{}]={} text='{}'",
 				 msg.sourceId,
 				 static_cast<int>(msg.content.size()),
-				 encoding::HexDump(msg.content),
+				 Corsairs::Util::Encoding::HexDump(msg.content),
 				 msg.content);
 
 	NetSay(l_netsay, msg.color);
@@ -808,7 +808,7 @@ BOOL SC_ChaEndSee(LPRPACKET pk) {
 	Corsairs::Net::Msg::McChaEndSeeMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
 	char chSeeType = static_cast<char>(msg.seeType);
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 	NetActorDestroy(l_id, chSeeType);
 	if (g_stUIStart.targetInfoID == l_id) {
 		g_stUIStart.RemoveTarget();
@@ -829,8 +829,8 @@ BOOL SC_ItemCreate(LPRPACKET pk) {
 	SCreateInfo.lWorldID = static_cast<decltype(SCreateInfo.lWorldID)>(msg.worldId);
 	SCreateInfo.lHandle = static_cast<decltype(SCreateInfo.lHandle)>(msg.handle);
 	SCreateInfo.lID = static_cast<decltype(SCreateInfo.lID)>(msg.itemId);
-	SCreateInfo.SPos.x = static_cast<decltype(SCreateInfo.SPos.x)>(msg.posX);
-	SCreateInfo.SPos.y = static_cast<decltype(SCreateInfo.SPos.y)>(msg.posY);
+	SCreateInfo.SPos.X = static_cast<decltype(SCreateInfo.SPos.X)>(msg.posX);
+	SCreateInfo.SPos.Y = static_cast<decltype(SCreateInfo.SPos.Y)>(msg.posY);
 	SCreateInfo.sAngle = static_cast<decltype(SCreateInfo.sAngle)>(msg.angle);
 	SCreateInfo.sNum = static_cast<decltype(SCreateInfo.sNum)>(msg.num);
 	SCreateInfo.chAppeType = static_cast<decltype(SCreateInfo.chAppeType)>(msg.appeType);
@@ -847,7 +847,7 @@ BOOL SC_ItemCreate(LPRPACKET pk) {
 	// log
 	ToLogService("common", "CreateType = {}, WorldID:{}, ItemID = {}, Pos = [{},{}], SrcID = {}",
 				 static_cast<int>(SCreateInfo.chAppeType),
-				 SCreateInfo.lWorldID, SCreateInfo.lID, SCreateInfo.SPos.x, SCreateInfo.SPos.y, SCreateInfo.lFromID);
+				 SCreateInfo.lWorldID, SCreateInfo.lID, SCreateInfo.SPos.X, SCreateInfo.SPos.Y, SCreateInfo.lFromID);
 	//
 	return TRUE;
 }
@@ -955,7 +955,7 @@ BOOL SC_DelItemCha(LPRPACKET pk) {
 	Corsairs::Net::Msg::deserialize(pk, msg);
 
 	char chSeeType = enumENTITY_SEEN_NEW;
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 	NetActorDestroy(l_id, chSeeType);
 
 	return TRUE;
@@ -966,8 +966,8 @@ BOOL SC_Cha_Emotion(LPRPACKET pk) {
 	Corsairs::Net::Msg::McChaEmotionMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
 
-	uLong l_id = static_cast<uLong>(msg.worldId);
-	uShort sEmotion = static_cast<uShort>(msg.emotion);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
+	std::uint16_t sEmotion = static_cast<std::uint16_t>(msg.emotion);
 
 	NetChaEmotion(l_id, sEmotion);
 	g_logManager.InternalLog(LogLevel::Debug, "common", SafeVFormat(GetLanguageString(297), sEmotion));
@@ -980,7 +980,7 @@ BOOL SC_CharacterAction(LPRPACKET pk) {
 	Corsairs::Net::Msg::McCharacterActionMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
 
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 	{
 		using namespace Corsairs::Net::Msg;
 
@@ -990,7 +990,7 @@ BOOL SC_CharacterAction(LPRPACKET pk) {
 			SMoveInfo.sState = static_cast<short>(move.moveState);
 			if (SMoveInfo.sState != enumMSTATE_ON)
 				SMoveInfo.sStopState = static_cast<short>(move.stopState);
-			SMoveInfo.nPointNum = static_cast<int>(move.waypoints.size()) / sizeof(Point);
+			SMoveInfo.nPointNum = static_cast<int>(move.waypoints.size()) / sizeof(Corsairs::Util::Point);
 			memcpy(SMoveInfo.SPos, move.waypoints.data(), move.waypoints.size());
 
 			// log — диагностика приёма Move-пакета. Раньше всё писалось в "common"
@@ -1138,15 +1138,15 @@ BOOL SC_CharacterAction(LPRPACKET pk) {
 			SSkillInfo.bMiss = d.miss;
 			SSkillInfo.bBeatBack = d.beatBack;
 			if (SSkillInfo.bBeatBack) {
-				SSkillInfo.SPos.x = static_cast<long>(d.beatBackX);
-				SSkillInfo.SPos.y = static_cast<long>(d.beatBackY);
+				SSkillInfo.SPos.X = static_cast<long>(d.beatBackX);
+				SSkillInfo.SPos.Y = static_cast<long>(d.beatBackY);
 			}
 			SSkillInfo.lSrcID = static_cast<long>(d.srcId);
-			SSkillInfo.SSrcPos.x = static_cast<long>(d.srcPosX);
-			SSkillInfo.SSrcPos.y = static_cast<long>(d.srcPosY);
+			SSkillInfo.SSrcPos.X = static_cast<long>(d.srcPosX);
+			SSkillInfo.SSrcPos.Y = static_cast<long>(d.srcPosY);
 			SSkillInfo.lSkillID = static_cast<long>(d.skillId);
-			SSkillInfo.SSkillTPos.x = static_cast<long>(d.skillTargetX);
-			SSkillInfo.SSkillTPos.y = static_cast<long>(d.skillTargetY);
+			SSkillInfo.SSkillTPos.X = static_cast<long>(d.skillTargetX);
+			SSkillInfo.SSkillTPos.Y = static_cast<long>(d.skillTargetY);
 			SSkillInfo.sExecTime = static_cast<short>(d.execTime);
 
 			//  
@@ -1338,7 +1338,7 @@ BOOL SC_CharacterAction(LPRPACKET pk) {
 		}
 		else if (msg.actionType == ActionType::CHANGE_CHA) {
 			stNetChangeCha SChangeCha;
-			SChangeCha.ulMainChaID = static_cast<uLong>(std::get<ActionChangeChaData>(msg.data).mainChaId);
+			SChangeCha.ulMainChaID = static_cast<std::uint32_t>(std::get<ActionChangeChaData>(msg.data).mainChaId);
 			NetActorChangeCha(l_id, SChangeCha);
 		}
 		else if (msg.actionType == ActionType::FACE) {
@@ -1418,7 +1418,7 @@ BOOL SC_FailedAction(LPRPACKET pk) {
 BOOL SC_SynAttribute(LPRPACKET pk) {
 	Corsairs::Net::Msg::McSynAttributeMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 
 	stNetChaAttr SChaAttr;
 	memset(&SChaAttr, 0, sizeof(SChaAttr));
@@ -1450,7 +1450,7 @@ BOOL SC_SynSkillBag(LPRPACKET pk) {
 	Corsairs::Net::Msg::McSynSkillBagMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
 
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 
 	stNetSkillBag SCurSkill;
 	memset(&SCurSkill, 0, sizeof(SCurSkill));
@@ -1506,7 +1506,7 @@ BOOL SC_SynSkillBag(LPRPACKET pk) {
 BOOL SC_SynDefaultSkill(LPRPACKET pk) {
 	Corsairs::Net::Msg::McSynDefaultSkillMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 	stNetDefaultSkill SDefaultSkill;
 	SDefaultSkill.sSkillID = static_cast<decltype(SDefaultSkill.sSkillID)>(msg.skillId);
 	SDefaultSkill.Exec();
@@ -1519,7 +1519,7 @@ BOOL SC_SynSkillState(LPRPACKET pk) {
 #endif
 	Corsairs::Net::Msg::McSynSkillStateMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 
 	unsigned long currentClient = GetTickCount();
 	unsigned long currentServer = static_cast<unsigned long>(msg.skillState.currentTime) / 1000;
@@ -2580,7 +2580,7 @@ BOOL SC_QueryRelive(LPRPACKET pk) {
 	stNetQueryRelive SQueryRelive;
 	SQueryRelive.szSrcChaName = msg.sourceName;
 	SQueryRelive.chType = static_cast<decltype(SQueryRelive.chType)>(msg.reliveType);
-	NetQueryRelive(static_cast<uLong>(msg.chaId), SQueryRelive);
+	NetQueryRelive(static_cast<std::uint32_t>(msg.chaId), SQueryRelive);
 
 	return TRUE;
 }
@@ -2588,7 +2588,7 @@ BOOL SC_QueryRelive(LPRPACKET pk) {
 BOOL SC_PreMoveTime(LPRPACKET pk) {
 	Corsairs::Net::Msg::McPreMoveTimeMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
-	NetPreMoveTime(static_cast<uLong>(msg.time));
+	NetPreMoveTime(static_cast<std::uint32_t>(msg.time));
 
 	return TRUE;
 }
@@ -2598,9 +2598,9 @@ BOOL SC_MapMask(LPRPACKET pk) {
 	Corsairs::Net::Msg::McMapMaskMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
 
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 	BYTE* pMapMask = msg.hasData ? reinterpret_cast<BYTE*>(msg.data.data()) : nullptr;
-	uShort usLen = static_cast<uShort>(msg.data.size());
+	std::uint16_t usLen = static_cast<std::uint16_t>(msg.data.size());
 
 	NetMapMask(l_id, pMapMask, usLen, msg.fogOfWarEnabled);
 
@@ -2624,7 +2624,7 @@ BOOL SC_SynEventInfo(LPRPACKET pk) {
 BOOL SC_SynSideInfo(LPRPACKET pk) {
 	Corsairs::Net::Msg::McSynSideInfoMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 
 	stNetChaSideInfo SNetSideInfo;
 	SNetSideInfo.chSideID = static_cast<decltype(SNetSideInfo.chSideID)>(msg.side.sideId);
@@ -2644,7 +2644,7 @@ BOOL SC_SynAppendLook(LPRPACKET pk) {
 	Corsairs::Net::Msg::McAppendLookMessage msg;
 	Corsairs::Net::Msg::deserialize(pk, msg);
 
-	uLong l_id = static_cast<uLong>(msg.worldId);
+	std::uint32_t l_id = static_cast<std::uint32_t>(msg.worldId);
 	stNetAppendLook SNetAppendLook;
 	for (int i = 0; i < defESPE_KBGRID_NUM; i++) {
 		SNetAppendLook.sLookID[i] = static_cast<short>(msg.slots[i].lookId);
@@ -3017,38 +3017,38 @@ BOOL PC_MasterRefresh(LPRPACKET packet) {
 	int64_t localType = isMaster ? msg.type : (msg.type - 5);
 
 	if (localType == MSG_MASTER_REFRESH_ONLINE) {
-		if (isMaster) NetMasterOnline(static_cast<uLong>(msg.chaId));
-		else NetPrenticeOnline(static_cast<uLong>(msg.chaId));
+		if (isMaster) NetMasterOnline(static_cast<std::uint32_t>(msg.chaId));
+		else NetPrenticeOnline(static_cast<std::uint32_t>(msg.chaId));
 	}
 	else if (localType == MSG_MASTER_REFRESH_OFFLINE) {
-		if (isMaster) NetMasterOffline(static_cast<uLong>(msg.chaId));
-		else NetPrenticeOffline(static_cast<uLong>(msg.chaId));
+		if (isMaster) NetMasterOffline(static_cast<std::uint32_t>(msg.chaId));
+		else NetPrenticeOffline(static_cast<std::uint32_t>(msg.chaId));
 	}
 	else if (localType == MSG_MASTER_REFRESH_DEL) {
-		if (isMaster) NetMasterDel(static_cast<uLong>(msg.chaId));
-		else NetPrenticeDel(static_cast<uLong>(msg.chaId));
+		if (isMaster) NetMasterDel(static_cast<std::uint32_t>(msg.chaId));
+		else NetPrenticeDel(static_cast<std::uint32_t>(msg.chaId));
 	}
 	else if (localType == MSG_MASTER_REFRESH_ADD) {
-		if (isMaster) NetMasterAdd(static_cast<uLong>(msg.chaId), msg.chaName.c_str(), msg.motto.c_str(),
-								   static_cast<uShort>(msg.icon), msg.group.c_str());
-		else NetPrenticeAdd(static_cast<uLong>(msg.chaId), msg.chaName.c_str(), msg.motto.c_str(),
-							static_cast<uShort>(msg.icon), msg.group.c_str());
+		if (isMaster) NetMasterAdd(static_cast<std::uint32_t>(msg.chaId), msg.chaName.c_str(), msg.motto.c_str(),
+								   static_cast<std::uint16_t>(msg.icon), msg.group.c_str());
+		else NetPrenticeAdd(static_cast<std::uint32_t>(msg.chaId), msg.chaName.c_str(), msg.motto.c_str(),
+							static_cast<std::uint16_t>(msg.icon), msg.group.c_str());
 	}
 	else if (localType == MSG_MASTER_REFRESH_START) {
 		stNetFrndStart l_self;
-		l_self.lChaid = static_cast<uLong>(msg.startData.selfChaId);
+		l_self.lChaid = static_cast<std::uint32_t>(msg.startData.selfChaId);
 		l_self.szChaname = msg.startData.selfName;
 		l_self.szMotto = msg.startData.selfMotto;
-		l_self.sIconID = static_cast<uShort>(msg.startData.selfIcon);
+		l_self.sIconID = static_cast<std::uint16_t>(msg.startData.selfIcon);
 		stNetFrndStart l_nfs[100];
-		uShort l_nfnum = 0;
+		std::uint16_t l_nfnum = 0;
 		for (const auto& e : msg.startData.entries) {
 			if (l_nfnum >= 100) break;
 			l_nfs[l_nfnum].szGroup = e.group;
-			l_nfs[l_nfnum].lChaid = static_cast<uLong>(e.chaId);
+			l_nfs[l_nfnum].lChaid = static_cast<std::uint32_t>(e.chaId);
 			l_nfs[l_nfnum].szChaname = e.chaName;
 			l_nfs[l_nfnum].szMotto = e.motto;
-			l_nfs[l_nfnum].sIconID = static_cast<uShort>(e.icon);
+			l_nfs[l_nfnum].sIconID = static_cast<std::uint16_t>(e.icon);
 			l_nfs[l_nfnum].cStatus = static_cast<char>(e.status);
 			l_nfnum++;
 		}
@@ -3062,7 +3062,7 @@ BOOL PC_MasterCancel(LPRPACKET packet) {
 	//   PcMasterCancelMessage
 	Corsairs::Net::Msg::PcMasterCancelMessage msg;
 	Corsairs::Net::Msg::deserialize(packet, msg);
-	NetMasterCancel(static_cast<uLong>(msg.cancelId), static_cast<unsigned char>(msg.reason));
+	NetMasterCancel(static_cast<std::uint32_t>(msg.cancelId), static_cast<unsigned char>(msg.reason));
 	return TRUE;
 }
 
@@ -3381,7 +3381,7 @@ BOOL SC_LifeSkill(LPRPACKET packet) {
 	case 2: //  
 	{
 		std::string strVer[3];
-		Util_ResolveTextLine(txt.c_str(), strVer, 3, ',');
+		Corsairs::Util::ResolveTextLine(txt.c_str(), strVer, 3, ',');
 		g_stUIFound.CheckResult(ret, strVer[0].c_str(), strVer[1].c_str(), strVer[2].c_str());
 	}
 	break;

@@ -33,10 +33,10 @@ string CutFaceText(string& text, size_t cutLimitlen) {
 	// UTF-8: если позиция разреза попала внутрь multi-byte codepoint,
 	// отступаем назад до начала ближайшего codepoint (starter-байт).
 	if (cutLimitlen < text.size()
-		&& !encoding::IsUtf8StartByte(static_cast<unsigned char>(text[cutLimitlen]))) {
+		&& !Corsairs::Util::Encoding::IsUtf8StartByte(static_cast<unsigned char>(text[cutLimitlen]))) {
 		size_t safe = cutLimitlen;
 		while (safe > 0
-			&& !encoding::IsUtf8StartByte(static_cast<unsigned char>(text[safe]))) {
+			&& !Corsairs::Util::Encoding::IsUtf8StartByte(static_cast<unsigned char>(text[safe]))) {
 			--safe;
 		}
 		retStr = text.substr(0, safe);

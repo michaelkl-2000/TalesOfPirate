@@ -77,8 +77,8 @@ void ChaRecordStore::ParseFloatArray(std::string_view text, float* out, int maxL
 // ReadRecord — конструирует CChaRecord из строки SQLite-запроса
 // ============================================================================
 
-GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatement& stmt) {
-	CChaRecord record{};
+GameRecordset<ChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatement& stmt) {
+	ChaRecord record{};
 	int col = 0;
 
 	// id, name
@@ -100,19 +100,19 @@ GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatemen
 	record.sSuitNum = static_cast<short>(stmt.GetInt(col++));
 
 	// skin_info[8] — TEXT
-	memset(record.sSkinInfo, cchChaRecordKeyValue, sizeof(record.sSkinInfo));
-	ParseShortArray(stmt.GetText(col++), record.sSkinInfo, defCHA_SKIN_NUM, static_cast<short>(cchChaRecordKeyValue));
+	record.sSkinInfo.fill(static_cast<short>(kChaRecordKeyValue));
+	ParseShortArray(stmt.GetText(col++), record.sSkinInfo.data(), kChaSkinNum, static_cast<short>(kChaRecordKeyValue));
 
 	// feff_id[4] — TEXT
-	memset(record.sFeffID, 0, sizeof(record.sFeffID));
-	ParseShortArray(stmt.GetText(col++), record.sFeffID, 4);
+	record.sFeffID.fill(0);
+	ParseShortArray(stmt.GetText(col++), record.sFeffID.data(), kChaFeffNum);
 
 	// eeff_id
 	record.sEeffID = static_cast<short>(stmt.GetInt(col++));
 
 	// effect_action_id[3] — TEXT
-	memset(record.sEffectActionID, 0, sizeof(record.sEffectActionID));
-	ParseShortArray(stmt.GetText(col++), record.sEffectActionID, 3);
+	record.sEffectActionID.fill(0);
+	ParseShortArray(stmt.GetText(col++), record.sEffectActionID.data(), kChaEffectActionNum);
 
 	// shadow, action_id, diaphaneity
 	record.sShadow       = static_cast<short>(stmt.GetInt(col++));
@@ -130,8 +130,8 @@ GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatemen
 	record.sSeaHeight    = static_cast<short>(stmt.GetInt(col++));
 
 	// item_type[20] — TEXT
-	memset(record.sItemType, cchChaRecordKeyValue, sizeof(record.sItemType));
-	ParseShortArray(stmt.GetText(col++), record.sItemType, defCHA_ITEM_KIND_NUM, static_cast<short>(cchChaRecordKeyValue));
+	record.sItemType.fill(static_cast<short>(kChaRecordKeyValue));
+	ParseShortArray(stmt.GetText(col++), record.sItemType.data(), kChaItemKindNum, static_cast<short>(kChaRecordKeyValue));
 
 	// lengh, width, height, radii
 	record.fLengh = static_cast<float>(stmt.GetDouble(col++));
@@ -140,12 +140,12 @@ GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatemen
 	record.sRadii = static_cast<short>(stmt.GetInt(col++));
 
 	// birth_behave[3] — TEXT
-	memset(record.nBirthBehave, 0, sizeof(record.nBirthBehave));
-	ParseCharArray(stmt.GetText(col++), record.nBirthBehave, defCHA_BIRTH_EFFECT_NUM);
+	record.nBirthBehave.fill(0);
+	ParseCharArray(stmt.GetText(col++), record.nBirthBehave.data(), kChaBirthEffectNum);
 
 	// died_behave[3] — TEXT
-	memset(record.nDiedBehave, 0, sizeof(record.nDiedBehave));
-	ParseCharArray(stmt.GetText(col++), record.nDiedBehave, defCHA_DIE_EFFECT_NUM);
+	record.nDiedBehave.fill(0);
+	ParseCharArray(stmt.GetText(col++), record.nDiedBehave.data(), kChaDieEffectNum);
 
 	// born_eff, die_eff, dormancy, die_action
 	record.sBornEff    = static_cast<short>(stmt.GetInt(col++));
@@ -154,8 +154,8 @@ GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatemen
 	record.chDieAction = static_cast<char>(stmt.GetInt(col++));
 
 	// hp_effect[3] — TEXT
-	memset(record._nHPEffect, 0, sizeof(record._nHPEffect));
-	ParseIntArray(stmt.GetText(col++), record._nHPEffect, defCHA_HP_EFFECT_NUM);
+	record._nHPEffect.fill(0);
+	ParseIntArray(stmt.GetText(col++), record._nHPEffect.data(), kChaHpEffectNum);
 
 	// is_face, is_cyclone
 	record._IsFace    = stmt.GetInt(col++) != 0;
@@ -166,34 +166,31 @@ GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatemen
 	record.lWeapon = stmt.GetInt(col++);
 
 	// skill_ids[11] — TEXT, skill_lvs[11] — TEXT
-	memset(record.lSkill, cchChaRecordKeyValue, sizeof(record.lSkill));
+	for (auto& row : record.lSkill) row.fill(kChaRecordKeyValue);
 	{
-		long ids[defCHA_INIT_SKILL_NUM]{};
-		ParseLongArray(stmt.GetText(col++), ids, defCHA_INIT_SKILL_NUM, static_cast<long>(cchChaRecordKeyValue));
-		for (int i = 0; i < defCHA_INIT_SKILL_NUM; i++)
-			record.lSkill[i][0] = ids[i];
+		long ids[kChaInitSkillNum]{};
+		ParseLongArray(stmt.GetText(col++), ids, kChaInitSkillNum, static_cast<long>(kChaRecordKeyValue));
+		for (std::size_t i = 0; i < kChaInitSkillNum; i++)
+			record.lSkill.at(i).at(0) = ids[i];
 
-		long lvs[defCHA_INIT_SKILL_NUM]{};
-		ParseLongArray(stmt.GetText(col++), lvs, defCHA_INIT_SKILL_NUM, static_cast<long>(cchChaRecordKeyValue));
-		for (int i = 0; i < defCHA_INIT_SKILL_NUM; i++)
-			record.lSkill[i][1] = lvs[i];
+		long lvs[kChaInitSkillNum]{};
+		ParseLongArray(stmt.GetText(col++), lvs, kChaInitSkillNum, static_cast<long>(kChaRecordKeyValue));
+		for (std::size_t i = 0; i < kChaInitSkillNum; i++)
+			record.lSkill.at(i).at(1) = lvs[i];
 	}
 
 	// item_ids[15] — TEXT, item_counts[15] — TEXT
-	for (int i = 0; i < defCHA_INIT_ITEM_NUM; i++) {
-		record.lItem[i][0] = cchChaRecordKeyValue;
-		record.lItem[i][1] = cchChaRecordKeyValue;
-	}
+	for (auto& row : record.lItem) row.fill(kChaRecordKeyValue);
 	{
-		long ids[defCHA_INIT_ITEM_NUM]{};
-		ParseLongArray(stmt.GetText(col++), ids, defCHA_INIT_ITEM_NUM, static_cast<long>(cchChaRecordKeyValue));
-		for (int i = 0; i < defCHA_INIT_ITEM_NUM; i++)
-			record.lItem[i][0] = ids[i];
+		long ids[kChaInitItemNum]{};
+		ParseLongArray(stmt.GetText(col++), ids, kChaInitItemNum, static_cast<long>(kChaRecordKeyValue));
+		for (std::size_t i = 0; i < kChaInitItemNum; i++)
+			record.lItem.at(i).at(0) = ids[i];
 
-		long counts[defCHA_INIT_ITEM_NUM]{};
-		ParseLongArray(stmt.GetText(col++), counts, defCHA_INIT_ITEM_NUM, static_cast<long>(cchChaRecordKeyValue));
-		for (int i = 0; i < defCHA_INIT_ITEM_NUM; i++)
-			record.lItem[i][1] = counts[i];
+		long counts[kChaInitItemNum]{};
+		ParseLongArray(stmt.GetText(col++), counts, kChaInitItemNum, static_cast<long>(kChaRecordKeyValue));
+		for (std::size_t i = 0; i < kChaInitItemNum; i++)
+			record.lItem.at(i).at(1) = counts[i];
 	}
 
 	// max_show_item, all_show, prefix
@@ -202,20 +199,17 @@ GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatemen
 	record.lPrefix      = stmt.GetInt(col++);
 
 	// task_item_ids[15] — TEXT, task_item_counts[15] — TEXT
-	for (int i = 0; i < defCHA_INIT_ITEM_NUM; i++) {
-		record.lTaskItem[i][0] = cchChaRecordKeyValue;
-		record.lTaskItem[i][1] = cchChaRecordKeyValue;
-	}
+	for (auto& row : record.lTaskItem) row.fill(kChaRecordKeyValue);
 	{
-		long ids[defCHA_INIT_ITEM_NUM]{};
-		ParseLongArray(stmt.GetText(col++), ids, defCHA_INIT_ITEM_NUM, static_cast<long>(cchChaRecordKeyValue));
-		for (int i = 0; i < defCHA_INIT_ITEM_NUM; i++)
-			record.lTaskItem[i][0] = ids[i];
+		long ids[kChaInitItemNum]{};
+		ParseLongArray(stmt.GetText(col++), ids, kChaInitItemNum, static_cast<long>(kChaRecordKeyValue));
+		for (std::size_t i = 0; i < kChaInitItemNum; i++)
+			record.lTaskItem.at(i).at(0) = ids[i];
 
-		long counts[defCHA_INIT_ITEM_NUM]{};
-		ParseLongArray(stmt.GetText(col++), counts, defCHA_INIT_ITEM_NUM, static_cast<long>(cchChaRecordKeyValue));
-		for (int i = 0; i < defCHA_INIT_ITEM_NUM; i++)
-			record.lTaskItem[i][1] = counts[i];
+		long counts[kChaInitItemNum]{};
+		ParseLongArray(stmt.GetText(col++), counts, kChaInitItemNum, static_cast<long>(kChaRecordKeyValue));
+		for (std::size_t i = 0; i < kChaInitItemNum; i++)
+			record.lTaskItem.at(i).at(1) = counts[i];
 	}
 
 	// ai_no, can_turn, vision, noise, get_exp, light
@@ -307,8 +301,8 @@ GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatemen
 	record.lTScsm = stmt.GetInt(col++);
 
 	// scaling[3] — TEXT
-	memset(record.scaling, 0, sizeof(record.scaling));
-	ParseFloatArray(stmt.GetText(col++), record.scaling, 3);
+	record.scaling.fill(0.0f);
+	ParseFloatArray(stmt.GetText(col++), record.scaling.data(), kChaScalingNum);
 
 	record.RefreshPrivateData();
 
@@ -316,4 +310,3 @@ GameRecordset<CChaRecord>::RecordEntry ChaRecordStore::ReadRecord(SqliteStatemen
 }
 
 } // namespace Corsairs::Common::Character
-

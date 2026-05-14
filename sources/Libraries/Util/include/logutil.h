@@ -23,7 +23,7 @@ std::string SafeVFormat(std::string_view _Fmt, _Types... _Args) {
 	return std::vformat(_Fmt, std::make_format_args(_Args...));
 }
 
-namespace TalesOfPirate::Utils::Logs {
+namespace Corsairs::Util::Log {
 	//        
 	enum class LogLevel {
 		Trace,
@@ -155,25 +155,25 @@ namespace TalesOfPirate::Utils::Logs {
 }
 
 //   LogLevel  ostream (  LogStream::Write)
-std::ostream& operator<<(std::ostream& stream, const TalesOfPirate::Utils::Logs::LogLevel& io);
+std::ostream& operator<<(std::ostream& stream, const Corsairs::Util::Log::LogLevel& io);
 
 //  std::formatter  LogLevel ( std::format)
 template <>
-struct std::formatter<TalesOfPirate::Utils::Logs::LogLevel> : std::formatter<std::string> {
+struct std::formatter<Corsairs::Util::Log::LogLevel> : std::formatter<std::string> {
 	template <class format_context>
-	auto format(const TalesOfPirate::Utils::Logs::LogLevel& io, format_context& ctx) const {
+	auto format(const Corsairs::Util::Log::LogLevel& io, format_context& ctx) const {
 		switch (io) {
-		case TalesOfPirate::Utils::Logs::LogLevel::Trace:
+		case Corsairs::Util::Log::LogLevel::Trace:
 			return formatter<string>::format("Trace", ctx);
-		case TalesOfPirate::Utils::Logs::LogLevel::Debug:
+		case Corsairs::Util::Log::LogLevel::Debug:
 			return formatter<string>::format("Debug", ctx);
-		case TalesOfPirate::Utils::Logs::LogLevel::Info:
+		case Corsairs::Util::Log::LogLevel::Info:
 			return formatter<string>::format("Info", ctx);
-		case TalesOfPirate::Utils::Logs::LogLevel::Warning:
+		case Corsairs::Util::Log::LogLevel::Warning:
 			return formatter<string>::format("Warning", ctx);
-		case TalesOfPirate::Utils::Logs::LogLevel::Error:
+		case Corsairs::Util::Log::LogLevel::Error:
 			return formatter<string>::format("Error", ctx);
-		case TalesOfPirate::Utils::Logs::LogLevel::Fatal:
+		case Corsairs::Util::Log::LogLevel::Fatal:
 			return formatter<string>::format("Fatal", ctx);
 		}
 
@@ -181,4 +181,12 @@ struct std::formatter<TalesOfPirate::Utils::Logs::LogLevel> : std::formatter<std
 	}
 };
 
-using namespace TalesOfPirate::Utils::Logs;
+// CLAUDE.md запрещает `using namespace ...` в глобальной области .h, поэтому
+// проброс делается per-name. 2300+ callsites используют эти имена без квалификации;
+// возможный follow-up — отказаться от шима и перейти на полную квалификацию.
+using Corsairs::Util::Log::LogLevel;
+using Corsairs::Util::Log::LogManager;
+using Corsairs::Util::Log::LogStream;
+using Corsairs::Util::Log::LogUtilEntry;
+using Corsairs::Util::Log::g_logManager;
+using Corsairs::Util::Log::ToLogService;

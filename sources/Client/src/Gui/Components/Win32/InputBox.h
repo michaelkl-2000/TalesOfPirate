@@ -63,7 +63,7 @@ inline char* CInputBox::RefreshText() {
 	// в UTF-8 ≈ 768 байт + NUL).
 	wchar_t wbuf[512] = {0};
 	const int wlen = ::GetWindowTextW(_hEdit, wbuf, static_cast<int>(std::size(wbuf)));
-	const std::string utf8 = encoding::WideToUtf8(std::wstring_view(wbuf, static_cast<std::size_t>(wlen)));
+	const std::string utf8 = Corsairs::Util::Encoding::WideToUtf8(std::wstring_view(wbuf, static_cast<std::size_t>(wlen)));
 	const std::size_t n = utf8.size() < sizeof(_szText) - 1 ? utf8.size() : sizeof(_szText) - 1;
 	std::memcpy(_szText, utf8.data(), n);
 	_szText[n] = '\0';
@@ -72,7 +72,7 @@ inline char* CInputBox::RefreshText() {
 
 inline char* CInputBox::SetText(const char* pszText) {
 	if (!pszText) pszText = "";
-	const std::wstring wide = encoding::Utf8ToWide(pszText);
+	const std::wstring wide = Corsairs::Util::Encoding::Utf8ToWide(pszText);
 	::SetWindowTextW(_hEdit, wide.c_str());
 	// Синхронизировать кеш _szText с входящей UTF-8 строкой.
 	const std::size_t n = std::strlen(pszText);
@@ -120,7 +120,7 @@ inline void CInputBox::HandleWindowMsg(DWORD dwMsgType, DWORD dwParam1, DWORD dw
 
 inline void CInputBox::ReplaceSel(const char* pszRplText, BOOL bCanUndo) {
 	if (!pszRplText) pszRplText = "";
-	const std::wstring wide = encoding::Utf8ToWide(pszRplText);
+	const std::wstring wide = Corsairs::Util::Encoding::Utf8ToWide(pszRplText);
 	::SendMessageW(_hEdit, EM_REPLACESEL, (WPARAM)bCanUndo, (LPARAM)wide.c_str());
 }
 

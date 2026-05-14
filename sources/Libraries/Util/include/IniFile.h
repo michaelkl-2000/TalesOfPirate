@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstdint>
 
-namespace dbc {
+namespace Corsairs::Util::Ini {
 	struct IniItem {
 		std::string name;
 		std::string value;
@@ -67,4 +67,4 @@ namespace dbc {
 		std::vector<IniSection> m_sections;
 		std::string m_filename;
 	};
-} // namespace dbc
+} // namespace Corsairs::Util::Ini

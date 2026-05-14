@@ -33,13 +33,13 @@ public:
 			return pCCha->GetID() == ulChaID;
 		}
 
-		dbc::Long lLeftTick1; //
-		dbc::Long lLeftTick2; //
-		dbc::Char chAction; //
+		std::int32_t lLeftTick1; //
+		std::int32_t lLeftTick2; //
+		char chAction; //
 		CCharacter* pCCha;
-		dbc::uLong ulChaID;
+		std::uint32_t ulChaID;
 		SSwitchMapInfo SwitchInfo;
-		dbc::Char chStep;
+		char chStep;
 
 		SMgrUnit* pSNext;
 	};
@@ -47,8 +47,8 @@ public:
 	COutMapCha(unsigned short usFreq = 2000);
 	~COutMapCha();
 
-	void Add(CCharacter* pCObj, dbc::uLong ulChaID, SSwitchMapInfo* pSwitchInfo, dbc::Char chAction,
-			 dbc::Long lLeftTick1, dbc::Long lLeftTick2);
+	void Add(CCharacter* pCObj, std::uint32_t ulChaID, SSwitchMapInfo* pSwitchInfo, char chAction,
+			 std::int32_t lLeftTick1, std::int32_t lLeftTick2);
 	void Run(unsigned long ulCurTick);
 	void Drop();
 	void ExecTimeCha(SMgrUnit* pChaInfo);
@@ -64,50 +64,50 @@ public:
 	SubMap();
 	virtual ~SubMap();
 
-	bool Init(CMapRes* pCMapRes, dbc::Short sCopyNO = 0);
+	bool Init(CMapRes* pCMapRes, int16_t sCopyNO = 0);
 
 	bool         IsRun(void);
 	const char*  GetName(void);
 
 	//pt.
-	Rect GetEyeshot(Point& pt) const;
-	Rect GetEyeshot(short sMgrUnitX, short sMgrUnitY) const;
-	void GetEyeshotCenter(Point& pt);
-	Rect GetHoldStateCell(Point& pt, dbc::Long lRadius) const;
-	void GetHoldStateCellCenter(Point& pt);
+	Corsairs::Util::Rect GetEyeshot(Corsairs::Util::Point& pt) const;
+	Corsairs::Util::Rect GetEyeshot(short sMgrUnitX, short sMgrUnitY) const;
+	void GetEyeshotCenter(Corsairs::Util::Point& pt);
+	Corsairs::Util::Rect GetHoldStateCell(Corsairs::Util::Point& pt, std::int32_t lRadius) const;
+	void GetHoldStateCellCenter(Corsairs::Util::Point& pt);
 
 	void Add(Entity* ent);
 	void Delete(Entity* ent);
-	void MoveInStateCell(CCharacter* pCCha, const Point& SSrcPos, const Point& STarPos);
-	void MoveInMapMask(CCharacter* pCCha, const Point& SSrcPos, const Point& STarPos);
+	void MoveInStateCell(CCharacter* pCCha, const Corsairs::Util::Point& SSrcPos, const Corsairs::Util::Point& STarPos);
+	void MoveInMapMask(CCharacter* pCCha, const Corsairs::Util::Point& SSrcPos, const Corsairs::Util::Point& STarPos);
 
-	bool EnsurePos(Square* pSEntShape, Entity* ent, dbc::cLong clSearchRadius = 40 * 100);
-	bool Enter(Square* pSEntShape, Entity* ent, dbc::cLong clSearchRadius = 40 * 100);
+	bool EnsurePos(Corsairs::Util::Square* pSEntShape, Entity* ent, const int32_t clSearchRadius = 40 * 100);
+	bool Enter(Corsairs::Util::Square* pSEntShape, Entity* ent, const int32_t clSearchRadius = 40 * 100);
 	void GoOut(Entity* ent);
-	void MoveTo(Entity* pCEnt, const Point& STar);
+	void MoveTo(Entity* pCEnt, const Corsairs::Util::Point& STar);
 	void RefreshEyeshot(Entity* pCEnt, bool bEyeshot, bool bHide, bool bShow);
 
-	bool         IsValidPos(dbc::Long lPosX, dbc::Long lPosY);
+	bool         IsValidPos(std::int32_t lPosX, std::int32_t lPosY);
 
-	dbc::uShort  GetAreaAttr(dbc::Long lPosX, dbc::Long lPosY);
-	dbc::uShort  GetAreaAttr(const Point& Pos);
+	std::uint16_t  GetAreaAttr(std::int32_t lPosX, std::int32_t lPosY);
+	std::uint16_t  GetAreaAttr(const Corsairs::Util::Point& Pos);
 
-	void NotiStateCellToEyeshot(dbc::Short sCellX, dbc::Short sCellY);
+	void NotiStateCellToEyeshot(int16_t sCellX, int16_t sCellY);
 
 	//
-	void BeginSearchInRange(dbc::Long* plRangeBParam, dbc::Long* plRangeEParam, bool bIncludeHideEnti = false);
+	void BeginSearchInRange(std::int32_t* plRangeBParam, std::int32_t* plRangeEParam, bool bIncludeHideEnti = false);
 	CCharacter* GetNextCharacterInRange(void);
 
 	//
-	bool RangeAddState(dbc::uChar uchFightID, dbc::uLong ulSrcWorldID, dbc::Long lSrcHandle,
-					   dbc::Char chObjType, dbc::Char chObjHabitat, dbc::Char chEffType, dbc::Short* sStateParam);
-	bool RangeAddState(Rect* pSRange, dbc::uChar uchFightID, dbc::uLong ulSrcWorldID, dbc::Long lSrcHandle,
-					   dbc::Char chObjType, dbc::Char chObjHabitat, dbc::Char chEffType, dbc::Short* sStateParam);
+	bool RangeAddState(std::uint8_t uchFightID, std::uint32_t ulSrcWorldID, std::int32_t lSrcHandle,
+					   char chObjType, char chObjHabitat, char chEffType, int16_t* sStateParam);
+	bool RangeAddState(Corsairs::Util::Rect* pSRange, std::uint8_t uchFightID, std::uint32_t ulSrcWorldID, std::int32_t lSrcHandle,
+					   char chObjType, char chObjHabitat, char chEffType, int16_t* sStateParam);
 
 	//
-	CCharacter* FindCharacter(dbc::uLong ulID, const Point& point);
+	CCharacter* FindCharacter(std::uint32_t ulID, const Corsairs::Util::Point& point);
 	//
-	bool IsMoveAble(Entity* pCEnt, dbc::Long lPosX, dbc::Long lPosY);
+	bool IsMoveAble(Entity* pCEnt, std::int32_t lPosX, std::int32_t lPosY);
 
 	void LoadMonsterInfo(void);
 
@@ -117,13 +117,13 @@ public:
 
 	Corsairs::Common::NPC::CNpcRecord* GetNpcInfo(USHORT sNpcID);
 
-	CItem* ItemSpawn(const SItemGrid* pItemInfo, dbc::Long lPosX, dbc::Long lPosY, dbc::Char chSpawnType,
-					 dbc::Long lFromEntityID = 0, dbc::Long lProtChaID = 0, dbc::Long lProtChaHandle = 0,
-					 dbc::Long lProtTime = 0, dbc::Long lOnTick = 0,
+	CItem* ItemSpawn(const SItemGrid* pItemInfo, std::int32_t lPosX, std::int32_t lPosY, char chSpawnType,
+					 std::int32_t lFromEntityID = 0, std::int32_t lProtChaID = 0, std::int32_t lProtChaHandle = 0,
+					 std::int32_t lProtTime = 0, std::int32_t lOnTick = 0,
 					 CEvent* pCEvent = NULL);
-	CCharacter* ChaSpawn(dbc::Long lChaInfoID, dbc::Char chCtrlType, dbc::Short sAngle, Point* pSPos,
+	CCharacter* ChaSpawn(std::int32_t lChaInfoID, char chCtrlType, int16_t sAngle, Corsairs::Util::Point* pSPos,
 						 bool bEyeshotAbility = false,
-						 dbc::cChar* cszChaName = 0, const long clSearchRadius = 120 * 100);
+						 const char* cszChaName = 0, const long clSearchRadius = 120 * 100);
 
 	void EntryOpen(void);
 	void EntryClose(void);
@@ -138,30 +138,30 @@ public:
 	void ClearAllMonsterByName(const char* szMonsName);
 	void Notice(const char* szString);
 
-	dbc::Short   GetEyeshotCellWidth(void) const;
-	dbc::Short   GetEyeshotCellHeight(void) const;
-	dbc::Short   GetEyeshotCellLin(void) const;
-	dbc::Short   GetEyeshotCellCol(void) const;
+	int16_t   GetEyeshotCellWidth(void) const;
+	int16_t   GetEyeshotCellHeight(void) const;
+	int16_t   GetEyeshotCellLin(void) const;
+	int16_t   GetEyeshotCellCol(void) const;
 
-	dbc::Short   GetStateCellWidth(void) const;
-	dbc::Short   GetStateCellHeight(void) const;
-	dbc::Short   GetStateCellLin(void) const;
-	dbc::Short   GetStateCellCol(void) const;
+	int16_t   GetStateCellWidth(void) const;
+	int16_t   GetStateCellHeight(void) const;
+	int16_t   GetStateCellLin(void) const;
+	int16_t   GetStateCellCol(void) const;
 
-	dbc::Short   GetBlockCellWidth(void) const;
-	dbc::Short   GetBlockCellHeight(void) const;
+	int16_t   GetBlockCellWidth(void) const;
+	int16_t   GetBlockCellHeight(void) const;
 
-	bool         GetTerrainCellSize(dbc::Short* psWidth, dbc::Short* psHeight);
-	bool         GetTerrainCellAttr(dbc::Short sUnitX, dbc::Short sUnitY, dbc::uShort& usAttribute);
-	bool         GetTerrainCellIsland(dbc::Short sUnitX, dbc::Short sUnitY, dbc::uChar& uchIsland);
+	bool         GetTerrainCellSize(int16_t* psWidth, int16_t* psHeight);
+	bool         GetTerrainCellAttr(int16_t sUnitX, int16_t sUnitY, std::uint16_t& usAttribute);
+	bool         GetTerrainCellIsland(int16_t sUnitX, int16_t sUnitY, std::uint8_t& uchIsland);
 
-	BYTE         IsBlock(dbc::Long lCellX, dbc::Long lCellY);
+	BYTE         IsBlock(std::int32_t lCellX, std::int32_t lCellY);
 
-	const Rect&  GetRange(void) const;
+	const Corsairs::Util::Rect&  GetRange(void) const;
 
 	BYTE         GetMapID();
 
-	dbc::Short   GetEyeshotWidth(void) const;
+	int16_t   GetEyeshotWidth(void) const;
 
 	bool         CanPK(void);
 	bool         CanSavePos(void);
@@ -169,17 +169,17 @@ public:
 	void BeforePlyOutMap(CCharacter* pCCha);
 	void AfterPlyEnterMap(CCharacter* pCCha);
 
-	dbc::Long    GetMonsterNum(void);
+	std::int32_t    GetMonsterNum(void);
 
 	CMapRes*     GetMapRes(void);
 
-	void         SetCopyNO(dbc::Short sCopyNO);
-	dbc::Short   GetCopyNO(void);
+	void         SetCopyNO(int16_t sCopyNO);
+	int16_t   GetCopyNO(void);
 
-	dbc::Long    GetPlayerNum(void);
+	std::int32_t    GetPlayerNum(void);
 
-	dbc::Long    GetInfoParam(dbc::Char chParamID);
-	bool         SetInfoParam(dbc::Char chParamID, dbc::Long lParamVal);
+	std::int32_t    GetInfoParam(char chParamID);
+	bool         SetInfoParam(char chParamID, std::int32_t lParamVal);
 
 	void BeginGetPlyCha(void);
 	CCharacter* GetNextPlyCha(void);
@@ -189,27 +189,27 @@ public:
 
 	void         SetSpecialInter(int interva); //2006.10.12wsj
 
-	dbc::Long    GetActivePlayer(); //2006.10.12wsj
+	std::int32_t    GetActivePlayer(); //2006.10.12wsj
 
-	dbc::Long CountEyeshotPlyActiveNum(dbc::Long lCellX, dbc::Long lCellY);
+	std::int32_t CountEyeshotPlyActiveNum(std::int32_t lCellX, std::int32_t lCellY);
 
-	void         ActiveEyeshotCell(dbc::Long lCellX, dbc::Long lCellY);
-	void         InactiveEyeshotCell(dbc::Long lCellX, dbc::Long lCellY);
+	void         ActiveEyeshotCell(std::int32_t lCellX, std::int32_t lCellY);
+	void         InactiveEyeshotCell(std::int32_t lCellX, std::int32_t lCellY);
 
-	bool         IsValidStateCell(dbc::Long x, dbc::Long y);
+	bool         IsValidStateCell(std::int32_t x, std::int32_t y);
 
-	CChaListNode* StateCellAddCha(dbc::Long lCellX, dbc::Long lCellY, CCharacter* pCCha, bool bIn);
-	void          StateCellDelCha(dbc::Long lCellX, dbc::Long lCellY, CChaListNode* pCChaNode);
+	CChaListNode* StateCellAddCha(std::int32_t lCellX, std::int32_t lCellY, CCharacter* pCCha, bool bIn);
+	void          StateCellDelCha(std::int32_t lCellX, std::int32_t lCellY, CChaListNode* pCChaNode);
 
-	void          ActiveStateCell(dbc::Long lCellX, dbc::Long lCellY);
-	void          InactiveStateCell(dbc::Long lCellX, dbc::Long lCellY);
+	void          ActiveStateCell(std::int32_t lCellX, std::int32_t lCellY);
+	void          InactiveStateCell(std::int32_t lCellX, std::int32_t lCellY);
 
-	bool AddCellState(dbc::uChar uchFightID, dbc::uLong ulSrcWorldID, dbc::Long lSrcHandle, dbc::Char chObjType,
-					  dbc::Char chObjHabitat, dbc::Char chEffType,
-					  dbc::Long lCellX, dbc::Long lCellY, dbc::uChar uchStateID, dbc::uChar uchStateLv,
-					  dbc::uLong ulStartTick, dbc::Long lOnTick, dbc::Char chType, dbc::Char chWithCenter);
+	bool AddCellState(std::uint8_t uchFightID, std::uint32_t ulSrcWorldID, std::int32_t lSrcHandle, char chObjType,
+					  char chObjHabitat, char chEffType,
+					  std::int32_t lCellX, std::int32_t lCellY, std::uint8_t uchStateID, std::uint8_t uchStateLv,
+					  std::uint32_t ulStartTick, std::int32_t lOnTick, char chType, char chWithCenter);
 
-	void          ReleaseStateCell(dbc::Long x, dbc::Long y);
+	void          ReleaseStateCell(std::int32_t x, std::int32_t y);
 
 	CEyeshotCell** m_pCEyeshotCell; //
 	StateCellGrid _stateCellGrid; //
@@ -225,15 +225,15 @@ private:
 	CMapRes* m_pCMapRes;
 	CTimer m_timeSpecialRun;
 
-	void CheckStateCell(dbc::Long x, dbc::Long y);
+	void CheckStateCell(std::int32_t x, std::int32_t y);
 
 	//
 	struct {
 		bool m_bIncludeHideEnti; //
-		dbc::Short m_sRangeMgrUnitNum; //
-		dbc::Long m_lRangeMgrUnit[defRANGE_MGRUNIU_NUM][2]; // x,y
-		dbc::Long m_lRangeCentUnit[2]; // ;
-		dbc::Short m_sRangeCurMgrUnit; //
+		int16_t m_sRangeMgrUnitNum; //
+		std::int32_t m_lRangeMgrUnit[defRANGE_MGRUNIU_NUM][2]; // x,y
+		std::int32_t m_lRangeCentUnit[2]; // ;
+		int16_t m_sRangeCurMgrUnit; //
 		CChaListNode* m_pRangeCurEntiNode; //
 		CRangeBase* m_pCBaseRange;
 
@@ -243,12 +243,12 @@ private:
 		CRangeCircle m_CCircleRange;
 	};
 
-	dbc::Short m_sCopyNO;
+	int16_t m_sCopyNO;
 	CTimer m_timeScriptRun;
 
-	dbc::Long m_lPlayerNum;
-	//	dbc::Long	m_lActivePlayerNum;
-	dbc::Long m_lInfoParam[defMAPCOPY_INFO_PARAM_NUM];
+	std::int32_t m_lPlayerNum;
+	//	std::int32_t	m_lActivePlayerNum;
+	std::int32_t m_lInfoParam[defMAPCOPY_INFO_PARAM_NUM];
 };
 
 #endif //SUBMAP_H

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <windows.h>
 
-namespace TalesOfPirate::Utils::Console {
+namespace Corsairs::Util::Console {
 
     // CODES/NAMES — function-local statics (Meyers' singleton), не namespace-scope.
     // Why: namespace-scope `const std::map` без inline даёт per-TU копию (internal
@@ -94,8 +94,9 @@ namespace TalesOfPirate::Utils::Console {
     }
 
     void set(int c) {
-        if (is_good(c))
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), c);
+        if (is_good(c)) {
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), static_cast<WORD>(c));
+        }
     }
 
     void set(int a, int b) {

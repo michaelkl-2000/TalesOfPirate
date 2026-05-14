@@ -6,7 +6,7 @@
 
 namespace Corsairs::Common::Character {
 
-class PoseRecordStore : public GameRecordset<CPoseInfo> {
+class PoseRecordStore : public GameRecordset<PoseInfo> {
 public:
 	static PoseRecordStore* Instance() {
 		static PoseRecordStore instance{};
@@ -31,14 +31,11 @@ public:
 		return GameRecordset::Load(db, SELECT_ALL_SQL);
 	}
 
-	static void Insert(SqliteDatabase& db, const CPoseInfo& record);
-
 protected:
 	RecordEntry ReadRecord(SqliteStatement& stmt) override;
 };
 
-CPoseInfo* GetPoseInfo(short sPoseID, const std::source_location& loc = std::source_location::current());
-short GetRealPoseID(short sPoseID, short sPoseType);
+PoseInfo* GetPoseInfo(short sPoseID, const std::source_location& loc = std::source_location::current());
 
 } // namespace Corsairs::Common::Character
 

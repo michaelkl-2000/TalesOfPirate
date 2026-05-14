@@ -45,7 +45,7 @@ CPicture& CPicture::operator=(const CPicture &rPic)
 	return *this;
 }
 
-char CPicture::GetImgByte(uInt index)
+char CPicture::GetImgByte(std::uint32_t index)
 {
 	BYTE BitMask[] = {0x7F, 0xBF, 0xDF, 0xEF, 0xF7, 0xFB, 0xFD, 0xFE};
 
@@ -76,7 +76,7 @@ bool CPicture::LoadImg()
 	_img = new char[lSize];
 	fread(_img, lSize, 1, fp);
 	fclose(fp);
-	SetSize((uInt)lSize);
+	SetSize((std::uint32_t)lSize);
 	memcpy(&m_start, _img + 10, sizeof(int));
 
 	return true;

@@ -445,22 +445,22 @@ int	g_IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int 
 			return enumESKILL_FAILD_ONLY_DIEPLY;
 	}
 
-	if (nTChaCtrlType == enumCHACTRL_MONS_TREE) // 
+	if (nTChaCtrlType == static_cast<char>(EChaCtrlType::MONS_TREE)) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_TREE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if (nTChaCtrlType == enumCHACTRL_MONS_MINE) // 
+	else if (nTChaCtrlType == static_cast<char>(EChaCtrlType::MONS_MINE)) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_MINE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if(nTChaCtrlType == enumCHACTRL_MONS_FISH) // 
+	else if(nTChaCtrlType == static_cast<char>(EChaCtrlType::MONS_FISH)) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_FISH)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if (nTChaCtrlType == enumCHACTRL_MONS_DBOAT) // 
+	else if (nTChaCtrlType == static_cast<char>(EChaCtrlType::MONS_DBOAT)) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_SALVAGE)
 			return enumESKILL_FAILD_ESP_MONS;
@@ -468,27 +468,27 @@ int	g_IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int 
 
 	if (nSSkillObjType == enumSKILL_TYPE_REPAIR)
 	{
-		if (nTChaCtrlType != enumCHACTRL_MONS_REPAIRABLE)
+		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_REPAIRABLE))
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	if (nSSkillObjType == enumSKILL_TYPE_TREE)
 	{
-		if (nTChaCtrlType != enumCHACTRL_MONS_TREE)
+		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_TREE))
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if (nSSkillObjType == enumSKILL_TYPE_MINE)
 	{
-		if (nTChaCtrlType != enumCHACTRL_MONS_MINE)
+		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_MINE))
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if(nSSkillObjType == enumSKILL_TYPE_FISH)
 	{
-		if (nTChaCtrlType != enumCHACTRL_MONS_FISH)
+		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_FISH))
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if (nSSkillObjType == enumSKILL_TYPE_SALVAGE)
 	{
-		if (nTChaCtrlType != enumCHACTRL_MONS_DBOAT)
+		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_DBOAT))
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 
@@ -642,26 +642,26 @@ void String2Item(const char* pszData, SItemGrid* SGridCont) {
 	std::string strSubList[csSubNum];
 
 	int sTCount = 0;
-	Util_ResolveTextLine(pszData, strSubList, csSubNum, ',');
-	SGridCont->sID = Str2Int(strSubList[sTCount++]);
-	SGridCont->sNum = Str2Int(strSubList[sTCount++]);
-	SGridCont->sEndure[0] = Str2Int(strSubList[sTCount++]);
-	SGridCont->sEndure[1] = Str2Int(strSubList[sTCount++]);
-	SGridCont->sEnergy[0] = Str2Int(strSubList[sTCount++]);
-	SGridCont->sEnergy[1] = Str2Int(strSubList[sTCount++]);
-	SGridCont->chForgeLv = Str2Int(strSubList[sTCount++]);
+	Corsairs::Util::ResolveTextLine(pszData, strSubList, csSubNum, ',');
+	SGridCont->sID = Corsairs::Util::Str2Int(strSubList[sTCount++]);
+	SGridCont->sNum = Corsairs::Util::Str2Int(strSubList[sTCount++]);
+	SGridCont->sEndure[0] = Corsairs::Util::Str2Int(strSubList[sTCount++]);
+	SGridCont->sEndure[1] = Corsairs::Util::Str2Int(strSubList[sTCount++]);
+	SGridCont->sEnergy[0] = Corsairs::Util::Str2Int(strSubList[sTCount++]);
+	SGridCont->sEnergy[1] = Corsairs::Util::Str2Int(strSubList[sTCount++]);
+	SGridCont->chForgeLv = Corsairs::Util::Str2Int(strSubList[sTCount++]);
 
 
 	for (int m = 0; m < enumITEMDBP_MAXNUM; m++)
 	{
-		SGridCont->SetDBParam(m, Str2Int(strSubList[sTCount++]));
+		SGridCont->SetDBParam(m, Corsairs::Util::Str2Int(strSubList[sTCount++]));
 	}
-	if (Str2Int(strSubList[sTCount++]) > 0) // 
+	if (Corsairs::Util::Str2Int(strSubList[sTCount++]) > 0) // 
 	{
 		for (int k = 0; k < defITEM_INSTANCE_ATTR_NUM; k++)
 		{
-			SGridCont->sInstAttr[k][0] = Str2Int(strSubList[sTCount + k * 2]);
-			SGridCont->sInstAttr[k][1] = Str2Int(strSubList[sTCount + k * 2 + 1]);
+			SGridCont->sInstAttr[k][0] = Corsairs::Util::Str2Int(strSubList[sTCount + k * 2]);
+			SGridCont->sInstAttr[k][1] = Corsairs::Util::Str2Int(strSubList[sTCount + k * 2 + 1]);
 		}
 	}
 	else
@@ -946,12 +946,12 @@ bool String2ShortcutData(stNetShortCut *pShortcut, std::string &strData)
 	std::string strList[SHORT_CUT_NUM + 1];
 	const short csSubNum = 2;
 	std::string strSubList[csSubNum];
-	Util_ResolveTextLine(strData.c_str(), strList, SHORT_CUT_NUM + 1, ';');
+	Corsairs::Util::ResolveTextLine(strData.c_str(), strList, SHORT_CUT_NUM + 1, ';');
 	for (int i = 0; i < SHORT_CUT_NUM; i++)
 	{
-		Util_ResolveTextLine(strList[i].c_str(), strSubList, csSubNum, ',');
-		pShortcut->chType[i] = Str2Int(strSubList[0]);
-		pShortcut->byGridID[i] = Str2Int(strSubList[1]);
+		Corsairs::Util::ResolveTextLine(strList[i].c_str(), strSubList, csSubNum, ',');
+		pShortcut->chType[i] = Corsairs::Util::Str2Int(strSubList[0]);
+		pShortcut->byGridID[i] = Corsairs::Util::Str2Int(strSubList[1]);
 	}
 
 	return true;

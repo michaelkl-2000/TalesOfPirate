@@ -1,7 +1,6 @@
 // Expand.cpp — function implementations moved from Expand.h
 
 #include "Character/Character.h"
-#include "excp.h"
 #include "Db/GameDB.h"
 #include "World/MapEntry.h"
 #include "Script/Script.h"
@@ -10,9 +9,6 @@
 #include "World/SubMap.h"
 #include "Script/lua_gamectrl.h"
 #include <tuple>
-
-_DBC_USING
-
 extern const char* GetResPath(const char* pszRes);
 
 void SynLook(CCharacter* pCha) {
@@ -108,7 +104,7 @@ int SetChaAttr(CCharacter* pCCha, int sAttrIndex, int64_t lValue) {
 	if (!pCCha) return 0;
 	if (sAttrIndex < 0 || sAttrIndex >= ATTR_MAX_NUM) return 0;
 	auto clamped = std::clamp(lValue, static_cast<int64_t>(INT32_MIN), static_cast<int64_t>(INT32_MAX));
-	long lSetRet = pCCha->setAttr(sAttrIndex, static_cast<LONG32>(clamped));
+	std::int32_t lSetRet = pCCha->setAttr(sAttrIndex, static_cast<LONG32>(clamped));
 	return lSetRet != 0 ? 1 : 0;
 }
 
@@ -154,8 +150,8 @@ void SetRangeState(int s1, int s2, int s3) {
 }
 
 int GetSkillPos_raw(lua_State* L) {
-	lua_pushinteger(L, g_SSkillPoint.x);
-	lua_pushinteger(L, g_SSkillPoint.y);
+	lua_pushinteger(L, g_SSkillPoint.X);
+	lua_pushinteger(L, g_SSkillPoint.Y);
 	return 2;
 }
 
@@ -260,26 +256,26 @@ int SetItemFall_raw(lua_State* pLS) {
 	int nParaNum = lua_gettop(pLS);
 	if (nParaNum < 1) return 0;
 
-	g_chItemFall[0] = (char)lua_tonumber(pLS, 1);
-	if (g_chItemFall[0] > defCHA_INIT_ITEM_NUM) return 0;
-	for (int i = 0; i < g_chItemFall[0]; i++)
-		g_chItemFall[i + 1] = (char)lua_tonumber(pLS, i + 2);
+	g_chItemFall.at(0) = (char)lua_tonumber(pLS, 1);
+	if (g_chItemFall.at(0) > static_cast<char>(kChaInitItemNum)) return 0;
+	for (int i = 0; i < g_chItemFall.at(0); i++)
+		g_chItemFall.at(i + 1) = (char)lua_tonumber(pLS, i + 2);
 	return 0;
 }
 
 void BeatBack(CCharacter* pCSrcCha, CCharacter* pCTarCha, int nBackLen) {
 	if (!pCSrcCha || !pCTarCha) return;
 
-	Point SSrcPos, STarPos;
-	Point STarNewPos;
+	Corsairs::Util::Point SSrcPos, STarPos;
+	Corsairs::Util::Point STarNewPos;
 	SSrcPos = pCSrcCha->GetPos();
 	STarPos = pCTarCha->GetPos();
 	int nDist1 = (int)sqrt(double(
-		(SSrcPos.x - STarPos.x) * (SSrcPos.x - STarPos.x) + (SSrcPos.y - STarPos.y) * (SSrcPos.y - STarPos.y)));
+		(SSrcPos.X - STarPos.X) * (SSrcPos.X - STarPos.X) + (SSrcPos.Y - STarPos.Y) * (SSrcPos.Y - STarPos.Y)));
 	int nDist2 = nDist1 + nBackLen;
-	STarNewPos.x = nDist2 * (STarPos.x - SSrcPos.x) / nDist1 + SSrcPos.x;
-	STarNewPos.y = nDist2 * (STarPos.y - SSrcPos.y) / nDist1 + SSrcPos.y;
-	unsigned long ulElapse;
+	STarNewPos.X = nDist2 * (STarPos.X - SSrcPos.X) / nDist1 + SSrcPos.X;
+	STarNewPos.Y = nDist2 * (STarPos.Y - SSrcPos.Y) / nDist1 + SSrcPos.Y;
+	std::uint32_t ulElapse;
 	pCTarCha->LinearAttemptMove(STarNewPos, nBackLen, &ulElapse);
 	STarNewPos = pCTarCha->GetPos();
 	pCTarCha->SetPos(STarPos);
@@ -388,8 +384,8 @@ int RemoveChaItem_raw(lua_State* pLS) {
 		return 1;
 	}
 
-	long lItemID = (long)lua_tonumber(pLS, 2);
-	long lItemNum = (long)lua_tonumber(pLS, 3);
+	std::int32_t lItemID = (std::int32_t)lua_tonumber(pLS, 2);
+	std::int32_t lItemNum = (std::int32_t)lua_tonumber(pLS, 3);
 	char chFromType = (char)lua_tonumber(pLS, 4);
 	short sFromID = (short)lua_tonumber(pLS, 5);
 	char chToType = (char)lua_tonumber(pLS, 6);
@@ -444,12 +440,12 @@ int ChaIsBoat(CCharacter* pCCha) {
 
 SItemGrid* GetChaItem(CCharacter* pCCha, int type, int id) {
 	if (!pCCha) return nullptr;
-	return pCCha->GetItem2((char)type, (long)id);
+	return pCCha->GetItem2((char)type, (std::int32_t)id);
 }
 
 SItemGrid* GetChaItem2(CCharacter* pCCha, int type, int id) {
 	if (!pCCha) return nullptr;
-	return pCCha->GetItem((char)type, (long)id);
+	return pCCha->GetItem((char)type, (std::int32_t)id);
 }
 
 int MoveToTemp(CCharacter* pCCha, SItemGrid* pSItem) {
@@ -488,7 +484,7 @@ int MoveToTemp(CCharacter* pCCha, SItemGrid* pSItem) {
 // GetItemAttr has complex branching on attrID
 int GetItemAttr_raw(lua_State* pLS) {
 	int nParaNum = lua_gettop(pLS);
-	long lItemAttr = 0;
+	std::int32_t lItemAttr = 0;
 
 	if (nParaNum != 2) return 0;
 
@@ -504,7 +500,7 @@ int GetItemAttr_raw(lua_State* pLS) {
 		return 1;
 	}
 
-	long lAttrID = (int)lua_tonumber(pLS, 2);
+	std::int32_t lAttrID = (int)lua_tonumber(pLS, 2);
 	if (lAttrID == ITEMATTR_VAL_PARAM1)
 		lItemAttr = pSItem->GetDBParam(0);
 	else if (lAttrID == ITEMATTR_VAL_PARAM2)
@@ -549,7 +545,7 @@ int SetItemAttr_raw(lua_State* pLS) {
 		return 1;
 	}
 
-	long lAttrID = (int)lua_tonumber(pLS, 2);
+	std::int32_t lAttrID = (int)lua_tonumber(pLS, 2);
 	short sAttr = (short)lua_tonumber(pLS, 3);
 	if (lAttrID == ITEMATTR_VAL_PARAM1)
 		pSItem->SetDBParam(0, sAttr);
@@ -587,7 +583,7 @@ int AddItemAttr_raw(lua_State* pLS) {
 		return 1;
 	}
 
-	long lAttrID = (int)lua_tonumber(pLS, 2);
+	std::int32_t lAttrID = (int)lua_tonumber(pLS, 2);
 	short sAttr = (short)lua_tonumber(pLS, 3);
 
 	if (lAttrID == ITEMATTR_VAL_PARAM1) {
@@ -662,7 +658,7 @@ int SetItemForgeParam_raw(lua_State* pLS) {
 		return 1;
 	}
 
-	long lType = (int)lua_tonumber(pLS, 2);
+	std::int32_t lType = (int)lua_tonumber(pLS, 2);
 	if (lType == 0)
 		pSItem->SetForgeLv((char)lua_tonumber(pLS, 3));
 	else
@@ -785,47 +781,47 @@ int SetMapEntryTime_raw(lua_State* pLS) {
 	time(&timep);
 	time_get = localtime(&timep);
 	const char* szTime = (const char*)lua_tostring(pLS, 2);
-	int n = Util_ResolveTextLine(szTime, strList, 5, '/');
+	int n = Corsairs::Util::ResolveTextLine(szTime, strList, 5, '/');
 	if (n != 5) {
 		MessageBox(0, szTime, RES_STRING(GM_EXPAND_H_00111), MB_OK);
 		lua_pushnumber(pLS, 0);
 		return 1;
 	}
-	time_set.tm_year = Str2Int(strList[0]) - 1900;
-	time_set.tm_mon = Str2Int(strList[1]) - 1;
-	time_set.tm_mday = Str2Int(strList[2]);
-	time_set.tm_hour = Str2Int(strList[3]);
-	time_set.tm_min = Str2Int(strList[4]);
+	time_set.tm_year = Corsairs::Util::Str2Int(strList[0]) - 1900;
+	time_set.tm_mon = Corsairs::Util::Str2Int(strList[1]) - 1;
+	time_set.tm_mday = Corsairs::Util::Str2Int(strList[2]);
+	time_set.tm_hour = Corsairs::Util::Str2Int(strList[3]);
+	time_set.tm_min = Corsairs::Util::Str2Int(strList[4]);
 	time_set.tm_sec = 0;
 	time_set.tm_isdst = time_get->tm_isdst;
 	pCMap->m_tEntryFirstTm = mktime(&time_set);
 
 	szTime = (const char*)lua_tostring(pLS, 3);
-	n = Util_ResolveTextLine(szTime, strList, 4, '/');
+	n = Corsairs::Util::ResolveTextLine(szTime, strList, 4, '/');
 	if (n != 3) {
 		MessageBox(0, szTime, RES_STRING(GM_EXPAND_H_00111), MB_OK);
 		lua_pushnumber(pLS, 0);
 		return 1;
 	}
-	pCMap->m_tEntryTmDis = ((Str2Int(strList[0]) * 24 + Str2Int(strList[1])) * 60 + Str2Int(strList[2])) * 60;
+	pCMap->m_tEntryTmDis = ((Corsairs::Util::Str2Int(strList[0]) * 24 + Corsairs::Util::Str2Int(strList[1])) * 60 + Corsairs::Util::Str2Int(strList[2])) * 60;
 
 	szTime = (const char*)lua_tostring(pLS, 4);
-	n = Util_ResolveTextLine(szTime, strList, 4, '/');
+	n = Corsairs::Util::ResolveTextLine(szTime, strList, 4, '/');
 	if (n != 3) {
 		MessageBox(0, szTime, RES_STRING(GM_EXPAND_H_00111), MB_OK);
 		lua_pushnumber(pLS, 0);
 		return 1;
 	}
-	pCMap->m_tEntryOutTmDis = ((Str2Int(strList[0]) * 24 + Str2Int(strList[1])) * 60 + Str2Int(strList[2])) * 60;
+	pCMap->m_tEntryOutTmDis = ((Corsairs::Util::Str2Int(strList[0]) * 24 + Corsairs::Util::Str2Int(strList[1])) * 60 + Corsairs::Util::Str2Int(strList[2])) * 60;
 
 	szTime = (const char*)lua_tostring(pLS, 5);
-	n = Util_ResolveTextLine(szTime, strList, 4, '/');
+	n = Corsairs::Util::ResolveTextLine(szTime, strList, 4, '/');
 	if (n != 3) {
 		MessageBox(0, szTime, RES_STRING(GM_EXPAND_H_00111), MB_OK);
 		lua_pushnumber(pLS, 0);
 		return 1;
 	}
-	pCMap->m_tMapClsTmDis = ((Str2Int(strList[0]) * 24 + Str2Int(strList[1])) * 60 + Str2Int(strList[2])) * 60;
+	pCMap->m_tMapClsTmDis = ((Corsairs::Util::Str2Int(strList[0]) * 24 + Corsairs::Util::Str2Int(strList[1])) * 60 + Corsairs::Util::Str2Int(strList[2])) * 60;
 
 	lua_pushnumber(pLS, 1);
 	return 1;
@@ -930,7 +926,7 @@ int GetMapEntryPosInfo_raw(lua_State* pLS) {
 
 	const char* pMapN = "";
 	const char* pTMapN = "";
-	long lPosX = 0, lPosY = 0;
+	std::int32_t lPosX = 0, lPosY = 0;
 	pEntry->GetPosInfo(&pMapN, &lPosX, &lPosY, &pTMapN);
 
 	lua_pushstring(pLS, pMapN);
@@ -1054,13 +1050,13 @@ int GetMapCopyID2(SubMap* pCMapCopy) {
 
 int SetMapCopyParam(CMapEntryCopyCell* pCCpyMgr, int paramIdx, int val) {
 	if (!pCCpyMgr) return 0;
-	if (!pCCpyMgr->SetParam((char)paramIdx - 1, (long)val)) return 0;
+	if (!pCCpyMgr->SetParam((char)paramIdx - 1, (std::int32_t)val)) return 0;
 	return 1;
 }
 
 int SetMapCopyParam2(SubMap* pCMapCpy, int paramIdx, int val) {
 	if (!pCMapCpy) return 0;
-	if (!pCMapCpy->SetInfoParam((char)paramIdx - 1, (long)val)) return 0;
+	if (!pCMapCpy->SetInfoParam((char)paramIdx - 1, (std::int32_t)val)) return 0;
 	return 1;
 }
 
@@ -1248,7 +1244,7 @@ int IsChaLiving(CCharacter* pCCha) {
 
 int SetChaParam(CCharacter* pCCha, int paramIdx, int val) {
 	if (!pCCha) return 0;
-	if (!pCCha->SetScriptParam((char)paramIdx - 1, (long)val)) return 0;
+	if (!pCCha->SetScriptParam((char)paramIdx - 1, (std::int32_t)val)) return 0;
 	return 1;
 }
 
@@ -1350,7 +1346,7 @@ int CalWinLottery_raw(lua_State* pLS) {
 int GetLotteryIssue_raw(lua_State* pLS) {
 	int issue;
 	if (game_db.GetLotteryIssue(issue)) {
-		lua_pushnumber(pLS, (long)issue);
+		lua_pushnumber(pLS, (std::int32_t)issue);
 		return 1;
 	}
 	return 0;
@@ -1368,45 +1364,45 @@ void DisuseLotteryIssue(int issue, int state) {
 int IsValidRegTeam_raw(lua_State* pLS) {
 	int teamID = (int)lua_tonumber(pLS, 1);
 	auto pCaptainResult = luabridge::Stack<CCharacter*>::get(pLS, 2);
-	if (!pCaptainResult) { PARAM_ERROR lua_pushnumber(pLS, (long)0); return 1; }
+	if (!pCaptainResult) { PARAM_ERROR lua_pushnumber(pLS, (std::int32_t)0); return 1; }
 	CCharacter* pCaptain = *pCaptainResult;
 	auto pMember1Result = luabridge::Stack<CCharacter*>::get(pLS, 3);
-	if (!pMember1Result) { PARAM_ERROR lua_pushnumber(pLS, (long)0); return 1; }
+	if (!pMember1Result) { PARAM_ERROR lua_pushnumber(pLS, (std::int32_t)0); return 1; }
 	CCharacter* pMember1 = *pMember1Result;
 	auto pMember2Result = luabridge::Stack<CCharacter*>::get(pLS, 4);
-	if (!pMember2Result) { PARAM_ERROR lua_pushnumber(pLS, (long)0); return 1; }
+	if (!pMember2Result) { PARAM_ERROR lua_pushnumber(pLS, (std::int32_t)0); return 1; }
 	CCharacter* pMember2 = *pMember2Result;
 	if (!pCaptain || !pMember1 || !pMember2)
 		return luaL_error(pLS, "IsValidRegTeam: null CCharacter* (captain=%p, m1=%p, m2=%p)", pCaptain, pMember1, pMember2);
 
 	if (game_db.IsValidAmphitheaterTeam(teamID, pCaptain->GetID(), pMember1->GetID(), pMember2->GetID()))
-		lua_pushnumber(pLS, (long)1);
+		lua_pushnumber(pLS, (std::int32_t)1);
 	else
-		lua_pushnumber(pLS, (long)0);
+		lua_pushnumber(pLS, (std::int32_t)0);
 	return 1;
 }
 
 // IsValidTeam has complex multi-return logic
 int IsValidTeam_raw(lua_State* pLS) {
 	auto pCChaResult = luabridge::Stack<CCharacter*>::get(pLS, 1);
-	if (!pCChaResult) { PARAM_ERROR lua_pushnumber(pLS, (long)-4); return 1; }
+	if (!pCChaResult) { PARAM_ERROR lua_pushnumber(pLS, (std::int32_t)-4); return 1; }
 	CCharacter* pCCha = *pCChaResult;
 	if (!pCCha) return luaL_error(pLS, "IsValidTeam: null CCharacter*");
 	CPlayer* pTeamPlayer = pCCha->GetPlayer();
 	int masterID = pTeamPlayer->GetDBChaId();
 
 	if (pTeamPlayer == NULL) {
-		lua_pushnumber(pLS, (long)-4);
+		lua_pushnumber(pLS, (std::int32_t)-4);
 		return 1;
 	}
 
 	if (!pTeamPlayer->IsTeamLeader()) {
-		lua_pushnumber(pLS, (long)-1);
+		lua_pushnumber(pLS, (std::int32_t)-1);
 		return 1;
 	}
 
 	if (pTeamPlayer->GetTeamMemberCnt() != 2) {
-		lua_pushnumber(pLS, (long)-2);
+		lua_pushnumber(pLS, (std::int32_t)-2);
 		return 1;
 	}
 
@@ -1414,11 +1410,11 @@ int IsValidTeam_raw(lua_State* pLS) {
 	DWORD prenticeID2 = pTeamPlayer->GetTeamMemberDBID(1);
 
 	if (game_db.IsMasterRelation(masterID, prenticeID1) && game_db.IsMasterRelation(masterID, prenticeID2)) {
-		lua_pushnumber(pLS, (long)1);
+		lua_pushnumber(pLS, (std::int32_t)1);
 		return 1;
 	}
 
-	lua_pushnumber(pLS, (long)-3);
+	lua_pushnumber(pLS, (std::int32_t)-3);
 	return 1;
 }
 
@@ -1426,11 +1422,11 @@ int GetAmphitheaterSeason_raw(lua_State* pLS) {
 	int season = -1;
 	int round = -1;
 	if (game_db.GetAmphitheaterSeasonAndRound(season, round)) {
-		lua_pushnumber(pLS, (long)season);
+		lua_pushnumber(pLS, (std::int32_t)season);
 		return 1;
 	}
 	else {
-		lua_pushnumber(pLS, (long)0);
+		lua_pushnumber(pLS, (std::int32_t)0);
 		return 0;
 	}
 }
@@ -1439,11 +1435,11 @@ int GetAmphitheaterRound_raw(lua_State* pLS) {
 	int season = -1;
 	int round = -1;
 	if (game_db.GetAmphitheaterSeasonAndRound(season, round)) {
-		lua_pushnumber(pLS, (long)round);
+		lua_pushnumber(pLS, (std::int32_t)round);
 		return 1;
 	}
 	else {
-		lua_pushnumber(pLS, (long)0);
+		lua_pushnumber(pLS, (std::int32_t)0);
 		return 1;
 	}
 }
@@ -1467,20 +1463,20 @@ int UpdateAmphitheaterRound(int season, int round) {
 int GetAmphitheaterTeamCount_raw(lua_State* pLS) {
 	int count = 0;
 	if (game_db.GetAmphitheaterTeamCount(count)) {
-		lua_pushnumber(pLS, (long)count);
+		lua_pushnumber(pLS, (std::int32_t)count);
 		return 1;
 	}
-	lua_pushnumber(pLS, (long)0);
+	lua_pushnumber(pLS, (std::int32_t)0);
 	return 0;
 }
 
 int GetAmphitheaterNoUseTeamID_raw(lua_State* pLS) {
 	int teamID = 0;
 	if (game_db.GetAmphitheaterNoUseTeamID(teamID)) {
-		lua_pushnumber(pLS, (long)teamID);
+		lua_pushnumber(pLS, (std::int32_t)teamID);
 		return 1;
 	}
-	lua_pushnumber(pLS, (long)0);
+	lua_pushnumber(pLS, (std::int32_t)0);
 	return 1;
 }
 
@@ -1680,7 +1676,7 @@ void LookEnergy(CCharacter* pCCha) {
 	pCCha->SynLookEnergy();
 }
 
-// SetExpiration uses lua_touserdata for the second param (long* cast)
+// SetExpiration uses lua_touserdata for the second param (std::int32_t* cast)
 int SetExpiration_raw(lua_State* L) {
 	int nParaNum = lua_gettop(L);
 	if (nParaNum != 2) {
@@ -1696,7 +1692,7 @@ int SetExpiration_raw(lua_State* L) {
 		lua_pushnumber(L, 0);
 		return 1;
 	}
-	long expiration = *static_cast<long*>(lua_touserdata(L, 2));
+	std::int32_t expiration = *static_cast<std::int32_t*>(lua_touserdata(L, 2));
 	if (expiration == -1 || expiration == 0)
 		pSItem->expiration = 0;
 	else

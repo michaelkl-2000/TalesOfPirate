@@ -15,7 +15,7 @@ static std::string g_dumpFilePath{};
 static std::optional<std::function<void()>> g_crushFunction{};
 static std::atomic<std::int32_t> incValue{};
 
-namespace TalesOfPirate::Utils::Crush {
+namespace Corsairs::Util::Crush {
 	long __stdcall CrushDumpFilter(EXCEPTION_POINTERS* pep) {
 		CreateMiniDump(pep);
 		return EXCEPTION_EXECUTE_HANDLER;

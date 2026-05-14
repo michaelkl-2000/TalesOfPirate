@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: CharacterPacket.cpp
 // Creater: ZhangXuedong
 // Date: 2005.05.09
@@ -10,7 +10,7 @@
 #include "App/GameApp.h"
 #include "CommandMessages.h"
 
-void CCharacter::WriteBaseInfo(Corsairs::Net::WPacket &pkret, Char chLookType)
+void CCharacter::WriteBaseInfo(Corsairs::Net::WPacket &pkret, char chLookType)
 {
 	CPlayer	*pCPlayer = GetPlayer();
 
@@ -40,7 +40,7 @@ void CCharacter::WriteBaseInfo(Corsairs::Net::WPacket &pkret, Char chLookType)
 	if (g_Config.m_bBlindChaos && IsPlayerCha() && LOOK_OTHER == chLookType && IsPKSilver())
 	{
 		pkret.WriteInt64(GetHandle());
-		pkret.WriteInt64((Char)m_CChaAttr.GetAttr(ATTR_CHATYPE));
+		pkret.WriteInt64((char)m_CChaAttr.GetAttr(ATTR_CHATYPE));
 		pkret.WriteString("");
 		pkret.WriteString("");
 		pkret.WriteInt64(GetPlyMainCha()->GetIcon());
@@ -52,7 +52,7 @@ void CCharacter::WriteBaseInfo(Corsairs::Net::WPacket &pkret, Char chLookType)
 	else
 	{
 		pkret.WriteInt64(GetHandle());
-		pkret.WriteInt64((Char)m_CChaAttr.GetAttr(ATTR_CHATYPE));
+		pkret.WriteInt64((char)m_CChaAttr.GetAttr(ATTR_CHATYPE));
 		pkret.WriteString(_name);
 		pkret.WriteString(GetMotto());
 		pkret.WriteInt64(GetPlyMainCha()->GetIcon());
@@ -63,8 +63,8 @@ void CCharacter::WriteBaseInfo(Corsairs::Net::WPacket &pkret, Char chLookType)
 		pkret.WriteString(GetStallName());
 	}
 	pkret.WriteInt64(GetExistState());
-	pkret.WriteInt64(GetPos().x);
-	pkret.WriteInt64(GetPos().y);
+	pkret.WriteInt64(GetPos().X);
+	pkret.WriteInt64(GetPos().Y);
 	pkret.WriteInt64(GetRadius());
 	pkret.WriteInt64(GetAngle());
 	// ID
@@ -96,7 +96,7 @@ void CCharacter::WritePKCtrl(Corsairs::Net::WPacket &pkret)
 
 void CCharacter::WriteSideInfo(Corsairs::Net::WPacket &pkret)
 {
-	pkret.WriteInt64((Char)GetSideID());
+	pkret.WriteInt64((char)GetSideID());
 }
 
 void CCharacter::WriteSkillbag(Corsairs::Net::WPacket &pk, int nSynType)
@@ -172,7 +172,7 @@ void CCharacter::WriteKitbag(CKitbag &CKb, Corsairs::Net::WPacket &WtPk, int nSy
 	CItemRecord* pItemRec;
 
 	WtPk.WriteInt64(nSynType);
-	Short sCapacity = CKb.GetCapacity();
+	int16_t sCapacity = CKb.GetCapacity();
 	if (nSynType == enumSYN_KITBAG_INIT)
 		WtPk.WriteInt64(sCapacity);
 	for (int i = 0; i < sCapacity; i++)
@@ -209,7 +209,7 @@ void CCharacter::WriteKitbag(CKitbag &CKb, Corsairs::Net::WPacket &WtPk, int nSy
 		pItemRec = GetItemRecordInfo( pGridCont->sID );
 		if( pItemRec->sType == enumItemTypeBoat ) // WorldID
 		{
-			CCharacter	*pCBoat = GetPlayer()->GetBoat((DWORD)pGridCont->GetDBParam(enumITEMDBP_INST_ID));
+			CCharacter	*pCBoat = GetPlayer()->GetBoat(pGridCont->GetDBParam(enumITEMDBP_INST_ID));
 			if (pCBoat)
 				WtPk.WriteInt64(pCBoat->GetID());
 			else
@@ -237,7 +237,7 @@ Corsairs::Net::Msg::ChaKitbagInfo CCharacter::BuildKitbagInfo(CKitbag &CKb, int 
 {
 	Corsairs::Net::Msg::ChaKitbagInfo info{};
 	info.synType = nSynType;
-	Short sCapacity = CKb.GetCapacity();
+	int16_t sCapacity = CKb.GetCapacity();
 	if (nSynType == enumSYN_KITBAG_INIT)
 		info.capacity = sCapacity;
 	for (int i = 0; i < sCapacity; i++)
@@ -276,7 +276,7 @@ Corsairs::Net::Msg::ChaKitbagInfo CCharacter::BuildKitbagInfo(CKitbag &CKb, int 
 		if (pItemRec->sType == enumItemTypeBoat)
 		{
 			item.isBoat = true;
-			CCharacter* pCBoat = GetPlayer()->GetBoat((DWORD)pGridCont->GetDBParam(enumITEMDBP_INST_ID));
+			CCharacter* pCBoat = GetPlayer()->GetBoat(pGridCont->GetDBParam(enumITEMDBP_INST_ID));
 			item.boatWorldId = pCBoat ? pCBoat->GetID() : 0;
 		}
 		item.forgeParam = pGridCont->GetDBParam(enumITEMDBP_FORGE);
@@ -297,7 +297,7 @@ Corsairs::Net::Msg::ChaKitbagInfo CCharacter::BuildKitbagInfo(CKitbag &CKb, int 
 
 // client: ReadChaLookPacket
 // void NetSynAttr( DWORD dwWorldID, char chType, short sNum, stEffect *pEffect )
-Short GetChaosEquip(Long type, Long job) {
+int16_t GetChaosEquip(std::int32_t type, std::int32_t job) {
 	if (type == enumEQUIP_BODY) {
 		switch (job) {
 			case JOB_TYPE_JUJS: return 1933;
@@ -362,11 +362,11 @@ Short GetChaosEquip(Long type, Long job) {
 	return 0;
 }
 
-void CCharacter::WriteLookData(Corsairs::Net::WPacket &WtPk, Char chLookType, Char chSynType)
+void CCharacter::WriteLookData(Corsairs::Net::WPacket &WtPk, char chLookType, char chSynType)
 {
 	WtPk.WriteInt64(chSynType);
 	WtPk.WriteInt64(m_SChaPart.sTypeID);
-	if( m_CChaAttr.GetAttr(ATTR_CHATYPE) == enumCHACTRL_PLAYER && IsBoat() )
+	if( m_CChaAttr.GetAttr(ATTR_CHATYPE) == static_cast<char>(EChaCtrlType::PLAYER) && IsBoat() )
 	{
 		WtPk.WriteInt64(1); // 
 		WtPk.WriteInt64(m_SChaPart.sPosID);
@@ -401,7 +401,7 @@ void CCharacter::WriteLookData(Corsairs::Net::WPacket &WtPk, Char chLookType, Ch
 					}
 				}
 
-				Short eqID = GetChaosEquip(i, nJob);
+				int16_t eqID = GetChaosEquip(i, nJob);
 				//WtPk.WriteInt64(pItem->dwDBID);
 				WtPk.WriteInt64(eqID); // pItem->sID
 				WtPk.WriteInt64(pItem->dwDBID);
@@ -590,7 +590,7 @@ void CCharacter::WriteItemChaBoat(Corsairs::Net::WPacket &WtPk, CCharacter *pCBo
 //  Fill*     (CommandMessages.h)
 // =====================================================================
 
-void CCharacter::FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, Char chLookType)
+void CCharacter::FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, char chLookType)
 {
 	CPlayer *pCPlayer = GetPlayer();
 
@@ -612,7 +612,7 @@ void CCharacter::FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, Char chLookTyp
 	if (g_Config.m_bBlindChaos && IsPlayerCha() && LOOK_OTHER == chLookType && IsPKSilver())
 	{
 		b.handle = GetHandle();
-		b.ctrlType = (Char)m_CChaAttr.GetAttr(ATTR_CHATYPE);
+		b.ctrlType = (char)m_CChaAttr.GetAttr(ATTR_CHATYPE);
 		b.name = "";
 		b.motto = "";
 		b.icon = GetPlyMainCha()->GetIcon();
@@ -625,7 +625,7 @@ void CCharacter::FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, Char chLookTyp
 	else
 	{
 		b.handle = GetHandle();
-		b.ctrlType = (Char)m_CChaAttr.GetAttr(ATTR_CHATYPE);
+		b.ctrlType = (char)m_CChaAttr.GetAttr(ATTR_CHATYPE);
 		b.name = _name;
 		b.motto = GetMotto();
 		b.icon = GetPlyMainCha()->GetIcon();
@@ -637,8 +637,8 @@ void CCharacter::FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, Char chLookTyp
 	}
 
 	b.state = GetExistState();
-	b.posX = GetPos().x;
-	b.posY = GetPos().y;
+	b.posX = GetPos().X;
+	b.posY = GetPos().Y;
 	b.radius = GetRadius();
 	b.angle = GetAngle();
 
@@ -659,7 +659,7 @@ void CCharacter::FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, Char chLookTyp
 	b.look.synType = enumSYN_LOOK_SWITCH;
 	b.look.typeId = m_SChaPart.sTypeID;
 
-	if (m_CChaAttr.GetAttr(ATTR_CHATYPE) == enumCHACTRL_PLAYER && IsBoat())
+	if (m_CChaAttr.GetAttr(ATTR_CHATYPE) == static_cast<char>(EChaCtrlType::PLAYER) && IsBoat())
 	{
 		b.look.isBoat = true;
 		b.look.boatParts.posId = m_SChaPart.sPosID;
@@ -688,7 +688,7 @@ void CCharacter::FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, Char chLookTyp
 
 			if (bChaos)
 			{
-				Short eqID = GetChaosEquip(i, nJob);
+				int16_t eqID = GetChaosEquip(i, nJob);
 				eq.id = eqID;
 				eq.dbId = pItem->dwDBID;
 				eq.needLv = pItem->sNeedLv;
@@ -844,7 +844,7 @@ void CCharacter::FillKitbag(Corsairs::Net::Msg::ChaKitbagInfo &k, CKitbag &CKb, 
 	k.synType = nSynType;
 	k.items.clear();
 
-	Short sCapacity = CKb.GetCapacity();
+	int16_t sCapacity = CKb.GetCapacity();
 	if (nSynType == enumSYN_KITBAG_INIT)
 		k.capacity = sCapacity;
 
@@ -887,7 +887,7 @@ void CCharacter::FillKitbag(Corsairs::Net::Msg::ChaKitbagInfo &k, CKitbag &CKb, 
 		if (pItemRec->sType == enumItemTypeBoat)
 		{
 			item.isBoat = true;
-			CCharacter *pCBoat = GetPlayer()->GetBoat((DWORD)pGridCont->GetDBParam(enumITEMDBP_INST_ID));
+			CCharacter *pCBoat = GetPlayer()->GetBoat(pGridCont->GetDBParam(enumITEMDBP_INST_ID));
 			item.boatWorldId = pCBoat ? pCBoat->GetID() : 0;
 		}
 

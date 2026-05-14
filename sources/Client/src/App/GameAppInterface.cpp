@@ -1,4 +1,6 @@
 #include "Stdafx.h"
+#include <filesystem>
+#include <io.h>
 namespace Corsairs::Common::Localization {}
 using namespace Corsairs::Common::Localization;
 
@@ -492,7 +494,7 @@ void CGameApp::CreateCharImg() {
 
 	if (be) {
 		const std::string szPath = "screenshot/cha";
-		Util_MakeDir(szPath.c_str());
+		std::filesystem::create_directories(szPath);
 
 		const std::string fileName = std::format("{}/{}.png", szPath, pInfo->DataName);
 
@@ -598,7 +600,7 @@ BOOL CGameApp::_CreateSmMap(MPTerrain* pTerr) {
 		_pCurScene->RenderSMallMap();
 
 		const std::string szPath = std::format("texture/minimap/{}", _pCurScene->GetTerrainName());
-		Util_MakeDir(szPath.c_str());
+		std::filesystem::create_directories(szPath);
 		const std::string fileName = std::format("{}/sm_{}_{}.png", szPath,
 												 int(vEyePt.x / SHOWRSIZE), int(vEyePt.y / SHOWRSIZE));
 
@@ -631,7 +633,7 @@ BOOL CGameApp::_PrintScreen() {
 	}
 	else {
 		static int g_nScreenCap = 0;
-		Util_MakeDir("screenshot\\");
+		std::filesystem::create_directories("screenshot");
 
 		std::string pszName;
 
@@ -639,7 +641,7 @@ BOOL CGameApp::_PrintScreen() {
 		while (1) {
 			pszName = std::format("screenshot\\{}\\", nidx);
 			if (_access(pszName.c_str(), 0) == -1) {
-				Util_MakeDir(pszName.c_str());
+				std::filesystem::create_directories(pszName);
 				break;
 			}
 		}
@@ -1547,15 +1549,15 @@ void CGameApp::AutoTest() {
 			pHairCha[i] = pScene->AddCharacter(i + 1);
 			pHairCha[i]->setPos(nTestX, nTestY + i * 100 - 200);
 		}
-		HairRecordStore::Instance()->ForEach([&](CHairRecord& hair) {
+		HairRecordStore::Instance()->ForEach([&](HairRecord& hair) {
 			for (int j = 0; j < nMax; j++) {
-				if (hair.IsChaUse[j]) {
-					if (!pHairCha[j]->ChangePart(enumEQUIP_HEAD, hair.dwItemID))
-						SysInfo(SafeVFormat(GetLanguageString(85), hair.Id, j + 1, hair.dwItemID));
+				if (hair.IsUsableByCharacterType[j]) {
+					if (!pHairCha[j]->ChangePart(enumEQUIP_HEAD, hair.ResultItemId))
+						SysInfo(SafeVFormat(GetLanguageString(85), hair.Id, j + 1, hair.ResultItemId));
 
-					for (int k = 0; k < hair.GetFailItemNum(); k++) {
-						if (!pHairCha[j]->ChangePart(enumEQUIP_HEAD, hair.dwFailItemID[k]))
-							SysInfo(SafeVFormat(GetLanguageString(86), hair.Id, j + 1, hair.dwFailItemID[k]));
+					for (int k = 0; k < hair.GetFailItemCount(); k++) {
+						if (!pHairCha[j]->ChangePart(enumEQUIP_HEAD, hair.FailItemIds[k]))
+							SysInfo(SafeVFormat(GetLanguageString(86), hair.Id, j + 1, hair.FailItemIds[k]));
 					}
 					AutoTestUpdate();
 				}

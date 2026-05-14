@@ -5,7 +5,7 @@
 #include <array>
 #include <format>
 
-namespace encoding {
+namespace Corsairs::Util::Encoding {
 
 std::string AnsiToUtf8(std::string_view ansi) {
     if (ansi.empty()) {
@@ -144,4 +144,4 @@ std::string HexDump(std::string_view bytes, std::size_t maxBytes) {
     return out;
 }
 
-}  // namespace encoding
+}  // namespace Corsairs::Util::Encoding

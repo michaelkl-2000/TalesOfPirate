@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: Player.cpp
 // Creater: ZhangXuedong
 // Date: 2004.10.19
@@ -13,7 +13,7 @@
 
 using namespace std;
 
-_DBC_USING;
+;
 
 CPlayer::CPlayer():
 m_sGarnerWiner(0)
@@ -32,8 +32,8 @@ m_sGarnerWiner(0)
 		std::int32_t h = kFogMapFallbackDim;
 		if (auto* mapRes = g_pGameApp->FindMapByName(mapName.c_str(), true)) {
 			const auto& range = mapRes->GetRange();
-			w = static_cast<std::int32_t>(range.rbtm.x / 100);
-			h = static_cast<std::int32_t>(range.rbtm.y / 100);
+			w = static_cast<std::int32_t>(range.RightBottom.X / 100);
+			h = static_cast<std::int32_t>(range.RightBottom.Y / 100);
 		}
 		m_CMapMask.AddMap(mapName, w, h);
 	}
@@ -331,7 +331,19 @@ void CPlayer::RefreshBoatAttr(void)
 	}
 }
 
-CCharacter* CPlayer::GetBoat( DWORD dwBoatDBID )
+CCharacter* CPlayer::GetBoat( std::uint32_t dwBoatDBID )
+{
+	for( BYTE i = 0; i < m_byNumBoat; i++ )
+	{
+		if( m_Boat[i] && m_Boat[i]->getAttr( ATTR_BOAT_DBID ) == dwBoatDBID )
+		{
+			return m_Boat[i];
+		}
+	}
+	return NULL;
+}
+
+CCharacter* CPlayer::GetBoat( std::int32_t dwBoatDBID )
 {
 	for( BYTE i = 0; i < m_byNumBoat; i++ )
 	{
@@ -473,7 +485,7 @@ CCharacter* CPlayer::GetTeamMemberCha(int nNo)
 
 CPlayer* CPlayer::GetNextTeamPly(void)
 {
-	Short	sMemCnt = (Short)GetTeamMemberCnt();
+	int16_t	sMemCnt = (int16_t)GetTeamMemberCnt();
 	CPlayer	*pCPly;
 	while (m_sGetTeamPlyCount < sMemCnt)
 	{
@@ -484,14 +496,14 @@ CPlayer* CPlayer::GetNextTeamPly(void)
 	return 0;
 }
 
-bool CPlayer::SetChallengeParam(dbc::Char chParamID, dbc::Long lParamVal)
+bool CPlayer::SetChallengeParam(char chParamID, std::int32_t lParamVal)
 {
 	m_lChallengeParam[chParamID] = lParamVal;
 
 	return true;
 }
 
-Long CPlayer::GetChallengeParam(dbc::Char chParamID)
+std::int32_t CPlayer::GetChallengeParam(char chParamID)
 {
 	return m_lChallengeParam[chParamID];
 }
@@ -508,11 +520,11 @@ void CPlayer::ClearChallengeObj(bool bAll)
 
 	if (bAll)
 	{
-		Char	chLoop = (Char)GetChallengeParam(0);
+		char	chLoop = (char)GetChallengeParam(0);
 		if (chLoop > MAX_TEAM_MEMBER * 2)
 			chLoop = MAX_TEAM_MEMBER * 2;
 		CPlayer	*pCPly;
-		for (Char i = 0; i < chLoop; i++)
+		for (char i = 0; i < chLoop; i++)
 		{
 			pCPly = g_pGameApp->IsValidPlayer(GetChallengeParam(i * 2 + 2), GetChallengeParam(i * 2 + 2 + 1));
 			if (!pCPly)
@@ -525,7 +537,7 @@ void CPlayer::ClearChallengeObj(bool bAll)
 }
 
 // chPosType 1.2
-bool CPlayer::SetRepairPosInfo(dbc::Char chPosType, dbc::Char chPosID)
+bool CPlayer::SetRepairPosInfo(char chPosType, char chPosID)
 {
 	m_chRepairPosType = chPosType;
 	m_chRepairPosID = chPosID;
@@ -1127,14 +1139,14 @@ bool CPlayer::Strin2BankDBIDData(std::string &strData)
 		return true;
 
 	std::string strList[MAX_BANK_NUM];
-	int nSegNum = Util_ResolveTextLine(strData.c_str(), strList, MAX_BANK_NUM, ',');
+	int nSegNum = Corsairs::Util::ResolveTextLine(strData.c_str(), strList, MAX_BANK_NUM, ',');
 	if (nSegNum > MAX_BANK_NUM)
 		return false;
 
 	short	sTCount = 0;
 	for (int i = 0; i < nSegNum; i++)
 	{
-		AddBankDBID(Str2Int(strList[i]));
+		AddBankDBID(Corsairs::Util::Str2Int(strList[i]));
 	}
 
 	return true;
@@ -1143,7 +1155,7 @@ bool CPlayer::Strin2BankDBIDData(std::string &strData)
 void CPlayer::CheckChaItemFinalData()
 {
 	// 
-	cChar	*szScript = "check_item_final_data";
+	const char	*szScript = "check_item_final_data";
 	CCharacter	*pCMainCha = GetMainCha();
 	for (int i = 0; i < enumEQUIP_NUM; i++)
 	{
@@ -1156,7 +1168,7 @@ void CPlayer::CheckChaItemFinalData()
 
 	//
 	SItemGrid	*pGridCont;
-	Short	sUseNum = pCMainCha->m_CKitbag.GetUseGridNum();
+	int16_t	sUseNum = pCMainCha->m_CKitbag.GetUseGridNum();
 	for (int i = 0; i < sUseNum; i++)
 	{
 		pGridCont = pCMainCha->m_CKitbag.GetGridContByNum(i);
@@ -1221,7 +1233,7 @@ void CPlayer::Run(DWORD dwCurTime)
 // Ранее inline-методы из Player.h, вынесены в .cpp 2026-04-22.
 // ============================================================================
 
-void CPlayer::Init(GateServer* pGate, dbc::uLong ulGtAddr) {
+void CPlayer::Init(GateServer* pGate, std::uint32_t ulGtAddr) {
 	SetGate(pGate);
 	SetGateAddr(ulGtAddr);
 	SetDBChaId(0);
@@ -1234,11 +1246,11 @@ void CPlayer::SetPassword(const char szPassword[]) {
 }
 const char* CPlayer::GetPassword()          { return m_szPassword; }
 
-void        CPlayer::SetID(dbc::Long lID)   { m_lID = lID; }
-dbc::Long   CPlayer::GetID(void)            { return m_lID; }
+void        CPlayer::SetID(std::int32_t lID)   { m_lID = lID; }
+std::int32_t   CPlayer::GetID(void)            { return m_lID; }
 
-void        CPlayer::SetHandle(dbc::Long lHandle) { m_lHandle = lHandle; }
-dbc::Long   CPlayer::GetHandle(void)              { return m_lHandle; }
+void        CPlayer::SetHandle(std::int32_t lHandle) { m_lHandle = lHandle; }
+std::int32_t   CPlayer::GetHandle(void)              { return m_lHandle; }
 
 bool        CPlayer::IsPlayer(void)         { return bIsValid && (GetGate() != nullptr); }
 
@@ -1252,26 +1264,26 @@ DWORD       CPlayer::GetActLoginID()        { return m_dwLoginID; }
 void        CPlayer::SetDBActId(DWORD v)    { m_dwDBActId = v; }
 DWORD       CPlayer::GetDBActId(void)       { return m_dwDBActId; }
 
-void CPlayer::SetActName(dbc::cChar* szActName) {
+void CPlayer::SetActName(const char* szActName) {
 	strncpy(m_chActName, szActName, ACT_NAME_LEN - 1);
 	m_chActName[ACT_NAME_LEN - 1] = 0;
 }
-dbc::cChar* CPlayer::GetActName(void)       { return m_chActName; }
+const char* CPlayer::GetActName(void)       { return m_chActName; }
 
-void        CPlayer::SetGMLev(dbc::Char v)  { m_chGMLev = v; }
-dbc::uChar  CPlayer::GetGMLev(void)         { return static_cast<dbc::uChar>(m_chGMLev); }
+void        CPlayer::SetGMLev(char v)  { m_chGMLev = v; }
+std::uint8_t  CPlayer::GetGMLev(void)         { return static_cast<std::uint8_t>(m_chGMLev); }
 
 void        CPlayer::SetBankDBID(long lID, char chBankNO) { m_lBankDBID[chBankNO] = lID; }
 long        CPlayer::GetBankDBID(char chBankNO)           { return m_lBankDBID[chBankNO]; }
 
 long        CPlayer::GetIMP()               { return m_lIMP; }
 
-void CPlayer::SetLoginCha(dbc::uLong ulType, dbc::uLong ulID) {
+void CPlayer::SetLoginCha(std::uint32_t ulType, std::uint32_t ulID) {
 	m_ulLoginCha[0] = ulType;
 	m_ulLoginCha[1] = ulID;
 }
-dbc::uLong  CPlayer::GetLoginChaType(void)  { return m_ulLoginCha[0]; }
-dbc::uLong  CPlayer::GetLoginChaID(void)    { return m_ulLoginCha[1]; }
+std::uint32_t  CPlayer::GetLoginChaType(void)  { return m_ulLoginCha[0]; }
+std::uint32_t  CPlayer::GetLoginChaID(void)    { return m_ulLoginCha[1]; }
 
 bool        CPlayer::CanReceiveRequests()          { return bReceiveRequests; }
 void        CPlayer::SetCanReceiveRequests(bool x) { bReceiveRequests = x; }
@@ -1285,8 +1297,8 @@ bool        CPlayer::IsTeamLeader(void)     { return getTeamLeaderID() == GetID(
 bool        CPlayer::HasTeam(void)          { return getTeamLeaderID() != 0; }
 void        CPlayer::BeginGetTeamPly(void)  { m_sGetTeamPlyCount = 0; }
 
-void        CPlayer::SetChallengeType(dbc::Char chType) { m_chChallengeType = chType; }
-dbc::Char   CPlayer::GetChallengeType(void)             { return m_chChallengeType; }
+void        CPlayer::SetChallengeType(char chType) { m_chChallengeType = chType; }
+char   CPlayer::GetChallengeType(void)             { return m_chChallengeType; }
 
 void        CPlayer::StartChallengeTimer(void) { m_timerChallenge.Begin(30 * 1000); }
 
@@ -1294,7 +1306,7 @@ CCharacter* CPlayer::GetRepairman(void)     { return m_pCRepairman; }
 SItemGrid*  CPlayer::GetRepairItem(void)    { return m_pSRepairItem; }
 bool        CPlayer::CheckRepairItem(void)  { return m_SRepairItem == *m_pSRepairItem; }
 bool        CPlayer::IsRepairEquipPos(void) { return m_chRepairPosType == 1; }
-dbc::Char   CPlayer::GetRepairPosID(void)   { return m_chRepairPosID; }
+char   CPlayer::GetRepairPosID(void)   { return m_chRepairPosID; }
 bool        CPlayer::IsInRepair(void)       { return m_bInRepair; }
 void        CPlayer::SetInRepair(bool bInR) { m_bInRepair = bInR; }
 
@@ -1304,7 +1316,7 @@ bool        CPlayer::IsInLifeSkill(void)    { return m_bInLiftSkill; }
 void        CPlayer::SetInForge(bool v)     { m_bInForge = v; }
 void        CPlayer::SetInLifeSkill(bool v) { m_bInLiftSkill = v; }
 
-void CPlayer::SetForgeInfo(dbc::Char chType, SForgeItem* pSItem) {
+void CPlayer::SetForgeInfo(char chType, SForgeItem* pSItem) {
 	m_chForgeType = chType;
 	m_SForgeItem  = *pSItem;
 }
@@ -1312,7 +1324,7 @@ void CPlayer::SetLifeSkillInfo(long lType, SLifeSkillItem* pLifeSkill) {
 	m_lLifeSkillType  = lType;
 	m_pSLifeSkillItem = *pLifeSkill;
 }
-dbc::Char       CPlayer::GetForgeType(void)    { return m_chForgeType; }
+char       CPlayer::GetForgeType(void)    { return m_chForgeType; }
 SForgeItem*     CPlayer::GetForgeItem(void)    { return &m_SForgeItem; }
 SLifeSkillItem* CPlayer::GetLifeSkillItem()    { return &m_pSLifeSkillItem; }
 

@@ -13,7 +13,7 @@ public:
 		return m_dwID;
 	}
 
-	void SetName(std::string strName) {
+	void SetName(std::string_view strName) {
 		m_strName = strName;
 	}
 
@@ -21,7 +21,7 @@ public:
 		return m_strName;
 	}
 
-	void SetJob(std::string strJob) {
+	void SetJob(std::string_view strJob) {
 		m_strJob = strJob;
 	}
 

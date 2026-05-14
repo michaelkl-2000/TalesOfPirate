@@ -94,25 +94,25 @@ inline int g_IsUseSeaLiveSkill(long lFitNo, CSkillRecord* p) {
 }
 
 inline bool g_IsPlyCtrlCha(int nChaCtrlType) {
-	if (nChaCtrlType == enumCHACTRL_PLAYER || nChaCtrlType == enumCHACTRL_PLAYER_PET)
+	if (nChaCtrlType == static_cast<char>(EChaCtrlType::PLAYER) || nChaCtrlType == static_cast<char>(EChaCtrlType::PLAYER_PET))
 		return true;
 	return false;
 }
 
 inline bool g_IsMonsCtrlCha(int nChaCtrlType) {
-	if (nChaCtrlType == enumCHACTRL_MONS
-		|| nChaCtrlType == enumCHACTRL_MONS_TREE
-		|| nChaCtrlType == enumCHACTRL_MONS_MINE
-		|| nChaCtrlType == enumCHACTRL_MONS_FISH
-		|| nChaCtrlType == enumCHACTRL_MONS_DBOAT
-		|| nChaCtrlType == enumCHACTRL_MONS_REPAIRABLE
+	if (nChaCtrlType == static_cast<char>(EChaCtrlType::MONS)
+		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_TREE)
+		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_MINE)
+		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_FISH)
+		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_DBOAT)
+		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_REPAIRABLE)
 	)
 		return true;
 	return false;
 }
 
 inline bool g_IsNPCCtrlCha(int nChaCtrlType) {
-	if (nChaCtrlType == enumCHACTRL_NPC || nChaCtrlType == enumCHACTRL_NPC_EVENT)
+	if (nChaCtrlType == static_cast<char>(EChaCtrlType::NPC) || nChaCtrlType == static_cast<char>(EChaCtrlType::NPC_EVENT))
 		return true;
 	return false;
 }
@@ -177,7 +177,7 @@ inline short g_GetRangeParamNum(char RangeType) {
 // ulAreaMask
 // true false
 //=============================================================================
-inline bool g_IsMoveAble(char chChaCtrlType, char chChaTerrType, unsigned short usAreaMask) {
+inline bool g_IsMoveAble(EChaCtrlType eChaCtrlType, char chChaTerrType, unsigned short usAreaMask) {
 	bool bRet1 = false;
 	if (chChaTerrType == defCHA_TERRITORY_DISCRETIONAL)
 		bRet1 = true;
@@ -193,7 +193,7 @@ inline bool g_IsMoveAble(char chChaCtrlType, char chChaTerrType, unsigned short 
 	bool bRet2 = true;
 	if (usAreaMask & enumAREA_TYPE_NOT_FIGHT) //
 	{
-		if (g_IsMonsCtrlCha(chChaCtrlType))
+		if (g_IsMonsCtrlCha(static_cast<int>(eChaCtrlType)))
 			bRet2 = false;
 	}
 

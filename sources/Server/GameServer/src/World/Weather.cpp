@@ -24,7 +24,7 @@ void CWeather::RandLocation(SubMap *pMap)
 	int nw = 1 +  rand()%3; // , 2
 	int nh = 1 +  rand()%3;
 
-	Rect	SRange = {{sx * 2 * 100, sy * 2 * 100}, {(sx + nw) * 2 * 100, (sy + nh) * 2 * 100}};
+	Corsairs::Util::Rect	SRange = {{sx * 2 * 100, sy * 2 * 100}, {(sx + nw) * 2 * 100, (sy + nh) * 2 * 100}};
 	short	sStateParam[defSKILL_STATE_PARAM_NUM];	// 
 
     sStateParam[0] = _btType;
@@ -43,7 +43,7 @@ void CWeather::RandLocation(SubMap *pMap)
 			
 			auto& weatherFmt = LanguageRecordStore::Instance()->GetKeyString("GM_WEATHER_CPP_00001");
 			snprintf(szText, sizeof(szText), "%s",
-				SafeVFormat(weatherFmt, SRange.ltop.x / 100, SRange.ltop.y / 100, pEff->DataName.c_str()).c_str());
+				SafeVFormat(weatherFmt, SRange.LeftTop.X / 100, SRange.LeftTop.Y / 100, pEff->DataName.c_str()).c_str());
 
 			g_pGameApp->LocalNotice( szText );
 			//LG("weather", "[%s][%s], time = %d\n", pMap->GetName(), szText, dwCurTick / 1000);

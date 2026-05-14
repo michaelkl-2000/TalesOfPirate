@@ -4,7 +4,7 @@
 #include "Db/GameDB.h"
 #include "App/GameApp.h"
 
-CAuctionItem::CAuctionItem(short sItemID, const string& strName, short sCount, uInt nBasePrice, uInt nMinBid)
+CAuctionItem::CAuctionItem(short sItemID, const string& strName, short sCount, std::uint32_t nBasePrice, std::uint32_t nMinBid)
 {
 	m_sItemID = sItemID;
 	m_sCount = sCount;
@@ -19,7 +19,7 @@ CAuctionItem::~CAuctionItem()
 {
 }
 
-BOOL CAuctionItem::BidUp(CCharacter *pCha, uInt price)
+BOOL CAuctionItem::BidUp(CCharacter *pCha, std::uint32_t price)
 {
 	if(pCha->m_CKitbag.IsPwdLocked())
 	{
@@ -69,7 +69,7 @@ BOOL CAuctionItem::BidUp(CCharacter *pCha, uInt price)
 	}
 
 	DWORD dwPreChaID = GetCurChaID();
-	uInt nPrePrice = GetCurPrice();
+	std::uint32_t nPrePrice = GetCurPrice();
 	string strPreChaName = GetCurChaName();
 
 	SetCurPrice(price);

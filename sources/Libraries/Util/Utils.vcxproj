@@ -63,12 +63,13 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader />
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard_C>stdclatest</LanguageStandard_C>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
@@ -81,7 +82,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -92,7 +93,6 @@
   <ItemGroup>
     <ClCompile Include="src\algo.cpp" />
     <ClCompile Include="src\Database.cpp" />
-    <ClCompile Include="src\DBCCommon.cpp" />
     <ClCompile Include="src\Point.cpp" />
     <ClCompile Include="src\IniFile.cpp" />
     <ClCompile Include="src\md5c.c" />
@@ -103,26 +103,25 @@
       </PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\util2.cpp" />
+    <ClCompile Include="src\util.cpp" />
     <ClCompile Include="src\newlogutil.cpp" />
     <ClCompile Include="src\CrushSystem.cpp" />
     <ClCompile Include="src\ConsoleColor.cpp" />
     <ClCompile Include="src\EncodingUtil.cpp" />
+    <ClCompile Include="src\MPMapDef.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\algo.h" />
     <ClInclude Include="include\Database.h" />
-    <ClInclude Include="include\DBCCommon.h" />
+    <ClInclude Include="include\PointerCast.h" />
     <ClInclude Include="include\Point.h" />
     <ClInclude Include="include\IniFile.h" />
-    <ClInclude Include="include\excp.h" />
+    <ClInclude Include="include\ThrowRuntimeError.h" />
     <ClInclude Include="include\TrackedPool.h" />
-    <ClInclude Include="include\fifo.h" />
     <ClInclude Include="include\MPMapDef.h" />
     <ClInclude Include="include\pch.h" />
     <ClInclude Include="include\singleton.h" />
     <ClInclude Include="include\util.h" />
-    <ClInclude Include="include\util2.h" />
     <ClInclude Include="src\md5.h" />
     <ClInclude Include="include\logutil.h" />
     <ClInclude Include="include\ConsoleColor.h" />

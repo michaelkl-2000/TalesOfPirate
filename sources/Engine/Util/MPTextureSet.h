@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+
 #include "TextureManager.h"
 #include "MPRender.h"
 
@@ -44,7 +46,7 @@ inline BOOL IsAlphaTexture(int nID) {
 }
 
 inline BOOL IsTextureExist(const char* pDataName) {
-	return Util_IsFileExist((char*)pDataName);
+	return std::filesystem::exists(pDataName);
 }
 
 #pragma warning(default: 4275)

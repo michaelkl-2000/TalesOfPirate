@@ -11,9 +11,8 @@
 #include <tchar.h>
 #include <stdio.h>
 #include "World/TerrainAttrib.h"
-#include "dbccommon.h"
+#include "World/BlockData.h"
 #include "point.h"
-#include "util2.h"
 #include "Core/Timer.h"
 #include "App/Config.h"
 #include <fstream>
@@ -22,6 +21,8 @@ class CChaSpawn;
 class CMapSwitchEntitySpawn;
 class CNpcSpawn;
 class SubMap;
+
+using namespace Corsairs::Util;
 
 namespace mission
 {
@@ -33,22 +34,22 @@ class CAreaData
 public:
 	CAreaData();
 	~CAreaData();
-	dbc::Long	Init(_TCHAR *chFile);
+	std::int32_t	Init(_TCHAR *chFile);
 	void	Free();
-	bool	GetUnitAttr(dbc::Short sUnitX, dbc::Short sUnitY, dbc::uShort &usAttribute);
-	bool	GetUnitSize(dbc::Short *psWidth, dbc::Short *psHeight);
-	bool	GetUnitIsland(dbc::Short sUnitX, dbc::Short sUnitY, dbc::uChar &uchIsland);
-	dbc::Short	GetWidth();
-	dbc::Short	GetHeight();
-	bool	    IsValidPos(dbc::Short sUnitX, dbc::Short sUnitY);
+	bool	GetUnitAttr(std::int16_t sUnitX, std::int16_t sUnitY, std::uint16_t &usAttribute);
+	bool	GetUnitSize(std::int16_t *psWidth, std::int16_t *psHeight);
+	bool	GetUnitIsland(std::int16_t sUnitX, std::int16_t sUnitY, std::uint8_t &uchIsland);
+	std::int16_t	GetWidth();
+	std::int16_t	GetHeight();
+	bool	    IsValidPos(std::int16_t sUnitX, std::int16_t sUnitY);
 
 protected:
 
 private:
-	dbc::Short	m_sUnitCountX;	// 
-	dbc::Short	m_sUnitCountY;	// 
-	dbc::Short	m_sUnitWidth;	// 
-	dbc::Short	m_sUnitHeight;	// 
+	std::int16_t	m_sUnitCountX;	// 
+	std::int16_t	m_sUnitCountY;	// 
+	std::int16_t	m_sUnitWidth;	// 
+	std::int16_t	m_sUnitHeight;	// 
 
 	int			m_nID;
 
@@ -123,11 +124,11 @@ public:
 	bool		Init(void);
 	bool		IsValid(void);
 	bool		IsOpen(void);
-	bool		SetCopyNum(dbc::Short sCpyNum);
-	dbc::Short	GetCopyNum(void);
-	SubMap*		GetCopy(dbc::Short sCpyNO = -1);
-	void		SetCopyPlyNum(dbc::Short sPlyNum);
-	dbc::Short	GetCopyPlyNum(void);
+	bool		SetCopyNum(std::int16_t sCpyNum);
+	std::int16_t	GetCopyNum(void);
+	SubMap*		GetCopy(std::int16_t sCpyNO = -1);
+	void		SetCopyPlyNum(std::int16_t sPlyNum);
+	std::int16_t	GetCopyPlyNum(void);
 	bool		InitCtrl(void);
 
 	bool		Open(void);
@@ -137,14 +138,14 @@ public:
 	bool		CreateEntry(void);
 	bool		DestroyEntry(void);
 	void		Run(DWORD dwCurTime);
-	bool		CopyClose(dbc::Short sCopyNO = -1);
-	bool		CopyNotice(const char *szString, dbc::Short sCopyNO = -1);
-	bool		ReleaseCopy(dbc::Short sCopyNO = 0);
+	bool		CopyClose(std::int16_t sCopyNO = -1);
+	bool		CopyNotice(const char *szString, std::int16_t sCopyNO = -1);
+	bool		ReleaseCopy(std::int16_t sCopyNO = 0);
 
-	bool		SetEntryMapName(dbc::cChar *szMapName);
-	void		CheckEntryState(dbc::Char chState);
-	bool		SubEntryPlayer(dbc::Short sCopyNO);
-	bool		SubEntryCopy(dbc::Short sCopyNO);
+	bool		SetEntryMapName(const char *szMapName);
+	void		CheckEntryState(char chState);
+	bool		SubEntryPlayer(std::int16_t sCopyNO);
+	bool		SubEntryCopy(std::int16_t sCopyNO);
 	bool		HasDynEntry(void);
 	void		SetCanSavePos(bool bCan = true);
 	bool		CanSavePos(void);
@@ -158,17 +159,17 @@ public:
 	bool		CanTeam(void);
 	bool		CanStall(void);
 	bool		CanGuild(void);
-	void		SetType(dbc::Char chType = enumMAPTYPE_NORMAL);
-	dbc::Char	GetType(void);
-	void		SetCopyStartType(dbc::Char chStartType = enumMAPCOPY_START_PLAYER);
-	dbc::Char	GetCopyStartType(void);
-	void		SetCopyStartCondition(dbc::Char chType, dbc::Long lVal);
-	dbc::Char	GetCopyStartCdtType(void);
-	dbc::Long	GetCopyStartCdtVal(void);
+	void		SetType(char chType = enumMAPTYPE_NORMAL);
+	char	GetType(void);
+	void		SetCopyStartType(char chStartType = enumMAPCOPY_START_PLAYER);
+	char	GetCopyStartType(void);
+	void		SetCopyStartCondition(char chType, std::int32_t lVal);
+	char	GetCopyStartCdtType(void);
+	std::int32_t	GetCopyStartCdtVal(void);
 
-	void		SetName(dbc::cChar *cszName);
+	void		SetName(const char *cszName);
 	const char*	GetName(void);
-	const Rect&	GetRange(void);
+	const		Rect&	GetRange(void);
 	BYTE		GetMapID();
 
 	BOOL		SummonNpc( USHORT sAreaID, const char szNpc[], USHORT sTime );
@@ -183,26 +184,26 @@ public:
 	// 
 	struct
 	{
-		dbc::cShort		m_csEyeshotCellWidth;
-		dbc::cShort		m_csEyeshotCellHeight;
-		dbc::Short		m_sEyeshotCellLin;
-		dbc::Short		m_sEyeshotCellCol;
+		const std::int16_t		m_csEyeshotCellWidth;
+		const std::int16_t		m_csEyeshotCellHeight;
+		std::int16_t		m_sEyeshotCellLin;
+		std::int16_t		m_sEyeshotCellCol;
 	};
 	// 
 	struct
 	{
-		dbc::cShort		m_csStateCellWidth;
-		dbc::cShort		m_csStateCellHeight;
-		dbc::Short		m_sStateCellLin;
-		dbc::Short		m_sStateCellCol;
+		const std::int16_t		m_csStateCellWidth;
+		const std::int16_t		m_csStateCellHeight;
+		std::int16_t		m_sStateCellLin;
+		std::int16_t		m_sStateCellCol;
 	};
 
 	CAreaData			m_CTerrain;
 	struct
 	{
 		CBlockData		m_CBlock;
-		dbc::cShort		m_csBlockUnitWidth;
-		dbc::cShort		m_csBlockUnitHeight;
+		const std::int16_t		m_csBlockUnitWidth;
+		const std::int16_t		m_csBlockUnitHeight;
 	};
 
 	struct
@@ -219,9 +220,9 @@ public:
 	// 
 	struct
 	{
-		dbc::Char	m_szEntryMapName[MAX_MAPNAME_LENGTH];
+		char	m_szEntryMapName[MAX_MAPNAME_LENGTH];
 		Point		m_SEntryPos;
-		dbc::Char	m_chEntryState;		// EMapEntryState
+		char	m_chEntryState;		// EMapEntryState
 
 		time_t		m_tEntryFirstTm;	// 
 		time_t		m_tEntryTmDis;		// 
@@ -246,7 +247,7 @@ protected:
 
 private:
 	bool		m_bValid;	// 
-	dbc::Char	m_chState;	// EMapState
+	char	m_chState;	// EMapState
 
 	BYTE	m_byMapID; // ID
 
@@ -263,20 +264,20 @@ private:
 	CTimer	m_timeRun;
 
 	SubMap		*m_pCMapCopy;
-	dbc::Short	m_sMapCpyNum;
-	dbc::Short	m_sCopyPlyNum;
-	dbc::Char	m_chType;
+	std::int16_t	m_sMapCpyNum;
+	std::int16_t	m_sCopyPlyNum;
+	char	m_chType;
 
 	struct
 	{
-		dbc::Char	m_chCopyStartType;		//  EMapCopyStartType
-		dbc::Char	m_chCopyStartCdtType;	// 
-		dbc::Long	m_lCopyStartCdtVal;	// 
+		char	m_chCopyStartType;		//  EMapCopyStartType
+		char	m_chCopyStartCdtType;	// 
+		std::int32_t	m_lCopyStartCdtVal;	//
 	};
 
 	bool	m_bRepatriateDie;	// 
 
-	dbc::Short	m_sUsedCopySearch;
+	std::int16_t	m_sUsedCopySearch;
 
 	bool		m_bGuildWar;
 

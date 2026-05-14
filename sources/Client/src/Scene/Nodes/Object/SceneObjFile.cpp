@@ -2,6 +2,7 @@
 #include	<sys/stat.h>
 #include	<sys/timeb.h>
 #include	<time.h>
+#include	<io.h>   // _chmod, _findfirst, _findnext, _findclose; ранее через umbrella util.h
 #include	"SceneObjFile.h"
 #include "SceneFileLoaders.h"
 #include	"GameConfig.h"

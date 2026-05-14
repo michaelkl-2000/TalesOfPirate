@@ -2606,7 +2606,7 @@ namespace mission
 				//const char* pszMap = (pMain->GetSubMap()) ? pMain->GetSubMap()->GetName() : "";
 				const char* pszMap = (pMain->GetSubMap()) ? pMain->GetSubMap()->GetName() : RES_STRING(GM_MISSION_CPP_00037);
 				char szData[128];
-				std::snprintf( szData, sizeof(szData), RES_STRING(GM_MISSION_CPP_00038), pszMap, pMain->GetPos().x, pMain->GetPos().y );
+				std::snprintf( szData, sizeof(szData), RES_STRING(GM_MISSION_CPP_00038), pszMap, pMain->GetPos().X, pMain->GetPos().Y );
 				ToLogService("trade", "[CHA_ENTER] {} : {}", m_pRoleChar->GetName(), szData);
 
 				// npc
@@ -2643,7 +2643,7 @@ namespace mission
 		CCharacter* pMain = m_pRoleChar->GetPlyCtrlCha();
 		const char* pszMap = (pMain->GetSubMap()) ? pMain->GetSubMap()->GetName() : "";
 		char szData[128];
-		std::snprintf( szData, sizeof(szData), RES_STRING(GM_MISSION_CPP_00040), pszMap, pMain->GetPos().x, pMain->GetPos().y );
+		std::snprintf( szData, sizeof(szData), RES_STRING(GM_MISSION_CPP_00040), pszMap, pMain->GetPos().X, pMain->GetPos().Y );
 		ToLogService("trade", "[CHA_OUT] {} : {}", m_pRoleChar->GetName(), szData);
 
 		// npc

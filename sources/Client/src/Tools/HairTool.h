@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-namespace Corsairs::Common::Character { class CHairRecord; }
-using CHairRecord = Corsairs::Common::Character::CHairRecord;
+namespace Corsairs::Common::Character { struct HairRecord; }
+using CHairRecord = Corsairs::Common::Character::HairRecord;
 
 class CHairName {
 public:

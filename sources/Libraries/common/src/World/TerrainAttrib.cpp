@@ -1,6 +1,7 @@
 ﻿
 #include "World/TerrainAttrib.h"
 #include "util.h"
+#include "singleton.h"  // cfl_singleton_ap<tamem_mgr>; ранее тянулся через umbrella util.h
 #include <iostream>
 #include <memory>
 

@@ -798,8 +798,8 @@ public:
 
 	bool AddCreditByDBID(std::uint32_t atorID, std::int32_t lCredit);
 	bool IsChaOnline(std::uint32_t atorID, bool& bOnline);
-	Long GetChaAddr(std::uint32_t atorID);
-	bool SetChaAddr(std::uint32_t atorID, Long addr);
+	std::int32_t GetChaAddr(std::uint32_t atorID);
+	bool SetChaAddr(std::uint32_t atorID, std::int32_t addr);
 
 	bool SetGuildPermission(std::int32_t atorID, std::uint32_t perm, std::int32_t guild_id);
 
@@ -1052,9 +1052,9 @@ public:
 	bool SaveKitbagTmpData(std::uint32_t res_id, const std::string& strData);
 
 	bool IsChaOnline(std::uint32_t atorID, bool& bOnline);
-	Long GetChaAddr(std::uint32_t atorID);
-	Long SetGuildPermission(std::int32_t atorID, std::uint32_t perm, std::int32_t guild_id);
-	Long SetChaAddr(std::uint32_t atorID, Long addr);
+	std::int32_t GetChaAddr(std::uint32_t atorID);
+	std::int32_t SetGuildPermission(std::int32_t atorID, std::uint32_t perm, std::int32_t guild_id);
+	std::int32_t SetChaAddr(std::uint32_t atorID, std::int32_t addr);
 
 	bool SaveMissionData(CPlayer& pPlayer, std::uint32_t atorID);
 

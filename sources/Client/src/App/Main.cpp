@@ -54,7 +54,7 @@ using Corsairs::Engine::Diagnostic::EngineDiag;
 using Corsairs::Client::Diagnostic::GameDiagnostic;
 
 
-dbc::IniFile g_SystemIni;
+Corsairs::Util::Ini::IniFile g_SystemIni;
 
 #define MAX_LOADSTRING 100
 
@@ -127,13 +127,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	std::string strParam = lpCmdLine;
 
 	::SetThreadName("main");
-	TalesOfPirate::Utils::Crush::SetGlobalCRTExceptionBehavior();
-	TalesOfPirate::Utils::Crush::SetPerThreadCRTExceptionBehavior();
-	TalesOfPirate::Utils::Crush::SetupDumpSetting("log\\game\\dumps");
+	Corsairs::Util::Crush::SetGlobalCRTExceptionBehavior();
+	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::Crush::SetupDumpSetting("log\\game\\dumps");
 	g_logManager.InitLogger("log\\game");
 	g_logManager.EnableGlobalConsole(true);
 
-	g_SystemIni = dbc::IniFile("./user/system.ini");
+	g_SystemIni = Corsairs::Util::Ini::IniFile("./user/system.ini");
 	GlobalAppConfig.Load();
 
 	//  Передаём в Engine флаг прогрева массовых ресурсов (см. GameConfig.h
@@ -278,7 +278,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		if (nEnd != std::string::npos) strModel = strModel.substr(0, nEnd);
 
 		std::string strList[2];
-		Util_ResolveTextLine(strModel.c_str(), strList, 2, '-');
+		Corsairs::Util::ResolveTextLine(strModel.c_str(), strList, 2, '-');
 
 		useModelMode = true;
 
@@ -302,7 +302,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		if (nEnd != -1) strAuto = strAuto.substr(0, nEnd);
 
 		std::string strList[5];
-		Util_ResolveTextLine(strAuto.c_str(), strList, 5, ',');
+		Corsairs::Util::ResolveTextLine(strAuto.c_str(), strList, 5, ',');
 
 		useAutoLogin = true;
 		useAutoLogin2 = true;
@@ -323,7 +323,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	InitLuaPlatform();
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 	g_pGameApp = new CGameApp();
 	g_lootFilter = new LootFilter();
@@ -770,7 +770,7 @@ HANDLE hOutputWrite = 0;
 
 DWORD WINAPI ReadStdout(LPVOID lpvThreadParam) {
 	::SetThreadName("read-stdout");
-	TalesOfPirate::Utils::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
 	CHAR lpBuffer[256];
 	DWORD nBytesRead;
 

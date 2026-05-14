@@ -743,7 +743,6 @@
       <Filter>Audio</Filter>
     </ClCompile>
     <ClCompile Include="src\Tools\LootFilter.cpp" />
-    <ClCompile Include="src\Tools\Point.cpp" />
     <ClCompile Include="src\Crypto\CryptoUtils.cpp">
       <Filter>Crypto</Filter>
     </ClCompile>
@@ -1380,7 +1379,6 @@
       <Filter>Audio</Filter>
     </ClInclude>
     <ClInclude Include="src\Tools\LootFilter.h" />
-    <ClInclude Include="src\Tools\Point.h" />
     <ClInclude Include="src\Crypto\CryptoUtils.h">
       <Filter>Crypto</Filter>
     </ClInclude>

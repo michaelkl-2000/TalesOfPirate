@@ -27,7 +27,7 @@ void CEventHandler::Event_ChaDie(CCharacter *pDead, CCharacter *pAtk)
 	CPlayer *pPlayer = pAtk->GetPlayer();
 	if(pPlayer==NULL) //
 	{
-		MPTimer t;
+		Corsairs::Util::MPTimer t;
 		t.Begin();
 		// 
 		extern lua_State *g_pLuaState;
@@ -120,7 +120,7 @@ void CEventHandler::Event_ChaDie(CCharacter *pDead, CCharacter *pAtk)
 		if(pCur!=pAtk)	pCur->GetPlyMainCha()->m_CChaAttr.ResetChangeFlag();
 	}
 	
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 
 	//
@@ -133,7 +133,7 @@ void CEventHandler::Event_ChaDie(CCharacter *pDead, CCharacter *pAtk)
 		return;
 	}
 
-	MPTimer tLua; tLua.Begin();
+	Corsairs::Util::MPTimer tLua; tLua.Begin();
 	luabridge::push(g_pLuaState, static_cast<CCharacter*>(pDead));
 	luabridge::push(g_pLuaState, static_cast<CCharacter*>(pAtk));
 	int r = lua_pcall(g_pLuaState, 2, 0, 0);
@@ -153,7 +153,7 @@ void CEventHandler::Event_ChaDie(CCharacter *pDead, CCharacter *pAtk)
 		if(pCur!=pAtk) pCur->GetPlyMainCha()->SynAttr(enumATTRSYN_ATTACK);
 	}
 
-	MPTimer tMission; tMission.Begin();
+	Corsairs::Util::MPTimer tMission; tMission.Begin();
 	// 
 	pPlayer = pAtk->GetPlayer();
 	pAtk->AfterObjDie(pAtk, pDead);
@@ -166,7 +166,7 @@ void CEventHandler::Event_ChaDie(CCharacter *pDead, CCharacter *pAtk)
 	}
 	tMission.End();
 		
-	MPTimer tItem; tItem.Begin();
+	Corsairs::Util::MPTimer tItem; tItem.Begin();
 	// 
 	pDead->ItemCount(pAtk);
 

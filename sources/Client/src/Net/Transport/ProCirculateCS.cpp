@@ -5,20 +5,44 @@
 #include "Character.h"
 #include "Character/ChaAttr.h"
 #include "GameConfig.h"
-#include "util2.h"
 #include "LoginScene.h"
 #include "netprotocol.h"
 #include "World/AreaRecord.h"
 #include "CommandMessages.h"
 
+#include <Iphlpapi.h>
+
 using namespace std;
 #include "CryptoUtils.h"
+
+// MAC-адрес первого сетевого адаптера в формате "XX-XX-XX-XX-XX-XX".
+// Используется как идентификатор клиента при логине.
+static std::string GetMacString() {
+	std::string strRet;
+	IP_ADAPTER_INFO checkBuf;
+	ULONG outLen = 0;
+	if (GetAdaptersInfo(&checkBuf, &outLen) != ERROR_SUCCESS) {
+		PIP_ADAPTER_INFO pAdpterInfo = (IP_ADAPTER_INFO*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, outLen);
+		if (GetAdaptersInfo(pAdpterInfo, &outLen) == ERROR_SUCCESS) {
+			char lpBuf[8];
+			for (int i = 0; i < MAX_ADAPTER_ADDRESS_LENGTH; i++) {
+				sprintf(lpBuf, "%.2X", pAdpterInfo->Address[i]);
+				strRet += lpBuf;
+				if (i + 1 < MAX_ADAPTER_ADDRESS_LENGTH) {
+					strRet += "-";
+				}
+			}
+		}
+		HeapFree(GetProcessHeap(), 0, pAdpterInfo);
+	}
+	return strRet;
+}
 using namespace Corsairs::Client::Crypto;
 #ifdef _TEST_CLIENT
 #include "..\..\TestClient\testclient.h"
 #endif
 
-//  uChar, uShort, uLong, cChar   NetIF.h
+//  std::uint8_t, std::uint16_t, std::uint32_t, cChar   NetIF.h
 
 //  :  CMD_CM_BEGINACTION + switch   
 void CProCirculateCS::BeginAction(CCharacter* pCha, DWORD type, void* param, CActionState* pState) {
@@ -30,7 +54,7 @@ void CProCirculateCS::BeginAction(CCharacter* pCha, DWORD type, void* param, CAc
 	switch (type) {
 		case enumACTION_MOVE: {
 			stNetMoveInfo* pMove = (stNetMoveInfo*)param;
-			pk.WriteSequence((cChar*)pMove->pos_buf, uShort(sizeof(Point) * pMove->pos_num));
+			pk.WriteSequence((std::uint8_t*)pMove->pos_buf, std::uint16_t(sizeof(Corsairs::Util::Point) * pMove->pos_num));
 			pCNetIf->SendPacketMessage(pk);
 
 			CCharacter* pCha = CGameScene::GetMainCha();
@@ -61,7 +85,8 @@ void CProCirculateCS::BeginAction(CCharacter* pCha, DWORD type, void* param, CAc
 			pk.WriteInt64(pSkill->chMove);
 			pk.WriteInt64(pSkill->byFightID);
 			if (pSkill->chMove == 2) {
-				pk.WriteSequence((cChar*)pSkill->SMove.pos_buf, uShort(sizeof(POINT) * pSkill->SMove.pos_num));
+				pk.WriteSequence((std::uint8_t*)pSkill->SMove.pos_buf, std::uint16_t(sizeof(POINT) * pSkill->SMove
+				.pos_num));
 			}
 			pk.WriteInt64(pSkill->lSkillID);
 			pk.WriteInt64(pSkill->lTarInfo1);
@@ -312,7 +337,7 @@ void CProCirculateCS::BeginAction(CCharacter* pCha, DWORD type, void* param, CAc
 			break;
 		}
 		case enumACTION_REQUESTGUILDLOGS: {
-			uShort* curSize = reinterpret_cast<uShort*>(param);
+			std::uint16_t* curSize = reinterpret_cast<std::uint16_t*>(param);
 			pk.WriteInt64(*curSize);
 
 			pCNetIf->SendPacketMessage(pk);
@@ -430,7 +455,7 @@ bool CProCirculate::SendPrivateKey() {
 	// NOTE: WriteSequence        Corsairs::Net::Msg::serialize
 	WPacket pk = pCNetIf->GetWPacket();
 	pk.WriteCmd(CMD_CM_SEND_PRIVATE_KEY);
-	pk.WriteSequence(reinterpret_cast<const char*>(encryptedKey.data()), static_cast<uShort>(resultLen));
+	pk.WriteSequence(reinterpret_cast<const char*>(encryptedKey.data()), static_cast<std::uint16_t>(resultLen));
 
 	pCNetIf->SendPacketMessage(pk);
 	g_NetIF->handshakeDone = true;

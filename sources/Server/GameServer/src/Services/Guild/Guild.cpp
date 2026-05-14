@@ -19,7 +19,7 @@ BOOL Guild::lua_CreateGuild(CCharacter* pCha)//,1-,2-
 	}
 	return TRUE;
 }
-void Guild::cmd_CreateGuild(CCharacter* pCha, bool confirm, cChar *guildname, cChar *passwd)
+void Guild::cmd_CreateGuild(CCharacter* pCha, bool confirm, const char *guildname, const char *passwd)
 {
 	if(!(pCha->GetPlayer()->m_GuildState & emGuildGetName))
 	{
@@ -120,7 +120,7 @@ void Guild::cmd_ListAllGuild(CCharacter* pCha)			//20
 {
 	game_db.ListAllGuild(*pCha,7);
 }
-void Guild::cmd_GuildTryFor(CCharacter* pCha, uLong guildid)			//
+void Guild::cmd_GuildTryFor(CCharacter* pCha, std::uint32_t guildid)			//
 {
 	if(!guildid)
 	{
@@ -154,17 +154,17 @@ void Guild::cmd_GuildListTryPlayer(CCharacter* pCha)
 
 	game_db.GuildListTryPlayer(*pCha,7);
 }
-void Guild::cmd_GuildApprove(CCharacter* pCha,uLong chaid)
+void Guild::cmd_GuildApprove(CCharacter* pCha,std::uint32_t chaid)
 {
 
 	game_db.GuildApprove(*pCha,chaid);
 }
-void Guild::cmd_GuildReject(CCharacter* pCha,uLong chaid)
+void Guild::cmd_GuildReject(CCharacter* pCha,std::uint32_t chaid)
 {
 
 	game_db.GuildReject(*pCha,chaid);
 }
-void Guild::cmd_GuildKick(CCharacter* pCha,uLong chaid)
+void Guild::cmd_GuildKick(CCharacter* pCha,std::uint32_t chaid)
 {
 
 	game_db.GuildKick(*pCha,chaid);
@@ -174,12 +174,12 @@ void Guild::cmd_GuildLeave(CCharacter* pCha)
 
 	game_db.GuildLeave(*pCha);
 }
-void Guild::cmd_GuildDisband(CCharacter* pCha,cChar *passwd)
+void Guild::cmd_GuildDisband(CCharacter* pCha,const char *passwd)
 {
 
 	game_db.GuildDisband(*pCha,passwd);
 }
-void Guild::cmd_GuildMotto(CCharacter* pCha,cChar *motto)
+void Guild::cmd_GuildMotto(CCharacter* pCha,const char *motto)
 {
 
 	game_db.GuildMotto(*pCha,motto);

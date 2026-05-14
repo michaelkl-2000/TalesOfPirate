@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: FightAble.h
 // Creater: ZhangXuedong
 // Date: 2004.09.15
@@ -8,6 +8,7 @@
 #ifndef FIGHTABLE_H
 #define FIGHTABLE_H
 
+#include <array>
 #include "Entity/Attachable.h"
 #include "Character/ChaAttr.h"
 #include "Character/CharacterRecord.h"
@@ -36,17 +37,17 @@ enum EFightChaType
 struct SFireUnit
 {
 #ifdef defPROTOCOL_HAVE_PACKETID
-	dbc::uLong	ulPacketID;	// ID
+	std::uint32_t	ulPacketID;	// ID
 #endif
-	dbc::uChar	uchFightID;
+	std::uint8_t	uchFightID;
 
 	CFightAble	*pCFightSrc;
-	dbc::uLong	ulID;
-	Point		SSrcPos;
-	dbc::Long	lTarInfo1;
-	dbc::Long	lTarInfo2;
+	std::uint32_t	ulID;
+	Corsairs::Util::Point		SSrcPos;
+	std::int32_t	lTarInfo1;
+	std::int32_t	lTarInfo2;
 
-	dbc::Short		sExecTime;	// 
+	int16_t		sExecTime;	// 
 	CSkillRecord	*pCSkillRecord;
 	CSkillTempData	*pCSkillTData;
 };
@@ -59,12 +60,12 @@ struct SFightInit
 	// lInfo1,lInfo2 ,WorldID,Handle x,y
 	struct
 	{
-		dbc::Char		chTarType;	// 012
-		dbc::Long		lTarInfo1;
-		dbc::Long		lTarInfo2;
+		char		chTarType;	// 012
+		std::int32_t		lTarInfo1;
+		std::int32_t		lTarInfo2;
 	};
 
-	dbc::Short		sStopState;		// enumEXISTS_WAITING, enumEXISTS_SLEEPING
+	int16_t		sStopState;		// enumEXISTS_WAITING, enumEXISTS_SLEEPING
 };
 
 namespace Corsairs::Net::Msg {
@@ -88,61 +89,61 @@ public:
 			StartAttack
 		};
 
-		dbc::Short	sState;
+		int16_t	sState;
 		Request	sRequestState;
 
 		bool		bCrt;			// 
 		bool		bMiss;			// Miss
 
-		long		lERangeBParam[defSKILL_RANGE_BASEP_NUM];	// 
+		std::int32_t		lERangeBParam[defSKILL_RANGE_BASEP_NUM];	//
 	};
 
-	dbc::Short	GetFightState(void);
-	dbc::Short	GetFightStopState(void);
+	int16_t	GetFightState(void);
+	int16_t	GetFightStopState(void);
 
 	bool	DesireFightBegin(SFightInit *);
 	void	DesireFightEnd(void);
-	void	OnFight(dbc::uLong ulCurTick);
+	void	OnFight(std::uint32_t ulCurTick);
 
-	void	RangeEffect(SFireUnit *pSFireSrc, SubMap *pCMap, dbc::Long *plRangeBParam);
+	void	RangeEffect(SFireUnit *pSFireSrc, SubMap *pCMap, std::int32_t *plRangeBParam);
 	void	SkillTarEffect(SFireUnit *pSFire);
-	void	NotiSkillSrcToEyeshot(dbc::Short sExecTime = 0);
-	void	NotiSkillSrcToSelf(dbc::Short sExecTime = 0);
+	void	NotiSkillSrcToEyeshot(int16_t sExecTime = 0);
+	void	NotiSkillSrcToSelf(int16_t sExecTime = 0);
 	void	NotiSkillTarToEyeshot(SFireUnit *pSFireSrc);
-	void	NotiChangeMainCha(dbc::uLong ulTargetID);
-	void	SynAttr(dbc::Short sType);
-	void	SynAttrToSelf(dbc::Short sType);
-	void	SynAttrToEyeshot(dbc::Short sType);
-	void	SynAttrToUnit(CFightAble *pCObj, dbc::Short sType);
-	void	SynAttrToUnit(CFightAble *pCObj, dbc::Short sStartAttr, dbc::Short sEndAttr, dbc::Short sType);
+	void	NotiChangeMainCha(std::uint32_t ulTargetID);
+	void	SynAttr(int16_t sType);
+	void	SynAttrToSelf(int16_t sType);
+	void	SynAttrToEyeshot(int16_t sType);
+	void	SynAttrToUnit(CFightAble *pCObj, int16_t sType);
+	void	SynAttrToUnit(CFightAble *pCObj, int16_t sStartAttr, int16_t sEndAttr, int16_t sType);
 	void	SynSkillStateToSelf(void);
 	void	SynSkillStateToEyeshot(void);
 	void	SynSkillStateToUnit(CFightAble *pCObj);
 	void	SynLookEnergy(void);
 	// 
 	void	WriteSkillState(Corsairs::Net::WPacket &pk);
-	void	WriteAttr(Corsairs::Net::WPacket &pk, dbc::Short sSynType);
-	void	WriteMonsAttr(Corsairs::Net::WPacket &pk, dbc::Short sSynType);
-	void	WriteAttr(Corsairs::Net::WPacket &pk, dbc::Short sStartAttr, dbc::Short sEndAttr, dbc::Short sSynType);
+	void	WriteAttr(Corsairs::Net::WPacket &pk, int16_t sSynType);
+	void	WriteMonsAttr(Corsairs::Net::WPacket &pk, int16_t sSynType);
+	void	WriteAttr(Corsairs::Net::WPacket &pk, int16_t sStartAttr, int16_t sEndAttr, int16_t sSynType);
 	void	WriteLookEnergy(Corsairs::Net::WPacket &pk);
 	// Fill*     (CommandMessages.h)
 	void	FillSkillState(Corsairs::Net::Msg::ChaSkillStateInfo &s);
-	void	FillAttr(Corsairs::Net::Msg::ChaAttrInfo &a, dbc::Short sSynType);
-	void	FillAttrAll(Corsairs::Net::Msg::ChaAttrInfo &a, dbc::Short sSynType); //   0..ATTR_CLIENT_MAX-1
-	void	FillMonsAttr(Corsairs::Net::Msg::ChaAttrInfo &a, dbc::Short sSynType); // 5  
+	void	FillAttr(Corsairs::Net::Msg::ChaAttrInfo &a, int16_t sSynType);
+	void	FillAttrAll(Corsairs::Net::Msg::ChaAttrInfo &a, int16_t sSynType); //   0..ATTR_CLIENT_MAX-1
+	void	FillMonsAttr(Corsairs::Net::Msg::ChaAttrInfo &a, int16_t sSynType); // 5  
 
 	bool	IsRightSkill(CSkillRecord *pSkill);
-	bool	IsRightSkillSrc(dbc::Char chSkillEffType);
-	bool	IsRightSkillTar(CFightAble *pSkillSrc, dbc::Char chSkillObjType, dbc::Char chSkillObjHabitat, dbc::Char chSkillEffType, bool bIncHider = false);
+	bool	IsRightSkillSrc(char chSkillEffType);
+	bool	IsRightSkillTar(CFightAble *pSkillSrc, char chSkillObjType, char chSkillObjHabitat, char chSkillEffType, bool bIncHider = false);
 	bool	IsTeammate(CFightAble *pCFighter);
 	bool	IsFriend(CFightAble *pCFighter);
 
 	void	ResetFight();
 	bool	RectifyAttr();
 
-	dbc::Long	GetLevel(void);
-	void		AddExp(dbc::uLong);
-	bool		AddExpAndNotic(dbc::Long lAddExp, dbc::Short sNotiType = enumATTRSYN_TASK);
+	std::int32_t	GetLevel(void);
+	void		AddExp(std::uint32_t);
+	bool		AddExpAndNotic(std::int32_t lAddExp, int16_t sNotiType = enumATTRSYN_TASK);
 
 	void	CountLevel(void);
 	void	CountSailLevel(void);
@@ -155,48 +156,48 @@ public:
 	virtual void OnLifeLvUp(USHORT sLevel);
 
 	// 	
-	void	SpawnResource( CCharacter *pCAtk, dbc::Long lSkillLv );
+	void	SpawnResource( CCharacter *pCAtk, std::int32_t lSkillLv );
 	void	ItemCount(CCharacter *pAtk);
-	void	ItemInstance(dbc::Char chType, SItemGrid *pGridContent, BOOL isTradable = 1, LONG expiration = 0);
-	bool	GetTrowItemPos(dbc::Long *plPosX, dbc::Long *plPosY);
-	bool	SkillExpend(dbc::Short sExecTime = 1);
+	void	ItemInstance(char chType, SItemGrid *pGridContent, BOOL isTradable = 1, LONG expiration = 0);
+	bool	GetTrowItemPos(std::int32_t *plPosX, std::int32_t *plPosY);
+	bool	SkillExpend(int16_t sExecTime = 1);
 
-	dbc::uLong	GetSkillDist(Entity *pTarEnt, CSkillRecord *pRec);
+	std::uint32_t	GetSkillDist(Entity *pTarEnt, CSkillRecord *pRec);
 	bool        SkillTarIsEntity(CSkillRecord *pRec);
 
-	void			BeUseSkill(dbc::Long lPreHp, dbc::Long lNowHp, CCharacter *pCSrcCha, dbc::Char chSkillEffType);
-	void			SetMonsterFightObj(dbc::uLong ulObjWorldID, dbc::Long lObjHandle);
-	dbc::Long		GetSkillTime(CSkillTempData *pCSkillTData);
+	void			BeUseSkill(std::int32_t lPreHp, std::int32_t lNowHp, CCharacter *pCSrcCha, char chSkillEffType);
+	void			SetMonsterFightObj(std::uint32_t ulObjWorldID, std::int32_t lObjHandle);
+	std::int32_t		GetSkillTime(CSkillTempData *pCSkillTData);
 	void			EnrichSkillBag(bool bActive = true);
-	virtual bool	AddSkillState(dbc::uChar uchFightID, dbc::uLong ulSrcWorldID, dbc::Long lSrcHandle, dbc::Char chObjType, dbc::Char chObjHabitat, dbc::Char chEffType,
-					dbc::uChar uchStateID, dbc::uChar uchStateLv, dbc::Long lOnTick, dbc::Char chType = enumSSTATE_ADD_UNDEFINED, bool bNotice = true);
-	virtual bool	DelSkillState(dbc::uChar uchStateID, bool bNotice = true);
+	virtual bool	AddSkillState(std::uint8_t uchFightID, std::uint32_t ulSrcWorldID, std::int32_t lSrcHandle, char chObjType, char chObjHabitat, char chEffType,
+					std::uint8_t uchStateID, std::uint8_t uchStateLv, std::int32_t lOnTick, char chType = enumSSTATE_ADD_UNDEFINED, bool bNotice = true);
+	virtual bool	DelSkillState(std::uint8_t uchStateID, bool bNotice = true);
 	void			SetItemHostObj(CFightAble *pCObj);
 
-	dbc::Long		setAttr(int nIdx, LONG32 lValue, int nType = 0);
-	dbc::Long		getAttr(int nIdx);
-	virtual void	AfterAttrChange(int nIdx, dbc::Long lOldVal, dbc::Long lNewVal);
+	std::int32_t		setAttr(int nIdx, LONG32 lValue, int nType = 0);
+	std::int32_t		getAttr(int nIdx);
+	virtual void	AfterAttrChange(int nIdx, std::int32_t lOldVal, std::int32_t lNewVal);
 	void			SetDie(CCharacter *pCSkillSrcCha);
 	virtual void	Die();
 
-	CCharacter* SkillPopBoat(dbc::Long lPosX, dbc::Long lPosY, dbc::Short sDir = -1);	// 
-	bool SkillPopBoat(CCharacter *pCBoat, dbc::Long lPosX, dbc::Long lPosY, dbc::Short sDir = -1);	// 
+	CCharacter* SkillPopBoat(std::int32_t lPosX, std::int32_t lPosY, int16_t sDir = -1);	//
+	bool SkillPopBoat(CCharacter *pCBoat, std::int32_t lPosX, std::int32_t lPosY, int16_t sDir = -1);	//
 	bool SkillInBoat(CCharacter* pCBoat);	// 
-	bool SkillOutBoat(dbc::Long lPosX, dbc::Long lPosY, dbc::Short sDir = -1);	// 
+	bool SkillOutBoat(std::int32_t lPosX, std::int32_t lPosY, int16_t sDir = -1);	//
 	bool SkillPushBoat(CCharacter* pCBoat, bool bFree = true);	// 
 
-	dbc::uLong	m_ulPacketID;		// ID
-	dbc::uChar	m_uchFightID;		// 
+	std::uint32_t	m_ulPacketID;		// ID
+	std::uint8_t	m_uchFightID;		//
 
 	SFightInit	m_SFightInit;
 	SFightProc	m_SFightProc;
 	SFightInit	m_SFightInitCache;
 
 	CChaAttr		m_CChaAttr;
-	CChaRecord		*m_pCChaRecord;
+	ChaRecord		*m_pCChaRecord;
 	CSkillState		m_CSkillState;
 	CSkillBag		m_CSkillBag;
-	dbc::Short		m_sDefSkillNo;
+	int16_t		m_sDefSkillNo;
 
 	//virtual bool IsBoat(void);
 
@@ -206,7 +207,7 @@ protected:
 	void	Finally();
 
 	CFightAble*	IsFightAble();
-	bool	GetFightTargetShape(Square *pSTarShape);
+	bool	GetFightTargetShape(Corsairs::Util::Square *pSTarShape);
 
 	
 	void	OnSkillState(DWORD dwCurTick);
@@ -224,10 +225,10 @@ private:
 	virtual void BreakAction(Corsairs::Net::RPacket* pk = nullptr);
 	virtual void EndAction(Corsairs::Net::RPacket* pk = nullptr);
 
-	bool SkillGeneral(dbc::Long lDistance, dbc::Short sExecTime = 1); // 
+	bool SkillGeneral(std::int32_t lDistance, int16_t sExecTime = 1); //
 
-	dbc::uShort	m_usTickInterval;	// 
-	dbc::uLong	m_ulLastTick;		// 
+	std::uint16_t	m_usTickInterval;	//
+	std::uint32_t	m_ulLastTick;		//
 	bool		m_bOnFight;
 
 	bool		m_bLookAttrChange;	// 
@@ -241,22 +242,22 @@ public:
 	struct SMgrUnit
 	{
 		SFireUnit	SFireSrc;
-		dbc::uLong	ulLeftTick;	// 
+		std::uint32_t	ulLeftTick;	//
 		SubMap		*pCMap;
-		Point		STargetPos;	// 
-		long		lERangeBParam[defSKILL_RANGE_BASEP_NUM];	// 
+		Corsairs::Util::Point		STargetPos;	// 
+		std::int32_t		lERangeBParam[defSKILL_RANGE_BASEP_NUM];	// 
 		SMgrUnit	*pSNext;
 	};
 
 	CTimeSkillMgr(unsigned short usFreq = 1000);
 	~CTimeSkillMgr();
 
-	void	Add(SFireUnit *pSFireSrc, dbc::uLong ulLeftTick, SubMap *pCMap, Point *pStarget, dbc::Long *lRangeBParam);
-	void	Run(unsigned long ulCurTick);
+	void	Add(SFireUnit *pSFireSrc, std::uint32_t ulLeftTick, SubMap *pCMap, Corsairs::Util::Point *pStarget, std::int32_t *lRangeBParam);
+	void	Run(std::uint32_t ulCurTick);
 	void	ExecTimeSkill(SMgrUnit *pFireInfo);
 
 private:
-	unsigned long	m_ulTick;
+	std::uint32_t	m_ulTick;
 	unsigned short	m_usFreq;	// 
 
 	SMgrUnit	*m_pSExecQueue;	// 
@@ -265,6 +266,6 @@ private:
 };
 
 extern CTimeSkillMgr	g_CTimeSkillMgr;
-extern char	g_chItemFall[defCHA_INIT_ITEM_NUM + 1];
+extern std::array<char, Corsairs::Common::Character::kChaInitItemNum + 1> g_chItemFall;
 
 #endif // FIGHTABLE_H

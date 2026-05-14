@@ -21,7 +21,7 @@ void CChaAttr::Clear() {
     _attribute.fill(0);
 }
 
-void CChaAttr::Init(std::int32_t id, bool fromFile) {
+void CChaAttr::Init(std::int32_t id, bool applyProgressionDefaults) {
     ResetChangeFlag();
 
     // Дефолты для item/state-коэффициентов: 1000 = "100.0%" в fixed-point.
@@ -31,13 +31,13 @@ void CChaAttr::Init(std::int32_t id, bool fromFile) {
     for (std::int32_t i = ATTR_BOAT_SKILLC_MNATK; i <= ATTR_BOAT_SKILLC_MXSPLY; ++i) _attribute[i] = 1000;
     // ITEMV/STATEV/BOAT_SKILLV/EXTEND zero-initialized в Clear().
 
-    CChaRecord* pCChaRecord = GetChaRecordInfo(id);
+    ChaRecord* pCChaRecord = GetChaRecordInfo(id);
     if (!pCChaRecord) {
         return;
     }
 
     _id = id;
-    if (fromFile) {
+    if (applyProgressionDefaults) {
         _attribute[ATTR_LV]    = static_cast<std::int32_t>(pCChaRecord->lLv);
         _attribute[ATTR_HP]    = static_cast<std::int32_t>(pCChaRecord->lMxHp);
         _attribute[ATTR_SP]    = static_cast<std::int32_t>(pCChaRecord->lMxSp);
@@ -74,7 +74,7 @@ void CChaAttr::Init(std::int32_t id, bool fromFile) {
     _attribute[ATTR_COL]         = static_cast<std::int32_t>(pCChaRecord->lCol);
     _attribute[ATTR_PDEF]        = static_cast<std::int32_t>(pCChaRecord->lPDef);
 
-    if (fromFile) {
+    if (applyProgressionDefaults) {
         _attribute[ATTR_BSTR]  = static_cast<std::int32_t>(pCChaRecord->lStr);
         _attribute[ATTR_BDEX]  = static_cast<std::int32_t>(pCChaRecord->lDex);
         _attribute[ATTR_BAGI]  = static_cast<std::int32_t>(pCChaRecord->lAgi);

@@ -1,4 +1,4 @@
-﻿// CharForge.h Created by knight-gongjian 2005.1.24.
+// CharForge.h Created by knight-gongjian 2005.1.24.
 //---------------------------------------------------------
 #pragma once
 
@@ -9,8 +9,6 @@
 #include "Character/Character.h"
 
 //---------------------------------------------------------
-_DBC_USING
-
 namespace mission
 {
 	class CForgeSystem

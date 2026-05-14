@@ -472,8 +472,9 @@ public:
 
 } // namespace Corsairs::Engine::Render
 
-// MPMapFileHeader — 20-байтная C-структура из Libraries/Util/include/MPMapDef.h.
-// Нужна по значению внутри MapInfo, поэтому подключаем полное определение.
+// MPMapFileHeader / SNewFileTile — 20- и 15-байтные C-структуры из
+// Libraries/Util/include/MPMapDef.h. Нужны по значению внутри MapInfo, поэтому
+// подключаем полное определение.
 #include "MPMapDef.h"
 
 #include <cstdio>
@@ -485,7 +486,7 @@ public:
 // MapLoader/MapStream MPTile фигурирует только через указатели.
 struct MPTile;
 
-// ZRBlockData (Engine/include/ZRBlock.h) — `short sRegion + BYTE btBlock[4]`,
+// ZRBlockData (Engine/include/ZRBlock.h) — `short Region + uint8_t Block[4]`,
 // тот «лёгкий» срез тайла, который нужен ZRBlock для коллизий/региональных
 // атрибутов. Forward-decl, чтобы MapLoader::ReadSectionBlockData принимал
 // его без втягивания ZRBlock.h в публичный заголовок.
@@ -493,13 +494,18 @@ class ZRBlockData;
 
 namespace Corsairs::Engine::Render {
 
+// Используем типы формата файла без квалификации (using-declaration,
+// не using-directive — глобально namespace Corsairs::Util::Map не открываем).
+using ::Corsairs::Util::Map::MPMapFileHeader;
+using ::Corsairs::Util::Map::SNewFileTile;
+
 enum class MapLoadStatus : std::uint32_t {
     Ok = 0,
     FileOpenFailed,         // fopen(file) не удался (нет файла, прав)
     HeaderTruncated,        // < 20 байт в файле — MPMapFileHeader не дочитан
-    BadMagic,               // header.nMapFlag не из {MP_MAP_FLAG+2, MP_MAP_FLAG+3}; чужой формат или MapTool-файл
-    InconsistentDimensions, // nSectionWidth/Height равны 0 либо не делят nWidth/nHeight нацело
-    OffsetTableTruncated,   // не удалось прочитать DWORD[sectionCount] таблицу оффсетов
+    BadMagic,               // header.MapFlag не из {kMapFlagLegacy, kMapFlagCurrent}; чужой формат или MapTool-файл
+    InconsistentDimensions, // SectionWidth/Height равны 0 либо не делят Width/Height нацело
+    OffsetTableTruncated,   // не удалось прочитать uint32[sectionCount] таблицу оффсетов
     BodyTruncated,          // EOF до конца секции, на которую указывает один из offsets[i]
     UnknownVersion          // зарезервировано: header принят как валидный, но runtime его не поддерживает
 };
@@ -512,16 +518,16 @@ struct MapLoadDiagnostics {
 
 // In-memory снимок одного .map-файла. Содержит ровно те же байты, что и файл
 // на диске:
-//   [MPMapFileHeader (20 байт): {nMapFlag, nWidth, nHeight, nSectionWidth, nSectionHeight}]
-//   [DWORD[sectionCount] offsets — 0 значит «секция пустая, на диске её нет»]
+//   [MPMapFileHeader (20 байт): {MapFlag, Width, Height, SectionWidth, SectionHeight}]
+//   [uint32[sectionCount] offsets — 0 значит «секция пустая, на диске её нет»]
 //   [body: конкатенация tile-данных секций; конкретный кусок берётся по
 //          offset[i] − (sizeof(header) + offsets.size()*4), вычитая префикс,
 //          чтобы получить индекс внутри body.]
 //
 // MapLoader::Load читает все три блока «как есть» и не разбирает body на
-// SNewFileTile/SFileTile-структуры — для round-trip-теста это не нужно, а
-// «сырая» секция делает Save(Load(file)) побайтно детерминированным для
-// любого валидного .map.
+// SNewFileTile-структуры — для round-trip-теста это не нужно, а «сырая»
+// секция делает Save(Load(file)) побайтно детерминированным для любого
+// валидного .map.
 struct MapInfo {
     MPMapFileHeader header{};
     std::vector<std::uint32_t> offsets;
@@ -586,19 +592,16 @@ private:
     std::uint32_t _bulkBaseOffset{0};
 };
 
-// Текущий формат записи .map. CUR_VERSION_NO в MPMapDef.h хранится как
-// `MP_MAP_FLAG + 3`; сюда дублируем как литерал, чтобы заголовок мог
-// использоваться без define NEW_VERSION (в тестах NEW_VERSION включён —
-// см. MPMapDef.h, в самом конце файла).
+// Текущий формат записи .map. См. Corsairs::Util::Map::kMapFlagCurrent.
 class MapLoader {
 public:
-    // MP_MAP_FLAG (780624) + 3. Совпадает с CUR_VERSION_NO из MPMapDef.h —
+    // kMapFlagBase (780624) + 3. Совпадает с kMapFlagCurrent из MPMapDef.h —
     // именно эта версия пишется обратно в Save и принимается runtime'ом.
-    static constexpr std::int32_t kCurrentMapFlag = 780627;
-    // MP_MAP_FLAG + 2 (LAST_VERSION_NO). Принимается на чтение, но в
-    // round-trip-тестах считается legacy: runtime откажется загружать такой
-    // файл (NEW_VERSION включён), а Save сохраняет в актуальной версии.
-    static constexpr std::int32_t kLegacyMapFlag = 780626;
+    static constexpr std::int32_t kCurrentMapFlag = ::Corsairs::Util::Map::kMapFlagCurrent;
+    // kMapFlagBase + 2 (kMapFlagLegacy). Принимается на чтение, но в
+    // round-trip-тестах считается legacy: Save всегда сохраняет в актуальной
+    // версии, runtime читает оба значения.
+    static constexpr std::int32_t kLegacyMapFlag = ::Corsairs::Util::Map::kMapFlagLegacy;
 
     // Снапшот-API (round-trip-тесты, тулзы).
     [[nodiscard]] static LW_RESULT Load(MapInfo& info, std::string_view file);
@@ -615,7 +618,7 @@ public:
                                               bool edit, MapLoadDiagnostics& diag);
 
     // ReadSection декодирует одну секцию из stream'а в outTiles. Размер
-    // outTiles — header.nSectionWidth * header.nSectionHeight (вызывающий
+    // outTiles — header.SectionWidth * header.SectionHeight (вызывающий
     // выделяет буфер). Возвращает LW_RET_FAILED при offset==0 (пустая секция;
     // вызывающий обязан проверить SectionOffset перед вызовом).
     [[nodiscard]] static LW_RESULT ReadSection(const MapStream& stream,
@@ -623,10 +626,10 @@ public:
                                                 ::MPTile* outTiles);
 
     // ReadSectionBlockData — облегчённый вариант ReadSection для ZRBlock'а.
-    // Из каждого SNewFileTile берёт только `sRegion + btBlock[4]` (6 из 15
-    // байт), не выполняя LW_RGB565TODWORD/TileInfo_5To8 — block/region-часть
-    // от них не зависит, и тянуть MPTile/lwgraphicsutil ради 6 байт на тайл
-    // незачем. Размер outBlocks — header.nSectionWidth*nSectionHeight.
+    // Из каждого SNewFileTile берёт только `Region + Block[4]` (6 из 15 байт),
+    // не выполняя LW_RGB565TODWORD/TileInfo_Unpack — block/region-часть от них
+    // не зависит, и тянуть MPTile/lwgraphicsutil ради 6 байт на тайл незачем.
+    // Размер outBlocks — header.SectionWidth*SectionHeight.
     [[nodiscard]] static LW_RESULT ReadSectionBlockData(
         const MapStream& stream, int sectionX, int sectionY,
         ::ZRBlockData* outBlocks);

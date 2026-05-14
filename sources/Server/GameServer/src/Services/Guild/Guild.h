@@ -1,4 +1,4 @@
-﻿//Created By Andor.Zhang 2005.4.19
+//Created By Andor.Zhang 2005.4.19
 #ifndef GUILD_H
 #define GUILD_H
 //#include "Core/stdafx.h"
@@ -11,17 +11,17 @@ public:
 	static BOOL lua_CreateGuild(CCharacter* pCha);	//,0-,1-
 	static BOOL lua_ListAllGuild(CCharacter* pCha);	//NPC
 
-	static void cmd_CreateGuild(CCharacter* pCha, bool confirm, cChar *guildname, cChar *passwd);
+	static void cmd_CreateGuild(CCharacter* pCha, bool confirm, const char *guildname, const char *passwd);
 	static void cmd_ListAllGuild(CCharacter* pCha);	//20
-	static void cmd_GuildTryFor(CCharacter* pCha, uLong guildid);	//NPC
+	static void cmd_GuildTryFor(CCharacter* pCha, std::uint32_t guildid);	//NPC
 	static void cmd_GuildTryForComfirm(CCharacter* pCha, char IsReplace);
 	static void cmd_GuildListTryPlayer(CCharacter* pCha);
-	static void cmd_GuildApprove(CCharacter* pCha,uLong chaid);
-	static void cmd_GuildReject(CCharacter* pCha,uLong chaid);
-	static void cmd_GuildKick(CCharacter* pCha,uLong chaid);
+	static void cmd_GuildApprove(CCharacter* pCha,std::uint32_t chaid);
+	static void cmd_GuildReject(CCharacter* pCha,std::uint32_t chaid);
+	static void cmd_GuildKick(CCharacter* pCha,std::uint32_t chaid);
 	static void	cmd_GuildLeave(CCharacter* pCha);
-	static void cmd_GuildDisband(CCharacter* pCha,cChar *passwd);
-	static void cmd_GuildMotto(CCharacter* pCha,cChar *motto);
+	static void cmd_GuildDisband(CCharacter* pCha,const char *passwd);
+	static void cmd_GuildMotto(CCharacter* pCha,const char *motto);
 	static void cmd_PMDisband(CCharacter *pCha);
 	static void cmd_GuildChallenge( CCharacter* pCha, BYTE byLevel, DWORD dwMoney );
 	static void cmd_GuildLeizhu( CCharacter* pCha, BYTE byLevel, DWORD dwMoney );

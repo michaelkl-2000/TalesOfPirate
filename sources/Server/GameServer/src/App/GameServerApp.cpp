@@ -266,7 +266,7 @@ void GameServerApp::HandleServeCall(GateServer* gt, Corsairs::Net::RPacket& pk)
     {
         Corsairs::Net::Msg::TmOfflineModeMessage offlineMsg;
         Corsairs::Net::Msg::deserialize(pk, offlineMsg);
-        auto player = ToPointer<CPlayer>(offlineMsg.playerPtr);
+        auto player = Corsairs::Util::ToPointer<CPlayer>(offlineMsg.playerPtr);
         CCharacter* pCCha{};
 
         const auto return_code = [&]

@@ -7,8 +7,8 @@
 //                   AI
 //--------------------------------------------------------
 
-void CCharacter::SrcFightTar(CFightAble *pTar, dbc::Short sSkillID)
+void CCharacter::SrcFightTar(CFightAble *pTar, int16_t sSkillID)
 {
-	Point	Path[2] = {GetShape().centre, pTar->GetShape().centre};
+	Corsairs::Util::Point	Path[2] = {GetShape().Centre, pTar->GetShape().Centre};
 	Cmd_BeginSkillDirect(sSkillID, pTar);
 }

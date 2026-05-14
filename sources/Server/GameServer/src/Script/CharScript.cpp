@@ -19,7 +19,6 @@ using namespace std;
 
 
 //---------------------------------------------------------
-_DBC_USING
 using namespace mission;
 
 std::string GetResString(const std::string& pszID)
@@ -1736,7 +1735,7 @@ int Garner2RequestReorder(CCharacter* pChar, CTalkNpc* pTalk)
 {
 	if (!pChar || !pTalk) return LUA_FALSE;
 
-	CCharacter* pCha = pChar->m_submap->FindCharacter(pTalk->GetID(), pChar->GetShape().centre);
+	CCharacter* pCha = pChar->m_submap->FindCharacter(pTalk->GetID(), pChar->GetShape().Centre);
 	if (pCha == NULL)
 	{
 		return LUA_FALSE;
@@ -1784,7 +1783,7 @@ int StartAuction(int sItemID, const std::string& szName, int sCount, int lBasePr
 {
 	if (szName.empty()) return LUA_FALSE;
 
-	if (!g_AuctionSystem.StartAuction((short)sItemID, szName, (short)sCount, (uInt)lBasePrice, (uInt)lMinBid))
+	if (!g_AuctionSystem.StartAuction((short)sItemID, szName, (short)sCount, (std::uint32_t)lBasePrice, (std::uint32_t)lMinBid))
 	{
 		return LUA_FALSE;
 	}
@@ -2012,7 +2011,7 @@ int LifeSkillBegin(CCharacter* pChar, CTalkNpc* pTalk, int ltype)
 {
 	if (!pChar || !pTalk) return LUA_FALSE;
 
-	CCharacter* pCha = pChar->m_submap->FindCharacter(pTalk->GetID(), pChar->GetShape().centre);
+	CCharacter* pCha = pChar->m_submap->FindCharacter(pTalk->GetID(), pChar->GetShape().Centre);
 	if (pCha == NULL)
 	{
 		return LUA_FALSE;
@@ -2198,8 +2197,8 @@ void SetGmLv(CCharacter* pCha, int gmLv)
 {
 	if (!pCha) return;
 	pCha->GetPlayer()->SetGMLev(gmLv);
-	Square& chaPos = (Square&)pCha->GetShape();
-	pCha->GetPlayer()->GetMainCha()->Cmd_EnterMap(pCha->GetBirthMap(), -1, chaPos.centre.x, chaPos.centre.y, 0);
+	Corsairs::Util::Square& chaPos = (Corsairs::Util::Square&)pCha->GetShape();
+	pCha->GetPlayer()->GetMainCha()->Cmd_EnterMap(pCha->GetBirthMap(), -1, chaPos.Centre.X, chaPos.Centre.Y, 0);
 	game_db.SaveGmLv(*pCha->GetPlayer());
 }
 
@@ -2207,8 +2206,8 @@ void RequestClientPin(CCharacter* pCha, int action)
 {
 	if (!pCha) return;
 	pCha->requestType = (char)action;
-	pCha->requestPos.centre.x = pCha->GetShape().centre.x;
-	pCha->requestPos.centre.y = pCha->GetShape().centre.y;
+	pCha->requestPos.Centre.X = pCha->GetShape().Centre.X;
+	pCha->requestPos.Centre.Y = pCha->GetShape().Centre.Y;
 	auto l_wpk = Corsairs::Net::Msg::serializeMcRequestPinCmd();
 	pCha->ReflectINFof(pCha, l_wpk);
 }
@@ -2284,10 +2283,10 @@ int GetOriginalChaTypeID(CCharacter* pCha)
 void TransformCha(CCharacter* pAtt, int mID)
 {
 	if (!pAtt) return;
-	Square& chaPos = (Square&)pAtt->GetShape();
+	Corsairs::Util::Square& chaPos = (Corsairs::Util::Square&)pAtt->GetShape();
 	pAtt->m_SChaPart.sTypeID = (short)mID;
 	pAtt->m_cat = (short)mID;
-	pAtt->GetPlayer()->GetMainCha()->Cmd_EnterMap(pAtt->GetBirthMap(), -1, chaPos.centre.x, chaPos.centre.y, 0);
+	pAtt->GetPlayer()->GetMainCha()->Cmd_EnterMap(pAtt->GetBirthMap(), -1, chaPos.Centre.X, chaPos.Centre.Y, 0);
 }
 
 // GetOnlineCount uses BEGINGETGATE / GETNEXTGATE macros -- keep as raw
@@ -2364,8 +2363,8 @@ int String2Item_raw(lua_State* L) {
 
 	if (lua_gettop(L) == 3 && lua_tonumber(L, 3) == 1) {
 		pChar->m_pCKitbagTmp->SetChangeFlag(false);
-		Short sPushPos = defKITBAG_DEFPUSH_POS;
-		Short sPushRet = pChar->m_pCKitbagTmp->Push(&SGridCont, sPushPos);
+		int16_t sPushPos = defKITBAG_DEFPUSH_POS;
+		int16_t sPushRet = pChar->m_pCKitbagTmp->Push(&SGridCont, sPushPos);
 		pChar->SynKitbagTmpNew(enumSYN_KITBAG_SYSTEM);
 	}
 	else {

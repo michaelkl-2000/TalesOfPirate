@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-namespace TalesOfPirate::Utils::Console {
+namespace Corsairs::Util::Console {
 	constexpr int DEFAULT_COLOR = 7;
 	constexpr int BAD_COLOR = -256;
 
@@ -1551,23 +1551,23 @@ namespace concolor {
 		int color;
 
 	public:
-		item(T t) : thing(std::move(t)), color(TalesOfPirate::Utils::Console::get()) {
+		item(T t) : thing(std::move(t)), color(Corsairs::Util::Console::get()) {
 		}
 
-		item(T t, int a) : thing(std::move(t)), color(TalesOfPirate::Utils::Console::itoc(a)) {
+		item(T t, int a) : thing(std::move(t)), color(Corsairs::Util::Console::itoc(a)) {
 		}
 
-		item(T t, int a, int b) : thing(std::move(t)), color(TalesOfPirate::Utils::Console::itoc(a, b)) {
+		item(T t, int a, int b) : thing(std::move(t)), color(Corsairs::Util::Console::itoc(a, b)) {
 		}
 
-		item(T t, std::string a) : thing(std::move(t)), color(TalesOfPirate::Utils::Console::stoc(a)) {
+		item(T t, std::string a) : thing(std::move(t)), color(Corsairs::Util::Console::stoc(a)) {
 		}
 
-		item(T t, std::string a, std::string b) : thing(std::move(t)), color(TalesOfPirate::Utils::Console::stoc(a, b)) {
+		item(T t, std::string a, std::string b) : thing(std::move(t)), color(Corsairs::Util::Console::stoc(a, b)) {
 		}
 
 		item<T>& invert() {
-			color = TalesOfPirate::Utils::Console::invert(color);
+			color = Corsairs::Util::Console::invert(color);
 			return *this;
 		}
 
@@ -1580,9 +1580,9 @@ namespace concolor {
 
 	template <typename T>
 	std::ostream& operator<<(std::ostream& os, const item<T>& it) {
-		TalesOfPirate::Utils::Console::set(it.color);
+		Corsairs::Util::Console::set(it.color);
 		os << it.thing;
-		TalesOfPirate::Utils::Console::reset();
+		Corsairs::Util::Console::reset();
 		return os;
 	}
 

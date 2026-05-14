@@ -6,6 +6,7 @@
 #include "assert.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <io.h>  // _chmod — ранее тянулся через umbrella util.h
 #include "MPMapDef.h"
 
 using namespace std;
@@ -32,10 +33,10 @@ BOOL MPMap::Load(const char* pszMapName, BOOL bEdit) {
 	}
 
 	const auto& header = _stream.Header();
-	_nWidth = header.nWidth;
-	_nHeight = header.nHeight;
-	_nSectionWidth = header.nSectionWidth;
-	_nSectionHeight = header.nSectionHeight;
+	_nWidth = header.Width;
+	_nHeight = header.Height;
+	_nSectionWidth = header.SectionWidth;
+	_nSectionHeight = header.SectionHeight;
 	_nSectionCntX = _stream.SectionCountX();
 	_nSectionCntY = _stream.SectionCountY();
 	_nSectionCnt = _nSectionCntX * _nSectionCntY;
@@ -186,7 +187,7 @@ void MPMap::DynamicLoading(DWORD dwTimeParam) {
 		_nLastSectionY = nCenterSectionY;
 	}
 
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 	int nCurSectionX = (int)(_fShowCenterX - (float)_nShowWidth / 2.0f) / _nSectionWidth;
 	int nCurSectionY = (int)(_fShowCenterY - (float)_nShowHeight / 2.0f) / _nSectionHeight;

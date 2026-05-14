@@ -281,7 +281,7 @@ BOOL CGameApp::_Init() {
 	// by lsh
 	// Load CSceneObjInfo model data
 	extern void LoadResModelBuf(MPIResourceMgr* res_mgr);
-	MPTimer t;
+	Corsairs::Util::MPTimer t;
 	t.Begin();
 	LoadResModelBuf(g_Render.GetInterfaceMgr()->res_mgr);
 	DWORD res_t = t.End();

@@ -49,7 +49,7 @@ static CItemRecord* LuaGetItemRecord(int id) {
 	return ItemRecordStore::Instance()->Get(id);
 }
 
-static CChaRecord* LuaGetChaRecord(int id) {
+static ChaRecord* LuaGetChaRecord(int id) {
 	return ChaRecordStore::Instance()->Get(id);
 }
 
@@ -84,7 +84,7 @@ static void LuaIterateChaRecords(luabridge::LuaRef fn) {
 	if (!fn.isFunction()) {
 		return;
 	}
-	ChaRecordStore::Instance()->ForEach([&fn](CChaRecord& rec) {
+	ChaRecordStore::Instance()->ForEach([&fn](ChaRecord& rec) {
 		try {
 			fn(&rec);
 		}
@@ -147,17 +147,17 @@ bool RegisterRecordScript() {
 
 	// --- CChaRecord ---
 	luabridge::getGlobalNamespace(L)
-		.beginClass<CChaRecord>("CChaRecord")
-			.addFunction("GetID",         +[](CChaRecord* self) -> int         { return static_cast<int>(self->lID); })
-			.addFunction("GetName",       +[](CChaRecord* self) -> std::string { return self->szName; })
-			.addFunction("GetLevel",      +[](CChaRecord* self) -> int         { return static_cast<int>(self->lLv); })
-			.addFunction("GetHp",         +[](CChaRecord* self) -> int         { return static_cast<int>(self->lHp); })
-			.addFunction("GetMaxHp",      +[](CChaRecord* self) -> int         { return static_cast<int>(self->lMxHp); })
-			.addFunction("GetSp",         +[](CChaRecord* self) -> int         { return static_cast<int>(self->lSp); })
-			.addFunction("GetMaxSp",      +[](CChaRecord* self) -> int         { return static_cast<int>(self->lMxSp); })
-			.addFunction("GetCtrlType",   +[](CChaRecord* self) -> int         { return static_cast<int>(self->chCtrlType); })
-			.addFunction("GetModalType",  +[](CChaRecord* self) -> int         { return static_cast<int>(self->chModalType); })
-			.addFunction("GetExpReward",  +[](CChaRecord* self) -> int         { return static_cast<int>(self->lGetEXP); })
+		.beginClass<ChaRecord>("CChaRecord")
+			.addFunction("GetID",         +[](ChaRecord* self) -> int         { return static_cast<int>(self->lID); })
+			.addFunction("GetName",       +[](ChaRecord* self) -> std::string { return self->szName; })
+			.addFunction("GetLevel",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->lLv); })
+			.addFunction("GetHp",         +[](ChaRecord* self) -> int         { return static_cast<int>(self->lHp); })
+			.addFunction("GetMaxHp",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->lMxHp); })
+			.addFunction("GetSp",         +[](ChaRecord* self) -> int         { return static_cast<int>(self->lSp); })
+			.addFunction("GetMaxSp",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->lMxSp); })
+			.addFunction("GetCtrlType",   +[](ChaRecord* self) -> int         { return static_cast<int>(self->chCtrlType); })
+			.addFunction("GetModalType",  +[](ChaRecord* self) -> int         { return static_cast<int>(self->chModalType); })
+			.addFunction("GetExpReward",  +[](ChaRecord* self) -> int         { return static_cast<int>(self->lGetEXP); })
 		.endClass();
 
 	// --- CSkillRecord ---

@@ -1,4 +1,4 @@
-﻿#include "Core/stdafx.h"
+#include "Core/stdafx.h"
 namespace Corsairs::Common::Progression {}
 using namespace Corsairs::Common::Progression;
 namespace Corsairs::Common::Localization {}
@@ -30,19 +30,16 @@ using namespace std;
 
 char	g_chUseItemFailed[2];
 char	g_chUseItemGiveMission[2];
-
-_DBC_USING
-
 // maincha
-bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_y, Char chLogin)
+bool CCharacter::Cmd_EnterMap(const char* l_map, std::int32_t lMapCopyNO, std::uint32_t l_x, std::uint32_t l_y, char chLogin)
 {
-	Short	sErrCode = ERR_MC_ENTER_ERROR;
-	Char	chEnterType = enumENTER_MAP_CARRY;
+	int16_t	sErrCode = ERR_MC_ENTER_ERROR;
+	char	chEnterType = enumENTER_MAP_CARRY;
 	CPlayer	*pCPlayer = GetPlayer();
 
 	m_CKitbag.UnLock();
 
-	Square l_shape;
+	Corsairs::Util::Square l_shape;
 	m_pCChaRecord = GetChaRecordInfo(GetCat());
 	if (m_pCChaRecord == NULL)
 		goto Error;
@@ -60,7 +57,7 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 			bNewCha = false;
 			m_CChaAttr.Init(GetCat(), false);
 		}
-		setAttr(ATTR_CHATYPE, enumCHACTRL_PLAYER);
+		setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
 		ResetPosState();
 
 		if (pCPlayer->GetLoginChaType() == enumLOGIN_CHA_BOAT) // 
@@ -113,8 +110,8 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 					}
 
 					pCMapRes = g_pGameApp->FindMapByName(pCCtrlCha->GetBirthMap());
-					l_x = pCCtrlCha->GetPos().x;
-					l_y = pCCtrlCha->GetPos().y;
+					l_x = pCCtrlCha->GetPos().X;
+					l_y = pCCtrlCha->GetPos().Y;
 				}
 				else // 
 				{
@@ -135,7 +132,7 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 				sErrCode = ERR_MC_ENTER_POS;
 				goto Error;
 			}
-			pCMap = pCMapRes->GetCopy((Short)lMapCopyNO);
+			pCMap = pCMapRes->GetCopy((int16_t)lMapCopyNO);
 			if (!pCMap)
 			{
 				//LG("enter_map", " %s(%s) !\n", GetLogName(), pCCtrlCha->GetLogName());
@@ -147,9 +144,9 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 				pCMap->Open();
 			pCCtrlCha->SetBirthMap(pCMap->GetName());
 
-			l_shape.centre.x = l_x;
-			l_shape.centre.y = l_y;
-			l_shape.radius = m_pCChaRecord->sRadii;
+			l_shape.Centre.X = l_x;
+			l_shape.Centre.Y = l_y;
+			l_shape.Radius = m_pCChaRecord->sRadii;
 			if (!pCMap->EnsurePos(&l_shape, pCCtrlCha))
 			{
 				ToLogService("map", "character {}({}) 's map coordinate[{}, {}]is unlawful, fallback to birth point", GetLogName(), pCCtrlCha->GetLogName(), l_x, l_y);
@@ -169,8 +166,8 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 							pCCtrlCha->SetBirthMap(pCMap->GetName());
 						}
 					}
-					l_shape.centre.x = l_x;
-					l_shape.centre.y = l_y;
+					l_shape.Centre.X = l_x;
+					l_shape.Centre.Y = l_y;
 					if (!pCMap || !pCMap->EnsurePos(&l_shape, pCCtrlCha))
 					{
 						ToLogService("map", "character {}({}) birth point fallback also failed [{}, {}]", GetLogName(), pCCtrlCha->GetLogName(), l_x, l_y);
@@ -206,7 +203,7 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 					ChangeItem(true, &m_SChaPart.SLink[i], i);
 
 				if (m_SChaPart.SLink[i].sID && (m_SChaPart.SLink[i].expiration - std::time(0)) <= 0 && m_SChaPart.SLink[i].expiration != 0) {
-					Short	sUnfixNum = 0;
+					int16_t	sUnfixNum = 0;
 					if (Cmd_UnfixItem(i, &sUnfixNum, 1, 0, -1, false, true, true) == enumITEMOPT_ERROR_KBFULL) {
 						m_SChaPart.SLink[i].sID = 0;
 					}
@@ -259,8 +256,8 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 				g_luaAPI.Call("AttrRecheck", static_cast<CCharacter*>(this));
 			{
 				CLevelRecord* pCLvRec = 0, * pNLvRec = 0;
-				pCLvRec = GetLevelRecordInfo((long)m_CChaAttr.GetAttr(ATTR_LV));
-				pNLvRec = GetLevelRecordInfo((long)m_CChaAttr.GetAttr(ATTR_LV) + 1);
+				pCLvRec = GetLevelRecordInfo((std::int32_t)m_CChaAttr.GetAttr(ATTR_LV));
+				pNLvRec = GetLevelRecordInfo((std::int32_t)m_CChaAttr.GetAttr(ATTR_LV) + 1);
 				if (pCLvRec)
 				{
 					setAttr(ATTR_CLEXP, pCLvRec->ulExp);
@@ -273,8 +270,8 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 			// 
 			{
 				CSailLvRecord* pCLvRec = 0, * pNLvRec = 0;
-				pCLvRec = GetSailLvRecordInfo((long)m_CChaAttr.GetAttr(ATTR_SAILLV));
-				pNLvRec = GetSailLvRecordInfo((long)m_CChaAttr.GetAttr(ATTR_SAILLV) + 1);
+				pCLvRec = GetSailLvRecordInfo((std::int32_t)m_CChaAttr.GetAttr(ATTR_SAILLV));
+				pNLvRec = GetSailLvRecordInfo((std::int32_t)m_CChaAttr.GetAttr(ATTR_SAILLV) + 1);
 				if (pCLvRec)
 				{
 					setAttr(ATTR_CLV_SAILEXP, pCLvRec->ulExp);
@@ -287,8 +284,8 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 			// 
 			{
 				CLifeLvRecord* pCLvRec = 0, * pNLvRec = 0;
-				pCLvRec = GetLifeLvRecordInfo((long)m_CChaAttr.GetAttr(ATTR_LIFELV));
-				pNLvRec = GetLifeLvRecordInfo((long)m_CChaAttr.GetAttr(ATTR_LIFELV) + 1);
+				pCLvRec = GetLifeLvRecordInfo((std::int32_t)m_CChaAttr.GetAttr(ATTR_LIFELV));
+				pNLvRec = GetLifeLvRecordInfo((std::int32_t)m_CChaAttr.GetAttr(ATTR_LIFELV) + 1);
 				if (pCLvRec)
 				{
 					setAttr(ATTR_CLV_LIFEEXP, pCLvRec->ulExp);
@@ -318,7 +315,7 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 			Corsairs::Net::Msg::McEnterMapTrailer trailer;
 			trailer.loginFlag = chLogin;
 			trailer.playerCount = g_pGameApp->m_dwPlayerCnt;
-			trailer.playerAddr = ToAddress(pCPlayer);
+			trailer.playerAddr = Corsairs::Util::ToAddress(pCPlayer);
 			Corsairs::Net::Msg::serializeEnterMapTrailer(pkret, trailer);
 
 			ReflectINFof(this, pkret);
@@ -364,7 +361,7 @@ Error:
 //       pPath 
 //       chPointNum defMOVE_INFLEXION_NUM
 //=============================================================================
-void CCharacter::Cmd_BeginMove(Short sPing, Point *pPath, Char chPointNum, Char chStopState)
+void CCharacter::Cmd_BeginMove(int16_t sPing, Corsairs::Util::Point *pPath, char chPointNum, char chStopState)
 {
 if (!IsLiveing()) {
 	return;
@@ -396,8 +393,8 @@ if (!IsLiveing()) {
 		return;
 	}
 
-	for (Char chPCount = 0; chPCount < chPointNum; chPCount++)
-		if (!m_submap->IsValidPos(pPath[chPCount].x, pPath[chPCount].y))
+	for (char chPCount = 0; chPCount < chPointNum; chPCount++)
+		if (!m_submap->IsValidPos(pPath[chPCount].X, pPath[chPCount].Y))
 		{
 			
 			FailedActionNoti(enumACTION_MOVE, enumFACTION_MOVEPATH);
@@ -406,7 +403,7 @@ if (!IsLiveing()) {
 
 	SMoveInit	MoveInit;
 	MoveInit.usPing = sPing;
-	memcpy(MoveInit.SInflexionInfo.SList, pPath, sizeof(Point) * chPointNum);
+	memcpy(MoveInit.SInflexionInfo.SList, pPath, sizeof(Corsairs::Util::Point) * chPointNum);
 	MoveInit.SInflexionInfo.sNum = chPointNum;
 	MoveInit.STargetInfo.chType = 0;
 	MoveInit.sStopState = chStopState;
@@ -438,7 +435,7 @@ void CCharacter::Cmd_BeginMoveDirect(Entity *pTar)
 	{
 		return;
 	}
-	Point	Path[2] = {GetPos(), pTar->GetPos()};
+	Corsairs::Util::Point	Path[2] = {GetPos(), pTar->GetPos()};
 	Cmd_BeginMove(0, Path, 2);
 }
 
@@ -453,8 +450,8 @@ void CCharacter::Cmd_BeginMoveDirect(Entity *pTar)
 //             pSkillID(GetID()), Handle(GetHandle())
 //             lSkillNox,y
 //=============================================================================
-void CCharacter::Cmd_BeginSkill(Short sPing, Point *pPath, Char chPointNum,
-								CSkillRecord *pSkill, Long lSkillLv, Long lTarInfo1, Long lTarInfo2, Char chStopState)
+void CCharacter::Cmd_BeginSkill(int16_t sPing, Corsairs::Util::Point *pPath, char chPointNum,
+								CSkillRecord *pSkill, std::int32_t lSkillLv, std::int32_t lTarInfo1, std::int32_t lTarInfo2, char chStopState)
 {
 	if (!IsLiveing() || !pSkill || !pPath )
 		return;
@@ -540,8 +537,8 @@ void CCharacter::Cmd_BeginSkill(Short sPing, Point *pPath, Char chPointNum,
 		return;
 	}
 
-	for (Char chPCount = 0; chPCount < chPointNum; chPCount++)
-		if (!m_submap->IsValidPos(pPath[chPCount].x, pPath[chPCount].y))
+	for (char chPCount = 0; chPCount < chPointNum; chPCount++)
+		if (!m_submap->IsValidPos(pPath[chPCount].X, pPath[chPCount].Y))
 		{
 			FailedActionNoti(enumACTION_MOVE, enumFACTION_MOVEPATH);
 
@@ -586,7 +583,7 @@ void CCharacter::Cmd_BeginSkill(Short sPing, Point *pPath, Char chPointNum,
 	}
 
 	MoveInit.usPing = sPing;
-	memcpy(MoveInit.SInflexionInfo.SList, pPath, sizeof(Point) * chPointNum);
+	memcpy(MoveInit.SInflexionInfo.SList, pPath, sizeof(Corsairs::Util::Point) * chPointNum);
 	MoveInit.SInflexionInfo.sNum = chPointNum;
 	MoveInit.sStopState = chStopState;
 
@@ -629,7 +626,7 @@ void CCharacter::Cmd_BeginSkill(Short sPing, Point *pPath, Char chPointNum,
 	}
 }
 
-void CCharacter::Cmd_BeginSkillDirect(Long lSkillNo, Entity *pTar, bool bIntelligent)
+void CCharacter::Cmd_BeginSkillDirect(std::int32_t lSkillNo, Entity *pTar, bool bIntelligent)
 {
 	if (!pTar || !g_pGameApp->IsMapEntity(pTar->GetID(), pTar->GetHandle())) // 
 	{
@@ -642,13 +639,13 @@ void CCharacter::Cmd_BeginSkillDirect(Long lSkillNo, Entity *pTar, bool bIntelli
 		return;
 	}
 
-	Long	lTarInfo1, lTarInfo2;
-	Point	Path[2] = {GetPos(), pTar->GetPos()};
+	std::int32_t	lTarInfo1, lTarInfo2;
+	Corsairs::Util::Point	Path[2] = {GetPos(), pTar->GetPos()};
 	if (bIntelligent)
 	{
 		CCharacter	*pCTarCha = pTar->IsCharacter();
 		if (pCTarCha && pCTarCha->GetMoveState() == enumMSTATE_ON)
-			Path[1].move(pCTarCha->GetAngle(), 400);
+			Path[1].Move(pCTarCha->GetAngle(), 400);
 	}
 	if (SkillTarIsEntity(pSkill)) // ID
 	{
@@ -657,13 +654,13 @@ void CCharacter::Cmd_BeginSkillDirect(Long lSkillNo, Entity *pTar, bool bIntelli
 	}
 	else
 	{
-		lTarInfo1 = pTar->GetPos().x;
-		lTarInfo2 = pTar->GetPos().y;
+		lTarInfo1 = pTar->GetPos().X;
+		lTarInfo2 = pTar->GetPos().Y;
 	}
 	Cmd_BeginSkill(0, Path, 2, pSkill, 1, lTarInfo1, lTarInfo2);
 }
 
-void CCharacter::Cmd_BeginSkillDirect2(Long lSkillNo, Long lSkillLv, Long lPosX, Long lPosY)
+void CCharacter::Cmd_BeginSkillDirect2(std::int32_t lSkillNo, std::int32_t lSkillLv, std::int32_t lPosX, std::int32_t lPosY)
 {
 	CSkillRecord *pSkill = GetSkillRecordInfo(lSkillNo);
 	if (pSkill == NULL)
@@ -671,10 +668,10 @@ void CCharacter::Cmd_BeginSkillDirect2(Long lSkillNo, Long lSkillLv, Long lPosX,
 		return;
 	}
 
-	Point	Path[2];
+	Corsairs::Util::Point	Path[2];
 	Path[0] = GetPos();
-	Path[1].x = lPosX;
-	Path[1].y = lPosY;
+	Path[1].X = lPosX;
+	Path[1].Y = lPosY;
 	if (SkillTarIsEntity(pSkill)) // ID
 	{
 		return;
@@ -686,7 +683,7 @@ void CCharacter::Cmd_BeginSkillDirect2(Long lSkillNo, Long lSkillLv, Long lPosX,
 //=============================================================================
 // 
 //=============================================================================
-Short CCharacter::Cmd_UseItem(Short sSrcKbPage, Short sSrcKbGrid, Short sTarKbPage, Short sTarKbGrid)
+int16_t CCharacter::Cmd_UseItem(int16_t sSrcKbPage, int16_t sSrcKbGrid, int16_t sTarKbPage, int16_t sTarKbGrid)
 {
 	if (m_CKitbag.IsLock()) // 
 		return enumITEMOPT_ERROR_KBLOCK;
@@ -705,7 +702,7 @@ Short CCharacter::Cmd_UseItem(Short sSrcKbPage, Short sSrcKbGrid, Short sTarKbPa
 
 	
 
-	Short	sItemID = m_CKitbag.GetID(sSrcKbGrid, sSrcKbPage);
+	int16_t	sItemID = m_CKitbag.GetID(sSrcKbGrid, sSrcKbPage);
 	if (sItemID <= 0)
 		return enumITEMOPT_ERROR_NONE;
 	CItemRecord	*pCItemRec = GetItemRecordInfo(sItemID);
@@ -720,7 +717,7 @@ Short CCharacter::Cmd_UseItem(Short sSrcKbPage, Short sSrcKbGrid, Short sTarKbPa
 		return enumITEMOPT_ERROR_KBLOCK;
 	}*/
 
-	Short	sUseRet;
+	int16_t	sUseRet;
 	if (pCItemRec->szAbleLink[0] == -1) // 
 		sUseRet = Cmd_UseExpendItem(sSrcKbPage, sSrcKbGrid, sTarKbPage, sTarKbGrid);
 	else // 
@@ -735,7 +732,7 @@ Short CCharacter::Cmd_UseItem(Short sSrcKbPage, Short sSrcKbGrid, Short sTarKbPa
 //=============================================================================
 // 
 //=============================================================================
-Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, bool rightHand)
+int16_t CCharacter::Cmd_UseEquipItem(int16_t sKbPage, int16_t sKbGrid, bool bRefresh, bool rightHand)
 {
 	if (!GetActControl(ActControl::ITEM_OPT))
 		return enumITEMOPT_ERROR_STATE;
@@ -754,8 +751,8 @@ Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, 
 		return enumITEMOPT_ERROR_NONE;
 	//if (!pSEquipIt->IsValid())
 	//	return enumITEMOPT_ERROR_INVALID;
-	Short	sItemId = pSEquipIt->sID;
-	Short	sItemNum = pSEquipIt->sNum;
+	int16_t	sItemId = pSEquipIt->sID;
+	int16_t	sItemNum = pSEquipIt->sNum;
 
 	CItemRecord	*pCItemRec = GetItemRecordInfo(sItemId);
 	if (!pCItemRec)
@@ -768,8 +765,8 @@ Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, 
 	CItemRecord * pItem = GetItemRecordInfo(sItemId);
 	if(CItemRecord::IsVaildFusionID(pItem) && pCItemRec->sType != enumItemTypeBoat && pSEquipIt->GetFusionItemID() ) // ning.yan  end
 	{
-		Short sEquipCon = CanEquipItemNew( sItemId, (Short)pSEquipIt->GetFusionItemID() );
-		Short expired = IsItemExpired(pSEquipIt);
+		int16_t sEquipCon = CanEquipItemNew( sItemId, (int16_t)pSEquipIt->GetFusionItemID() );
+		int16_t expired = IsItemExpired(pSEquipIt);
 		
 		if (sEquipCon != enumITEMOPT_SUCCESS)
 		{
@@ -782,9 +779,9 @@ Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, 
 	}
 	else
 	{
-		//Short sEquipCon = CanEquipItem(sItemId);
-		Short sEquipCon = CanEquipItem(pSEquipIt);
-		Short expired = IsItemExpired(pSEquipIt);
+		//int16_t sEquipCon = CanEquipItem(sItemId);
+		int16_t sEquipCon = CanEquipItem(pSEquipIt);
+		int16_t expired = IsItemExpired(pSEquipIt);
 		if (sEquipCon != enumITEMOPT_SUCCESS)
 		{
 			return sEquipCon;
@@ -797,7 +794,7 @@ Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, 
 
 	bool bOccupied = true;
 
-	Char	chEquipPos = -1;
+	char	chEquipPos = -1;
 	for (int i = 0; i < enumEQUIP_NUM; i++)
 	{
 		if (pCItemRec->szAbleLink[i] == cchItemRecordKeyValue)
@@ -814,7 +811,7 @@ Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, 
 		bOccupied = false;
 	}
 
-	Short	sUnfixRet = enumITEMOPT_ERROR_NONE;
+	int16_t	sUnfixRet = enumITEMOPT_ERROR_NONE;
 
 	if (rightHand == true){
 		int slot = -1;
@@ -849,13 +846,13 @@ Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, 
 
 	if (pCItemRec->szNeedLink[0] == -1)
 	{
-		Short	sUnfixNum = 0;
+		int16_t	sUnfixNum = 0;
 		sUnfixRet = Cmd_UnfixItem(chEquipPos, &sUnfixNum, 1, 0, -1, false, false);
 	}
 	else
 	{
 		char	chNeedL;
-		Short	sUnfixNum = 0;
+		int16_t	sUnfixNum = 0;
 		for (int i = 0; i < enumEQUIP_NUM; i++)
 		{
 			chNeedL = pCItemRec->szNeedLink[i];
@@ -870,7 +867,7 @@ Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, 
 	{		
 		if (pCItemRec->szNeedLink[0] != -1)
 		{
-			Short	sVal;
+			int16_t	sVal;
 			if (chEquipPos == enumEQUIP_LHAND || chEquipPos == enumEQUIP_RHAND)
 				sVal = enumEQUIP_BOTH_HAND;
 			else if (chEquipPos == enumEQUIP_BODY)
@@ -925,7 +922,7 @@ Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, 
 //=============================================================================
 // 
 //=============================================================================
-Short CCharacter::Cmd_UseExpendItem(Short sKbPage, Short sKbGrid, Short sTarKbPage, Short sTarKbGrid, bool bRefresh)
+int16_t CCharacter::Cmd_UseExpendItem(int16_t sKbPage, int16_t sKbGrid, int16_t sTarKbPage, int16_t sTarKbGrid, bool bRefresh)
 {
 	static DWORD dwLastTime = GetTickCount();
 	DWORD dwCurTime = GetTickCount();
@@ -1067,7 +1064,7 @@ Short CCharacter::Cmd_UseExpendItem(Short sKbPage, Short sKbGrid, Short sTarKbPa
 // 1 [lParam1lParam2]
 // 2 
 //=============================================================================
-Short CCharacter::Cmd_UnfixItem(Char chLinkID, Short *psItemNum, Char chDir, Long lParam1, Long lParam2, bool bPriority, bool bRefresh, bool bForcible)
+int16_t CCharacter::Cmd_UnfixItem(char chLinkID, int16_t *psItemNum, char chDir, std::int32_t lParam1, std::int32_t lParam2, bool bPriority, bool bRefresh, bool bForcible)
 {
 	//mothannakh cooldown	//this cooldown needed since the spam of this packet crash all players clients 
 	//DWORD dwLastTime = GetTickCount();	//static 
@@ -1109,7 +1106,7 @@ Short CCharacter::Cmd_UnfixItem(Char chLinkID, Short *psItemNum, Char chDir, Lon
 		chLinkID = enumEQUIP_BODY;
 	}
 
-	Short	sItemID = m_SChaPart.SLink[chLinkID].sID;
+	int16_t	sItemID = m_SChaPart.SLink[chLinkID].sID;
 	CItemRecord	*pCItemRec = GetItemRecordInfo(sItemID);
 	if (!pCItemRec)
 		return enumITEMOPT_ERROR_NONE;
@@ -1135,7 +1132,7 @@ Short CCharacter::Cmd_UnfixItem(Char chLinkID, Short *psItemNum, Char chDir, Lon
 		m_CSkillState.ResetChangeFlag();
 		SetLookChangeFlag();
 		if (bOptKb)
-			m_CKitbag.SetChangeFlag(false, (Short)lParam1);
+			m_CKitbag.SetChangeFlag(false, (int16_t)lParam1);
 	}
 
 	if (*psItemNum == 0 || (*psItemNum != 0 && *psItemNum > m_SChaPart.SLink[chLinkID].sNum))
@@ -1151,7 +1148,7 @@ Short CCharacter::Cmd_UnfixItem(Char chLinkID, Short *psItemNum, Char chDir, Lon
         return enumITEMOPT_ERROR_KBLOCK;
 	if (chDir == 1) // 
 	{
-		Short sKbPushRet = KbPushItem(false, false, &SUnfixCont, (Short&)lParam2, (Short)lParam1);
+		int16_t sKbPushRet = KbPushItem(false, false, &SUnfixCont, (int16_t&)lParam2, (int16_t)lParam1);
 		if (sKbPushRet == enumKBACT_ERROR_FULL) // 
 		{
 			return enumITEMOPT_ERROR_KBFULL;
@@ -1266,7 +1263,7 @@ Short CCharacter::Cmd_UnfixItem(Char chLinkID, Short *psItemNum, Char chDir, Lon
 // WorldIDHandle
 #include "Item/Item.h"
 //=================================================================================================
-Short CCharacter::Cmd_PickupItem(uLong ulID, Long lHandle)
+int16_t CCharacter::Cmd_PickupItem(std::uint32_t ulID, std::int32_t lHandle)
 {
 	DBG_ASSERT_ENTITY(this);
 	if (!GetActControl(ActControl::ITEM_OPT))
@@ -1291,7 +1288,7 @@ Short CCharacter::Cmd_PickupItem(uLong ulID, Long lHandle)
 	SubMap	*pCMap = pCCtrlCha->GetSubMapFar();
 	if (!pCMap)
 		return enumITEMOPT_ERROR_KBLOCK;
-	uShort	usAreaAttr = pCMap->GetAreaAttr(pCEnt->GetPos());
+	std::uint16_t	usAreaAttr = pCMap->GetAreaAttr(pCEnt->GetPos());
 	if ((g_IsLand(usAreaAttr) != g_IsLand(GetAreaAttr())) && (g_IsLand(usAreaAttr))) //
 		return enumITEMOPT_ERROR_AREA;
 
@@ -1352,10 +1349,10 @@ Short CCharacter::Cmd_PickupItem(uLong ulID, Long lHandle)
 		return enumITEMOPT_ERROR_DISTANCE;
 
 	pCKitbag->SetChangeFlag(false, 0);
-	Short	sPickupNum = pCItem->m_SGridContent.sNum;
-	Short sPushPos = defKITBAG_DEFPUSH_POS;
+	int16_t	sPickupNum = pCItem->m_SGridContent.sNum;
+	int16_t sPushPos = defKITBAG_DEFPUSH_POS;
 
-	Short sPushRet = pKitbagCha->KbPushItem(true, true, &pCItem->m_SGridContent, sPushPos);
+	int16_t sPushRet = pKitbagCha->KbPushItem(true, true, &pCItem->m_SGridContent, sPushPos);
 	if (sPushRet != enumKBACT_SUCCESS)
 	{
 		if (sPushRet == enumKBACT_ERROR_FULL)
@@ -1459,7 +1456,7 @@ Short CCharacter::Cmd_PickupItem(uLong ulID, Long lHandle)
 }
 
 //(sSrcGrid:   sSrcNum:   sTarGrid:)
-Short CCharacter::Cmd_DragItem(Short sSrcGrid, Short sSrcNum, Short sTarGrid)
+int16_t CCharacter::Cmd_DragItem(int16_t sSrcGrid, int16_t sSrcNum, int16_t sTarGrid)
 {
     if (GetPlyMainCha()->m_CKitbag.IsPwdLocked()) //
         return enumITEMOPT_ERROR_KBLOCK;
@@ -1497,7 +1494,7 @@ Short CCharacter::Cmd_DragItem(Short sSrcGrid, Short sSrcNum, Short sTarGrid)
 
 // 
 // psThrowNum 0
-Short CCharacter::Cmd_ThrowItem(Short sKbPage, Short sKbGrid, Short *psThrowNum, Long lPosX, Long lPosY, bool bRefresh, bool bForcible)
+int16_t CCharacter::Cmd_ThrowItem(int16_t sKbPage, int16_t sKbGrid, int16_t *psThrowNum, std::int32_t lPosX, std::int32_t lPosY, bool bRefresh, bool bForcible)
 {
     if (GetPlyMainCha()->m_CKitbag.IsPwdLocked()) //
         return enumITEMOPT_ERROR_KBLOCK;
@@ -1514,7 +1511,7 @@ Short CCharacter::Cmd_ThrowItem(Short sKbPage, Short sKbGrid, Short *psThrowNum,
 			return enumITEMOPT_ERROR_KBLOCK;
 	}
 
-	Point	STarP = {lPosX, lPosY};
+	Corsairs::Util::Point	STarP = {lPosX, lPosY};
 	if (!IsRangePoint(STarP, defTHROW_DISTANCE))
 		return enumITEMOPT_ERROR_DISTANCE;
 
@@ -1544,7 +1541,7 @@ Short CCharacter::Cmd_ThrowItem(Short sKbPage, Short sKbGrid, Short *psThrowNum,
 	// 
 	if( pItem->sType == enumItemTypeBoat )
 	{
-		DWORD dwBoatID = m_CKitbag.GetDBParam( enumITEMDBP_INST_ID, sKbGrid ); 
+		auto dwBoatID = m_CKitbag.GetDBParam( enumITEMDBP_INST_ID, sKbGrid );
 		CCharacter* pBoat = this->GetPlayer()->GetBoat( dwBoatID );
 		if( pBoat )
 		{
@@ -1563,13 +1560,13 @@ Short CCharacter::Cmd_ThrowItem(Short sKbPage, Short sKbGrid, Short *psThrowNum,
 	SubMap	*pCMap = pCCtrlCha->GetSubMapFar();
 	if (!pCMap)
 		return enumITEMOPT_ERROR_KBLOCK;
-	uShort	usAreaAttr = pCMap->GetAreaAttr(lPosX, lPosY);
+	std::uint16_t	usAreaAttr = pCMap->GetAreaAttr(lPosX, lPosY);
 	if (g_IsLand(usAreaAttr) != g_IsLand(GetAreaAttr())) //
 		return enumITEMOPT_ERROR_AREA;
 
 	if (*psThrowNum != 0)
 	{
-		Short	sCurNum = m_CKitbag.GetNum(sKbGrid, sKbPage);
+		int16_t	sCurNum = m_CKitbag.GetNum(sKbGrid, sKbPage);
 		if (sCurNum <= 0)
 			return enumITEMOPT_ERROR_NONE;
 		if (*psThrowNum > sCurNum)
@@ -1580,7 +1577,7 @@ Short CCharacter::Cmd_ThrowItem(Short sKbPage, Short sKbGrid, Short *psThrowNum,
 		m_CKitbag.SetChangeFlag(false, sKbPage);
 	SItemGrid GridCont;
 	GridCont.sNum = *psThrowNum;
-	Short sRet = KbPopItem(bRefresh, bRefresh, &GridCont, sKbGrid, sKbPage); // 
+	int16_t sRet = KbPopItem(bRefresh, bRefresh, &GridCont, sKbGrid, sKbPage); // 
 	if( sRet != enumKBACT_SUCCESS )
 		return enumITEMOPT_ERROR_NONE;
 	*psThrowNum = GridCont.sNum;
@@ -1614,7 +1611,7 @@ Short CCharacter::Cmd_ThrowItem(Short sKbPage, Short sKbGrid, Short *psThrowNum,
 }
 
 // .
-Short CCharacter::Cmd_ItemSwitchPos(Short sKbPage, Short sSrcGrid, Short sSrcNum, Short sTarGrid)
+int16_t CCharacter::Cmd_ItemSwitchPos(int16_t sKbPage, int16_t sSrcGrid, int16_t sSrcNum, int16_t sTarGrid)
 {
 	if (!GetActControl(ActControl::ITEM_OPT))
 		return enumITEMOPT_ERROR_STATE;
@@ -1630,7 +1627,7 @@ Short CCharacter::Cmd_ItemSwitchPos(Short sKbPage, Short sSrcGrid, Short sSrcNum
         return enumITEMOPT_ERROR_KBLOCK;
 
 	m_CKitbag.SetChangeFlag(false, sKbPage);
-	Short	sKbOptRet = KbRegroupItem(true, true, sSrcGrid, sSrcNum, sTarGrid);
+	int16_t	sKbOptRet = KbRegroupItem(true, true, sSrcGrid, sSrcNum, sTarGrid);
 	if (sKbOptRet == enumKBACT_SUCCESS || sKbOptRet == enumKBACT_ERROR_FULL) // 
 		SynKitbagNew(enumSYN_KITBAG_SWITCH);
 	else if (sKbOptRet == enumKBACT_ERROR_RANGE)
@@ -1643,7 +1640,7 @@ Short CCharacter::Cmd_ItemSwitchPos(Short sKbPage, Short sSrcGrid, Short sSrcNum
 
 // 
 // psThrowNum 0
-Short CCharacter::Cmd_DelItem(Short sKbPage, Short sKbGrid, dbc::Short *psThrowNum, bool bRefresh, bool bForcible)
+int16_t CCharacter::Cmd_DelItem(int16_t sKbPage, int16_t sKbGrid, int16_t *psThrowNum, bool bRefresh, bool bForcible)
 {
 	if (!bForcible)
 	{	
@@ -1702,7 +1699,7 @@ Short CCharacter::Cmd_DelItem(Short sKbPage, Short sKbGrid, dbc::Short *psThrowN
 
 	if (*psThrowNum != 0)
 	{
-		Short	sCurNum = m_CKitbag.GetNum(sKbGrid, sKbPage);
+		int16_t	sCurNum = m_CKitbag.GetNum(sKbGrid, sKbPage);
 		if (sCurNum <= 0)
 			return enumITEMOPT_ERROR_NONE;
 		if (*psThrowNum > sCurNum)
@@ -1722,7 +1719,7 @@ Short CCharacter::Cmd_DelItem(Short sKbPage, Short sKbGrid, dbc::Short *psThrowN
 
 	SItemGrid GridCont;
 	GridCont.sNum = *psThrowNum;
-	Short sRet = KbPopItem(bRefresh, bRefresh, &GridCont, sKbGrid, sKbPage); // 
+	int16_t sRet = KbPopItem(bRefresh, bRefresh, &GridCont, sKbGrid, sKbPage); // 
 	if( sRet != enumKBACT_SUCCESS )
 		return enumITEMOPT_ERROR_NONE;
 	*psThrowNum = GridCont.sNum;
@@ -1761,7 +1758,7 @@ Short CCharacter::Cmd_DelItem(Short sKbPage, Short sKbGrid, dbc::Short *psThrowN
 	return enumITEMOPT_SUCCESS;
 }
 
-Short CCharacter::Cmd_GuildBankOper(Char chSrcType, Short sSrcGridID, Short sSrcNum, Char chTarType, Short sTarGridID){
+int16_t CCharacter::Cmd_GuildBankOper(char chSrcType, int16_t sSrcGridID, int16_t sSrcNum, char chTarType, int16_t sTarGridID){
 	CKitbag	pCSrcBag, pCTarBag;
 	CCharacter	*pCMainCha = GetPlyMainCha();
 
@@ -1821,7 +1818,7 @@ Short CCharacter::Cmd_GuildBankOper(Char chSrcType, Short sSrcGridID, Short sSrc
 	}
 	else
 	{
-		Short	sSrcItemID = pCSrcBag.GetID(sSrcGridID);
+		int16_t	sSrcItemID = pCSrcBag.GetID(sSrcGridID);
 
 		CItemRecord* pItem = GetItemRecordInfo(sSrcItemID);
 		if (pItem == NULL)
@@ -1841,8 +1838,8 @@ Short CCharacter::Cmd_GuildBankOper(Char chSrcType, Short sSrcGridID, Short sSrc
 			}
 		}
 
-		Short	sLeftNum;
-		Short	sOpRet;
+		int16_t	sLeftNum;
+		int16_t	sOpRet;
 		SItemGrid	SPopItem;
 		SPopItem.sNum = sSrcNum;
 		if (chSrcType == 0)
@@ -1911,7 +1908,7 @@ Short CCharacter::Cmd_GuildBankOper(Char chSrcType, Short sSrcGridID, Short sSrc
 }
 
 // ..
-Short CCharacter::Cmd_BankOper(Char chSrcType, Short sSrcGridID, Short sSrcNum, Char chTarType, Short sTarGridID)
+int16_t CCharacter::Cmd_BankOper(char chSrcType, int16_t sSrcGridID, int16_t sSrcNum, char chTarType, int16_t sTarGridID)
 {
 	CKitbag	*pCSrcBag, *pCTarBag;
 	CCharacter	*pCMainCha = GetPlyMainCha();
@@ -1959,7 +1956,7 @@ Short CCharacter::Cmd_BankOper(Char chSrcType, Short sSrcGridID, Short sSrcNum, 
 	}
 	else
 	{
-		Short	sSrcItemID = pCSrcBag->GetID(sSrcGridID);
+		int16_t	sSrcItemID = pCSrcBag->GetID(sSrcGridID);
 
 		CItemRecord* pItem = GetItemRecordInfo(sSrcItemID);
 		if(pItem == NULL)
@@ -1977,8 +1974,8 @@ Short CCharacter::Cmd_BankOper(Char chSrcType, Short sSrcGridID, Short sSrcNum, 
 			}
 		}
 
-		Short	sLeftNum;
-		Short	sOpRet;
+		int16_t	sLeftNum;
+		int16_t	sOpRet;
 		SItemGrid	SPopItem;
 		SPopItem.sNum = sSrcNum;
 		if (pCSrcBag == &pCMainCha->m_CKitbag)
@@ -2060,26 +2057,26 @@ void CCharacter::Cmd_ReassignAttr(const Corsairs::Net::Msg::CmSynAttrMessage& ms
 		return;
 	}
 
-	Long	lBaseAttr[ATTR_LUK - ATTR_STR + 1] = {0};
-	Long	lBaseAttrBalanceVal[ATTR_LUK - ATTR_STR + 1] =
+	std::int32_t	lBaseAttr[ATTR_LUK - ATTR_STR + 1] = {0};
+	std::int32_t	lBaseAttrBalanceVal[ATTR_LUK - ATTR_STR + 1] =
 	{
-		(long)m_CChaAttr.GetAttrMaxVal(ATTR_BSTR) - (long)m_CChaAttr.GetAttr(ATTR_BSTR),
-		(long)m_CChaAttr.GetAttrMaxVal(ATTR_BDEX) - (long)m_CChaAttr.GetAttr(ATTR_BDEX),
-		(long)m_CChaAttr.GetAttrMaxVal(ATTR_BAGI) - (long)m_CChaAttr.GetAttr(ATTR_BAGI),
-		(long)m_CChaAttr.GetAttrMaxVal(ATTR_BCON) - (long)m_CChaAttr.GetAttr(ATTR_BCON),
-		(long)m_CChaAttr.GetAttrMaxVal(ATTR_BSTA) - (long)m_CChaAttr.GetAttr(ATTR_BSTA),
-		(long)m_CChaAttr.GetAttrMaxVal(ATTR_BLUK) - (long)m_CChaAttr.GetAttr(ATTR_BLUK)
+		(std::int32_t)m_CChaAttr.GetAttrMaxVal(ATTR_BSTR) - (std::int32_t)m_CChaAttr.GetAttr(ATTR_BSTR),
+		(std::int32_t)m_CChaAttr.GetAttrMaxVal(ATTR_BDEX) - (std::int32_t)m_CChaAttr.GetAttr(ATTR_BDEX),
+		(std::int32_t)m_CChaAttr.GetAttrMaxVal(ATTR_BAGI) - (std::int32_t)m_CChaAttr.GetAttr(ATTR_BAGI),
+		(std::int32_t)m_CChaAttr.GetAttrMaxVal(ATTR_BCON) - (std::int32_t)m_CChaAttr.GetAttr(ATTR_BCON),
+		(std::int32_t)m_CChaAttr.GetAttrMaxVal(ATTR_BSTA) - (std::int32_t)m_CChaAttr.GetAttr(ATTR_BSTA),
+		(std::int32_t)m_CChaAttr.GetAttrMaxVal(ATTR_BLUK) - (std::int32_t)m_CChaAttr.GetAttr(ATTR_BLUK)
 	};
-	Long	lAttrPoint = 0;
+	std::int32_t	lAttrPoint = 0;
 	bool	bSetCorrect = true;
-	Short	sAttrID{}, sAttrOppID{};
+	int16_t	sAttrID{}, sAttrOppID{};
 	for (char i = 0; i < chAttrNum; i++)
 	{
-		sAttrID = static_cast<Short>(msg.attrs[i].attrId);
+		sAttrID = static_cast<int16_t>(msg.attrs[i].attrId);
 		if (sAttrID < ATTR_STR || sAttrID > ATTR_LUK)
 			continue;
 		sAttrOppID = sAttrID - ATTR_STR;
-		lBaseAttr[sAttrOppID] = static_cast<Long>(msg.attrs[i].value);
+		lBaseAttr[sAttrOppID] = static_cast<std::int32_t>(msg.attrs[i].value);
 		if (lBaseAttr[sAttrOppID] < 0) // 0
 		{
 			bSetCorrect = false;
@@ -2120,7 +2117,7 @@ void CCharacter::Cmd_ReassignAttr(const Corsairs::Net::Msg::CmSynAttrMessage& ms
 // sFromID  -1chFromType
 // chToType  0.1.2Cmd_UnfixItemchDir
 // bForcible
-Short CCharacter::Cmd_RemoveItem(Long lItemID, Long lItemNum, Char chFromType, Short sFromID, Char chToType, Short sToID, bool bRefresh, bool bForcible)
+int16_t CCharacter::Cmd_RemoveItem(std::int32_t lItemID, std::int32_t lItemNum, char chFromType, int16_t sFromID, char chToType, int16_t sToID, bool bRefresh, bool bForcible)
 {
     
     
@@ -2156,10 +2153,10 @@ Short CCharacter::Cmd_RemoveItem(Long lItemID, Long lItemNum, Char chFromType, S
 		m_CKitbag.SetChangeFlag(false, 0);
 	}
 
-	Short	sOptRet = enumITEMOPT_ERROR_NONE;
+	int16_t	sOptRet = enumITEMOPT_ERROR_NONE;
 	if (chFromType == 1 || chFromType == 0) // 
 	{
-		Long	lParam1, lParam2;
+		std::int32_t	lParam1, lParam2;
 		if (chToType == 0) // 
 		{
 			GetTrowItemPos(&lParam1, &lParam2);
@@ -2175,8 +2172,8 @@ Short CCharacter::Cmd_RemoveItem(Long lItemID, Long lItemNum, Char chFromType, S
 
 		if (sFromID >= 0 && sFromID < enumEQUIP_NUM)
 		{
-			Short	sOptNum = (Short)lItemNum;
-			sOptRet = Cmd_UnfixItem((Char)sFromID, &sOptNum, chToType, lParam1, lParam2, true, false, bForcible);
+			int16_t	sOptNum = (int16_t)lItemNum;
+			sOptRet = Cmd_UnfixItem((char)sFromID, &sOptNum, chToType, lParam1, lParam2, true, false, bForcible);
 			if (sOptRet == enumITEMOPT_SUCCESS)
 			{
 				bEquipChange = true;
@@ -2191,12 +2188,12 @@ Short CCharacter::Cmd_RemoveItem(Long lItemID, Long lItemNum, Char chFromType, S
 		}
 		else
 		{
-			Short	sOptNum;
-			for (Char i = enumEQUIP_HEAD; i < enumEQUIP_NUM; i++)
+			int16_t	sOptNum;
+			for (char i = enumEQUIP_HEAD; i < enumEQUIP_NUM; i++)
 			{
-				if (m_SChaPart.SLink[i].sID == (Short)lItemID)
+				if (m_SChaPart.SLink[i].sID == (int16_t)lItemID)
 				{
-					sOptNum = (Short)lItemNum;
+					sOptNum = (int16_t)lItemNum;
 					sOptRet = Cmd_UnfixItem(i, &sOptNum, chToType, lParam1, lParam2, true, false, bForcible);
 					if (sOptRet == enumITEMOPT_SUCCESS)
 					{
@@ -2215,10 +2212,10 @@ Short CCharacter::Cmd_RemoveItem(Long lItemID, Long lItemNum, Char chFromType, S
 	}
 	if (chFromType == 2 || chFromType == 0) // 
 	{
-		Long	lParam1, lParam2;
+		std::int32_t	lParam1, lParam2;
 		if (sFromID >= 0 && sFromID < m_CKitbag.GetCapacity())
 		{
-			Short	sOptNum = (Short)lItemNum;
+			int16_t	sOptNum = (int16_t)lItemNum;
 			if (chToType == 0) // 
 			{
 				GetTrowItemPos(&lParam1, &lParam2);
@@ -2239,17 +2236,17 @@ Short CCharacter::Cmd_RemoveItem(Long lItemID, Long lItemNum, Char chFromType, S
 		}
 		else
 		{
-			Short	sOptNum;
-			Short	sUseGNum = m_CKitbag.GetUseGridNum();
-			Short	sPosID;
+			int16_t	sOptNum;
+			int16_t	sUseGNum = m_CKitbag.GetUseGridNum();
+			int16_t	sPosID;
 			if (sUseGNum > 0)
 			{
-				for (Short i = sUseGNum - 1; i >= 0; i--)
+				for (int16_t i = sUseGNum - 1; i >= 0; i--)
 				{
 					sPosID = m_CKitbag.GetPosIDByNum(i);
-					if (m_CKitbag.GetID(sPosID) == (Short)lItemID)
+					if (m_CKitbag.GetID(sPosID) == (int16_t)lItemID)
 					{
-						sOptNum = (Short)lItemNum;
+						sOptNum = (int16_t)lItemNum;
 						if (chToType == 0) // 
 						{
 							GetTrowItemPos(&lParam1, &lParam2);
@@ -2308,7 +2305,7 @@ ItemRemoveEnd:
 }
 
 // 
-void CCharacter::Cmd_FightAsk(dbc::Char chType, dbc::Long lTarID, dbc::Long lTarHandle)
+void CCharacter::Cmd_FightAsk(char chType, std::int32_t lTarID, std::int32_t lTarHandle)
 {
 	CDynMapEntryCell	*pCTeamFightEntry = g_CDMapEntry.GetEntry(g_szTFightMapName);
 	if (!pCTeamFightEntry) // 
@@ -2421,8 +2418,8 @@ void CCharacter::Cmd_FightAsk(dbc::Char chType, dbc::Long lTarID, dbc::Long lTar
 	auto addPlayer = [&](CCharacter* pCha) {
 		Corsairs::Net::Msg::TeamFightPlayerEntry entry;
 		entry.name = pCha->GetName();
-		entry.lv = static_cast<int64_t>((Char)pCha->getAttr(ATTR_LV));
-		entry.job = g_GetJobName((Short)pCha->getAttr(ATTR_JOB));
+		entry.lv = static_cast<int64_t>((char)pCha->getAttr(ATTR_LV));
+		entry.job = g_GetJobName((int16_t)pCha->getAttr(ATTR_JOB));
 		if (auto ret = g_luaAPI.CallR<int>("Get_ItemAttr_Join", static_cast<CCharacter*>(pCha)))
 			entry.fightNum = ret.value_or(0);
 		if (auto ret = g_luaAPI.CallR<int>("Get_ItemAttr_Win", static_cast<CCharacter*>(pCha)))
@@ -2430,9 +2427,9 @@ void CCharacter::Cmd_FightAsk(dbc::Char chType, dbc::Long lTarID, dbc::Long lTar
 		fightMsg.players.push_back(std::move(entry));
 	};
 
-	Char	chObjStart = 2;
+	char	chObjStart = 2;
 	//  
-	Char	chSrcObjNum = 0;
+	char	chSrcObjNum = 0;
 	pCPly->SetChallengeType(chType);
 	pCPly->SetChallengeParam(chObjStart++, pCPly->GetID());
 	pCPly->SetChallengeParam(chObjStart++, pCPly->GetHandle());
@@ -2479,7 +2476,7 @@ void CCharacter::Cmd_FightAsk(dbc::Char chType, dbc::Long lTarID, dbc::Long lTar
 	}
 
 	//  
-	Char	chTarObjNum = 0;
+	char	chTarObjNum = 0;
 	pCTarPly->SetChallengeType(chType);
 	pCTarPly->SetChallengeParam(0, 1);
 	pCTarPly->SetChallengeParam(2, pCPly->GetID());
@@ -2555,10 +2552,10 @@ void CCharacter::Cmd_FightAnswer(bool bFight)
 		return;
 	}
 
-	Long	lID, lHandle;
+	std::int32_t	lID, lHandle;
 	lID = pCPly->GetChallengeParam(2);
 	lHandle = pCPly->GetChallengeParam(3);
-	Long	lFightType = pCPly->GetChallengeType();
+	std::int32_t	lFightType = pCPly->GetChallengeType();
 
 	CPlayer	*pCSrcPly, *pCTarPly;
 	pCSrcPly = g_pGameApp->IsValidPlayer(lID, lHandle);
@@ -2568,7 +2565,7 @@ void CCharacter::Cmd_FightAnswer(bool bFight)
 		SystemNotice(RES_STRING(GM_CHARACTERCMD_CPP_00031));
 		return;
 	}
-	Char	chObjNum = (Char)pCSrcPly->GetChallengeParam(0);
+	char	chObjNum = (char)pCSrcPly->GetChallengeParam(0);
 	pCTarPly = g_pGameApp->IsValidPlayer(pCSrcPly->GetChallengeParam(2 + (chObjNum -1) * 2), pCSrcPly->GetChallengeParam(2 + (chObjNum -1) * 2 + 1));
 	if (!pCTarPly || !pCTarPly->HasChallengeObj())
 	{
@@ -2579,10 +2576,10 @@ void CCharacter::Cmd_FightAnswer(bool bFight)
 
 	// 
 	bool	bHasPly = false;
-	Char	chLoop = (Char)pCSrcPly->GetChallengeParam(0);
+	char	chLoop = (char)pCSrcPly->GetChallengeParam(0);
 	if (chLoop > MAX_TEAM_MEMBER * 2)
 		chLoop = MAX_TEAM_MEMBER * 2;
-	for (Char i = 0; i < chLoop; i++)
+	for (char i = 0; i < chLoop; i++)
 	{
 		if (pCSrcPly->GetChallengeParam(i * 2 + 2) == pCPly->GetID() && pCSrcPly->GetChallengeParam(i * 2 + 2 + 1) == pCPly->GetHandle())
 			bHasPly = true;
@@ -2653,7 +2650,7 @@ void CCharacter::Cmd_FightAnswer(bool bFight)
 		pCSrcPly->ClearChallengeObj();
 		return;
 	}
-	if (!pCMCpyCell->HasFreePlyCount((Short)pCSrcPly->GetChallengeParam(0))) // 
+	if (!pCMCpyCell->HasFreePlyCount((int16_t)pCSrcPly->GetChallengeParam(0))) // 
 	{
 		//std::string	strNoti = "!";
 		std::string	strNoti = RES_STRING(GM_CHARACTERCMD_CPP_00036);
@@ -2675,7 +2672,7 @@ void CCharacter::Cmd_FightAnswer(bool bFight)
 	string	strScript1 = "after_get_map_copy_";
 	strScript1 += pCTeamFightEntry->GetTMapName();
 	g_luaAPI.Call(strScript1.c_str(), pCMCpyCell, pCSrcPly, pCTarPly, static_cast<int>(lFightType));
-	pCTeamFightEntry->SynCopyParam((Short)pCMCpyCell->GetPosID());
+	pCTeamFightEntry->SynCopyParam((int16_t)pCMCpyCell->GetPosID());
 	// PK
 	CPlayer	*pCFightMem;
 	CCharacter	*pCFightCha;
@@ -2687,9 +2684,9 @@ void CCharacter::Cmd_FightAnswer(bool bFight)
 
 	bool	bSide1 = false, bSide2 = false;
 	CCharacter	*pCEnterCha[MAX_TEAM_MEMBER * 2];
-	Long	lEnterChaNum = 0;
+	std::int32_t	lEnterChaNum = 0;
 	pCSrcPly->ClearChallengeObj();
-	for (Char i = 0; i < chLoop; i++)
+	for (char i = 0; i < chLoop; i++)
 	{
 		pCFightMem = g_pGameApp->IsValidPlayer(pCSrcPly->GetChallengeParam(i * 2 + 2), pCSrcPly->GetChallengeParam(i * 2 + 2 + 1));
 		if (!pCFightMem)
@@ -2745,20 +2742,20 @@ void CCharacter::Cmd_FightAnswer(bool bFight)
 
 	if (!(bSide1 & bSide2)) // 
 	{
-		for (Long i = 0; i < lEnterChaNum; i++)
+		for (std::int32_t i = 0; i < lEnterChaNum; i++)
 			//pCEnterCha[i]->SystemNotice("PK!");
 			pCEnterCha[i]->SystemNotice(RES_STRING(GM_CHARACTERCMD_CPP_00041));
 		pCTeamFightEntry->ReleaseCopy(pCMCpyCell);
 		return;
 	}
-	for (Long i = 0; i < lEnterChaNum; i++)
+	for (std::int32_t i = 0; i < lEnterChaNum; i++)
 		g_luaAPI.Call(strScript.c_str(), pCEnterCha[i], pCMCpyCell);
-	pCMCpyCell->AddCurPlyNum((Short)lEnterChaNum);
+	pCMCpyCell->AddCurPlyNum((int16_t)lEnterChaNum);
 
 	// temp for test
 	//std::string	strPrint = "";
 	std::string	strPrint = RES_STRING(GM_CHARACTERCMD_CPP_00042);
-	Char	szPrint[10];
+	char	szPrint[10];
 	itoa(pCMCpyCell->GetPosID(), szPrint, 10);
 	strPrint += szPrint;
 	strPrint += ".";
@@ -2770,13 +2767,13 @@ void CCharacter::Cmd_FightAnswer(bool bFight)
 	//LG("", "%s\n", strPrint.c_str());
 	ToLogService("common", "{}", strPrint.c_str());
 	//
-	pCTeamFightEntry->SynCopyRun((Short)pCMCpyCell->GetPosID(), enumMAPCOPY_START_CDT_PLYNUM, lEnterChaNum);
+	pCTeamFightEntry->SynCopyRun((int16_t)pCMCpyCell->GetPosID(), enumMAPCOPY_START_CDT_PLYNUM, lEnterChaNum);
 
 	return;
 }
 
 // 
-void CCharacter::Cmd_ItemRepairAsk(dbc::Char chPosType, dbc::Char chPosID)
+void CCharacter::Cmd_ItemRepairAsk(char chPosType, char chPosID)
 {
 	CPlayer	*pCPly = GetPlayer();
 	if (!pCPly)
@@ -2917,7 +2914,7 @@ EndItemRepair:
 }
 
 // 
-void CCharacter::Cmd_ItemForgeAsk(dbc::Char chType, SForgeItem *pSItem)
+void CCharacter::Cmd_ItemForgeAsk(char chType, SForgeItem *pSItem)
 {
 	CPlayer	*pCPly = GetPlayer();
 
@@ -3046,7 +3043,7 @@ void CCharacter::Cmd_ItemForgeAsk(dbc::Char chType, SForgeItem *pSItem)
 			return;
 		}
 
-		Long	lCheckCan;
+		std::int32_t	lCheckCan;
 		if (!DoForgeLikeScript(szCheckCanScript, lCheckCan))
 		{
 			//SystemNotice("!");
@@ -3057,7 +3054,7 @@ void CCharacter::Cmd_ItemForgeAsk(dbc::Char chType, SForgeItem *pSItem)
 			goto EndItemForgeAsk;
 
 		{
-			Long	lOptMoney;
+			std::int32_t	lOptMoney;
 			if (!DoForgeLikeScript(szGetMoneyScript, lOptMoney))
 			{
 				//SystemNotice("!");
@@ -3185,7 +3182,7 @@ void CCharacter::Cmd_ItemLotteryAnswer(bool bLottery)
 }
 // End
 
-void CCharacter::Cmd_LifeSkillItemAsk(long dwType, SLifeSkillItem *pSItem)
+void CCharacter::Cmd_LifeSkillItemAsk(std::int32_t dwType, SLifeSkillItem *pSItem)
 {
 	if(m_CKitbag.IsPwdLocked())
 	{
@@ -3210,7 +3207,7 @@ void CCharacter::Cmd_LifeSkillItemAsk(long dwType, SLifeSkillItem *pSItem)
 
 	string& strLifeSkillinfo = GetPlayer()->GetLifeSkillinfo();
 
-	long lCheckCan = 0,lOptMoney =-1;
+	std::int32_t lCheckCan = 0,lOptMoney =-1;
 
 	if(m_CKitbag.IsPwdLocked())
 	{
@@ -3293,7 +3290,7 @@ EndItemForgeAsk:
 		if(1==dwType)
 		{
 			string	strVer[2];
-			Util_ResolveTextLine(strLifeSkillinfo.c_str(),strVer,2,',');
+			Corsairs::Util::ResolveTextLine(strLifeSkillinfo.c_str(),strVer,2,',');
 			skillInfo = strVer[1];
 		}
 		else
@@ -3305,7 +3302,7 @@ EndItemForgeAsk:
 	}
 }
 
-void CCharacter::Cmd_LifeSkillItemAsR(long dwType, SLifeSkillItem *pSItem)
+void CCharacter::Cmd_LifeSkillItemAsR(std::int32_t dwType, SLifeSkillItem *pSItem)
 {
 	if(m_CKitbag.IsPwdLocked())
 	{
@@ -3324,7 +3321,7 @@ void CCharacter::Cmd_LifeSkillItemAsR(long dwType, SLifeSkillItem *pSItem)
 	CPlayer	*pCPly = GetPlayer();
 	if(pCPly == NULL || pSItem == NULL)
 		return;
-	long lCheckCan = 0,lOptMoney =-1;
+	std::int32_t lCheckCan = 0,lOptMoney =-1;
 
 	if (pCPly->IsInLifeSkill())
 	{
@@ -3354,8 +3351,8 @@ void CCharacter::Cmd_LifeSkillItemAsR(long dwType, SLifeSkillItem *pSItem)
 		return;
 	}
 
-	//Char	*szCheckCanScript;
-	//Char	*szGetMoneyScript;
+	//char	*szCheckCanScript;
+	//char	*szGetMoneyScript;
 
 
 	const char* cszFunc;
@@ -3426,7 +3423,7 @@ void CCharacter::Cmd_LifeSkillItemAsR(long dwType, SLifeSkillItem *pSItem)
 		if(1==dwType)
 		{
 			string	strVer[2];
-			Util_ResolveTextLine(cszContent,strVer,2,',');
+			Corsairs::Util::ResolveTextLine(cszContent,strVer,2,',');
 			skillInfo = strVer[0];
 		}
 		auto l_wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McLifeSkillAsrMessage{
@@ -3438,8 +3435,8 @@ void CCharacter::Cmd_LifeSkillItemAsR(long dwType, SLifeSkillItem *pSItem)
 //
 void CCharacter::Cmd_LockKitbag()
 {
-    Char sState;//0: 1:
-    cChar *szPwd = GetPlayer()->GetPassword();
+    char sState;//0: 1:
+    const char *szPwd = GetPlayer()->GetPassword();
     if(!m_CKitbag.IsPwdLocked()){ 
 		m_CKitbag.PwdLock();
     }
@@ -3453,10 +3450,10 @@ void CCharacter::Cmd_LockKitbag()
 //
 void CCharacter::Cmd_UnlockKitbag( const char szPassword[] )
 {
-    Char sState;//0:  1:
+    char sState;//0:  1:
 
     CPlayer	*pCply = GetPlayer();
-    cChar *szPwd2 = pCply->GetPassword();
+    const char *szPwd2 = pCply->GetPassword();
 
     if((szPwd2[0] == 0) || (!strcmp(szPassword, szPwd2)))
     {
@@ -3472,7 +3469,7 @@ void CCharacter::Cmd_UnlockKitbag( const char szPassword[] )
 //  
 void CCharacter::Cmd_CheckKitbagState()
 {
-    Char sState;//0:  1:
+    char sState;//0:  1:
     sState = m_CKitbag.IsPwdLocked() ? 1 : 0;
 
     //  :   
@@ -3480,7 +3477,7 @@ void CCharacter::Cmd_CheckKitbagState()
 	ReflectINFof(this, WtPk);
 }
 
-void CCharacter::Cmd_SetKitbagAutoLock(Char cAuto)
+void CCharacter::Cmd_SetKitbagAutoLock(char cAuto)
 {
     m_CKitbag.PwdAutoLock(cAuto);
     //game_db.SavePlayer(GetPlayer(), enumSAVE_TYPE_TRADE);
@@ -3556,7 +3553,7 @@ CCharacter* CCharacter::FindVolunteer(const char *szName)
 void CCharacter::Cmd_ItemForgeAnswer(bool bForge)
 {
 	CPlayer	*pCPly = GetPlayer();
-	Char	chType = pCPly->GetForgeType();
+	char	chType = pCPly->GetForgeType();
 
     if(m_CKitbag.IsPwdLocked())
     {
@@ -3668,7 +3665,7 @@ void CCharacter::Cmd_ItemForgeAnswer(bool bForge)
 				return;
 			}
 
-			Long	lCheckCan;
+			std::int32_t	lCheckCan;
 			if (!DoForgeLikeScript(szCheckCanScript, lCheckCan))
 			{
 				//SystemNotice("!");
@@ -3680,7 +3677,7 @@ void CCharacter::Cmd_ItemForgeAnswer(bool bForge)
 
 			m_CChaAttr.ResetChangeFlag();
 			m_CKitbag.SetChangeFlag(false);
-			Long	lBegin;
+			std::int32_t	lBegin;
 			if (!DoForgeLikeScript(szBeginScript, lBegin))
 			{
 				//SystemNotice("!");
@@ -3695,7 +3692,7 @@ void CCharacter::Cmd_ItemForgeAnswer(bool bForge)
 			{
 				//  :   ()
 				auto WtPk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McItemForgeAnswerMessage{
-					GetID(), static_cast<int64_t>(chType), static_cast<int64_t>((Char)lBegin)
+					GetID(), static_cast<int64_t>(chType), static_cast<int64_t>((char)lBegin)
 				});
 				NotiChgToEyeshot(WtPk);
 

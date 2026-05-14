@@ -15,7 +15,7 @@
 #include <fcntl.h>
 #include "CrushSystem.h"
 
-namespace TalesOfPirate::Utils::Logs {
+namespace Corsairs::Util::Log {
 	//         
 	std::mutex _consoleLock{};
 
@@ -67,7 +67,7 @@ namespace TalesOfPirate::Utils::Logs {
 		auto data = std::format("{}_{}_{:02}_{:02}.log", _logSystem, st.wYear, st.wMonth, st.wDay);
 		std::transform(data.begin(), data.end(), data.begin(),
 					   [](unsigned char c) {
-						   return std::tolower(c);
+						   return static_cast<char>(std::tolower(c));
 					   });
 		return data;
 	}
@@ -259,7 +259,7 @@ namespace TalesOfPirate::Utils::Logs {
 		// (joinит thread), затем уже Codes/Names. Без этого финальный
 		// DrainQueue в logger thread'е падал на CODES.find() после
 		// деструкции namespace-scope CODES (см. ConsoleColor.cpp).
-		TalesOfPirate::Utils::Console::ForceInit();
+		Corsairs::Util::Console::ForceInit();
 	}
 
 	LogManager::~LogManager() {

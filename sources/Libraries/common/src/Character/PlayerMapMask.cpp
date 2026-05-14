@@ -50,20 +50,14 @@ bool PlayerMapMask::LoadBase64(std::string_view mapName, std::string_view base64
         return false;
     }
 
-    std::vector<std::uint8_t> decoded(base64Data.size());
-    unsigned int decodedLen = 0;
-    ibase64(base64Data.data(),
-            static_cast<unsigned int>(base64Data.size()),
-            reinterpret_cast<char*>(decoded.data()),
-            &decodedLen);
-
+    const auto decoded = Corsairs::Util::Base64Decode(base64Data);
     const std::size_t bitsLen = map->Bits.size();
 
-    if (decodedLen == bitsLen) {
+    if (decoded.size() == bitsLen) {
         std::memcpy(map->Bits.data(), decoded.data(), bitsLen);
         return true;
     }
-    if (decodedLen == LegacyHeaderSize + bitsLen) {
+    if (decoded.size() == LegacyHeaderSize + bitsLen) {
         std::memcpy(map->Bits.data(), decoded.data() + LegacyHeaderSize, bitsLen);
         return true;
     }
@@ -76,14 +70,7 @@ std::string PlayerMapMask::SaveBase64(std::string_view mapName) const {
         return {};
     }
 
-    std::vector<char> out(map->Bits.size() * 2 + 4);
-    unsigned int outLen = 0;
-    base64(reinterpret_cast<const char*>(map->Bits.data()),
-           static_cast<unsigned int>(map->Bits.size()),
-           out.data(),
-           static_cast<unsigned int>(out.size()),
-           &outLen);
-    return std::string(out.data(), outLen);
+    return Corsairs::Util::Base64Encode(std::span<const std::uint8_t>(map->Bits));
 }
 
 std::span<const std::uint8_t> PlayerMapMask::GetBits(std::string_view mapName) const {

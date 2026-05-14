@@ -152,7 +152,7 @@ void CWorldScene::SetAttackChaColor(BYTE r, BYTE g, BYTE b) {
 }
 
 bool CWorldScene::_Init() {
-	MPTimer tInit;
+	Corsairs::Util::MPTimer tInit;
 	tInit.Begin();
 
 	if (!CGameScene::_Init()) return false;
@@ -1362,7 +1362,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 					pObj = &_pChaArray[i];
 					if (pObj->IsValid()
 						&& pObj->GetTeamLeaderID() == nMainTeamID
-						&& pObj->getChaCtrlType() == enumCHACTRL_PLAYER
+						&& pObj->getChaCtrlType() == EChaCtrlType::PLAYER
 						&& pObj->IsEnabled()
 						&& !pObj->IsHide()) {
 						if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1397,7 +1397,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 		for (; i < _nChaCnt; i++) {
 			pObj = &_pChaArray[i];
 			if (pObj->IsValid()
-				&& pObj->getChaCtrlType() == enumCHACTRL_PLAYER
+				&& pObj->getChaCtrlType() == EChaCtrlType::PLAYER
 				&& !pObj->IsHide()) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
 					if (!pObjXXX) {
@@ -1417,7 +1417,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 		for (; i < _nChaCnt; i++) {
 			pObj = &_pChaArray[i];
 			if (pObj->IsValid()
-				&& pObj->getChaCtrlType() == enumCHACTRL_PLAYER
+				&& pObj->getChaCtrlType() == EChaCtrlType::PLAYER
 				&& !pObj->IsEnabled()
 				&& !pObj->IsHide()) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1443,8 +1443,8 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 				for (; i < _nChaCnt; i++) {
 					pObj = &_pChaArray[i];
 					if (pObj->IsValid()
-						&& (pObj->getChaCtrlType() == enumCHACTRL_MONS
-							|| (pObj->getChaCtrlType() == enumCHACTRL_PLAYER && pObj->GetTeamLeaderID() != nMainTeamID))
+						&& (pObj->getChaCtrlType() == EChaCtrlType::MONS
+							|| (pObj->getChaCtrlType() == EChaCtrlType::PLAYER && pObj->GetTeamLeaderID() != nMainTeamID))
 						&& pObj->IsEnabled()
 						&& !pObj->IsHide()) {
 						if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1464,8 +1464,8 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 				for (; i < _nChaCnt; i++) {
 					pObj = &_pChaArray[i];
 					if (pObj->IsValid()
-						&& (pObj->getChaCtrlType() == enumCHACTRL_MONS
-							|| (pObj->getChaCtrlType() == enumCHACTRL_PLAYER && pMain != pObj))
+						&& (pObj->getChaCtrlType() == EChaCtrlType::MONS
+							|| (pObj->getChaCtrlType() == EChaCtrlType::PLAYER && pMain != pObj))
 						&& pObj->IsEnabled()
 						&& !pObj->IsHide()) {
 						if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1486,7 +1486,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 			for (; i < _nChaCnt; i++) {
 				pObj = &_pChaArray[i];
 				if (pObj->IsValid()
-					&& pObj->getChaCtrlType() == enumCHACTRL_MONS
+					&& pObj->getChaCtrlType() == EChaCtrlType::MONS
 					&& pObj->IsEnabled()
 					&& !pObj->IsHide()) {
 					if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1508,7 +1508,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 		for (; i < _nChaCnt; i++) {
 			pObj = &_pChaArray[i];
 			if (pObj->IsValid()
-				&& pObj->getChaCtrlType() == enumCHACTRL_MONS
+				&& pObj->getChaCtrlType() == EChaCtrlType::MONS
 				&& pObj->IsEnabled()
 				&& !pObj->IsHide()) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1529,7 +1529,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 		for (; i < _nChaCnt; i++) {
 			pObj = &_pChaArray[i];
 			if (pObj->IsValid()
-				&& pObj->getChaCtrlType() == enumCHACTRL_MONS_TREE
+				&& pObj->getChaCtrlType() == EChaCtrlType::MONS_TREE
 				&& pObj->IsEnabled()
 				&& !pObj->IsHide()) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1550,7 +1550,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 		for (; i < _nChaCnt; i++) {
 			pObj = &_pChaArray[i];
 			if (pObj->IsValid()
-				&& pObj->getChaCtrlType() == enumCHACTRL_MONS_REPAIRABLE
+				&& pObj->getChaCtrlType() == EChaCtrlType::MONS_REPAIRABLE
 				&& pObj->IsEnabled()
 				&& !pObj->IsHide()) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1571,7 +1571,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 		for (; i < _nChaCnt; i++) {
 			pObj = &_pChaArray[i];
 			if (pObj->IsValid()
-				&& pObj->getChaCtrlType() == enumCHACTRL_MONS_MINE
+				&& pObj->getChaCtrlType() == EChaCtrlType::MONS_MINE
 				&& pObj->IsEnabled()
 				&& !pObj->IsHide()) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1592,7 +1592,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 		for (; i < _nChaCnt; i++) {
 			pObj = &_pChaArray[i];
 			if (pObj->IsValid()
-				&& pObj->getChaCtrlType() == enumCHACTRL_MONS_FISH
+				&& pObj->getChaCtrlType() == EChaCtrlType::MONS_FISH
 				&& pObj->IsEnabled()
 				&& !pObj->IsHide()) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {
@@ -1613,7 +1613,7 @@ CCharacter* CWorldScene::HitSelectCharacter(int nScrX, int nScrY, int nSelect) {
 		for (; i < _nChaCnt; i++) {
 			pObj = &_pChaArray[i];
 			if (pObj->IsValid()
-				&& pObj->getChaCtrlType() == enumCHACTRL_MONS_DBOAT
+				&& pObj->getChaCtrlType() == EChaCtrlType::MONS_DBOAT
 				&& pObj->IsEnabled()
 				&& !pObj->IsHide()) {
 				if (SUCCEEDED(pObj->HitTestPrimitive( &info, &org, &ray ))) {

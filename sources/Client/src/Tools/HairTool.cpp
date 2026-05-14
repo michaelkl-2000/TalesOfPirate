@@ -32,7 +32,7 @@ bool CHairTools::RefreshCha(DWORD dwChaID) {
 	dwChaID--;
 
 	HairRecordStore::Instance()->ForEach([&](CHairRecord& hair) {
-		if (hair.IsChaUse[dwChaID])
+		if (hair.IsUsableByCharacterType[dwChaID])
 			_AddInfo(&hair);
 	});
 	return true;

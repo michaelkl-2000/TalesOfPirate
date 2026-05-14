@@ -6,7 +6,7 @@
 
 unsigned int __stdcall ThreadFunc(void* param) {
 	::SetThreadName("thread-base");
-	TalesOfPirate::Utils::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
 	return ((CThreadBase*)param)->Run();
 }
 

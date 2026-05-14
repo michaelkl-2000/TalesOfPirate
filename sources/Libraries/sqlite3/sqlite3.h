@@ -2832,7 +2832,7 @@ SQLITE_API int sqlite3_total_changes(sqlite3*);
 SQLITE_API sqlite3_int64 sqlite3_total_changes64(sqlite3*);
 
 /*
-** CAPI3REF: Interrupt A Long-Running Query
+** CAPI3REF: Interrupt A std::int32_t-Running Query
 ** METHOD: sqlite3
 **
 ** ^This function causes any pending database operation to abort and

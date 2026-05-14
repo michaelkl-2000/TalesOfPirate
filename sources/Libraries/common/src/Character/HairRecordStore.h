@@ -3,11 +3,15 @@
 #include "Database/GameRecordset.h"
 #include "Character/HairRecord.h"
 
+#include <cstdint>
+#include <span>
+#include <string_view>
+
 // Хранилище таблицы причёсок на базе SQLite.
 
 namespace Corsairs::Common::Character {
 
-class HairRecordStore : public GameRecordset<CHairRecord> {
+class HairRecordStore : public GameRecordset<HairRecord> {
 public:
 	static HairRecordStore* Instance() {
 		static HairRecordStore instance{};
@@ -40,8 +44,8 @@ protected:
 	RecordEntry ReadRecord(SqliteStatement& stmt) override;
 
 private:
-	static void ParseDwordArray(std::string_view text, DWORD* out, int maxLen);
-	static void ParseBoolArray(std::string_view text, bool* out, int maxLen);
+	static void ParseUint32Array(std::string_view text, std::span<std::uint32_t> out);
+	static void ParseBoolArray(std::string_view text, std::span<bool> out);
 };
 
 } // namespace Corsairs::Common::Character

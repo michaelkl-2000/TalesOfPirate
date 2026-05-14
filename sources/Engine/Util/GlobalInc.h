@@ -17,6 +17,7 @@
 #include <stdarg.h>
 
 #include "Util.h"
+#include "logutil.h"  // g_logManager, LogLevel — ранее тянулись через umbrella util.h
 
 struct MPTexRect {
 	int nTexSX;

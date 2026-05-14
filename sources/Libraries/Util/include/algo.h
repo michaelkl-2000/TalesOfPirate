@@ -1,19 +1,20 @@
-﻿
-#ifndef _ALGO_H_
-#define _ALGO_H_
+#pragma once
 
-int base64(char const* src, unsigned int src_len, char* dst,
-           unsigned int dst_max_len, unsigned int* dst_len);
-int ibase64(char const* src, unsigned int src_len, char* dst, unsigned int* dst_len);
-unsigned char const* sha1(unsigned char const* msg,unsigned int len, unsigned char* md);
+#include <array>
+#include <cstdint>
+#include <span>
+#include <string>
+#include <string_view>
+#include <vector>
 
-bool encrypt_A(char* out, char* in, long data_len, char const* key, int key_len, bool en = true);
+namespace Corsairs::Util {
 
-bool dbpswd_out(char const* ctxt, int ctxt_len, std::string& pswd);
-bool dbpswd_in(char const* pswd, int pswd_len, std::string& ctxt);
+std::string Base64Encode(std::span<const std::uint8_t> data);
+std::string Base64Encode(std::string_view text);
 
-void md5(char const* msg, unsigned char dig[16]);
-void md5string(char const* msg, char str[33]);
+std::vector<std::uint8_t> Base64Decode(std::string_view src);
 
+std::array<std::uint8_t, 16> Md5(std::string_view msg);
+std::string Md5Hex(std::string_view msg);
 
-#endif
+} // namespace Corsairs::Util

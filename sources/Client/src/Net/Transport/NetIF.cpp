@@ -312,7 +312,7 @@ NetIF::NetIF()
 	hAesAlg = NULL;
 	hAesKey = NULL;
 	memset(cliAesKey, 0, sizeof(cliAesKey));
-	memset(m_ulDelayTime, 0, sizeof(unsigned long) * 4);
+	memset(m_ulDelayTime, 0, sizeof(std::uint32_t) * 4);
 
 	m_pCProCir = new CProCirculateCC(this);
 }
@@ -404,10 +404,10 @@ bool NetIF::IsActive() const {
 
 bool NetIF::Encrypt(uint8_t* ciphertext, int ciphertext_len,
 					const uint8_t* plaintext, int& len) {
-	unsigned long ulen = static_cast<unsigned long>(len);
+	std::uint32_t ulen = static_cast<std::uint32_t>(len);
 	bool ok = EncryptAES(
 		reinterpret_cast<char*>(ciphertext),
-		static_cast<unsigned long>(ciphertext_len),
+		static_cast<std::uint32_t>(ciphertext_len),
 		reinterpret_cast<const char*>(plaintext),
 		ulen);
 	len = static_cast<int>(ulen);
@@ -415,7 +415,7 @@ bool NetIF::Encrypt(uint8_t* ciphertext, int ciphertext_len,
 }
 
 bool NetIF::Decrypt(uint8_t* data, int& len) {
-	unsigned long ulen = static_cast<unsigned long>(len);
+	std::uint32_t ulen = static_cast<std::uint32_t>(len);
 	bool ok = DecryptAES(reinterpret_cast<char*>(data), ulen);
 	len = static_cast<int>(ulen);
 	return ok;
@@ -442,8 +442,8 @@ std::string NetIF::GetDisconnectErrText(int reason) const {
 	}();
 }
 
-unsigned long NetIF::GetAveragePing() {
-	unsigned long ulAverage = 0, ulCount = 0;
+std::uint32_t NetIF::GetAveragePing() {
+	std::uint32_t ulAverage = 0, ulCount = 0;
 
 	m_mutmov.lock();
 
@@ -488,7 +488,8 @@ void NetIF::SendPacketMessage(LPWPACKET pk) {
 
 
 // AES-256-GCM  (BCrypt). Wire format: [nonce(12)][tag(16)][ciphertext]
-bool NetIF::EncryptAES(char* ciphertext, uLong ciphertext_len, cChar* plaintext, unsigned long& ciphersize) {
+bool NetIF::EncryptAES(char* ciphertext, std::uint32_t ciphertext_len, const char* plaintext, std::uint32_t&
+ciphersize) {
 	const ULONG NONCE_SIZE = 12;
 	const ULONG TAG_SIZE = 16;
 	const ULONG overhead = NONCE_SIZE + TAG_SIZE;
@@ -546,7 +547,7 @@ bool NetIF::EncryptAES(char* ciphertext, uLong ciphertext_len, cChar* plaintext,
 }
 
 // AES-256-GCM  (BCrypt). Wire format: [nonce(12)][tag(16)][ciphertext]
-bool NetIF::DecryptAES(char* ciphertext, unsigned long& len) {
+bool NetIF::DecryptAES(char* ciphertext, std::uint32_t& len) {
 	const ULONG NONCE_SIZE = 12;
 	const ULONG TAG_SIZE = 16;
 	const ULONG overhead = NONCE_SIZE + TAG_SIZE;

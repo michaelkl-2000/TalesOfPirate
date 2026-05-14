@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: EntitySpawn.cpp
 // Creater: ZhangXuedong
 // Date: 2004.09.10
@@ -8,7 +8,6 @@
 namespace Corsairs::Common::NPC {}
 using namespace Corsairs::Common::NPC;
 #include "Entity/EntitySpawn.h"
-#include "excp.h"
 #include "Character/Character.h"
 #include "Core/GameCommon.h"
 #include "App/GameAppNet.h"
@@ -20,9 +19,6 @@ using namespace Corsairs::Common::NPC;
 #include <string>
 
 extern const char* GetResPath(const char* pszRes);
-
-_DBC_USING
-
 //=============================================================================
 CChaSpawn::CChaSpawn() = default;
 
@@ -33,7 +29,7 @@ bool CChaSpawn::Init(const char *szMapName, const char *szSpawnTable)
 	m_pCMap = nullptr;
 
 	if (szMapName == nullptr || szMapName[0] == '\0' || szSpawnTable == nullptr) {
-		THROW_EXCP(excpArr, RES_STRING(GM_ENTITYSPAWN_CPP_00001));
+		ThrowRuntimeError(RES_STRING(GM_ENTITYSPAWN_CPP_00001));
 	}
 
 	m_strMapName = szMapName;
@@ -56,7 +52,7 @@ long CChaSpawn::Load(SubMap *pCMap)
 		return 0;
 	}
 
-	const Rect& area = pCMap->GetRange();
+	const Corsairs::Util::Rect& area = pCMap->GetRange();
 	bool reachedCap = false;
 
 	// Размер блочной клетки obstacle-карты в мировых единицах — для перевода
@@ -96,17 +92,17 @@ long CChaSpawn::Load(SubMap *pCMap)
 					sAngle = rand() % 360;
 				}
 
-				Point l_pos{};
+				Corsairs::Util::Point l_pos{};
 				bool walkable = false;
 				for (int retry = 0; retry < kMaxWalkableRetries; ++retry) {
-					l_pos.x = randInRange(pMonRefRecord->SRegion[0].x, pMonRefRecord->SRegion[1].x);
-					l_pos.y = randInRange(pMonRefRecord->SRegion[0].y, pMonRefRecord->SRegion[1].y);
+					l_pos.X = randInRange(pMonRefRecord->SRegion[0].X, pMonRefRecord->SRegion[1].X);
+					l_pos.Y = randInRange(pMonRefRecord->SRegion[0].Y, pMonRefRecord->SRegion[1].Y);
 					if (!blockGridValid) {
 						// Нет валидного block-grid — доверяем точке, ChaSpawn проверит сам.
 						walkable = true;
 						break;
 					}
-					if (!pCMap->IsBlock(l_pos.x / cellW, l_pos.y / cellH)) {
+					if (!pCMap->IsBlock(l_pos.X / cellW, l_pos.Y / cellH)) {
 						walkable = true;
 						break;
 					}
@@ -118,7 +114,7 @@ long CChaSpawn::Load(SubMap *pCMap)
 				}
 
 				CCharacter* pCCha = pCMap->ChaSpawn(
-					pMonRefRecord->lMonster[j][0], enumCHACTRL_NONE, sAngle, &l_pos);
+					pMonRefRecord->lMonster[j][0], static_cast<char>(EChaCtrlType::NONE), sAngle, &l_pos);
 				if (pCCha) {
 					pCCha->SetResumeTime(pMonRefRecord->lMonster[j][3] * 1000);
 					m_lCount++;
@@ -138,8 +134,8 @@ long CChaSpawn::Load(SubMap *pCMap)
 					ToLogService("errors", LogLevel::Error,
 						"character born error (walkable but spawn failed): map {}[{}, {}], "
 						"character hatch list number {}, character list number {}, born position[{}, {}]",
-						pCMap->GetName(), area.width(), area.height(),
-						pMonRefRecord->Id, pMonRefRecord->lMonster[j][0], l_pos.x, l_pos.y);
+						pCMap->GetName(), area.Width(), area.Height(),
+						pMonRefRecord->Id, pMonRefRecord->lMonster[j][0], l_pos.X, l_pos.Y);
 				}
 			}
 		}
@@ -171,7 +167,7 @@ bool CMapSwitchEntitySpawn::Init(const char *szMapName, const char *szSpawnTable
 	m_pCMap = nullptr;
 
 	if (szMapName == nullptr || szMapName[0] == '\0' || szSpawnTable == nullptr) {
-		THROW_EXCP(excpArr, RES_STRING(GM_ENTITYSPAWN_CPP_00005));
+		ThrowRuntimeError(RES_STRING(GM_ENTITYSPAWN_CPP_00005));
 	}
 
 	m_strMapName = szMapName;
@@ -209,7 +205,7 @@ long CMapSwitchEntitySpawn::Load(SubMap *pCMap)
 
 		CItem* pCItem = pCMap->ItemSpawn(
 			&SItemCont,
-			pCSwitchMapRecord->SEntityPos.x, pCSwitchMapRecord->SEntityPos.y,
+			pCSwitchMapRecord->SEntityPos.X, pCSwitchMapRecord->SEntityPos.Y,
 			enumITEM_APPE_NATURAL, 0,
 			g_pCSystemCha->GetID(), g_pCSystemCha->GetHandle(),
 			-1, -1, &CEvtCont);
@@ -239,7 +235,7 @@ bool CNpcSpawn::Init(const char *szMapName, const char *szSpawnTable)
 	if (szMapName == nullptr || szMapName[0] == '\0' || szSpawnTable == nullptr) {
 		char szTemp[128];
 		std::snprintf(szTemp, sizeof(szTemp), RES_STRING(GM_ENTITYSPAWN_CPP_00007), szSpawnTable ? szSpawnTable : "", 0);
-		THROW_EXCP(excpArr, szTemp);
+		ThrowRuntimeError(szTemp);
 	}
 
 	m_strMapName = szMapName;
@@ -302,7 +298,7 @@ long CNpcSpawn::Load( SubMap& submap )
 					pTalk->Free();
 					return;
 				}
-				Square SShape = {{pNpcRecord->dwxPos0, pNpcRecord->dwyPos0}, pCharRecord->sRadii};
+				Corsairs::Util::Square SShape = {{pNpcRecord->dwxPos0, pNpcRecord->dwyPos0}, pCharRecord->sRadii};
 				if (!submap.Enter(&SShape, pTalk)) {
 					pTalk->Free();
 					return;

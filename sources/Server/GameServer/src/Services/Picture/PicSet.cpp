@@ -1,7 +1,5 @@
 ﻿#include "Core/stdafx.h"
 #include "Services/Picture/PicSet.h"
-#include "util2.h"
-
 CPicSet::CPicSet()
 {
 }

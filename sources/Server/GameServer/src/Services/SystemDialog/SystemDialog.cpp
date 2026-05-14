@@ -288,8 +288,8 @@ void DrawMapUnit(SubMap *pMap, HDC dc, int sx, int sy, int w, int h)
 			pObj = pMap->m_pCEyeshotCell[i][j].m_pCChaL;
 			while (pObj)
 			{
-				int mx = pObj->GetShape().centre.x;
-				int my = pObj->GetShape().centre.y;
+				int mx = pObj->GetShape().Centre.X;
+				int my = pObj->GetShape().Centre.Y;
 				int x = (mx / 100 - sx) * UNIT_SCALE + 1;
 				int y = (my / 100 - sy) * UNIT_SCALE + 1;
 				
@@ -316,8 +316,8 @@ void DrawMapUnit(SubMap *pMap, HDC dc, int sx, int sy, int w, int h)
 			pObj = pMap->m_pCEyeshotCell[i][j].m_pCItemL;
 			while (pObj)
 			{
-				int mx = pObj->GetShape().centre.x;
-				int my = pObj->GetShape().centre.y;
+				int mx = pObj->GetShape().Centre.X;
+				int my = pObj->GetShape().Centre.Y;
 				int x = (mx / 100 - sx) * UNIT_SCALE + 1;
 				int y = (my / 100 - sy) * UNIT_SCALE + 1;
 				

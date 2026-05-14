@@ -1,4 +1,4 @@
-﻿// Mission.h Created by knight-gongjian 2004.12.13.
+// Mission.h Created by knight-gongjian 2004.12.13.
 //---------------------------------------------------------
 #pragma once
 
@@ -7,8 +7,6 @@
 
 #include "Services/Mission/RoleData.h"
 //---------------------------------------------------------
-_DBC_USING
-
 class CCharacter;
 namespace mission
 {

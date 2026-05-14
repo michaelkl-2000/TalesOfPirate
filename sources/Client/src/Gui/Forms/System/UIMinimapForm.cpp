@@ -576,9 +576,9 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 
 	// 
 	const std::string_view terrain(CGameApp::GetCurScene()->GetTerrainName());
-	if (encoding::EqualsIgnoreCaseAscii(terrain, "garner")
-		|| encoding::EqualsIgnoreCaseAscii(terrain, "magicsea")
-		|| encoding::EqualsIgnoreCaseAscii(terrain, "darkblue")) {
+	if (Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "garner")
+		|| Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "magicsea")
+		|| Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "darkblue")) {
 		struct SApplyInfo {
 			int nAreaID; //  AreaSet  ID
 			int x, y;
@@ -605,7 +605,7 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 		//{	54,	611,	2097	},	//
 		//     };
 
-		if (encoding::EqualsIgnoreCaseAscii(terrain, "garner")) {
+		if (Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "garner")) {
 			stApply[0].nAreaID = 1;
 			stApply[0].x = 2218;
 			stApply[0].y = 2759;
@@ -638,7 +638,7 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 			stApply[7].x = 611;
 			stApply[7].y = 2097;
 		}
-		if (encoding::EqualsIgnoreCaseAscii(terrain, "magicsea")) {
+		if (Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "magicsea")) {
 			stApply[0].nAreaID = 57;
 			stApply[0].x = 781;
 			stApply[0].y = 3118;
@@ -671,7 +671,7 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 			stApply[7].x = 0;
 			stApply[7].y = 0;
 		}
-		if (encoding::EqualsIgnoreCaseAscii(terrain, "darkblue")) {
+		if (Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "darkblue")) {
 			stApply[0].nAreaID = 20;
 			stApply[0].x = 1319;
 			stApply[0].y = 521;

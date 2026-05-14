@@ -102,12 +102,12 @@ struct stNetNotiSkillEffect //  enumACTION_SKILL_TAR
 	bool bDoubleAttack; // 
 	bool bMiss; // Miss;
 	bool bBeatBack; // 
-	Point SPos; // 
+	Corsairs::Util::Point SPos; //
 	long lSkillID; // ID
 	char chObjType; // 01
 	long lSrcID; // ID
-	Point SSrcPos; // 
-	Point SSkillTPos; // 
+	Corsairs::Util::Point SSrcPos; //
+	Corsairs::Util::Point SSkillTPos; //
 	short sExecTime; // ,
 
 	// 
@@ -171,7 +171,7 @@ struct stNetActorCreate //
 	unsigned long ulChaID{};
 	char chCtrlType{}; // NPCCompCommand.h EChaCtrlType
 	int chGuildPermission{}; // NPCCompCommand.h EChaCtrlType
-	Circle SArea{};
+	Corsairs::Util::Circle SArea{};
 	short sAngle{}; // server
 	unsigned long ulTLeaderID{}; // ID0
 	short sState{}; //  0x000x010x02
@@ -254,7 +254,7 @@ struct stNetItemCreate //
 	long lHandle; // 
 	long lEntityAddr; // 
 	long lID;
-	Point SPos;
+	Corsairs::Util::Point SPos;
 	short sAngle;
 	short sNum; // 
 	char chAppeType; // CompCommand.h EItemAppearType
@@ -521,7 +521,7 @@ typedef struct _NET_CHARTRADE_ITEMDATA {
 	std::array<short, 2> sEndure;
 	std::array<short, 2> sEnergy;
 
-	std::array<long, enumITEMDBP_MAXNUM> lDBParam;
+	std::array<std::int32_t, enumITEMDBP_MAXNUM> lDBParam;
 	bool bValid;
 	bool bItemTradable;
 	long expiration;
@@ -592,7 +592,7 @@ struct stNetUpdateHair {
 
 // 
 struct stNetUpdateHairRes {
-	unsigned long ulWorldID; // 
+	unsigned long ulWorldID; //
 	int nScriptID; // ID
 	std::string szReason; // ,:ok,fail,:
 

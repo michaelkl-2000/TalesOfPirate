@@ -82,7 +82,7 @@ static bool sortcol(const vector<int>& v1, const vector<int>& v2) {
 }
 
 void CStartMgr::CleanDropListForm() {
-	for (int i = 0; i < defCHA_INIT_ITEM_NUM - 1; i++) {
+	for (int i = 0; i < kChaInitItemNum - 1; i++) {
 		if (listMobDrops[i]) {
 			listMobDrops[i]->DelCommand();
 		}
@@ -109,10 +109,10 @@ void CStartMgr::SetMonsterInfo() {
 	CItemRecord* tInfo = nullptr;
 	CItemRow* pRow(NULL);
 	CItem* content = nullptr;
-	std::vector<std::vector<int>> vect(defCHA_INIT_ITEM_NUM, vector<int>(2, 0));
+	std::vector<std::vector<int>> vect(kChaInitItemNum, vector<int>(2, 0));
 
 	int max = 15;
-	for (int i = 0; i < defCHA_INIT_ITEM_NUM; i++) {
+	for (int i = 0; i < kChaInitItemNum; i++) {
 		vect[i][0] = ((int)charInfo->lItem[i][0]);
 		vect[i][1] = (int)charInfo->lItem[i][1];
 		if (GetItemRecordInfo(vect[i][0]) == NULL) {
@@ -352,7 +352,7 @@ bool CStartMgr::Init() {
 			assert(listInfo != NULL);
 			listInfo->evtSelectPage = _evtMobPageIndexChange;
 
-			for (int i = 0; i < defCHA_INIT_ITEM_NUM - 1; i++) {
+			for (int i = 0; i < kChaInitItemNum - 1; i++) {
 				const std::string buf_list = std::format("listMobDrops{}", i);
 				listMobDrops[i] = dynamic_cast<COneCommand*>(frmMonsterInfo->Find(buf_list.c_str()));
 				if (!listMobDrops[i]) return false;

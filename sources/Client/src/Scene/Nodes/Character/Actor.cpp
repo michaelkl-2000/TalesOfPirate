@@ -134,13 +134,15 @@ void CActor::IdleState() {
 		_nWaitingTime = -1;
 
 		switch (_pCha->getChaCtrlType()) {
-		case enumCHACTRL_PLAYER:
-			if (_pCha->getChaModalType() != enumMODAL_BOAT)
+		case EChaCtrlType::PLAYER:
+			if (_pCha->getChaModalType() != EChaModalType::BOAT)
 				_nWaitingTime = 30 * 32;
 			break;
-		case enumCHACTRL_MONS:
-			if (_pCha->getChaModalType() == enumMODAL_OTHER)
+		case EChaCtrlType::MONS:
+			if (_pCha->getChaModalType() == EChaModalType::OTHER)
 				_nWaitingTime = (rand() % 15 + 3) * 32;
+			break;
+		default:
 			break;
 		}
 	}
@@ -212,11 +214,11 @@ void CActor::FrameMove(DWORD dwTimeParam) {
 			_nWaitingTime--;
 			if (_nWaitingTime == 0) {
 				switch (_pCha->getChaCtrlType()) {
-				case enumCHACTRL_PLAYER:
-					if (_pCha->getChaModalType() != enumMODAL_BOAT && !_pCha->GetIsOnMount())
+				case EChaCtrlType::PLAYER:
+					if (_pCha->getChaModalType() != EChaModalType::BOAT && !_pCha->GetIsOnMount())
 						_pCha->PlayPose(POSE_SHOW, PLAY_ONCE);
 					break;
-				case enumCHACTRL_MONS:
+				case EChaCtrlType::MONS:
 					if (_pCha->getMobID() == 71) {
 						_pCha->PlayPose(POSE_SHOW, PLAY_ONCE, -1, 60, false, true);
 					}

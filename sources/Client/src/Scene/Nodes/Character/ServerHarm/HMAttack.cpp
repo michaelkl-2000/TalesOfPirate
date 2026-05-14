@@ -193,7 +193,7 @@ void CAttackEffect::ExecHarm(CSizeArray<stEffect>& Value, CCharacter* pTarget, C
 	if (Change.GetChangeBitFlag(ATTR_HP)) {
 		pTarget->RefreshFog();
 
-		if (pTarget->getChaCtrlType() == enumCHACTRL_MONS_MINE) {
+		if (pTarget->getChaCtrlType() == EChaCtrlType::MONS_MINE) {
 			float f = (float)pAttr->get(ATTR_HP) / (float)pAttr->get(ATTR_MXHP);
 
 			if (f > 0.67f)
@@ -417,7 +417,7 @@ void CAttribSynchro::_Exec() {
 	}
 	pCha->RefreshUI();
 
-	if (pCha->getChaCtrlType() == enumCHACTRL_PLAYER && Change.GetChangeBitFlag(ATTR_JOB)) {
+	if (pCha->getChaCtrlType() == EChaCtrlType::PLAYER && Change.GetChangeBitFlag(ATTR_JOB)) {
 		CTeam* pTeam = g_stUIChat.GetTeamMgr()->Find(enumTeamRoad);
 		if (pTeam) {
 			CMember* pMember = pTeam->Find(pCha->getAttachID());
@@ -499,7 +499,7 @@ void CAttribSynchro::_Exec() {
 
 	pCha->RefreshFog();
 
-	if (pCha->getChaCtrlType() == enumCHACTRL_MONS_MINE) {
+	if (pCha->getChaCtrlType() == EChaCtrlType::MONS_MINE) {
 		// 
 		float f = (float)pCha->getGameAttr()->get(ATTR_HP) / (float)pCha->getGameAttr()->get(ATTR_MXHP);
 		if (f > 0.67f)

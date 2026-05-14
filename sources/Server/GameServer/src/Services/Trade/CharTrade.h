@@ -1,4 +1,4 @@
-﻿// CharTrade.h Created by knight-gongjian 2004.12.7.
+// CharTrade.h Created by knight-gongjian 2004.12.7.
 //---------------------------------------------------------
 #pragma once
 
@@ -8,8 +8,6 @@
 
 #include "Character/Character.h"
 //---------------------------------------------------------
-_DBC_USING
-
 namespace mission
 {
 	typedef struct _TRADE_DATA

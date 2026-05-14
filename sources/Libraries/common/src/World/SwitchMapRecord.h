@@ -25,10 +25,10 @@ public:
 	long	lID;                           // дубликат nID
 	long	lEntityID;                     // ID предмета-триггера (ItemInfo)
 	long	lEventID;                      // ID события
-	Point	SEntityPos;                    // позиция триггера на текущей карте
+	Corsairs::Util::Point	SEntityPos;                    // позиция триггера на текущей карте
 	short	sAngle;                        // направление (−1 = случайное)
 	_TCHAR	szTarMapName[defMAP_NAME_LEN]; // имя целевой карты
-	Point	STarPos;                       // позиция появления на целевой карте
+	Corsairs::Util::Point	STarPos;                       // позиция появления на целевой карте
 };
 
 

@@ -202,7 +202,7 @@
  * **Question: My application isn't performing very well. Is this the GPU
  * API's fault?**
  *
- * Answer: No. Long answer: The GPU API is a relatively thin layer over the
+ * Answer: No. std::int32_t answer: The GPU API is a relatively thin layer over the
  * underlying graphics API. While it's possible that we have done something
  * inefficiently, it's very unlikely especially if you are relatively
  * inexperienced with GPU rendering. Please see the performance tips above and

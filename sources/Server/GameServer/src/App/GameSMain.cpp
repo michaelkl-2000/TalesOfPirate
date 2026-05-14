@@ -1,4 +1,4 @@
-﻿// GameServer.cpp : Defines the entry point for the console application.
+// GameServer.cpp : Defines the entry point for the console application.
 //
 
 #include "Core/stdafx.h"
@@ -53,9 +53,9 @@ int main(int argc, char* argv[]) {
 	C_PRINT("Loading %s\n", szConfigFileN);
 
 	::SetThreadName("main");
-	TalesOfPirate::Utils::Crush::SetGlobalCRTExceptionBehavior();
-	TalesOfPirate::Utils::Crush::SetPerThreadCRTExceptionBehavior();
-	TalesOfPirate::Utils::Crush::SetupDumpSetting("log\\game_server\\dumps");
+	Corsairs::Util::Crush::SetGlobalCRTExceptionBehavior();
+	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::Crush::SetupDumpSetting("log\\game_server\\dumps");
 	g_logManager.InitLogger("log\\game_server");
 	g_logManager.EnableGlobalConsole(true);
 
@@ -112,9 +112,7 @@ int main(int argc, char* argv[]) {
 }
 
 
-//_DBC_USING
-
-// CorsairsNet: ThreadPool     TcpClient
+//// CorsairsNet: ThreadPool     TcpClient
 
 extern DWORD WINAPI g_GameLogicProcess(LPVOID lpParameter);
 

@@ -45,7 +45,7 @@ using namespace GUI;
 //   
 #include "logutil.h"
 
-//  Engine +  
+//  Engine +
 #include "Language.h"
 #include "util.h"
 #include "GlobalInc.h"

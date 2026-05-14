@@ -166,7 +166,7 @@ bool CLoginScene::_Init() {
 	}
 
 	_bEnableCamDrag = TRUE;
-	MPTimer tInit;
+	Corsairs::Util::MPTimer tInit;
 	tInit.Begin();
 
 	//static bool IsLoad = false;
@@ -310,12 +310,11 @@ void CLoginScene::__cha_render_event(C3DCompent* pSender, int x, int y) {
 	g_Render.SetTransformView(&g_Render.GetWorldViewMatrix());
 
 
-	char szMD5[33] = {0};
-	md5string(modelLook, szMD5);
+	const std::string md5 = Corsairs::Util::Md5Hex(modelLook);
 
 	const std::string file = !modelMode
-								 ? std::format("./player/{}.png", szMD5)
-								 : std::format("./icon/{}.png", szMD5);
+								 ? std::format("./player/{}.png", md5)
+								 : std::format("./icon/{}.png", md5);
 	g_Render.CaptureScreen(file.c_str());
 	g_ChaExitOnTime.ExitApp();
 }
@@ -698,7 +697,7 @@ BOOL CLoginScene::_InitUI() {
 	if (inCheck.is_open()) {
 		inCheck.getline(szChkID, 128, '\n');
 		strChkID = szChkID;
-		int nCheck = Str2Int(strChkID);
+		int nCheck = Corsairs::Util::Str2Int(strChkID);
 		m_bSaveAccount = (nCheck == 1) ? true : false;
 		chkID->SetIsChecked(m_bSaveAccount);
 	}

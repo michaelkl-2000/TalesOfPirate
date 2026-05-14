@@ -1,13 +1,10 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 #include <vector>
 #include <map>
 #include <sstream>
-#include "DBCCommon.h"
 #include "Services/Picture/Picture.h"
-
-_DBC_USING
 extern const char* GetResPath(const char *pszRes);
 
 class CPicSet

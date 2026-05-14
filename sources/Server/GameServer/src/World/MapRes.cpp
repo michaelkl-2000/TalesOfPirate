@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: MapRes.cpp
 // Creater: ZhangXuedong
 // Date: 2005.09.05
@@ -15,9 +15,6 @@ using namespace std;
 
 CMapID g_MapID;
 const char g_cchLogMapEntry = 0;
-
-_DBC_USING
-
 const char* GetResPath(const char *pszRes);
 
 CMapRes::CMapRes()
@@ -94,13 +91,13 @@ bool CMapRes::Init()
 		return false;
 	}
 
-	int	nMapWidth = m_CBlock.getWidth() / 2, nMapHeight = m_CBlock.getHeight() / 2;
-	m_SRange.ltop.x = 0;
-	m_SRange.ltop.y = 0;
-	m_SRange.rbtm.x = nMapWidth * 100;
-	m_SRange.rbtm.y = nMapHeight * 100;
+	int	nMapWidth = m_CBlock.GetWidth() / 2, nMapHeight = m_CBlock.GetHeight() / 2;
+	m_SRange.LeftTop.X = 0;
+	m_SRange.LeftTop.Y = 0;
+	m_SRange.RightBottom.X = nMapWidth * 100;
+	m_SRange.RightBottom.Y = nMapHeight * 100;
 	//
-	if((m_SRange.width() % m_csEyeshotCellWidth) || (m_SRange.height() % m_csEyeshotCellHeight))
+	if((m_SRange.Width() % m_csEyeshotCellWidth) || (m_SRange.Height() % m_csEyeshotCellHeight))
 	{
 		//LG("init", "[%s]\n", m_strMapName);
 		ToLogService("common", "the map[{}]'s length or width isn't the multiple of manage cell", m_strMapName);
@@ -122,25 +119,21 @@ bool CMapRes::Init()
 	m_pCMonsterSpawn = new CChaSpawn();
 	if (!m_pCMonsterSpawn->Init(GetName(), m_szMonsterSpawnFile))
 	{
-		//THROW_EXCP( excpMem, "!" );
-		THROW_EXCP( excpMem, RES_STRING(GM_MAPRES_CPP_00003) );
+		ThrowRuntimeError(RES_STRING(GM_MAPRES_CPP_00003));
 	}
 	m_pCMapSwitchEntitySpawn = new CMapSwitchEntitySpawn();
 	if (!m_pCMapSwitchEntitySpawn->Init(GetName(), m_szMapSwitchFile))
 	{
-		//THROW_EXCP( excpMem, "!" );
-		THROW_EXCP( excpMem, RES_STRING(GM_MAPRES_CPP_00004) );
+		ThrowRuntimeError(RES_STRING(GM_MAPRES_CPP_00004));
 	}
 	m_pNpcSpawn = new CNpcSpawn();
 	if (!m_pNpcSpawn->Init(GetName(), m_szNpcSpawnFile))
 	{
-		//THROW_EXCP( excpMem, "NPC!" );
-		THROW_EXCP( excpMem, RES_STRING(GM_MAPRES_CPP_00005) );
+		ThrowRuntimeError(RES_STRING(GM_MAPRES_CPP_00005));
 	}
 
 	if (!InitCtrl())
-		//THROW_EXCP( excpMem, "!" );
-		THROW_EXCP( excpMem, RES_STRING(GM_MAPRES_CPP_00006) );
+		ThrowRuntimeError(RES_STRING(GM_MAPRES_CPP_00006));
 
 	//LG("init", " %s \n", m_strMapName.c_str());
 	ToLogService("common", "map {} init resource succeed", m_strMapName.c_str());
@@ -151,7 +144,7 @@ bool CMapRes::Init()
 	return true;
 }
 
-bool CMapRes::SetCopyNum(dbc::Short sCpyNum)
+bool CMapRes::SetCopyNum(int16_t sCpyNum)
 {
 	if (m_pCMapCopy || sCpyNum < 1 || sCpyNum > defMAX_MAP_COPY_NUM)
 	{
@@ -163,7 +156,7 @@ bool CMapRes::SetCopyNum(dbc::Short sCpyNum)
 	return true;
 }
 
-SubMap* CMapRes::GetCopy(dbc::Short sCpyNO)
+SubMap* CMapRes::GetCopy(int16_t sCpyNO)
 {
 	if (sCpyNO < 0) return m_pCMapCopy;
 	if (sCpyNO >= m_sMapCpyNum) return 0;
@@ -182,8 +175,8 @@ bool CMapRes::InitCtrl(void)
 		luaL_dofile(g_pLuaState, GetResPath(m_szCtrlFile));
 
 	m_szEntryMapName[0] = '\0';
-	m_SEntryPos.x = 0;
-	m_SEntryPos.y = 0;
+	m_SEntryPos.X = 0;
+	m_SEntryPos.Y = 0;
 	m_chEntryState = 0;
 	m_tEntryFirstTm = 0;
 	m_tEntryTmDis = 0;
@@ -204,9 +197,8 @@ bool CMapRes::InitCtrl(void)
 	// 
 	m_pCMapCopy = new SubMap[m_sMapCpyNum];
 	if (!m_pCMapCopy)
-		//THROW_EXCP(excpMem,"");
-		THROW_EXCP(excpMem,RES_STRING(GM_MAPRES_CPP_00007));
-	for (Short i = 0; i < m_sMapCpyNum; i++)
+		ThrowRuntimeError(RES_STRING(GM_MAPRES_CPP_00007));
+	for (int16_t i = 0; i < m_sMapCpyNum; i++)
 	{
 		if (!m_pCMapCopy[i].Init(this, i))
 			return false;
@@ -231,15 +223,15 @@ bool CMapRes::CreateEntry(void)
 	{
 		auto rx = result[0].cast<int>();
 		auto ry = result[1].cast<int>();
-		m_SEntryPos.x = (rx ? rx.value() : 0) * 100;
-		m_SEntryPos.y = (ry ? ry.value() : 0) * 100;
+		m_SEntryPos.X = (rx ? rx.value() : 0) * 100;
+		m_SEntryPos.Y = (ry ? ry.value() : 0) * 100;
 	}
 
-	cShort	csLineCharNum = 2048;
-	Char	szLine[csLineCharNum + 1];
-	Char	*pszPos;
+	const int16_t	csLineCharNum = 2048;
+	char	szLine[csLineCharNum + 1];
+	char	*pszPos;
 	bool	bRead = true;
-	Short	sLineNum = 0;
+	int16_t	sLineNum = 0;
 	szLine[csLineCharNum] = '\0';
 
 	if (g_cchLogMapEntry)
@@ -247,14 +239,14 @@ bool CMapRes::CreateEntry(void)
 		//LG("", "\n");
 		ToLogService("common", "");
 		//LG("", " %s --> %s[%u, %u]\n", GetName(), m_szEntryMapName, m_SEntryPos.x, m_SEntryPos.y);
-		ToLogService("common", "ask for found entrance : position {} --> {}[{}, {}]", GetName(), m_szEntryMapName, m_SEntryPos.x, m_SEntryPos.y);
+		ToLogService("common", "ask for found entrance : position {} --> {}[{}, {}]", GetName(), m_szEntryMapName, m_SEntryPos.X, m_SEntryPos.Y);
 	}
 	//  :      
 	Corsairs::Net::Msg::GmMapEntryCreateMessage entryMsg;
 	entryMsg.targetMapName = m_szEntryMapName;
 	entryMsg.srcMapName = GetName();
-	entryMsg.posX = m_SEntryPos.x;
-	entryMsg.posY = m_SEntryPos.y;
+	entryMsg.posX = m_SEntryPos.X;
+	entryMsg.posY = m_SEntryPos.Y;
 	entryMsg.copyNum = GetCopyNum();
 	entryMsg.copyPlyNum = GetCopyPlyNum();
 	while (!feof(m_pfEntryFile))
@@ -316,7 +308,7 @@ bool CMapRes::DestroyEntry(void)
 }
 
 // 
-bool CMapRes::SubEntryPlayer(dbc::Short sCopyNO)
+bool CMapRes::SubEntryPlayer(int16_t sCopyNO)
 {
 	if (!strcmp(m_szEntryMapName, ""))
 		return true;
@@ -342,7 +334,7 @@ bool CMapRes::SubEntryPlayer(dbc::Short sCopyNO)
 }
 
 // 
-bool CMapRes::SubEntryCopy(dbc::Short sCopyNO)
+bool CMapRes::SubEntryCopy(int16_t sCopyNO)
 {
 	if (!strcmp(m_szEntryMapName, ""))
 		return true;
@@ -429,7 +421,7 @@ void CMapRes::Run(DWORD dwCurTime)
 	if (!m_timeRun.IsOK(dwCurTime))
 		return;
 
-	for (Short i = 0; i < m_sMapCpyNum; i++)
+	for (int16_t i = 0; i < m_sMapCpyNum; i++)
 		m_pCMapCopy[i].Run(dwCurTime);
 
 
@@ -492,7 +484,7 @@ void CMapRes::Run(DWORD dwCurTime)
 	time_t	tBeepT = m_tMapClsTmDis - tDist;
 	if (m_chState == enumMAP_STATE_OPEN && tBeepT > 0 && tBeepT < 50)
 	{
-		Char szInfo[128];
+		char szInfo[128];
 		std::snprintf(szInfo, sizeof(szInfo), RES_STRING(GM_MAPRES_CPP_00008), tBeepT);
 		CopyNotice(szInfo);
 	}
@@ -543,7 +535,7 @@ bool CMapRes::CloseEntry(void)
 }
 
 // 
-bool CMapRes::CopyClose(dbc::Short sCopyNO)
+bool CMapRes::CopyClose(int16_t sCopyNO)
 {
 	if (sCopyNO >= GetCopyNum())
 		return false;
@@ -553,7 +545,7 @@ bool CMapRes::CopyClose(dbc::Short sCopyNO)
 		ToLogService("common", "close map copy {}{}", GetName(), sCopyNO);
 	if (sCopyNO < 0)
 	{
-		for (Short i = 0; i < m_sMapCpyNum; i++)
+		for (int16_t i = 0; i < m_sMapCpyNum; i++)
 		{
 			m_pCMapCopy[i].Close();
 		}
@@ -566,13 +558,13 @@ bool CMapRes::CopyClose(dbc::Short sCopyNO)
 	return true;
 }
 
-bool CMapRes::CopyNotice(const char *szString, dbc::Short sCopyNO)
+bool CMapRes::CopyNotice(const char *szString, int16_t sCopyNO)
 {
 	if (sCopyNO >= GetCopyNum())
 		return false;
 
 	if (sCopyNO < 0)
-		for (Short i = 0; i < m_sMapCpyNum; i++)
+		for (int16_t i = 0; i < m_sMapCpyNum; i++)
 			m_pCMapCopy[i].Notice(szString);
 	else
 		m_pCMapCopy[sCopyNO].Notice(szString);
@@ -581,12 +573,12 @@ bool CMapRes::CopyNotice(const char *szString, dbc::Short sCopyNO)
 }
 
 // 
-bool CMapRes::ReleaseCopy(dbc::Short sCopyNO)
+bool CMapRes::ReleaseCopy(int16_t sCopyNO)
 {
 	return SubEntryCopy(sCopyNO);
 }
 
-void CMapRes::CheckEntryState(dbc::Char chState)
+void CMapRes::CheckEntryState(char chState)
 {
 	if (chState == enumMAPENTRY_STATE_OPEN)
 	{
@@ -599,7 +591,7 @@ void CMapRes::CheckEntryState(dbc::Char chState)
 		{
 		}
 
-		for (Short i = 0; i < m_sMapCpyNum; i++)
+		for (int16_t i = 0; i < m_sMapCpyNum; i++)
 		{
 			if (GetCopyStartType() == enumMAPCOPY_START_NOW)
 				m_pCMapCopy[i].Open();
@@ -628,12 +620,12 @@ SubMap* CMapRes::GetNextUsedCopy(void)
 	if (!m_pCMapCopy)
 		return NULL;
 
-	Short	sCopyNum = GetCopyNum();
+	int16_t	sCopyNum = GetCopyNum();
 
 	if (m_sUsedCopySearch >= sCopyNum)
 		return NULL;
 
-	for (Short i = m_sUsedCopySearch; i < sCopyNum; i++)
+	for (int16_t i = m_sUsedCopySearch; i < sCopyNum; i++)
 	{
 		m_sUsedCopySearch = i + 1;
 		if (m_pCMapCopy[i].IsRun())
@@ -667,7 +659,7 @@ CAreaData::~CAreaData()
 	Free();
 }
 
-Long CAreaData::Init(_TCHAR *chFile)
+std::int32_t CAreaData::Init(_TCHAR *chFile)
 {
 	if ((m_nID = Corsairs::Common::World::s_openAttribFile(chFile)) == -1)
 		return 0;
@@ -675,8 +667,8 @@ Long CAreaData::Init(_TCHAR *chFile)
 	unsigned int nWidth, nHeight;
 	Corsairs::Common::World::s_getAttribFileInfo(m_nID, nWidth, nHeight);
 
-	m_sUnitCountX = (Short)nWidth;
-	m_sUnitCountY = (Short)nHeight;
+	m_sUnitCountX = (int16_t)nWidth;
+	m_sUnitCountY = (int16_t)nHeight;
 
 	return 1;
 }
@@ -685,7 +677,7 @@ void CAreaData::Free()
 {
 }
 
-bool CAreaData::GetUnitSize(Short *psWidth, Short *psHeight)
+bool CAreaData::GetUnitSize(int16_t *psWidth, int16_t *psHeight)
 {
 	*psWidth = m_sUnitWidth;
 	*psHeight = m_sUnitHeight;
@@ -693,7 +685,7 @@ bool CAreaData::GetUnitSize(Short *psWidth, Short *psHeight)
 	return true;
 }
 
-bool CAreaData::GetUnitAttr(Short sUnitX, Short sUnitY, uShort &usAttribute)
+bool CAreaData::GetUnitAttr(int16_t sUnitX, int16_t sUnitY, std::uint16_t &usAttribute)
 {
 	if (m_nID == -1)
 		return false;
@@ -702,7 +694,7 @@ bool CAreaData::GetUnitAttr(Short sUnitX, Short sUnitY, uShort &usAttribute)
 	return Corsairs::Common::World::s_getTileAttrib(m_nID, sUnitX, sUnitY, usAttribute);
 }
 
-bool CAreaData::GetUnitIsland(Short sUnitX, Short sUnitY, uChar &uchIsland)
+bool CAreaData::GetUnitIsland(int16_t sUnitX, int16_t sUnitY, std::uint8_t &uchIsland)
 {
 	if (m_nID == -1)
 		return false;
@@ -781,19 +773,19 @@ BOOL CMapID::SetMap( BYTE byID, CMapRes* pMap )
 // Ранее inline-методы из MapRes.h, вынесены в .cpp 2026-04-22.
 // ============================================================================
 
-dbc::Short CAreaData::GetWidth()  { return m_sUnitCountX; }
-dbc::Short CAreaData::GetHeight() { return m_sUnitCountY; }
+int16_t CAreaData::GetWidth()  { return m_sUnitCountX; }
+int16_t CAreaData::GetHeight() { return m_sUnitCountY; }
 
-bool CAreaData::IsValidPos(dbc::Short sUnitX, dbc::Short sUnitY) {
+bool CAreaData::IsValidPos(int16_t sUnitX, int16_t sUnitY) {
 	if (sUnitX < 0 || sUnitX >= GetWidth() || sUnitY < 0 || sUnitY >= GetHeight()) return false;
 	return true;
 }
 
 bool       CMapRes::IsValid(void) { return m_bValid; }
 bool       CMapRes::IsOpen(void)  { return m_bValid && m_chState == enumMAP_STATE_OPEN; }
-dbc::Short CMapRes::GetCopyNum(void)                 { return m_sMapCpyNum; }
-void       CMapRes::SetCopyPlyNum(dbc::Short sPlyNum) { m_sCopyPlyNum = sPlyNum; }
-dbc::Short CMapRes::GetCopyPlyNum(void)              { return m_sCopyPlyNum; }
+int16_t CMapRes::GetCopyNum(void)                 { return m_sMapCpyNum; }
+void       CMapRes::SetCopyPlyNum(int16_t sPlyNum) { m_sCopyPlyNum = sPlyNum; }
+int16_t CMapRes::GetCopyPlyNum(void)              { return m_sCopyPlyNum; }
 
 bool       CMapRes::HasDynEntry(void)                { return strcmp(m_szEntryMapName, "") != 0; }
 
@@ -810,22 +802,22 @@ bool       CMapRes::CanTeam(void)                    { return m_bCanTeam; }
 bool       CMapRes::CanStall(void)                   { return m_bCanStall; }
 bool       CMapRes::CanGuild(void)                   { return m_bCanGuild; }
 
-void       CMapRes::SetType(dbc::Char chType)        { m_chType = chType; }
-dbc::Char  CMapRes::GetType(void)                    { return m_chType; }
+void       CMapRes::SetType(char chType)        { m_chType = chType; }
+char  CMapRes::GetType(void)                    { return m_chType; }
 
-void       CMapRes::SetCopyStartType(dbc::Char chStartType) { m_chCopyStartType = chStartType; }
-dbc::Char  CMapRes::GetCopyStartType(void)           { return m_chCopyStartType; }
+void       CMapRes::SetCopyStartType(char chStartType) { m_chCopyStartType = chStartType; }
+char  CMapRes::GetCopyStartType(void)           { return m_chCopyStartType; }
 
-void       CMapRes::SetCopyStartCondition(dbc::Char chType, dbc::Long lVal) {
+void       CMapRes::SetCopyStartCondition(char chType, std::int32_t lVal) {
 	m_chCopyStartCdtType = chType;
 	m_lCopyStartCdtVal = lVal;
 }
-dbc::Char  CMapRes::GetCopyStartCdtType(void)        { return m_chCopyStartCdtType; }
-dbc::Long  CMapRes::GetCopyStartCdtVal(void)         { return m_lCopyStartCdtVal; }
+char  CMapRes::GetCopyStartCdtType(void)        { return m_chCopyStartCdtType; }
+std::int32_t  CMapRes::GetCopyStartCdtVal(void)         { return m_lCopyStartCdtVal; }
 
-void        CMapRes::SetName(dbc::cChar* cszName)    { m_strMapName = cszName; }
+void        CMapRes::SetName(const char* cszName)    { m_strMapName = cszName; }
 const char* CMapRes::GetName(void)                   { return m_strMapName.c_str(); }
-const Rect& CMapRes::GetRange(void)                  { return m_SRange; }
+const Corsairs::Util::Rect& CMapRes::GetRange(void)                  { return m_SRange; }
 BYTE        CMapRes::GetMapID()                      { return m_byMapID; }
 
 void       CMapRes::SetRepatriateDie(bool bRepatriate) { m_bRepatriateDie = bRepatriate; }

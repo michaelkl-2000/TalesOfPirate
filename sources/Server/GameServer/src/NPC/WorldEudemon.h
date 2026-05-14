@@ -22,7 +22,7 @@ namespace mission
 		virtual HRESULT MsgProc( CCharacter& character, Corsairs::Net::RPacket& packet );
 		
 		// 
-		virtual BOOL Load( const char szMsgProc[], const char szName[], dbc::uLong ulID );
+		virtual BOOL Load( const char szMsgProc[], const char szName[], std::uint32_t ulID );
 
 	private:
 		// 

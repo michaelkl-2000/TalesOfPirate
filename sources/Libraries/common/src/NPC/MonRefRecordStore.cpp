@@ -11,7 +11,7 @@
 #include <vector>
 
 #include <logutil.h>
-#include <util2.h>
+#include <util.h>
 
 
 namespace Corsairs::Common::NPC {
@@ -88,7 +88,7 @@ bool MonRefRecordStore::Load(const char* txtPath) {
 			strLine.resize(pos);
 		}
 
-		int n = Util_ResolveTextLine(strLine.c_str(), fields.get(), MAX_FIELDS + 1, '\t');
+		int n = Corsairs::Util::ResolveTextLine(strLine.c_str(), fields.get(), MAX_FIELDS + 1, '\t');
 		if (n < 2) {
 			continue;
 		}
@@ -104,17 +104,17 @@ bool MonRefRecordStore::Load(const char* txtPath) {
 		// [7] refreshTime CSV
 		// [8,9] commotion/note — игнорируются
 		CMonRefRecord r{};
-		r.Id = Str2Int(fields[0]);
+		r.Id = Corsairs::Util::Str2Int(fields[0]);
 		r.lID = r.Id;
 
 		auto [x0, y0] = ParseXY(fields[1]);
 		auto [x1, y1] = n > 2 ? ParseXY(fields[2]) : std::pair<int, int>{0, 0};
-		r.SRegion[0].x = x0;
-		r.SRegion[0].y = y0;
-		r.SRegion[1].x = x1;
-		r.SRegion[1].y = y1;
+		r.SRegion[0].X = x0;
+		r.SRegion[0].Y = y0;
+		r.SRegion[1].X = x1;
+		r.SRegion[1].Y = y1;
 
-		r.sAngle = n > 3 ? static_cast<short>(Str2Int(fields[3])) : -1;
+		r.sAngle = n > 3 ? static_cast<short>(Corsairs::Util::Str2Int(fields[3])) : -1;
 
 		auto ids   = n > 4 ? ParseIntCsv(fields[4], defMAX_REGION_MONSTER_TYPE) : std::vector<int>{};
 		auto cnts  = n > 5 ? ParseIntCsv(fields[5], defMAX_REGION_MONSTER_TYPE) : std::vector<int>{};

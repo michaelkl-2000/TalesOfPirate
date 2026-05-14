@@ -22,7 +22,7 @@ public:
 	DWORD hand_num{0};
 	DWORD foot_num{0};
 	DWORD profession{0};
-	char description[1024]{};
+	std::string description{""};
 };
 
 } // namespace Corsairs::Common::Character

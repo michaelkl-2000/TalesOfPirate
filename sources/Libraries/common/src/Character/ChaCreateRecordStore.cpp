@@ -47,11 +47,7 @@ GameRecordset<CChaCreateInfo>::RecordEntry ChaCreateRecordStore::ReadRecord(Sqli
 	record.foot_num = ParseDwordArray(stmt.GetText(col++), record.foot, 64);
 
 	record.profession = static_cast<DWORD>(stmt.GetInt(col++));
-
-	{
-		auto text = stmt.GetText(col++);
-		strncpy(record.description, text.data(), sizeof(record.description) - 1);
-	}
+	record.description = stmt.GetText(col++);
 
 	std::string name(record.DataName);
 	return {record.Id, std::move(name), std::move(record)};

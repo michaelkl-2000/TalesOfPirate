@@ -66,7 +66,7 @@ namespace mission
 			return FALSE;
 		}
 
-		if( character.m_CKitbag.IsLock() || !character.GetActControl(enumACTCONTROL_ITEM_OPT) )
+		if( character.m_CKitbag.IsLock() || !character.GetActControl(ActControl::ITEM_OPT) )
 		{
 			//character.SystemNotice( "" );
 			character.SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00005) );
@@ -147,7 +147,7 @@ namespace mission
 			return FALSE;
 		}
 
-		if( pChar->m_CKitbag.IsLock() || !pChar->GetActControl(enumACTCONTROL_ITEM_OPT) )
+		if( pChar->m_CKitbag.IsLock() || !pChar->GetActControl(ActControl::ITEM_OPT) )
 		{
 			//character.SystemNotice( "%s", pChar->GetName() );
 			character.SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00015), pChar->GetName() );
@@ -251,7 +251,7 @@ namespace mission
 			return FALSE;
 		}
 
-		if( character.m_CKitbag.IsLock() || !character.GetActControl(enumACTCONTROL_ITEM_OPT) )
+		if( character.m_CKitbag.IsLock() || !character.GetActControl(ActControl::ITEM_OPT) )
 		{
 			//character.SystemNotice( "" );
 			character.SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00005) );
@@ -350,7 +350,7 @@ namespace mission
 			return FALSE;
 		}
 
-		if( pChar->m_CKitbag.IsLock() || !pChar->GetActControl(enumACTCONTROL_ITEM_OPT) )
+		if( pChar->m_CKitbag.IsLock() || !pChar->GetActControl(ActControl::ITEM_OPT) )
 		{
 			//pChar->SystemNotice( "" );
 			pChar->SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00005) );

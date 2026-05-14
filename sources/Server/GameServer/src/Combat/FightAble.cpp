@@ -202,8 +202,8 @@ void CFightAble::OnFight(uLong ulCurTick)
 
 	if (m_SFightProc.sState == enumFSTATE_ON)
 		if (m_SFightInit.pSSkillGrid->chState != enumSUSTATE_ACTIVE // 
-			|| (m_SFightInit.pCSkillTData->lResumeTime == 0 && !IsCharacter()->GetActControl(enumACTCONTROL_USE_GSKILL)) // 
-			|| (m_SFightInit.pCSkillTData->lResumeTime > 0 && !IsCharacter()->GetActControl(enumACTCONTROL_USE_MSKILL))) // 
+			|| (m_SFightInit.pCSkillTData->lResumeTime == 0 && !IsCharacter()->GetActControl(ActControl::USE_GSKILL)) // 
+			|| (m_SFightInit.pCSkillTData->lResumeTime > 0 && !IsCharacter()->GetActControl(ActControl::USE_MSKILL))) // 
 		{
 			m_SFightProc.sState = enumFSTATE_CANCEL; // 
 			NotiSkillSrcToEyeshot();
@@ -1563,13 +1563,13 @@ bool CFightAble::IsRightSkillTar(CFightAble *pSkillSrc, Char chSkillObjType, Cha
 	if (!bIncHider)
 		if (IsCharacter()->IsHide())
 			return false;
-	if (!IsCharacter()->GetActControl(enumACTCONTROL_INVINCIBLE))
+	if (!IsCharacter()->GetActControl(ActControl::INVINCIBLE))
 		return false;
 
 	bool	bIsTeammate = pSkillSrc->IsTeammate(this);
 	bool	bIsFriend = pSkillSrc->IsFriend(this);
 
-	int nCheckRet = g_IsRightSkillTar((long)m_CChaAttr.GetAttr(ATTR_CHATYPE), !IsLiveing(), IsCharacter()->GetActControl(enumACTCONTROL_BEUSE_SKILL), GetAreaAttr(),
+	int nCheckRet = g_IsRightSkillTar((long)m_CChaAttr.GetAttr(ATTR_CHATYPE), !IsLiveing(), IsCharacter()->GetActControl(ActControl::BEUSE_SKILL), GetAreaAttr(),
 						(long)pSkillSrc->m_CChaAttr.GetAttr(ATTR_CHATYPE), chSkillObjType, chSkillObjHabitat, chSkillEffType, bIsTeammate, bIsFriend, pSkillSrc == this);
 	if (nCheckRet != enumESKILL_SUCCESS)
 		return false;

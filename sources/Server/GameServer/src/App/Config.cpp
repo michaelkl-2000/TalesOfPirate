@@ -3,6 +3,8 @@
 #include "IniFile.h"
 #include "Core/StringLib.h"
 
+#include <filesystem>
+
 using namespace std;
 
 char	szConfigFileN[defCONFIG_FILE_NAME_LEN] = "GameServer00.cfg";
@@ -20,6 +22,7 @@ void CGameConfig::SetDefault()
 	m_lSocketAlive = 1;
 	m_mapList.clear();
 	m_mapOK.clear();
+	m_loadAllMaps = false;
 	strcpy(m_szDBIP,  "192.168.1.233");
 	strcpy(m_szDBUsr,  "usr");
 	strcpy(m_szDBPass, "22222");
@@ -40,6 +43,8 @@ void CGameConfig::SetDefault()
 	m_lSayInterval  =  3  * 1000;
 
 	m_chMapMask = 1;
+	m_mapMaskRadius = 0;
+	m_fogOfWarMaps = {"garner", "magicsea", "darkblue", "winterland"};
 	m_lDBSave = 20 * 60 * 1000;
 
 	strcpy(m_szResDir, "");
@@ -89,8 +94,10 @@ bool CGameConfig::Load(char *pszFileName)
 	}
 
 	// [Map] — список карт через запятую: maps = garner, lonetower, teampk
+	// Если maps_all = 1, явный список maps игнорируется, карты подбираются
+	// автоматически после чтения [Res] (см. ниже).
 	m_mapList = SplitString(cfg["Map"].GetString("maps"));
-	m_mapOK.resize(m_mapList.size(), 0);
+	m_loadAllMaps = (cfg["Map"].GetInt64("maps_all", 0) != 0);
 
 	// [Database]
 	auto& db = cfg["Database"];
@@ -154,8 +161,42 @@ bool CGameConfig::Load(char *pszFileName)
 	strncpy_s(m_szResDir, sizeof(m_szResDir), res.GetString("res_dir", m_szResDir).c_str(), _TRUNCATE);
 	strncpy_s(m_szLogDir, sizeof(m_szLogDir), res.GetString("log_dir", m_szLogDir).c_str(), _TRUNCATE);
 
+	// Autodiscover карт после того, как мы узнали m_szResDir.
+	// Карта = поддиректория resource, в которой лежит файл <name>/<name>.blk.
+	if (m_loadAllMaps && m_szResDir[0] != '\0') {
+		namespace fs = std::filesystem;
+		std::vector<std::string> discovered;
+		std::error_code ec;
+		const fs::path base{m_szResDir};
+		if (fs::is_directory(base, ec)) {
+			for (const auto& entry : fs::directory_iterator(base, ec)) {
+				if (!entry.is_directory(ec)) {
+					continue;
+				}
+				const auto name = entry.path().filename().string();
+				const auto blkPath = entry.path() / (name + ".blk");
+				if (fs::exists(blkPath, ec)) {
+					discovered.push_back(name);
+				}
+			}
+		}
+		std::sort(discovered.begin(), discovered.end());
+		m_mapList = std::move(discovered);
+	}
+	m_mapOK.assign(m_mapList.size(), 0);
+
 	// [Large map switch]
-	m_chMapMask = static_cast<char>(cfg["Large map switch"].GetInt64("db_mapmask", m_chMapMask));
+	m_chMapMask     = static_cast<char>(cfg["Large map switch"].GetInt64("db_mapmask",  m_chMapMask));
+	m_mapMaskRadius = static_cast<std::int32_t>(cfg["Large map switch"].GetInt64("mmask_radius", m_mapMaskRadius));
+	// fog_maps — список карт с fog-of-war. Если ключ отсутствует, остаётся default.
+	// Реальная сериализация в БД (map_mask.content1..content5) ограничена набором имён,
+	// известных CTableMapMask::GetColNameByMapName — лишние имена не сохранятся.
+	{
+		const auto fogMapsStr = cfg["Large map switch"].GetString("fog_maps");
+		if (!fogMapsStr.empty()) {
+			m_fogOfWarMaps = SplitString(fogMapsStr);
+		}
+	}
 
 	// [Corsairs]
 	auto& corsairs = cfg["Corsairs"];

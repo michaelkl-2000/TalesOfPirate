@@ -12980,6 +12980,9 @@ namespace Corsairs::Net {
 			int64_t worldId = 0;
 			bool hasData = false;
 			std::vector<char> data; //
+			// Признак включённого fog-of-war на сервере. По умолчанию true для обратной
+			// совместимости со старыми пакетами без этого поля (см. deserialize).
+			bool fogOfWarEnabled = true;
 		};
 
 		//  Struct: CMD_MC_CHECK_PING
@@ -13170,6 +13173,7 @@ namespace Corsairs::Net {
 				w.WriteInt64(1);
 				w.WriteSequence(m.data.data(), static_cast<uint16_t>(m.data.size()));
 			}
+			w.WriteInt64(m.fogOfWarEnabled ? 1 : 0);
 			return w;
 		}
 
@@ -13390,6 +13394,9 @@ namespace Corsairs::Net {
 				auto* ptr = pk.ReadSequence(len);
 				m.data.assign(ptr, ptr + len);
 			}
+			// fogOfWarEnabled добавлено позже — у старых серверов поля нет; в таком случае
+			// считаем fog-of-war включённым (исторически дефолтное поведение).
+			m.fogOfWarEnabled = (pk.RemainingBytes() > 0) ? (pk.ReadInt64() != 0) : true;
 		}
 
 		//  Deserialize: McCheatCheckMessage

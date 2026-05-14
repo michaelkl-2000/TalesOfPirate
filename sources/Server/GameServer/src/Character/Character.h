@@ -15,6 +15,15 @@
 #include "Inventory/Kitbag.h"
 #include "Inventory/ShipSet.h"
 #include "Combat/Action.h"
+#include "Character/ChaAction.h"
+
+#include <array>
+#include <utility>
+
+// Краткий доступ к типам ChaAction.h на уровне файла — чтобы колсайты
+// CCharacter могли писать ActControl::MOVE вместо полного квалификатора.
+using ActControl = Corsairs::Common::Character::ActControl;
+inline constexpr auto kActControlCount = Corsairs::Common::Character::kActControlCount;
 
 #define defMAX_ITEM_NUM			10
 #define defCHA_SCRIPT_TIMER		1 * 1000
@@ -58,24 +67,6 @@ struct SCheatX
 	DWORD dwLastTime;	//
 	DWORD dwInterval;	//
 	std::string Xnum;		//X number
-};
-
-enum EActControl
-{
-	enumACTCONTROL_MOVE,		// 
-	enumACTCONTROL_USE_GSKILL,	// 
-	enumACTCONTROL_USE_MSKILL,	// 
-	enumACTCONTROL_BEUSE_SKILL,	// 
-	enumACTCONTROL_TRADE,		// 
-	enumACTCONTROL_USE_ITEM,	// 
-	enumACTCONTROL_BEUSE_ITEM,	// 
-	enumACTCONTROL_INVINCIBLE,	// 
-	enumACTCONTROL_EYESHOT,		// 
-	enumACTCONTROL_NOHIDE,		// 
-	enumACTCONTROL_NOSHOW,		// 
-	enumACTCONTROL_ITEM_OPT,	// 
-	enumACTCONTROL_TALKTO_NPC,	// NPC
-	enumACTCONTROL_MAX,
 };
 
 enum ESwitchMapType
@@ -415,7 +406,7 @@ public:
 	bool	DelSkillState(dbc::uChar uchStateID, bool bNotice = true); // 
 
 	//
-	bool	GetActControl(dbc::Char chCtrlType);
+	bool	GetActControl(Corsairs::Common::Character::ActControl ctrlType) const;
 	void	Hide();
 	void	Show();
 
@@ -771,7 +762,7 @@ public:
 
 	long	ExecuteEvent(Entity *pCObj, dbc::uShort usEventID);
 
-	void	SetActControl(dbc::Char chCtrlType, bool bSet = true);
+	void	SetActControl(Corsairs::Common::Character::ActControl ctrlType, bool set = true);
 
 	bool		CanLearnSkill(CSkillRecord *pCSkill, dbc::Char chToLv);
 	dbc::Short	CanEquipItem(dbc::Short sItemID);
@@ -797,7 +788,7 @@ public:
 	int					m_nPetNum;
 	
 	stNetChangeChaPart	m_SChaPart;
-	bool				m_ActContrl[enumACTCONTROL_MAX];	// 
+	std::array<bool, Corsairs::Common::Character::kActControlCount> _actControl{}; //
 	CTimer				m_timerScripts;						// HPSP
 
 	CHateMgr*			m_pHate;							// 

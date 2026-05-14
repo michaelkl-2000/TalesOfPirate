@@ -43,7 +43,7 @@ public:
 	}
 
 private:
-	char _szAttr[MAX_ATTR_CLIENT];
+	char _szAttr[ATTR_CLIENT_MAX];
 };
 
 class CAttackEffect : public CStateSynchro {

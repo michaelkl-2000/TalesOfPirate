@@ -97,7 +97,7 @@ int GetChaAttr_raw(lua_State* pLS) {
 
 	int nAttrVal = pCCha->getAttr(sAttrIndex);
 
-	if (nAttrVal < 0 && g_IsNosignChaAttr(sAttrIndex))
+	if (nAttrVal < 0 && IsExpAttr(sAttrIndex))
 		lua_pushnumber(pLS, (double)(unsigned int)nAttrVal);
 	else
 		lua_pushnumber(pLS, (double)nAttrVal);

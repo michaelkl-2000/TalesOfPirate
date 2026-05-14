@@ -17,7 +17,8 @@
 #include "UIMiniMapForm.h"
 #include "UIBoxForm.h"
 
-CMaskData* CMaskData::g_MaskData = NULL;
+using Corsairs::Client::Tools::MapMaskOverlay;
+using Corsairs::Client::Tools::g_pMapMaskOverlay;
 
 BOOL PosInRange(D3DXVECTOR3& pos, D3DXVECTOR3& Org, float fRange) {
 	//return ((pos.x > (Org.x - fRange)) && (pos.x < (Org.x + fRange))
@@ -2329,8 +2330,8 @@ void CLargerMap::InitScene() {
 				delete _pMiniPack;
 		}
 	}
-	if (!CMaskData::g_MaskData && m_pScene && m_pScene->GetTerrain()) {
-		CMaskData::g_MaskData = new CMaskData;
+	if (!g_pMapMaskOverlay && m_pScene && m_pScene->GetTerrain()) {
+		g_pMapMaskOverlay = new MapMaskOverlay;
 	}
 	_bUpdate = FALSE;
 }
@@ -2371,7 +2372,7 @@ void CLargerMap::Show(bool bShow) {
 		return;
 	}
 
-	if (!CMaskData::g_MaskData)
+	if (!g_pMapMaskOverlay)
 		return;
 
 	m_pScene = CGameApp::GetCurScene();
@@ -2454,8 +2455,8 @@ void CLargerMap::Update(int x, int y) {
 				_pTex[idx] = _pTexMask;
 			}
 			else {
-				if (CMaskData::g_MaskData) {
-					if (CMaskData::g_MaskData->GetMask((_sx + n) / 2, (_sy + m) / 2)) {
+				if (g_pMapMaskOverlay) {
+					if (g_pMapMaskOverlay->GetMask((_sx + n) / 2, (_sy + m) / 2)) {
 						vecColor[idx + 1] = iColor;
 						vecColor[idx + 1 + 1] = iColor;
 
@@ -2542,19 +2543,19 @@ void CLargerMap::Update(int x, int y) {
 		}
 	}
 
-	if (CMaskData::g_MaskData) {
+	if (g_pMapMaskOverlay) {
 		fInf = 0;
-		int ty = CMaskData::g_MaskData->iNumY;
-		int tx = CMaskData::g_MaskData->iNumX;
+		const int ty = g_pMapMaskOverlay->NumY();
+		const int tx = g_pMapMaskOverlay->NumX();
 
 		for (int m = 0; m < ty; m++) {
 			for (int n = 0; n < tx; n++) {
-				if (CMaskData::g_MaskData->GetMask(n, m)) {
+				if (g_pMapMaskOverlay->GetMask(n, m)) {
 					fInf += 1;
 				}
 			}
 		}
-		fInf /= float((CMaskData::g_MaskData->iNumX) * (CMaskData::g_MaskData->iNumY));
+		fInf /= float(tx * ty);
 		fInf *= 100;
 		//id1 = (int)fInf * 100;
 		//id2 = (int)(fInf * 10000) - id1;

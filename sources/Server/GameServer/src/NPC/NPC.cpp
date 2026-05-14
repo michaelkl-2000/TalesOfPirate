@@ -250,7 +250,7 @@ namespace mission
 			return EN_FAILER;
 		}
 
-		if( !GetActControl(enumACTCONTROL_TALKTO_NPC) )
+		if( !GetActControl(ActControl::TALKTO_NPC) )
 		{
 			//character.SystemNotice( "npc!" );
 			character.SystemNotice( RES_STRING(GM_NPC_CPP_00007) );
@@ -258,7 +258,7 @@ namespace mission
 		}
 
 		// 
-		if( character.m_CKitbag.IsLock() || !character.GetActControl(enumACTCONTROL_ITEM_OPT) )
+		if( character.m_CKitbag.IsLock() || !character.GetActControl(ActControl::ITEM_OPT) )
 		{
 			//character.SystemNotice( "npc!" );
 			character.SystemNotice( RES_STRING(GM_NPC_CPP_00008) );

@@ -57,7 +57,6 @@ public class Character
     public int MapY { get; set; }
     public int Radius { get; set; }
     public int Angle { get; set; }
-    public string MapMask { get; set; } = string.Empty;
 
     // --- Рождение / логин ---
     public string BirthCity { get; set; } = string.Empty;
@@ -130,6 +129,27 @@ public class Character
     public ICollection<Mentorship> MentorshipsAsMaster { get; set; } = [];
     public ICollection<Mentorship> MentorshipsAsPrentice { get; set; } = [];
     public ICollection<CharacterResource> Resources { get; set; } = [];
+    public ICollection<PlayerMapMask> MapMasks { get; set; } = [];
+}
+
+/// <summary>Маска fog-of-war: посещённые игроком клетки карты, одна запись на (персонаж, карта).
+/// Сериализуется как base64 битмассива через PlayerMapMask::SaveBase64 на стороне GameServer.</summary>
+public class PlayerMapMask
+{
+    public int Id { get; set; }
+
+    /// <summary>FK -> Character.Id (в БД колонка atorID, исторически "actor ID").</summary>
+    public int CharacterId { get; set; }
+
+    /// <summary>Имя карты (соответствует g_Config.m_fogOfWarMaps в GameServer).</summary>
+    public string MapName { get; set; } = string.Empty;
+
+    /// <summary>Base64 битмассива посещённых клеток (см. PlayerMapMask::SaveBase64 в C++).</summary>
+    public string MaskData { get; set; } = string.Empty;
+
+    public DateTime UpdatedAt { get; set; }
+
+    public Character Character { get; set; } = null!;
 }
 
 /// <summary>Персональная информация персонажа (профиль).</summary>

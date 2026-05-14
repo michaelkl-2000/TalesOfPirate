@@ -400,7 +400,7 @@ static void convertAttr(const Corsairs::Net::Msg::ChaAttrInfo& src, stNetChaAttr
 	memset(&dst, 0, sizeof(dst));
 	dst.chType = static_cast<char>(src.synType);
 	dst.sNum = static_cast<short>(src.attrs.size());
-	for (short i = 0; i < dst.sNum && i < MAX_ATTR_CLIENT; ++i) {
+	for (short i = 0; i < dst.sNum && i < ATTR_CLIENT_MAX; ++i) {
 		dst.SEff[i].lAttrID = static_cast<long>(src.attrs[i].attrId);
 		dst.SEff[i].lVal = static_cast<LONG64>(src.attrs[i].attrVal);
 	}
@@ -2602,7 +2602,7 @@ BOOL SC_MapMask(LPRPACKET pk) {
 	BYTE* pMapMask = msg.hasData ? reinterpret_cast<BYTE*>(msg.data.data()) : nullptr;
 	uShort usLen = static_cast<uShort>(msg.data.size());
 
-	NetMapMask(l_id, pMapMask, usLen);
+	NetMapMask(l_id, pMapMask, usLen, msg.fogOfWarEnabled);
 
 	return TRUE;
 }

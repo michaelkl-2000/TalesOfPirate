@@ -328,7 +328,6 @@ extern CGameApp*        g_pGameApp;
 extern std::unordered_map<int, CItemRecordAttr> g_itemAttrMap;
 extern CCharacter*		g_pCSystemCha;		//
 extern SubMap *			g_pScriptMap;		//
-extern long				g_lDeftMMaskLight;	//
 extern std::string			g_strChaState[2];	// 01
 extern uLong			g_ulCurID;
 extern Long				g_lCurHandle;

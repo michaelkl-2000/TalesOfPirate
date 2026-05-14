@@ -29,7 +29,7 @@ enum NODE_TYPE {
 };
 
 struct SGameAttr {
-	long lAttr[Corsairs::Common::Character::MAX_ATTR_CLIENT];
+	long lAttr[Corsairs::Common::Character::ATTR_CLIENT_MAX];
 
 	SGameAttr() {
 		clear();

@@ -24,6 +24,7 @@ public class GameDbContext : DbContext
     // --- Геймплей ---
     public DbSet<Boat> Boats => Set<Boat>();
     public DbSet<CharacterResource> CharacterResources => Set<CharacterResource>();
+    public DbSet<PlayerMapMask> PlayerMapMasks => Set<PlayerMapMask>();
 
     // --- Параметры ---
     public DbSet<ServerParam> ServerParams => Set<ServerParam>();
@@ -106,7 +107,6 @@ public class GameDbContext : DbContext
             e.Property(c => c.MapY).HasColumnName("map_y");
             e.Property(c => c.Radius).HasColumnName("radius");
             e.Property(c => c.Angle).HasColumnName("angle");
-            e.Property(c => c.MapMask).HasColumnName("map_mask").HasMaxLength(8000);
             e.Property(c => c.BirthCity).HasColumnName("birth").HasMaxLength(50);
             e.Property(c => c.LoginCha).HasColumnName("login_cha").HasMaxLength(50);
             // Gold (long) ↔ bomd (int): legacy хранит как int
@@ -359,6 +359,25 @@ public class GameDbContext : DbContext
             e.HasIndex(r => new { r.CharacterId, r.ResourceTypeId });
             e.HasOne(r => r.Character).WithMany(c => c.Resources)
                 .HasForeignKey(r => r.CharacterId);
+        });
+
+        // ═══════════════════════════════════════════════════════
+        // PlayerMapMask → [dbo].[player_map_masks]
+        // Замена legacy map_mask (single-row, 5 фикс. колонок); см.
+        // databases/migrate_player_map_masks.sql.
+        // ═══════════════════════════════════════════════════════
+        b.Entity<PlayerMapMask>(e =>
+        {
+            e.ToTable("player_map_masks");
+            e.HasKey(p => p.Id);
+            e.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            e.Property(p => p.CharacterId).HasColumnName("atorID");
+            e.Property(p => p.MapName).HasColumnName("map_name").HasMaxLength(32);
+            e.Property(p => p.MaskData).HasColumnName("mask_data");
+            e.Property(p => p.UpdatedAt).HasColumnName("updated_at");
+            e.HasIndex(p => new { p.CharacterId, p.MapName }).IsUnique();
+            e.HasOne(p => p.Character).WithMany(c => c.MapMasks)
+                .HasForeignKey(p => p.CharacterId).OnDelete(DeleteBehavior.Cascade);
         });
 
         // ═══════════════════════════════════════════════════════

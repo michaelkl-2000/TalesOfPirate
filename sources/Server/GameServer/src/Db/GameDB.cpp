@@ -142,7 +142,7 @@ bool PlayerStorage::ReadAllData(CPlayer& player, std::uint32_t atorID) {
 		lVer = defCHA_TABLE_NEW_VER;
 	}
 	pCha->SetPKCtrl(row->pk_ctrl);
-	strcpy(pCha->m_CChaAttr.m_szName, pCha->GetName());
+	pCha->m_CChaAttr.SetName(pCha->GetName());
 
 	// Уровень, класс, статы
 	pCha->setAttr(ATTR_LV, row->degree, 1);
@@ -227,8 +227,9 @@ bool PlayerStorage::ReadAllData(CPlayer& player, std::uint32_t atorID) {
 	pCha->SetKitbagRecDBID(Str2Int(row->kitbag));
 	pCha->SetKitbagTmpRecDBID(row->kitbag_tmp);
 
-	// Карта и состояние
-	player.SetMapMaskDBID(Str2Int(row->map_mask));
+	// Карта и состояние. character.map_mask больше не используется (исторический legacy
+	// FK на map_mask.id); fog-of-war теперь живёт в таблице player_map_masks с ключом
+	// (atorID, map_name).
 	g_strChaState[0] = row->skill_state;
 
 	auto bankData = row->bank;
@@ -556,17 +557,6 @@ Long PlayerStorage::GetChaAddr(std::uint32_t atorID) {
 	return static_cast<Long>(row->endeMem);
 }
 
-bool PlayerStorage::SaveMMaskDBID(CPlayer& pPlayer) {
-	if (!pPlayer.IsValid()) {
-		return false;
-	}
-	_characters.Execute(
-		"UPDATE character SET map_mask=? WHERE atorID=?",
-		static_cast<int>(pPlayer.GetMapMaskDBID()),
-		static_cast<int>(pPlayer.GetDBChaId()));
-	return true;
-}
-
 bool PlayerStorage::SaveBankDBID(CPlayer& pPlayer) {
 	if (!pPlayer.IsValid()) {
 		return false;
@@ -828,116 +818,98 @@ bool CTableResource::SaveBankData(CPlayer& pCPly, std::int8_t chBankNO) {
 }
 
 
-// === CTableMapMask (OdbcDatabase) ===
+// === CTableMapMask (per-(player, map) хранение) ===
 
-bool CTableMapMask::GetColNameByMapName(const std::string& szMapName, std::string& colName) {
-	if (szMapName.empty()) return false;
-	if (szMapName == "garner") {
-		colName = "content1";
-		return true;
-	}
-	if (szMapName == "magicsea") {
-		colName = "content2";
-		return true;
-	}
-	if (szMapName == "darkblue") {
-		colName = "content3";
-		return true;
-	}
-	if (szMapName == "winterland") {
-		colName = "content4";
-		return true;
-	}
-	return false;
-}
-
-bool CTableMapMask::Create(std::int32_t& lDBID, std::int32_t lChaId) {
-	try {
-		_db.CreateCommand("INSERT INTO map_mask (atorID) VALUES (?)").SetParam(1, lChaId).ExecuteNonQuery();
-		auto idStr = _db.CreateCommand("SELECT @@IDENTITY").ExecuteScalar();
-		lDBID = std::stol(idStr);
-		return true;
-	}
-	catch (const OdbcException& e) {
-		ToLogService("db", LogLevel::Error, "CTableMapMask::Create failed: {}", e.what());
-		return false;
-	}
-}
-
-bool CTableMapMask::ReadData(CPlayer& pCPly) {
+bool CTableMapMask::ReadAllMaps(CPlayer& pCPly) {
 	if (!pCPly.IsValid()) {
-		ToLogService("map", "Load map_mask error: player is null");
-		return false;
-	}
-	if (pCPly.GetMapMaskDBID() == 0) {
-		std::int32_t lDBID;
-		if (!Create(lDBID, pCPly.GetDBChaId())) {
-			return false;
-		}
-		pCPly.SetMapMaskDBID(lDBID);
-	}
-
-	std::string colName;
-	if (!GetColNameByMapName(pCPly.GetMaskMapName(), colName)) {
-		ToLogService("map", "map_mask: unknown map name");
+		ToLogService("map", "ReadAllMaps: player is null");
 		return false;
 	}
 
 	try {
-		// colName из фиксированного набора (content1..4), безопасно вставлять в SQL
-		auto sql = std::format("SELECT atorID, {} FROM map_mask WHERE id = ?", colName);
-		auto reader = _db.CreateCommand(sql).SetParam(1, pCPly.GetMapMaskDBID()).ExecuteReader();
-		if (reader.Read()) {
-			auto dbChaId = static_cast<DWORD>(reader.GetInt(0));
-			if (dbChaId != pCPly.GetDBChaId()) {
-				ToLogService("map", "map_mask: character mismatch");
-				return false;
-			}
-			pCPly.SetMapMaskBase64(reader.GetString(1).c_str());
-		}
-		else {
-			ToLogService("map", "map_mask: no data for id {}", pCPly.GetMapMaskDBID());
-			return false;
+		auto reader = _db.CreateCommand("SELECT map_name, mask_data FROM player_map_masks WHERE atorID = ?")
+		                 .SetParam(1, static_cast<int>(pCPly.GetDBChaId()))
+		                 .ExecuteReader();
+		while (reader.Read()) {
+			auto mapName = reader.GetString(0);
+			auto base64  = reader.GetString(1);
+			// Если карта не в g_Config.m_fogOfWarMaps, LoadBase64 вернёт false — это OK
+			// (например, карту удалили из cfg, старая маска просто игнорируется).
+			pCPly.LoadMapMaskBase64(mapName, base64);
 		}
 		return true;
 	}
 	catch (const OdbcException& e) {
-		ToLogService("db", LogLevel::Error, "CTableMapMask::ReadData failed: {}", e.what());
+		ToLogService("db", LogLevel::Error, "CTableMapMask::ReadAllMaps failed: {}", e.what());
 		return false;
 	}
 }
 
-bool CTableMapMask::SaveData(CPlayer& pCPly, bool bDirect) {
-	if (!pCPly.IsValid()) return false;
-
-	std::string colName;
-	if (!GetColNameByMapName(pCPly.GetMaskMapName(), colName)) {
-		ToLogService("map", "map_mask: unknown map name");
+bool CTableMapMask::SaveMap(CPlayer& pCPly, const std::string& mapName,
+                            const std::string& base64Data, bool bDirect) {
+	if (!pCPly.IsValid() || mapName.empty()) {
 		return false;
 	}
 
-	// colName из фиксированного набора (content1..4), безопасно
-	auto sql = std::format("UPDATE map_mask SET {} = ? WHERE id = ?", colName);
+	// MERGE = атомарный UPSERT по уникальному ключу (atorID, map_name).
+	constexpr const char* kMergeSql =
+		"MERGE INTO player_map_masks AS t "
+		"USING (VALUES (?, ?, ?)) AS s(atorID, map_name, mask_data) "
+		"ON t.atorID = s.atorID AND t.map_name = s.map_name "
+		"WHEN MATCHED THEN UPDATE SET mask_data = s.mask_data, updated_at = GETDATE() "
+		"WHEN NOT MATCHED THEN INSERT (atorID, map_name, mask_data) "
+		"VALUES (s.atorID, s.map_name, s.mask_data);";
+
+	const auto atorId = static_cast<int>(pCPly.GetDBChaId());
 
 	if (!bDirect) {
-		// Отложенное сохранение — собираем SQL в очередь
-		// Для отложенного нужно подставить значения сразу (очередь хранит готовые SQL)
-		auto fullSql = std::format("UPDATE map_mask SET {} = '{}' WHERE id = {}",
-								   colName, pCPly.GetMapMaskBase64(), pCPly.GetMapMaskDBID());
+		// Отложенное сохранение собирает готовый SQL в очередь. В base64-алфавите нет
+		// кавычек/спецсимволов, опасных для прямой подстановки, но всё равно экранируем
+		// одиночные кавычки для защиты от случайно непредвиденных символов.
+		std::string escaped;
+		escaped.reserve(base64Data.size() + 8);
+		for (char c : base64Data) {
+			if (c == '\'') {
+				escaped += "''";
+			}
+			else {
+				escaped += c;
+			}
+		}
+		std::string escapedName;
+		escapedName.reserve(mapName.size() + 4);
+		for (char c : mapName) {
+			if (c == '\'') {
+				escapedName += "''";
+			}
+			else {
+				escapedName += c;
+			}
+		}
+		auto fullSql = std::format(
+			"MERGE INTO player_map_masks AS t "
+			"USING (VALUES ({}, '{}', '{}')) AS s(atorID, map_name, mask_data) "
+			"ON t.atorID = s.atorID AND t.map_name = s.map_name "
+			"WHEN MATCHED THEN UPDATE SET mask_data = s.mask_data, updated_at = GETDATE() "
+			"WHEN NOT MATCHED THEN INSERT (atorID, map_name, mask_data) "
+			"VALUES (s.atorID, s.map_name, s.mask_data);",
+			atorId, escapedName, escaped);
 		_saveQueue.push_back(std::move(fullSql));
+		return true;
 	}
-	else {
-		try {
-			_db.CreateCommand(sql)
-			   .SetParam(1, std::string_view(pCPly.GetMapMaskBase64()))
-			   .SetParam(2, pCPly.GetMapMaskDBID()).ExecuteNonQuery();
-		}
-		catch (const OdbcException& e) {
-			ToLogService("db", LogLevel::Error, "CTableMapMask::SaveData failed: {}", e.what());
-			return false;
-		}
+
+	try {
+		_db.CreateCommand(kMergeSql)
+		   .SetParam(1, atorId)
+		   .SetParam(2, std::string_view(mapName))
+		   .SetParam(3, std::string_view(base64Data))
+		   .ExecuteNonQuery();
+		return true;
 	}
-	return true;
+	catch (const OdbcException& e) {
+		ToLogService("db", LogLevel::Error, "CTableMapMask::SaveMap failed: {}", e.what());
+		return false;
+	}
 }
 
 void CTableMapMask::HandleSaveList() {
@@ -1267,7 +1239,6 @@ bool CGameDB::ReadPlayer(CPlayer& pPlayer, std::uint32_t atorID) {
 
 	long lKbDBID = pPlayer.GetMainCha()->GetKitbagRecDBID();
 	long lkbTmpDBID = pPlayer.GetMainCha()->GetKitbagTmpRecDBID(); //ID
-	long lMMaskDBID = pPlayer.GetMapMaskDBID();
 	long lBankNum = pPlayer.GetCurBankNum();
 	if (!_tab_res.ReadKitbagData(*pPlayer.GetMainCha()))
 		return false;
@@ -1288,12 +1259,12 @@ bool CGameDB::ReadPlayer(CPlayer& pPlayer, std::uint32_t atorID) {
 		if (!_tab_cha.SaveBankDBID(pPlayer))
 			return false;
 
-	//if (g_Config.m_chMapMask > 0)
-	{
-		//
-		_tab_mmask.ReadData(pPlayer);
-		if (lMMaskDBID == 0)
-			SavePlayerMMaskDBID(pPlayer);
+	if (g_Config.m_chMapMask > 0) {
+		// Загружаем все маски игрока одним SELECT'ом. PlayerMapMask::LoadBase64
+		// проигнорирует маски карт, которых нет в g_Config.m_fogOfWarMaps
+		// (например, при удалении карты из cfg маска осиротеет, но не упадёт).
+		_tab_mmask.ReadAllMaps(pPlayer);
+		pPlayer.ClearDirtyFogMaps();
 	}
 
 	// Чтение данных аккаунта через типизированную таблицу
@@ -1427,13 +1398,24 @@ bool CGameDB::SavePlayer(CPlayer& pPlayer, std::int8_t chSaveType, bool bForceWi
 		bSaveBank = _tab_res.SaveBankData(pPlayer);
 		DWORD dwSaveBankTick = GetTickCount();
 		if ((chSaveType != enumSAVE_TYPE_TIMER) && (g_Config.m_chMapMask > 0)) {
-			if (pPlayer.IsMapMaskChange()) {
-				bSaveMMask = _tab_mmask.SaveData(pPlayer);
-				pPlayer.ResetMapMaskChange();
+			bSaveMMask = true;
+			if (pPlayer.HasDirtyFogMaps()) {
+				// Сохраняем только те карты, что менялись с последнего сейва.
+				// Снимок dirty-set'а, чтобы безопасно итерироваться, даже если
+				// SaveMap по какой-то причине дёрнет change-флаг.
+				const auto dirtySnapshot = pPlayer.GetDirtyFogMaps();
+				for (const auto& mapName : dirtySnapshot) {
+					const auto base64 = pPlayer.SaveMapMaskBase64(mapName);
+					if (!_tab_mmask.SaveMap(pPlayer, mapName, base64, /*bDirect=*/false)) {
+						bSaveMMask = false;
+					}
+				}
+				pPlayer.ClearDirtyFogMaps();
 			}
 		}
-		else
+		else {
 			bSaveMMask = true;
+		}
 		DWORD dwSaveMMaskTick = GetTickCount();
 		bSaveBoat = _tab_boat.SaveAllData(pPlayer, chSaveType); //
 		DWORD dwSaveBoatTick = GetTickCount();
@@ -3019,7 +3001,6 @@ CGameDB::CGameDB()
 	  , _friends(_db)
 	  , _guilds(_db)
 	  , _lotterySettings(_db)
-	  , _mapMasks(_db)
 	  , _masters(_db)
 	  , _params(_db)
 	  , _personAvatars(_db)
@@ -3831,9 +3812,6 @@ bool CGameDB::SavePlayerKBagTmpDBID(CPlayer& pPlayer) {
 	return _tab_cha.SaveKBagTmpDBID(pPlayer);
 }
 
-bool CGameDB::SavePlayerMMaskDBID(CPlayer& pPlayer) {
-	return _tab_cha.SaveMMaskDBID(pPlayer);
-}
 
 bool CGameDB::AddCreditByDBID(std::uint32_t atorID, std::int32_t lCredit) {
 	return _tab_cha.AddCreditByDBID(atorID, lCredit);

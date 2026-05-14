@@ -64,7 +64,9 @@ public:
 	int m_nGatePort[MAX_GATE]; // Gate Port
 	int m_nGateCnt; // Gate
 	std::vector<std::string> m_mapList;
-	std::vector<uint8_t> m_mapOK; // Статус загрузки каждой карты (0/1)
+	std::vector<uint8_t> m_mapOK;     // Статус загрузки каждой карты (0/1)
+	bool m_loadAllMaps;               // [Map].maps_all=1 — автодискавер карт из resource/
+	std::vector<std::string> m_fogOfWarMaps; // [Large map switch].fog_maps — карты с fog-of-war
 	char m_szEqument[MAX_MAPNAME_LENGTH]; //
 	char m_szName[64]; //
 	char m_szDBIP[64]; // DB IP
@@ -92,7 +94,8 @@ public:
 	long m_lSayInterval; //
 	char m_szResDir[255]; //
 	char m_szLogDir[255]; // Log
-	char m_chMapMask; //
+	char m_chMapMask;           // fog-of-war: 0 = выключен, >0 = включён
+	std::int32_t m_mapMaskRadius; // радиус открытия клеток вокруг игрока (в клетках 80×80). 0 = только текущая клетка
 	long m_lDBSave; //
 
 	BOOL m_bLogAI; // AIlog

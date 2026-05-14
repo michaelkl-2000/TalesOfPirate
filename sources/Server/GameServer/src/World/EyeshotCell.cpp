@@ -193,9 +193,9 @@ void CEyeshotCell::RefreshEyeshot(Entity *pCEnt, bool bToEyeshot, bool bToNoHide
 	CCharacter	*pCCha = pCEnt->IsCharacter();
 	if (!pCCha)
 		return;
-	if (pCCha->GetActControl(enumACTCONTROL_EYESHOT) == bToEyeshot
-		&& pCCha->GetActControl(enumACTCONTROL_NOHIDE) == bToNoHide
-		&& pCCha->GetActControl(enumACTCONTROL_NOSHOW) == bToNoShow)
+	if (pCCha->GetActControl(ActControl::EYESHOT) == bToEyeshot
+		&& pCCha->GetActControl(ActControl::NOHIDE) == bToNoHide
+		&& pCCha->GetActControl(ActControl::NOSHOW) == bToNoShow)
 		return;
 	bool	bOldSeen, bNewSeen;
 

@@ -667,6 +667,9 @@
     <ClCompile Include="src\Tools\SMallMap.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\Tools\MapMaskOverlay.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
     <ClCompile Include="src\Tools\Tools.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
@@ -1293,6 +1296,9 @@
       <Filter>Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\Tools\SMallMap.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Tools\MapMaskOverlay.h">
       <Filter>Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\Tools\Tools.h">

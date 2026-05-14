@@ -63,7 +63,6 @@ bool g_bLogEntity = false;
 std::unordered_map<int, CItemRecordAttr> g_itemAttrMap;
 CCharacter* g_pCSystemCha = NULL;
 SubMap* g_pScriptMap = NULL; //
-long g_lDeftMMaskLight = 21;
 string g_strChaState[2];
 
 

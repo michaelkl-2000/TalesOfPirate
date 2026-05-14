@@ -108,7 +108,7 @@
     <ClCompile Include="src\Core\StringLib.cpp" />
     <ClCompile Include="src\Character\ChaAttr.cpp" />
     <ClCompile Include="src\Character\ChaCreateRecordStore.cpp" />
-    <ClCompile Include="src\Character\ChaMask.cpp" />
+    <ClCompile Include="src\Character\PlayerMapMask.cpp" />
     <ClCompile Include="src\Character\ChaNameFilterStore.cpp" />
     <ClCompile Include="src\Character\ChaRecordStore.cpp" />
     <ClCompile Include="src\Character\CharacterActionStore.cpp" />
@@ -202,7 +202,7 @@
     <ClInclude Include="src\Character\ChaAttrType.h" />
     <ClInclude Include="src\Character\ChaCreateRecord.h" />
     <ClInclude Include="src\Character\ChaCreateRecordStore.h" />
-    <ClInclude Include="src\Character\ChaMask.h" />
+    <ClInclude Include="src\Character\PlayerMapMask.h" />
     <ClInclude Include="src\Character\ChaNameFilterRecord.h" />
     <ClInclude Include="src\Character\ChaNameFilterStore.h" />
     <ClInclude Include="src\Character\ChaRecordStore.h" />

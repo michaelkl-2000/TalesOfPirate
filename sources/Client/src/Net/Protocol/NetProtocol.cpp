@@ -1,5 +1,7 @@
 ﻿#include "stdafx.h"
 #include "NetProtocol.h"
+#include "Tools/MapMaskOverlay.h"
+#include <span>
 #include "gameapp.h"
 #include "Actor.h"
 #include "STMove.h"
@@ -1365,11 +1367,29 @@ void NetPreMoveTime(unsigned long ulTime) {
 	CWaitMoveState::SetPreMoveTime(ulTime);
 }
 
-void NetMapMask(unsigned int nID, BYTE* pMask, long lLen) {
-	// If pMask is empty, there is no large map
+void NetMapMask(unsigned int nID, BYTE* pMask, long lLen, bool fogOfWarEnabled) {
+	auto*& overlay = Corsairs::Client::Tools::g_pMapMaskOverlay;
+
+	if (!fogOfWarEnabled) {
+		// На сервере fog-of-war выключен: всё открыто. Кешируем флаг в overlay,
+		// чтобы GetMask возвращал true даже без блоба.
+		if (!overlay) {
+			overlay = new Corsairs::Client::Tools::MapMaskOverlay;
+		}
+		overlay->SetFogOfWarEnabled(false);
+
+		if (CGameApp::GetCurScene() && CGameApp::GetCurScene()->GetLargerMap()) {
+			CGameApp::GetCurScene()->GetLargerMap()->Show(true);
+		}
+		g_pGameApp->Waiting(false);
+		return;
+	}
+
+	// fog-of-war включён на сервере: нормальный путь с блобом данных.
 	if (pMask) {
-		if (CMaskData::g_MaskData) {
-			CMaskData::g_MaskData->InitMaskData(pMask, lLen);
+		if (overlay) {
+			overlay->SetFogOfWarEnabled(true);
+			overlay->Init(std::span<const std::uint8_t>(pMask, static_cast<std::size_t>(lLen)));
 		}
 
 		if (CGameApp::GetCurScene() && CGameApp::GetCurScene()->GetLargerMap()) {

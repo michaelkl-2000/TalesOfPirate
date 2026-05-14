@@ -447,7 +447,7 @@ void CMoveAble::BeginMove(uLong ulElapse)
 		}
 	}
 
-	if (!IsCharacter()->GetActControl(enumACTCONTROL_MOVE))
+	if (!IsCharacter()->GetActControl(ActControl::MOVE))
 	{
 		m_SMoveProc.sState |= enumMSTATE_CANCEL;
 
@@ -512,7 +512,7 @@ void CMoveAble::OnMove(uLong dwCurTime)
 	uLong	ulWillElapse = ulCurTick - m_ulHeartbeatTick;
 	uLong	ulAttemptDist;
 
-	if (!IsCharacter()->GetActControl(enumACTCONTROL_MOVE) && m_SMoveProc.sState == enumMSTATE_ON)
+	if (!IsCharacter()->GetActControl(ActControl::MOVE) && m_SMoveProc.sState == enumMSTATE_ON)
 	{
 		EndMove();
 	}

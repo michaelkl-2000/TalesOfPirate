@@ -59,11 +59,35 @@ long CChaSpawn::Load(SubMap *pCMap)
 	const Rect& area = pCMap->GetRange();
 	bool reachedCap = false;
 
+	// Размер блочной клетки obstacle-карты в мировых единицах — для перевода
+	// мировых координат в координаты IsBlock. Кешируем один раз, размер карты
+	// в течение Load не меняется.
+	const auto cellW = pCMap->GetBlockCellWidth();
+	const auto cellH = pCMap->GetBlockCellHeight();
+	const bool blockGridValid = (cellW > 0 && cellH > 0);
+
+	// Сколько раз перекатывать рандом, если первая точка попадает в obstacle.
+	// 16 даёт ~99.998% покрытия даже при 50% obstacle-density региона
+	// (1 - 0.5^16 ≈ 99.998%). Больше — пустая трата CPU при старте карты.
+	constexpr int kMaxWalkableRetries = 16;
+
+	auto randInRange = [](long lo, long hi) -> long {
+		if (lo >= hi) {
+			return lo;
+		}
+		long lRand = rand();
+		long lSub  = hi - lo;
+		long lBase = (lSub / RAND_MAX > 0) ? (lRand % (lSub / RAND_MAX + 1) * RAND_MAX) : 0;
+		return lBase + lRand % (lSub - lBase) + lo;
+	};
+
 	m_pStore->ForEach([&](CMonRefRecord& rec) {
 		if (reachedCap) return;
 
 		CMonRefRecord* pMonRefRecord = &rec;
 		long lNum = 0;
+		long lObstacleFails = 0; // сколько точек пропустили из-за obstacle во всех retry
+		long lOtherFails    = 0; // walkable, но ChaSpawn вернул null (редко, диагностика)
 
 		for (int j = 0; j < defMAX_REGION_MONSTER_TYPE; j++) {
 			for (int k = 0; k < pMonRefRecord->lMonster[j][1]; k++) {
@@ -72,26 +96,26 @@ long CChaSpawn::Load(SubMap *pCMap)
 					sAngle = rand() % 360;
 				}
 
-				long l_x, l_y;
-				if (pMonRefRecord->SRegion[0].x != pMonRefRecord->SRegion[1].x) {
-					long lRand = rand();
-					long lSub  = pMonRefRecord->SRegion[1].x - pMonRefRecord->SRegion[0].x;
-					long lBase = (lSub / RAND_MAX > 0) ? (lRand % (lSub / RAND_MAX + 1) * RAND_MAX) : 0;
-					l_x = lBase + lRand % (lSub - lBase) + pMonRefRecord->SRegion[0].x;
+				Point l_pos{};
+				bool walkable = false;
+				for (int retry = 0; retry < kMaxWalkableRetries; ++retry) {
+					l_pos.x = randInRange(pMonRefRecord->SRegion[0].x, pMonRefRecord->SRegion[1].x);
+					l_pos.y = randInRange(pMonRefRecord->SRegion[0].y, pMonRefRecord->SRegion[1].y);
+					if (!blockGridValid) {
+						// Нет валидного block-grid — доверяем точке, ChaSpawn проверит сам.
+						walkable = true;
+						break;
+					}
+					if (!pCMap->IsBlock(l_pos.x / cellW, l_pos.y / cellH)) {
+						walkable = true;
+						break;
+					}
 				}
-				else {
-					l_x = pMonRefRecord->SRegion[0].x;
+
+				if (!walkable) {
+					++lObstacleFails;
+					continue;
 				}
-				if (pMonRefRecord->SRegion[0].y != pMonRefRecord->SRegion[1].y) {
-					long lRand = rand();
-					long lSub  = pMonRefRecord->SRegion[1].y - pMonRefRecord->SRegion[0].y;
-					long lBase = (lSub / RAND_MAX > 0) ? (lRand % (lSub / RAND_MAX + 1) * RAND_MAX) : 0;
-					l_y = lBase + lRand % (lSub - lBase) + pMonRefRecord->SRegion[0].y;
-				}
-				else {
-					l_y = pMonRefRecord->SRegion[0].y;
-				}
-				Point l_pos = {l_x, l_y};
 
 				CCharacter* pCCha = pCMap->ChaSpawn(
 					pMonRefRecord->lMonster[j][0], enumCHACTRL_NONE, sAngle, &l_pos);
@@ -107,13 +131,23 @@ long CChaSpawn::Load(SubMap *pCMap)
 					}
 				}
 				else {
+					// Точка прошла walkable pre-check, но ChaSpawn всё равно вернул null
+					// (entity pool overflow, отсутствие CChaRecord, neighbour overlap, и т.п.).
+					// Это нормально редкая ошибка — оставляем индивидуальный лог для диагностики.
+					++lOtherFails;
 					ToLogService("errors", LogLevel::Error,
-						"character born error, born information: map {}[{}, {}], "
+						"character born error (walkable but spawn failed): map {}[{}, {}], "
 						"character hatch list number {}, character list number {}, born position[{}, {}]",
 						pCMap->GetName(), area.width(), area.height(),
 						pMonRefRecord->Id, pMonRefRecord->lMonster[j][0], l_pos.x, l_pos.y);
 				}
 			}
+		}
+		if (lObstacleFails > 0) {
+			ToLogService("common", LogLevel::Warning,
+				"spawn region in map '{}' (record id={}): {} positions skipped (obstacle), "
+				"{} other failures, {} succeeded",
+				pCMap->GetName(), pMonRefRecord->Id, lObstacleFails, lOtherFails, lNum);
 		}
 		ToLogService("common", "entry {} character number:\t{}", pMonRefRecord->Id, lNum);
 	});

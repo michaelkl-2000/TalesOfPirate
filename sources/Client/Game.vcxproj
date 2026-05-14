@@ -251,6 +251,7 @@
         <ClCompile Include="src\Scene\World\SelectChaScene.cpp"/>
         <ClCompile Include="src\Scene\Ship\ShipFactory.cpp"/>
         <ClCompile Include="src\Tools\SMallMap.cpp"/>
+        <ClCompile Include="src\Tools\MapMaskOverlay.cpp"/>
         <ClCompile Include="src\Audio\SoundCommon.cpp"/>
         <ClCompile Include="src\Scene\Nodes\Character\State\state_reading.cpp"/>
         <ClCompile Include="src\Scene\Nodes\Character\State\STAttack.cpp"/>
@@ -463,6 +464,7 @@
         <ClInclude Include="src\Script\Tables\ServerSet.h"/>
         <ClInclude Include="src\Scene\Ship\ShipFactory.h"/>
         <ClInclude Include="src\Tools\SMallMap.h"/>
+        <ClInclude Include="src\Tools\MapMaskOverlay.h"/>
         <ClInclude Include="src\Audio\SoundCommon.h"/>
         <ClInclude Include="src\Audio\SoundInstance.h"/>
         <ClInclude Include="src\Audio\SoundManager.h"/>

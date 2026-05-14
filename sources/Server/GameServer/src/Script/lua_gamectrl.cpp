@@ -273,7 +273,7 @@ int SetCurMap(const std::string& name) {
 int GetChaID(CCharacter* pCha) {
 	if (!pCha)
 		return 0;
-	return (int)pCha->m_CChaAttr.m_lID;
+	return static_cast<int>(pCha->m_CChaAttr.GetId());
 }
 
 
@@ -1001,7 +1001,7 @@ int GetChaByRange_raw(lua_State* L) {
 			if (!pCTempCha->IsPlayerCha()) continue;
 			if (pCTempCha->IsGMCha()) continue;
 			if (!pCTempCha->IsLiveing()) continue;
-			if (!pCTempCha->GetActControl(enumACTCONTROL_BEUSE_SKILL)) continue;
+			if (!pCTempCha->GetActControl(ActControl::BEUSE_SKILL)) continue;
 		}
 
 		if (flag == 1 && pCTempCha->IsPlayerCha()) continue;
@@ -1670,8 +1670,8 @@ int IsPlayer(CCharacter* pCha) {
 
 // ,
 void SetChaAttrMax(int nNo, unsigned int lValue) {
-	if (nNo < ATTR_MAX_NUM) {
-		g_lMaxChaAttr[nNo] = (LONG32)lValue;
+	if (IsValidAttr(nNo)) {
+		g_attrMax.at(nNo) = static_cast<std::int32_t>(lValue);
 		g_pGameApp->ChaAttrMaxValInit(true);
 	}
 }

@@ -11,7 +11,7 @@ GameRecordset<CMusicInfo>::RecordEntry MusicRecordStore::ReadRecord(SqliteStatem
 
 	record.DataName = stmt.GetText(col++);
 
-	record.nType = stmt.GetInt(col++);
+	record.Type = stmt.GetInt(col++);
 
 	std::string name(record.DataName);
 	return {record.Id, std::move(name), std::move(record)};
@@ -23,7 +23,7 @@ void MusicRecordStore::Insert(SqliteDatabase& db, const CMusicInfo& r) {
 		auto stmt = db.Prepare("INSERT OR REPLACE INTO music (id, name, type) VALUES (?, ?, ?)");
 		stmt.Bind(1, r.Id);
 		stmt.Bind(2, std::string_view(r.DataName));
-		stmt.Bind(3, r.nType);
+		stmt.Bind(3, r.Type);
 		stmt.Step();
 	} catch (const std::exception& e) {
 		ToLogService("errors", LogLevel::Error, "MusicRecordStore::Insert(id={}) failed: {}", r.Id, e.what());

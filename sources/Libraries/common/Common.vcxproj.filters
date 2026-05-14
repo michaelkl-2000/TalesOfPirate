@@ -82,7 +82,7 @@
     <ClCompile Include="src\Character\ChaCreateRecordStore.cpp">
       <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="src\Character\ChaMask.cpp">
+    <ClCompile Include="src\Character\PlayerMapMask.cpp">
       <Filter>Character</Filter>
     </ClCompile>
     <ClCompile Include="src\Character\ChaNameFilterStore.cpp">
@@ -343,7 +343,7 @@
     <ClInclude Include="src\Character\ChaCreateRecordStore.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="src\Character\ChaMask.h">
+    <ClInclude Include="src\Character\PlayerMapMask.h">
       <Filter>Character</Filter>
     </ClInclude>
     <ClInclude Include="src\Character\ChaNameFilterRecord.h">

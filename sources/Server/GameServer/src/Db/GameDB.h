@@ -132,7 +132,6 @@ struct CharacterRow {
 	std::string birth;
 	std::string login_cha;
 	std::int32_t live_tp;
-	std::string map_mask;
 	std::int32_t delflag;
 	std::string operdate;
 	std::string deldate;
@@ -199,16 +198,6 @@ struct LotterySettingRow {
 	std::string createdate;
 	std::string updatetime;
 	std::string itemno;
-};
-
-struct MapMaskRow {
-	std::int32_t id;
-	std::int32_t atorID;
-	std::string content1;
-	std::string content2;
-	std::string content3;
-	std::string content4;
-	std::string content5;
 };
 
 struct MasterRow {
@@ -479,7 +468,6 @@ public:
 			MakeColumn("birth",            &CharacterRow::birth),
 			MakeColumn("login_cha",        &CharacterRow::login_cha),
 			MakeColumn("live_tp",          &CharacterRow::live_tp),
-			MakeColumn("map_mask",         &CharacterRow::map_mask),
 			MakeColumn("delflag",          &CharacterRow::delflag),
 			MakeColumn("operdate",         &CharacterRow::operdate, Timestamp),
 			MakeColumn("deldate",          &CharacterRow::deldate, Nullable | Timestamp),
@@ -576,19 +564,6 @@ public:
 		}) {}
 };
 
-class TableMapMaskTyped : public OdbcTable<MapMaskRow> {
-public:
-	explicit TableMapMaskTyped(OdbcDatabase& db)
-		: OdbcTable(db, "map_mask", {
-			MakeColumn("id",       &MapMaskRow::id, PrimaryKey),
-			MakeColumn("atorID",   &MapMaskRow::atorID),
-			MakeColumn("content1", &MapMaskRow::content1),
-			MakeColumn("content2", &MapMaskRow::content2),
-			MakeColumn("content3", &MapMaskRow::content3),
-			MakeColumn("content4", &MapMaskRow::content4),
-			MakeColumn("content5", &MapMaskRow::content5),
-		}) {}
-};
 
 class TableMaster : public OdbcTable<MasterRow> {
 public:
@@ -815,7 +790,6 @@ public:
 	bool SaveKBagDBID(CPlayer& pPlayer);
 	bool SaveKBagTmpDBID(CPlayer& pPlayer); // ID
 	bool SaveKBState(CPlayer& pPlayer); //
-	bool SaveMMaskDBID(CPlayer& pPlayer);
 	bool SaveBankDBID(CPlayer& pPlayer);
 	bool SaveTableVer(std::uint32_t atorID); //
 	bool SaveMissionData(CPlayer& pPlayer, std::uint32_t atorID); //
@@ -885,20 +859,25 @@ private:
 	OdbcDatabase& _db;
 };
 
-// MapMask — миграция на OdbcDatabase
+// Fog-of-war: per-(player, map) хранение в таблице player_map_masks.
+// Заменил легаси CTableMapMask с фиксированными колонками content1..5 (см.
+// databases/migrate_player_map_masks.sql).
 class CTableMapMask {
 public:
 	explicit CTableMapMask(OdbcDatabase& db) : _db(db) {
 	}
 
-	bool Create(std::int32_t& lDBID, std::int32_t lChaId);
-	bool ReadData(CPlayer& pCPly);
-	bool SaveData(CPlayer& pCPly, bool bDirect = FALSE);
+	// Загружает все маски игрока (одним SELECT) и пушит их в pCPly через
+	// SetMaskMapName + SetMapMaskBase64. Возвращает true при отсутствии ODBC-ошибок.
+	bool ReadAllMaps(CPlayer& pCPly);
+
+	// UPSERT'ит одну маску по (atorID, mapName). При bDirect=false складывает
+	// готовый SQL в _saveQueue для отложенного выполнения через HandleSaveList.
+	bool SaveMap(CPlayer& pCPly, const std::string& mapName,
+	             const std::string& base64Data, bool bDirect = FALSE);
 
 	void HandleSaveList();
 	void SaveAll();
-
-	static bool GetColNameByMapName(const std::string& szMapName, std::string& colName);
 
 private:
 	OdbcDatabase& _db;
@@ -1060,7 +1039,6 @@ public:
 	bool SavePlayerPos(CPlayer& pPlayer);
 	bool SavePlayerKBagDBID(CPlayer& pPlayer);
 	bool SavePlayerKBagTmpDBID(CPlayer& pPlayer);
-	bool SavePlayerMMaskDBID(CPlayer& pPlayer);
 
 	bool CreatePlyBank(CPlayer& pCPly);
 	bool SavePlyBank(CPlayer& pCPly, char chBankNO = -1);
@@ -1149,7 +1127,6 @@ protected:
 	TableFriends _friends;
 	TableGuildTyped _guilds;
 	TableLotterySetting _lotterySettings;
-	TableMapMaskTyped _mapMasks;
 	TableMaster _masters;
 	TableParam _params;
 	TablePersonAvatar _personAvatars;

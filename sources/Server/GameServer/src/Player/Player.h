@@ -14,10 +14,12 @@
 #include "Services/Mission/Mission.h"
 #include "App/GameAppNet.h"
 #include "Inventory/ShipSet.h"
-#include "Character/ChaMask.h"
+#include "Character/PlayerMapMask.h"
 #include "Core/Timer.h"
 
 #include <source_location>
+#include <string>
+#include <unordered_set>
 
 namespace mission {
 	class CStallData;
@@ -74,9 +76,6 @@ public:
 
 	void         SetGMLev(dbc::Char chGMLev);
 	dbc::uChar   GetGMLev(void);
-
-	void         SetMapMaskDBID(long lID);
-	long         GetMapMaskDBID(void);
 
 	void         SetBankDBID(long lID, char chBankNO);
 	long         GetBankDBID(char chBankNO);
@@ -207,22 +206,24 @@ public:
 	mission::CStallData* GetStallData();
 	void                 SetStallData(mission::CStallData* pData);
 
-	void         SetMMaskLightSize(long lSize);
-	long         GetMMaskLightSize(void);
+	// Загрузка/сохранение base64 для конкретной карты (используется БД-слоем).
+	bool         LoadMapMaskBase64(std::string_view mapName, std::string_view base64Data);
+	std::string  SaveMapMaskBase64(std::string_view mapName) const;
+	// Wire-формат текущей маски (m_szMaskMapName) для CMD_MC_MAP_MASK:
+	//   [sMapMask 48-byte header][bits] (клиент парсит header).
+	std::vector<std::uint8_t> GetMapMaskWire() const;
 
-	bool         SetMapMaskBase64(const char* pMask);
-	const char*  GetMapMaskBase64();
-	BYTE*        GetMapMask(long& lLen);
+	bool RefreshMapMask(std::string_view szMapName, std::int32_t lPosX, std::int32_t lPosY);
 
-	bool RefreshMapMask(const char* szMapName, long lPosX, long lPosY);
-
-	void         SetMaskMapName(const char* szMapName);
+	void         SetMaskMapName(std::string_view szMapName);
 	const char*  GetMaskMapName(void);
 
-	bool         IsMapMaskChange(void);
-	void         SetMapMaskChange(void);
-	void         ResetMapMaskChange(void);
-	float        GetMapMaskOpenScale(const char* szMapName);
+	// Per-map dirty tracking: какие маски менялись с момента последнего сейва.
+	const std::unordered_set<std::string>& GetDirtyFogMaps() const { return m_dirtyFogMaps; }
+	void                                   ClearDirtyFogMaps() { m_dirtyFogMaps.clear(); }
+	bool                                   HasDirtyFogMaps() const { return !m_dirtyFogMaps.empty(); }
+
+	float        GetMapMaskOpenScale(std::string_view szMapName);
 
 	char         GetCurBankNum(void);
 	bool         AddBankDBID(long lDBID);
@@ -297,7 +298,6 @@ private:
 	DWORD m_dwLoginID; //  Account DB ID
 	DWORD m_dwDBActId; // ID
 	dbc::Char m_chGMLev; // GM
-	long m_lMapMaskDBID;
 	dbc::Char m_chActName[ACT_NAME_LEN]; //
 
 	CCharacter* m_pCtrlCha; //
@@ -319,10 +319,10 @@ private:
 
 	//
 	struct {
-		long m_lLightSize;
-		CMaskData m_CMapMask;
+		Corsairs::Common::Character::PlayerMapMask m_CMapMask;
 		char m_szMaskMapName[MAX_MAPNAME_LENGTH];
-		char m_chMapMaskChange;
+		// Имена карт, чья маска менялась с последнего сейва (per-map dirty set).
+		std::unordered_set<std::string> m_dirtyFogMaps;
 	};
 
 	//

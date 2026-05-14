@@ -3,6 +3,7 @@
 #include "EffectObj.h"
 #include "MindPower.h"
 #include ".\packfile.h"
+#include "Tools/MapMaskOverlay.h"
 
 class CGameScene;
 class CCharacter;
@@ -882,88 +883,6 @@ protected:
 	int mposy;
 };
 
-struct sMask {
-	char pszName[32];
-	int lenx, leny;
-	long lpos;
-	long llen;
-};
-
-class CMaskData {
-public:
-	CMaskData() {
-		pData = NULL;
-		iLength = 0;
-		iNumX = iNumY = 0;
-	}
-
-	~CMaskData() {
-		SAFE_DELETE_ARRAY(pData);
-	}
-
-
-	bool InitMaskData(BYTE* pRecData, long lLen) {
-		sMask* pmask = (sMask*)pRecData;
-
-		iNumX = pmask->lenx;
-		iNumY = pmask->leny;
-
-		if (iLength != pmask->llen) {
-			SAFE_DELETE_ARRAY(pData);
-			iLength = pmask->llen;
-			pData = new BYTE[iLength];
-		}
-		memcpy(pData, pRecData, iLength);
-
-		return true;
-	}
-
-	bool GetMask(int x, int y) {
-		//int x  = posx;//((posx / 100) / 40 );
-		//int y  = posy;//((posy / 100) / 40 );
-		if (x < 0 || y < 0 || x >= iNumX || y >= iNumY)
-			return false;
-
-		BYTE* p = pData;
-		p += sizeof(sMask);
-		int pos = y * iNumX + x;
-		int potion = pos / 8;
-
-		pos = pos - potion * 8;
-
-		if (p[potion] & (1 << pos))
-			return true;
-		//Add by sunny.sun 20080903
-		return true; // 
-		//return false;
-	}
-
-	//void	SetMask(int x, int y)
-	//{
-	//	if(x < 0 || y < 0 ||x >= iNumX || y >= iNumY)
-	//		return;
-	//	//int x  = posx;//((posx / 100) / 40 );
-	//	//int y  = posy;//((posy / 100) / 40 );
-
-	//	int pos = y * iNumX + x;
-	//	int potion = pos / 8;
-
-	//	pos = pos - potion * 8;
-
-	//	int value = (1 << pos);
-	//	if(!(pData[potion] & value))
-	//		pData[potion] |= value;
-	//}
-
-public:
-	static CMaskData* g_MaskData;
-
-	long iLength;
-	int iNumX, iNumY;
-	BYTE* pData;
-};
-
-
 #define		VIEWRANGE	3
 
 class CMinimap : public CSMallWnd {
@@ -979,7 +898,7 @@ public:
 		SAFE_RELEASE(_pTexDefault);
 		SAFE_DELETE(_pMiniPack);
 
-		SAFE_DELETE(CMaskData::g_MaskData);
+		SAFE_DELETE(Corsairs::Client::Tools::g_pMapMaskOverlay);
 	}
 
 	struct TEXIDX {
@@ -1068,7 +987,7 @@ public:
 		SAFE_RELEASE(_pTexMask);
 		SAFE_RELEASE(_pTexDefault);
 		SAFE_DELETE(_pMiniPack);
-		SAFE_DELETE(CMaskData::g_MaskData);
+		SAFE_DELETE(Corsairs::Client::Tools::g_pMapMaskOverlay);
 	}
 
 	void Show(bool bShow);

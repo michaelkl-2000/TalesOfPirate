@@ -571,7 +571,7 @@ struct stNetAreaState {
 struct stNetChaAttr {
 	char chType;
 	short sNum;
-	stEffect SEff[MAX_ATTR_CLIENT];
+	stEffect SEff[ATTR_CLIENT_MAX];
 };
 
 struct stNetQueryRelive {
@@ -789,7 +789,7 @@ extern void NetShowBoatList(DWORD dwNpcID, BYTE byNumBoat, const Corsairs::Commo
 extern void NetChangeChaLookEnergy(unsigned int nID, stLookEnergy& SLookEnergy);
 extern void NetQueryRelive(unsigned int nID, stNetQueryRelive& SQueryRelive);
 extern void NetPreMoveTime(unsigned long ulTime);
-extern void NetMapMask(unsigned int nID, BYTE* pMask, long lLen);
+extern void NetMapMask(unsigned int nID, BYTE* pMask, long lLen, bool fogOfWarEnabled);
 
 // npc
 extern void NetShowTrade(const NET_TRADEINFO& TradeInfo, BYTE byCmd, DWORD dwNpcID, DWORD dwParam);

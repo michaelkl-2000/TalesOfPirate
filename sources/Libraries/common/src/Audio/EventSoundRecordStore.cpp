@@ -11,7 +11,7 @@ GameRecordset<CEventSoundInfo>::RecordEntry EventSoundRecordStore::ReadRecord(Sq
 
 	record.DataName = stmt.GetText(col++);
 
-	record.nSoundID = stmt.GetInt(col++);
+	record.SoundID = stmt.GetInt(col++);
 
 	std::string name(record.DataName);
 	return {record.Id, std::move(name), std::move(record)};
@@ -23,7 +23,7 @@ void EventSoundRecordStore::Insert(SqliteDatabase& db, const CEventSoundInfo& r)
 		auto stmt = db.Prepare("INSERT OR REPLACE INTO event_sounds (id, name, sound_id) VALUES (?, ?, ?)");
 		stmt.Bind(1, r.Id);
 		stmt.Bind(2, std::string_view(r.DataName));
-		stmt.Bind(3, r.nSoundID);
+		stmt.Bind(3, r.SoundID);
 		stmt.Step();
 	} catch (const std::exception& e) {
 		ToLogService("errors", LogLevel::Error, "EventSoundRecordStore::Insert(id={}) failed: {}", r.Id, e.what());

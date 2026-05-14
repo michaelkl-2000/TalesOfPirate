@@ -188,8 +188,7 @@ bool CCharacter::Cmd_EnterMap(cChar* l_map, Long lMapCopyNO, uLong l_x, uLong l_
 			}
 
 			pCPlayer->CheckChaItemFinalData();
-			for (int i = 0; i < enumACTCONTROL_MAX; i++)
-				SetActControl(i);
+			_actControl.fill(true);
 			m_CSkillState.Reset();
 			m_CSkillBag.SetState(-1, enumSUSTATE_INACTIVE);
 			pCCtrlCha->SkillRefresh();
@@ -370,7 +369,7 @@ void CCharacter::Cmd_BeginMove(Short sPing, Point *pPath, Char chPointNum, Char 
 if (!IsLiveing()) {
 	return;
 }
-	if (!GetActControl(enumACTCONTROL_MOVE))
+	if (!GetActControl(ActControl::MOVE))
 	{
 		
 		FailedActionNoti(enumACTION_MOVE, enumFACTION_ACTFORBID);
@@ -466,7 +465,7 @@ void CCharacter::Cmd_BeginSkill(Short sPing, Point *pPath, Char chPointNum,
 		return;
 	}
 
-	if (!GetActControl(enumACTCONTROL_MOVE) && pPath[0] != pPath[1])
+	if (!GetActControl(ActControl::MOVE) && pPath[0] != pPath[1])
 	{
 		FailedActionNoti(enumACTION_MOVE, enumFACTION_ACTFORBID);
 		return;
@@ -533,8 +532,8 @@ void CCharacter::Cmd_BeginSkill(Short sPing, Point *pPath, Char chPointNum,
 	}
 
 	if (pSSkillCont->chState != enumSUSTATE_ACTIVE // 
-		|| (pCSkillTData->lResumeTime == 0 && !GetActControl(enumACTCONTROL_USE_GSKILL)) // 
-		|| (pCSkillTData->lResumeTime > 0 && !GetActControl(enumACTCONTROL_USE_MSKILL))) // 
+		|| (pCSkillTData->lResumeTime == 0 && !GetActControl(ActControl::USE_GSKILL)) // 
+		|| (pCSkillTData->lResumeTime > 0 && !GetActControl(ActControl::USE_MSKILL))) // 
 	{
 		FailedActionNoti(enumACTION_SKILL, enumFACTION_ACTFORBID);
 
@@ -738,7 +737,7 @@ Short CCharacter::Cmd_UseItem(Short sSrcKbPage, Short sSrcKbGrid, Short sTarKbPa
 //=============================================================================
 Short CCharacter::Cmd_UseEquipItem(Short sKbPage, Short sKbGrid, bool bRefresh, bool rightHand)
 {
-	if (!GetActControl(enumACTCONTROL_ITEM_OPT))
+	if (!GetActControl(ActControl::ITEM_OPT))
 		return enumITEMOPT_ERROR_STATE;
 
 	if (bRefresh)
@@ -936,10 +935,10 @@ Short CCharacter::Cmd_UseExpendItem(Short sKbPage, Short sKbGrid, Short sTarKbPa
 	}
 	dwLastTime = dwCurTime;
 
-	if (!GetActControl(enumACTCONTROL_ITEM_OPT))
+	if (!GetActControl(ActControl::ITEM_OPT))
 		return enumITEMOPT_ERROR_STATE;
 
-	if (!GetActControl(enumACTCONTROL_USE_ITEM))
+	if (!GetActControl(ActControl::USE_ITEM))
 		return enumITEMOPT_ERROR_STATE;
 
 	SItemGrid	*pSGridCont = m_CKitbag.GetGridContByID(sKbGrid, sKbPage);
@@ -1088,7 +1087,7 @@ Short CCharacter::Cmd_UnfixItem(Char chLinkID, Short *psItemNum, Char chDir, Lon
 	//fix end
 	if (!bForcible)
 	{
-		if (!GetActControl(enumACTCONTROL_ITEM_OPT))
+		if (!GetActControl(ActControl::ITEM_OPT))
 			return enumITEMOPT_ERROR_STATE;
 		if (m_CKitbag.IsLock()) // 
 			return enumITEMOPT_ERROR_KBLOCK;
@@ -1270,7 +1269,7 @@ Short CCharacter::Cmd_UnfixItem(Char chLinkID, Short *psItemNum, Char chDir, Lon
 Short CCharacter::Cmd_PickupItem(uLong ulID, Long lHandle)
 {
 	DBG_ASSERT_ENTITY(this);
-	if (!GetActControl(enumACTCONTROL_ITEM_OPT))
+	if (!GetActControl(ActControl::ITEM_OPT))
 		return enumITEMOPT_ERROR_STATE;
 
 	Entity	*pCEnt = g_pGameApp->IsLiveingEntity(ulID, lHandle);
@@ -1509,7 +1508,7 @@ Short CCharacter::Cmd_ThrowItem(Short sKbPage, Short sKbGrid, Short *psThrowNum,
 
 	if (!bForcible)
 	{
-		if (!GetActControl(enumACTCONTROL_ITEM_OPT))
+		if (!GetActControl(ActControl::ITEM_OPT))
 			return enumITEMOPT_ERROR_STATE;
 		if (m_CKitbag.IsLock()) // 
 			return enumITEMOPT_ERROR_KBLOCK;
@@ -1617,7 +1616,7 @@ Short CCharacter::Cmd_ThrowItem(Short sKbPage, Short sKbGrid, Short *psThrowNum,
 // .
 Short CCharacter::Cmd_ItemSwitchPos(Short sKbPage, Short sSrcGrid, Short sSrcNum, Short sTarGrid)
 {
-	if (!GetActControl(enumACTCONTROL_ITEM_OPT))
+	if (!GetActControl(ActControl::ITEM_OPT))
 		return enumITEMOPT_ERROR_STATE;
 
 	if (m_CKitbag.IsLock()) // 
@@ -1657,7 +1656,7 @@ Short CCharacter::Cmd_DelItem(Short sKbPage, Short sKbGrid, dbc::Short *psThrowN
 		if (GetPlyMainCha()->m_CKitbag.IsPwdLocked()) //
 			return enumITEMOPT_ERROR_KBLOCK;
 
-		if (!GetActControl(enumACTCONTROL_ITEM_OPT))
+		if (!GetActControl(ActControl::ITEM_OPT))
 			return enumITEMOPT_ERROR_STATE;
 		//add by ALLEN 2007-10-16
 		if (GetPlyMainCha()->IsReadBook()) //
@@ -2140,7 +2139,7 @@ Short CCharacter::Cmd_RemoveItem(Long lItemID, Long lItemNum, Char chFromType, S
 		if (GetPlyMainCha()->IsReadBook()) //
         return enumITEMOPT_ERROR_KBLOCK;
 
-		if (!GetActControl(enumACTCONTROL_ITEM_OPT))
+		if (!GetActControl(ActControl::ITEM_OPT))
 			return enumITEMOPT_ERROR_STATE;
 		if (m_CKitbag.IsLock()) // 
 			return enumITEMOPT_ERROR_KBLOCK;

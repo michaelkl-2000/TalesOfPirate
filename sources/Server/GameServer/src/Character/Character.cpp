@@ -72,8 +72,7 @@ requestType(0)
 
 	memset(&m_SChaPart, 0, sizeof(m_SChaPart));
 	memset(&m_STempChaPart, 0, sizeof(m_STempChaPart));
-	for (int i = 0; i < enumACTCONTROL_MAX; i++)
-		SetActControl(i);
+	_actControl.fill(true);
 
 	m_pTradeData = NULL;
 	m_lSideID = 0;
@@ -109,8 +108,7 @@ void CCharacter::Initially()
 	m_CKitbag.Init(defDEF_KBITEM_NUM_PER_TYPE);
 	memset(&m_CShortcut, 0, sizeof(m_CShortcut));
 	memset(&m_SChaPart, 0, sizeof(m_SChaPart));
-	for (int i = 0; i < enumACTCONTROL_MAX; i++)
-		SetActControl(i);
+	_actControl.fill(true);
 	m_pHate->ClearHarmRec();
 	m_chSelRelive = enumEPLAYER_RELIVE_NONE;
 	m_chReliveLv = 0;
@@ -606,7 +604,7 @@ bool CCharacter::CanSeen(CCharacter *pCCha)
 	if (pCCha == this)
 		return true;
 
-	if (pCCha->GetActControl(enumACTCONTROL_EYESHOT) && (GetActControl(enumACTCONTROL_NOHIDE) || !GetActControl(enumACTCONTROL_NOSHOW)))
+	if (pCCha->GetActControl(ActControl::EYESHOT) && (GetActControl(ActControl::NOHIDE) || !GetActControl(ActControl::NOSHOW)))
 		return true;
 
 	if (IsFriend(pCCha) && !IsGMCha2())
@@ -623,7 +621,7 @@ bool CCharacter::CanSeen(CCharacter *pCCha, bool bThisEyeshot, bool bThisNoHide,
 	if (pCCha == this)
 		return true;
 
-	if (pCCha->GetActControl(enumACTCONTROL_EYESHOT) && (bThisNoHide || !bThisNoShow))
+	if (pCCha->GetActControl(ActControl::EYESHOT) && (bThisNoHide || !bThisNoShow))
 		return true;
 
 	if (IsFriend(pCCha) && !IsGMCha2())
@@ -1412,8 +1410,7 @@ void CCharacter::Reset()
 {
 	BreakAction();
 	m_CSkillState.Reset();
-	for (int i = 0; i < enumACTCONTROL_MAX; i++)
-		SetActControl(i);
+	_actControl.fill(true);
 	m_SSeat.chIsSeat = 0;
 
 	setAttr(ATTR_HP, m_CChaAttr.GetAttr(ATTR_MXHP));	// HP
@@ -1657,8 +1654,7 @@ void CCharacter::Die()
 
 	BreakAction();
 	m_CSkillState.Reset();
-	for (int i = 0; i < enumACTCONTROL_MAX; i++)
-		SetActControl(i);
+	_actControl.fill(true);
 	m_SSeat.chIsSeat = 0;
 	m_chSelRelive = enumEPLAYER_RELIVE_NONE;
 	m_chReliveLv = 0;
@@ -4434,36 +4430,36 @@ bool CCharacter::AddSkillState(uChar uchFightID, uLong ulSrcWorldID, Long lSrcHa
 	if (!bAlreadyHas)
 	{
 		if (!pSSkillState->bCanMove)
-			SetActControl(enumACTCONTROL_MOVE, false);
+			SetActControl(ActControl::MOVE, false);
 		if (!pSSkillState->bCanGSkill)
-			SetActControl(enumACTCONTROL_USE_GSKILL, false);
+			SetActControl(ActControl::USE_GSKILL, false);
 		if (!pSSkillState->bCanMSkill)
-			SetActControl(enumACTCONTROL_USE_MSKILL, false);
+			SetActControl(ActControl::USE_MSKILL, false);
 		if (!pSSkillState->bCanTrade)
-			SetActControl(enumACTCONTROL_TRADE, false);
+			SetActControl(ActControl::TRADE, false);
 		if (!pSSkillState->bCanItem)
-			SetActControl(enumACTCONTROL_USE_ITEM, false);
+			SetActControl(ActControl::USE_ITEM, false);
 		if (!pSSkillState->bCanUnbeatable)
-			SetActControl(enumACTCONTROL_INVINCIBLE, false);
+			SetActControl(ActControl::INVINCIBLE, false);
 		if (!pSSkillState->bCanItemmed)
-			SetActControl(enumACTCONTROL_BEUSE_ITEM, false);
+			SetActControl(ActControl::BEUSE_ITEM, false);
 		if (!pSSkillState->bCanSkilled)
-			SetActControl(enumACTCONTROL_BEUSE_SKILL, false);
+			SetActControl(ActControl::BEUSE_SKILL, false);
 		if (!pSSkillState->bOptItem)
-			SetActControl(enumACTCONTROL_ITEM_OPT, false);
+			SetActControl(ActControl::ITEM_OPT, false);
 		if (!pSSkillState->bTalkToNPC)
-			SetActControl(enumACTCONTROL_TALKTO_NPC, false);
+			SetActControl(ActControl::TALKTO_NPC, false);
 		if (!pSSkillState->bNoHide)
 		{
 			if (GetSubMap())
-				GetSubMap()->RefreshEyeshot(this, GetActControl(enumACTCONTROL_EYESHOT), false, GetActControl(enumACTCONTROL_NOSHOW));
-			SetActControl(enumACTCONTROL_NOHIDE, false);
+				GetSubMap()->RefreshEyeshot(this, GetActControl(ActControl::EYESHOT), false, GetActControl(ActControl::NOSHOW));
+			SetActControl(ActControl::NOHIDE, false);
 		}
 		if (!pSSkillState->bNoShow)
 		{
 			if (GetSubMap())
-				GetSubMap()->RefreshEyeshot(this, GetActControl(enumACTCONTROL_EYESHOT), GetActControl(enumACTCONTROL_NOHIDE), false);
-			SetActControl(enumACTCONTROL_NOSHOW, false);
+				GetSubMap()->RefreshEyeshot(this, GetActControl(ActControl::EYESHOT), GetActControl(ActControl::NOHIDE), false);
+			SetActControl(ActControl::NOSHOW, false);
 		}
 	}
 
@@ -4540,13 +4536,12 @@ bool CCharacter::DelSkillState(dbc::uChar uchStateID, bool bNotice)
 
 		if (!m_CSkillState.Del(uchStateID))
 			return false;
-		bool	bNoHide = GetActControl(enumACTCONTROL_NOHIDE);
-		bool	bNoShow = GetActControl(enumACTCONTROL_NOSHOW);
+		bool	bNoHide = GetActControl(ActControl::NOHIDE);
+		bool	bNoShow = GetActControl(ActControl::NOSHOW);
 		bool	bToNoHide = true, bToNoShow = true;
-		for (int i = 0; i < enumACTCONTROL_MAX; i++)
-			SetActControl(i);
-		SetActControl(enumACTCONTROL_NOHIDE, bNoHide);
-		SetActControl(enumACTCONTROL_NOSHOW, bNoShow);
+		_actControl.fill(true);
+		SetActControl(ActControl::NOHIDE, bNoHide);
+		SetActControl(ActControl::NOSHOW, bNoShow);
 		CSkillStateRecord	*pSTempSkillState;
 		SSkillStateUnit		*pTempState;
 		for (int i = 0; i < m_CSkillState.GetStateNum(); i++)
@@ -4558,25 +4553,25 @@ bool CCharacter::DelSkillState(dbc::uChar uchStateID, bool bNotice)
 			if (!pSTempSkillState)
 				continue;
 			if (!pSTempSkillState->bCanMove)
-				SetActControl(enumACTCONTROL_MOVE, false);
+				SetActControl(ActControl::MOVE, false);
 			if (!pSTempSkillState->bCanGSkill)
-				SetActControl(enumACTCONTROL_USE_GSKILL, false);
+				SetActControl(ActControl::USE_GSKILL, false);
 			if (!pSTempSkillState->bCanMSkill)
-				SetActControl(enumACTCONTROL_USE_MSKILL, false);
+				SetActControl(ActControl::USE_MSKILL, false);
 			if (!pSTempSkillState->bCanTrade)
-				SetActControl(enumACTCONTROL_TRADE, false);
+				SetActControl(ActControl::TRADE, false);
 			if (!pSTempSkillState->bCanItem)
-				SetActControl(enumACTCONTROL_USE_ITEM, false);
+				SetActControl(ActControl::USE_ITEM, false);
 			if (!pSTempSkillState->bCanUnbeatable)
-				SetActControl(enumACTCONTROL_INVINCIBLE, false);
+				SetActControl(ActControl::INVINCIBLE, false);
 			if (!pSTempSkillState->bCanItemmed)
-				SetActControl(enumACTCONTROL_BEUSE_ITEM, false);
+				SetActControl(ActControl::BEUSE_ITEM, false);
 			if (!pSTempSkillState->bCanSkilled)
-				SetActControl(enumACTCONTROL_BEUSE_SKILL, false);
+				SetActControl(ActControl::BEUSE_SKILL, false);
 			if (!pSTempSkillState->bOptItem)
-				SetActControl(enumACTCONTROL_ITEM_OPT, false);
+				SetActControl(ActControl::ITEM_OPT, false);
 			if (!pSTempSkillState->bTalkToNPC)
-				SetActControl(enumACTCONTROL_TALKTO_NPC, false);
+				SetActControl(ActControl::TALKTO_NPC, false);
 			if (!pSTempSkillState->bNoHide)
 				bToNoHide = false;
 			if (!pSTempSkillState->bNoShow)
@@ -4585,8 +4580,8 @@ bool CCharacter::DelSkillState(dbc::uChar uchStateID, bool bNotice)
 		if (bToNoHide != bNoHide || bToNoShow != bNoShow)
 			if (GetSubMap())
 				GetSubMap()->RefreshEyeshot(this, true, bToNoHide, bToNoShow);
-		SetActControl(enumACTCONTROL_NOHIDE, bToNoHide);
-		SetActControl(enumACTCONTROL_NOSHOW, bToNoShow);
+		SetActControl(ActControl::NOHIDE, bToNoHide);
+		SetActControl(ActControl::NOSHOW, bToNoShow);
 
 		Long	lOldHP = (long)m_CChaAttr.GetAttr(ATTR_HP);
 
@@ -6972,7 +6967,7 @@ mission::CStallData* CCharacter::GetStallData()
 
 BYTE CCharacter::GetStallNum()
 {
-	if (!GetActControl(enumACTCONTROL_USE_MSKILL)) // 
+	if (!GetActControl(ActControl::USE_MSKILL)) // 
 		return 0;
 
 	Char	chLv;
@@ -7746,8 +7741,8 @@ mission::CTradeData* CCharacter::GetTradeData()                           { retu
 bool CCharacter::IsBoat(void)         { return m_pCChaRecord->chModalType == enumMODAL_BOAT; }
 bool CCharacter::HasTradeAction(void) { return m_CSkillState.HasState(85); }
 
-bool      CCharacter::GetActControl(dbc::Char chCtrlType) { return m_ActContrl[chCtrlType]; }
-void      CCharacter::SetActControl(dbc::Char chCtrlType, bool bSet) { m_ActContrl[chCtrlType] = bSet; }
+bool      CCharacter::GetActControl(Corsairs::Common::Character::ActControl ctrlType) const { return _actControl[std::to_underlying(ctrlType)]; }
+void      CCharacter::SetActControl(Corsairs::Common::Character::ActControl ctrlType, bool set) { _actControl[std::to_underlying(ctrlType)] = set; }
 
 bool      CCharacter::IsInPK(void)                 { return m_chPKCtrl[0]; }
 bool      CCharacter::IsInGymkhana(void)           { return m_chPKCtrl[1]; }
@@ -7772,7 +7767,7 @@ BYTE CCharacter::GetBlockCnt()               { return _btBlockCnt; }
 void CCharacter::SetBlockCnt(BYTE cnt)       { _btBlockCnt = cnt; }
 
 bool CCharacter::IsHide() {
-	return !GetActControl(enumACTCONTROL_NOHIDE) && GetActControl(enumACTCONTROL_NOSHOW);
+	return !GetActControl(ActControl::NOHIDE) && GetActControl(ActControl::NOSHOW);
 }
 
 dbc::Long CCharacter::GetSideID()            { return m_lSideID; }

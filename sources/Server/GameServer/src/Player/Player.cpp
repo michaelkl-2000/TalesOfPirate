@@ -22,17 +22,21 @@ m_sGarnerWiner(0)
 	m_chGMLev = 0;
 	m_dwValidFlag = PLAYER_INVALID_FLAG;
 
-	m_CMapMask.AddMap("garner", defMAP_GARNER_WIDTH, defMAP_GARNER_HEIGHT);
-	m_CMapMask.AddMap("magicsea", defMAP_MAGICSEA_WIDTH, defMAP_MAGICSEA_HEIGHT);
-	m_CMapMask.AddMap("darkblue", defMAP_DARKBLUE_WIDTH, defMAP_DARKBLUE_HEIGHT);
-
-	// Add by lark.li 20080812 begin
-	m_CMapMask.AddMap("winterland", defMAP_DARKBLUE_WIDTH, defMAP_DARKBLUE_HEIGHT);
-	// End
-
-	//m_CMapMask.AddMap("eastgoaf", defMAP_EASTGOAF_WIDTH, defMAP_EASTGOAF_HEIGHT);
-	//m_CMapMask.AddMap("lonetower", defMAP_LONETOWER_WIDTH, defMAP_LONETOWER_HEIGHT);
-	m_lLightSize = g_lDeftMMaskLight;
+	// Список карт с fog-of-war задаётся в [Large map switch].fog_maps.
+	// Размеры берём из реальной CMapRes загруженной карты; если карта не загружена
+	// (например, отсутствует в [Map]), используем fallback 4096 — исторический размер,
+	// под который раньше были захардкожены defMAP_*_WIDTH/HEIGHT.
+	constexpr std::int32_t kFogMapFallbackDim = 4096;
+	for (const auto& mapName : g_Config.m_fogOfWarMaps) {
+		std::int32_t w = kFogMapFallbackDim;
+		std::int32_t h = kFogMapFallbackDim;
+		if (auto* mapRes = g_pGameApp->FindMapByName(mapName.c_str(), true)) {
+			const auto& range = mapRes->GetRange();
+			w = static_cast<std::int32_t>(range.rbtm.x / 100);
+			h = static_cast<std::int32_t>(range.rbtm.y / 100);
+		}
+		m_CMapMask.AddMap(mapName, w, h);
+	}
 
 	//
 	m_lMoBean = 0;
@@ -65,8 +69,7 @@ void CPlayer::Initially()
 	memset( m_Boat, 0, sizeof(CCharacter*)*MAX_CHAR_BOAT );
 
 	m_ulLoginCha[0] = enumLOGIN_CHA_MAIN;
-	SetMapMaskDBID(0);
-	ResetMapMaskChange();
+	m_dirtyFogMaps.clear();
 	m_chBankNum = 0;
 	m_pCBankNpc = 0;
 	for (char i = 0; i < MAX_BANK_NUM; i++)
@@ -755,12 +758,15 @@ void CPlayer::SystemNotice( const char szData[], ... )
 	GetGate()->SendData(packet);
 }
 
-bool CPlayer::RefreshMapMask(const char *szMapName, long lPosX, long lPosY)
+bool CPlayer::RefreshMapMask(std::string_view szMapName, std::int32_t lPosX, std::int32_t lPosY)
 {
-	if (!strcmp(szMapName, m_szMaskMapName))
-	{
-		if (m_CMapMask.UpdateMapMask((char *)szMapName, lPosX, lPosY, m_lLightSize))
-			SetMapMaskChange();
+	if (g_Config.m_chMapMask <= 0) {
+		return false;
+	}
+	if (szMapName == m_szMaskMapName) {
+		if (m_CMapMask.Update(szMapName, lPosX, lPosY, g_Config.m_mapMaskRadius)) {
+			m_dirtyFogMaps.emplace(szMapName);
+		}
 		return true;
 	}
 
@@ -1255,9 +1261,6 @@ dbc::cChar* CPlayer::GetActName(void)       { return m_chActName; }
 void        CPlayer::SetGMLev(dbc::Char v)  { m_chGMLev = v; }
 dbc::uChar  CPlayer::GetGMLev(void)         { return static_cast<dbc::uChar>(m_chGMLev); }
 
-void        CPlayer::SetMapMaskDBID(long v) { m_lMapMaskDBID = v; }
-long        CPlayer::GetMapMaskDBID(void)   { return m_lMapMaskDBID; }
-
 void        CPlayer::SetBankDBID(long lID, char chBankNO) { m_lBankDBID[chBankNO] = lID; }
 long        CPlayer::GetBankDBID(char chBankNO)           { return m_lBankDBID[chBankNO]; }
 
@@ -1335,24 +1338,19 @@ CCharacter* CPlayer::GetBoat(BYTE byIndex) {
 mission::CStallData* CPlayer::GetStallData()                           { return m_pStallData; }
 void                 CPlayer::SetStallData(mission::CStallData* pData) { m_pStallData = pData; }
 
-void        CPlayer::SetMMaskLightSize(long lSize) { m_lLightSize = lSize; }
-long        CPlayer::GetMMaskLightSize(void)       { return m_lLightSize; }
+bool        CPlayer::LoadMapMaskBase64(std::string_view mapName, std::string_view base64Data) { return m_CMapMask.LoadBase64(mapName, base64Data); }
+std::string CPlayer::SaveMapMaskBase64(std::string_view mapName) const                         { return m_CMapMask.SaveBase64(mapName); }
+std::vector<std::uint8_t> CPlayer::GetMapMaskWire() const                                      { return m_CMapMask.SerializeLegacyWire(m_szMaskMapName); }
 
-bool        CPlayer::SetMapMaskBase64(const char* pMask) { return m_CMapMask.InitMaskData(m_szMaskMapName, pMask); }
-const char* CPlayer::GetMapMaskBase64()                  { return m_CMapMask.GetResultOneMask(m_szMaskMapName); }
-BYTE*       CPlayer::GetMapMask(long& lLen)              { return m_CMapMask.GetMapMask(m_szMaskMapName, lLen); }
-
-void CPlayer::SetMaskMapName(const char* szMapName) {
-	strncpy(m_szMaskMapName, szMapName, MAX_MAPNAME_LENGTH - 1);
-	m_szMaskMapName[MAX_MAPNAME_LENGTH - 1] = '\0';
+void CPlayer::SetMaskMapName(std::string_view szMapName) {
+	const auto len = std::min<std::size_t>(szMapName.size(), MAX_MAPNAME_LENGTH - 1);
+	std::memcpy(m_szMaskMapName, szMapName.data(), len);
+	m_szMaskMapName[len] = '\0';
 }
 const char* CPlayer::GetMaskMapName(void)      { return m_szMaskMapName; }
 
-bool        CPlayer::IsMapMaskChange(void)     { return m_chMapMaskChange >= 3; }
-void        CPlayer::SetMapMaskChange(void)    { m_chMapMaskChange++; }
-void        CPlayer::ResetMapMaskChange(void)  { m_chMapMaskChange = 0; }
-float       CPlayer::GetMapMaskOpenScale(const char* szMapName) {
-	return m_CMapMask.GetMapMaskOpenScale(szMapName);
+float       CPlayer::GetMapMaskOpenScale(std::string_view szMapName) {
+	return m_CMapMask.GetOpenScalePercent(szMapName);
 }
 
 char        CPlayer::GetCurBankNum(void)       { return m_chBankNum; }

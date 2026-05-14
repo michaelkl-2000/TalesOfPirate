@@ -342,7 +342,7 @@ namespace mission {
 			return FALSE;
 		}
 
-		if (owner.m_CKitbag.IsLock() || !owner.GetActControl(enumACTCONTROL_ITEM_OPT)) {
+		if (owner.m_CKitbag.IsLock() || !owner.GetActControl(ActControl::ITEM_OPT)) {
 			//owner.SystemNotice( "" );
 			owner.SystemNotice(RES_STRING(GM_CHARBOAT_CPP_00007));
 			return FALSE;
@@ -583,7 +583,7 @@ namespace mission {
 			return FALSE;
 		}
 
-		if (owner.m_CKitbag.IsLock() || !owner.GetActControl(enumACTCONTROL_ITEM_OPT)) {
+		if (owner.m_CKitbag.IsLock() || !owner.GetActControl(ActControl::ITEM_OPT)) {
 			//owner.SystemNotice( "" );
 			owner.SystemNotice(RES_STRING(GM_CHARBOAT_CPP_00007));
 			return FALSE;

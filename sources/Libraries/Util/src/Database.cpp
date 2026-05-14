@@ -331,6 +331,20 @@ bool OdbcReader::IsNull(int col) const {
 int OdbcReader::ResolveColumn(std::string_view name) const {
 	auto it = _columnMap.find(ToUpper(name));
 	if (it == _columnMap.end()) {
+		// Логируем перед throw — exception часто проглатывается выше по стеку,
+		// и без лога не видно, какая колонка/запрос отсутствует. Перечисляем
+		// доступные колонки чтобы быстро понять причину (опечатка, миграция и т.п.).
+		std::string availableCols;
+		for (const auto& [k, v] : _columnMap) {
+			if (!availableCols.empty()) {
+				availableCols += ", ";
+			}
+			availableCols += k;
+		}
+		ToLogService("errors", LogLevel::Error,
+		             "OdbcReader::ResolveColumn: column '{}' not found in result set. "
+		             "SQL=[{}]. Available columns: [{}]",
+		             name, _sql, availableCols);
 		throw OdbcException("", 0, std::format("Column '{}' not found in result set", name));
 	}
 	return it->second;

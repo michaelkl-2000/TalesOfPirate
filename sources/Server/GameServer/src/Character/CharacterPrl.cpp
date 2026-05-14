@@ -111,9 +111,9 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		const bool bTradeData  = GetTradeData() != nullptr;
 		const bool bBoat       = GetBoat() != nullptr;
 		const bool bStallData  = GetStallData() != nullptr;
-		const bool bTalkCtrl   = GetActControl(enumACTCONTROL_TALKTO_NPC);
+		const bool bTalkCtrl   = GetActControl(ActControl::TALKTO_NPC);
 		const bool bKitbagLock = m_CKitbag.IsLock();
-		const bool bItemCtrl   = GetActControl(enumACTCONTROL_ITEM_OPT);
+		const bool bItemCtrl   = GetActControl(ActControl::ITEM_OPT);
 		if (bTradeData || bBoat || bStallData || !bTalkCtrl || bKitbagLock || !bItemCtrl) {
 			ToLogService("trade", LogLevel::Error,
 				"REQUESTTALK/TRADE rejected for cha={} cmd={}: trade={}, boat={}, stall={}, talkCtrl={}, kitbagLock={}, itemCtrl={}",
@@ -1282,15 +1282,23 @@ void CCharacter::Handle_MapMask() {
 	//const char	*szMapName = pk.ReadString();
 	const char* szMapName = GetSubMap()->GetName();
 
-	long lDataLen;
-	BYTE* pData = GetPlayer()->GetMapMask(lDataLen);
 	Corsairs::Net::Msg::McMapMaskMessage msg;
 	msg.worldId = m_ID;
-	if (!pData)
+	msg.fogOfWarEnabled = (g_Config.m_chMapMask > 0);
+
+	if (!msg.fogOfWarEnabled) {
 		msg.hasData = false;
+	}
 	else {
-		msg.hasData = true;
-		msg.data.assign((char*)pData, (char*)pData + lDataLen);
+		auto wireBlob = GetPlayer()->GetMapMaskWire();
+		if (wireBlob.empty()) {
+			msg.hasData = false;
+		}
+		else {
+			msg.hasData = true;
+			msg.data.assign(reinterpret_cast<const char*>(wireBlob.data()),
+			                reinterpret_cast<const char*>(wireBlob.data()) + wireBlob.size());
+		}
 	}
 	auto wpk = Corsairs::Net::Msg::serialize(msg);
 	ReflectINFof(this, wpk);
@@ -2325,7 +2333,7 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 
 		if (IsBoat())
 			break;
-		if (GetMoveState() == enumMSTATE_ON || GetFightState() == enumFSTATE_ON || !GetActControl(enumACTCONTROL_MOVE))
+		if (GetMoveState() == enumMSTATE_ON || GetFightState() == enumFSTATE_ON || !GetActControl(ActControl::MOVE))
 			break;
 
 		const auto& d = std::get<Corsairs::Net::Msg::CmActionFaceData>(msg.data);

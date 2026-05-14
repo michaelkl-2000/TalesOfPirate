@@ -832,19 +832,6 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 
 	}
 
-	else if (!strcmp(szComHead, "light")) // .
-	{
-		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');
-		if (n != 1)
-			return FALSE;
-
-		long	lLight = Str2Int(strList[0]);
-		if (lLight < 0)
-			return FALSE;
-		GetPlayer()->SetMMaskLightSize(lLight);
-		ToLogService("common", "ChaID: {}, ChaName: {}, CMD: {}, Param: {}", GetPlayer()->GetID(), GetName(), pszCmd, pszParam);
-		return TRUE;
-	}
 	else if (!strcmp(szComHead, "seeattr")) // WorldID.
 	{
 		int n = Util_ResolveTextLine(szComParam, strList, 10, ',');

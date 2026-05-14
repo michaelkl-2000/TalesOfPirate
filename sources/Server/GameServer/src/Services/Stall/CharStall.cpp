@@ -68,7 +68,7 @@ namespace mission
 			return;
 		}
 
-		if( staller.m_CKitbag.IsLock() || !staller.GetActControl(enumACTCONTROL_ITEM_OPT) )
+		if( staller.m_CKitbag.IsLock() || !staller.GetActControl(ActControl::ITEM_OPT) )
 		{
 			//staller.SystemNotice( "" );
 			staller.SystemNotice( RES_STRING(GM_CHARSTALL_CPP_00004));

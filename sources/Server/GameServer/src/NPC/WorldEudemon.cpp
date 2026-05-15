@@ -11,7 +11,7 @@ using namespace Corsairs::Common::NPC;
 #include "Script/lua_gamectrl.h"
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	CWorldEudemon g_WorldEudemon;
 
@@ -37,7 +37,7 @@ namespace mission
 			return FALSE;
 		}
 
-		luabridge::push( g_pLuaState, static_cast<mission::CNpc*>(this) );
+		luabridge::push( g_pLuaState, static_cast<Corsairs::Common::Mission::CNpc*>(this) );
 		lua_pushstring( g_pLuaState, szName );
 
 		int nStatus = lua_pcall( g_pLuaState, 2, 0, 0 );
@@ -84,7 +84,7 @@ namespace mission
 			return FALSE;
 		}
 
-		luabridge::push( g_pLuaState, static_cast<mission::CNpc*>(this) );
+		luabridge::push( g_pLuaState, static_cast<Corsairs::Common::Mission::CNpc*>(this) );
 		lua_pushstring( g_pLuaState, szName );
 
 		nStatus = lua_pcall( g_pLuaState, 2, 0, 0 );
@@ -148,7 +148,7 @@ namespace mission
 		}
 
 		luabridge::push( g_pLuaState, &character );
-		luabridge::push( g_pLuaState, static_cast<mission::CNpc*>(this) );
+		luabridge::push( g_pLuaState, static_cast<Corsairs::Common::Mission::CNpc*>(this) );
 		luabridge::push( g_pLuaState, &packet );
 		lua_pushnumber( g_pLuaState, m_sScriptID );
 

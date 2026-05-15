@@ -6,7 +6,8 @@
 #include "UIGuildMgr.h"
 #include "NetChat.h"
 #include "TalkSessionFormMgr.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 using namespace std;
 using namespace GUI;
 

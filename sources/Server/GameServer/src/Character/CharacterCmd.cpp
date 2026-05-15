@@ -199,7 +199,7 @@ bool CCharacter::Cmd_EnterMap(const char* l_map, std::int32_t lMapCopyNO, std::u
 
 			for (int i = 0; i < enumEQUIP_NUM; i++)
 			{
-				if (g_IsRealItemID(m_SChaPart.SLink[i].sID))
+				if (IsRealItemId(m_SChaPart.SLink[i].sID))
 					ChangeItem(true, &m_SChaPart.SLink[i], i);
 
 				if (m_SChaPart.SLink[i].sID && (m_SChaPart.SLink[i].expiration - std::time(0)) <= 0 && m_SChaPart.SLink[i].expiration != 0) {
@@ -1289,12 +1289,12 @@ int16_t CCharacter::Cmd_PickupItem(std::uint32_t ulID, std::int32_t lHandle)
 	if (!pCMap)
 		return enumITEMOPT_ERROR_KBLOCK;
 	std::uint16_t	usAreaAttr = pCMap->GetAreaAttr(pCEnt->GetPos());
-	if ((g_IsLand(usAreaAttr) != g_IsLand(GetAreaAttr())) && (g_IsLand(usAreaAttr))) //
+	if ((IsLand(usAreaAttr) != IsLand(GetAreaAttr())) && (IsLand(usAreaAttr))) //
 		return enumITEMOPT_ERROR_AREA;
 
 	CCharacter	*pKitbagCha = this;
 	CKitbag	*pCKitbag = &m_CKitbag;
-	if (!g_IsLand(usAreaAttr)) // 
+	if (!IsLand(usAreaAttr)) // 
 	{
 		if (!IsBoat())
 			return enumITEMOPT_ERROR_DISTANCE;
@@ -1561,7 +1561,7 @@ int16_t CCharacter::Cmd_ThrowItem(int16_t sKbPage, int16_t sKbGrid, int16_t *psT
 	if (!pCMap)
 		return enumITEMOPT_ERROR_KBLOCK;
 	std::uint16_t	usAreaAttr = pCMap->GetAreaAttr(lPosX, lPosY);
-	if (g_IsLand(usAreaAttr) != g_IsLand(GetAreaAttr())) //
+	if (IsLand(usAreaAttr) != IsLand(GetAreaAttr())) //
 		return enumITEMOPT_ERROR_AREA;
 
 	if (*psThrowNum != 0)
@@ -2419,7 +2419,7 @@ void CCharacter::Cmd_FightAsk(char chType, std::int32_t lTarID, std::int32_t lTa
 		Corsairs::Net::Msg::TeamFightPlayerEntry entry;
 		entry.name = pCha->GetName();
 		entry.lv = static_cast<int64_t>((char)pCha->getAttr(ATTR_LV));
-		entry.job = g_GetJobName((int16_t)pCha->getAttr(ATTR_JOB));
+		entry.job = GetJobName((int16_t)pCha->getAttr(ATTR_JOB));
 		if (auto ret = g_luaAPI.CallR<int>("Get_ItemAttr_Join", static_cast<CCharacter*>(pCha)))
 			entry.fightNum = ret.value_or(0);
 		if (auto ret = g_luaAPI.CallR<int>("Get_ItemAttr_Win", static_cast<CCharacter*>(pCha)))

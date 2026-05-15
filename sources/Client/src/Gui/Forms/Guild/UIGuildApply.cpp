@@ -3,6 +3,8 @@
 //------------------------------------------------------------------------
 
 #include "stdafx.h"
+#include "TextFilter.h"
+using namespace Corsairs::Util;
 #include "uiguildapply.h"
 #include "netguild.h"
 #include "UIFormMgr.h"

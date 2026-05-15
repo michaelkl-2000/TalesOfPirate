@@ -95,7 +95,7 @@ void CMoveAble::ResetMove()
 //	if (sUnitSX == sUnitEX && sUnitSY == sUnitEY)
 //	{
 //		m_submap->GetTerrainCellAttr(sUnitSX, sUnitSY, usAreaAttr);
-//		if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+//		if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 //		{
 //			xdist = 0, ydist = 0;
 //			return true;
@@ -134,7 +134,7 @@ void CMoveAble::ResetMove()
 //		for (int16_t i = 0; i <= sLoop; i++)
 //		{
 //			m_submap->GetTerrainCellAttr(sUnitSX + i * chXDir, sUnitSY + i * chYDir, usAreaAttr);
-//			if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+//			if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 //			{
 //				xdist = 0, ydist = 0;
 //				return true;
@@ -144,7 +144,7 @@ void CMoveAble::ResetMove()
 //	else
 //	{
 //		m_submap->GetTerrainCellAttr(sUnitEX, sUnitEY, usAreaAttr);
-//		if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+//		if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 //		{
 //			xdist = 0, ydist = 0;
 //			return true;
@@ -168,13 +168,13 @@ void CMoveAble::ResetMove()
 //				std::int32_t y = ydist * ((sUnitWidth - lRSX % sUnitWidth) + x * sUnitWidth) / xdist + lRSY;
 //				int16_t sRUnitY = int16_t(y / sUnitHeight);
 //				m_submap->GetTerrainCellAttr(sUnitSX + x, sRUnitY, usAreaAttr);
-//				if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+//				if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 //				{
 //					xdist = 0, ydist = 0;
 //					return true;
 //				}
 //				m_submap->GetTerrainCellAttr(sUnitSX + x + 1, sRUnitY, usAreaAttr);
-//				if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+//				if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 //				{
 //					xdist = 0, ydist = 0;
 //					return true;
@@ -199,13 +199,13 @@ void CMoveAble::ResetMove()
 //				std::int32_t x = xdist * ((sUnitHeight - lRSY % sUnitHeight) + y * sUnitHeight) / ydist + lRSX;
 //				int16_t sRUnitX = int16_t(x / sUnitWidth);
 //				m_submap->GetTerrainCellAttr(sRUnitX, sUnitSY + y, usAreaAttr);
-//				if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+//				if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 //				{
 //					xdist = 0, ydist = 0;
 //					return true;
 //				}
 //				m_submap->GetTerrainCellAttr(sRUnitX, sUnitSY + y + 1, usAreaAttr);
-//				if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+//				if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 //				{
 //					xdist = 0, ydist = 0;
 //					return true;
@@ -237,7 +237,7 @@ bool CMoveAble::AreaOverlap(long &xdist, long &ydist)
 	if (sUnitSX == sUnitEX && sUnitSY == sUnitEY)
 	{
 		m_submap->GetTerrainCellAttr(sUnitSX, sUnitSY, usAreaAttr);
-		if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+		if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 		{
 			xdist = 0, ydist = 0;
 			return true;
@@ -276,7 +276,7 @@ bool CMoveAble::AreaOverlap(long &xdist, long &ydist)
 		for (int16_t i = 0; i <= sLoop; i++)
 		{
 			m_submap->GetTerrainCellAttr(sUnitSX + i * chXDir, sUnitSY + i * chYDir, usAreaAttr);
-			if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+			if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 			{
 				xdist = 0, ydist = 0;
 				return true;
@@ -306,7 +306,7 @@ bool CMoveAble::AreaOverlap(long &xdist, long &ydist)
 			for (int16_t y = sUnitSY; y <= sUnitEY; y++)
 			{
 				m_submap->GetTerrainCellAttr(x, y, usAreaAttr);
-				if (!g_IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
+				if (!::IsMoveAble(static_cast<EChaCtrlType>(m_CChaAttr.GetAttr(ATTR_CHATYPE)), m_pCChaRecord->Territory, usAreaAttr))
 				{
 					p1[0] = (float)(x * sUnitWidth), p1[1] = (float)(y * sUnitHeight);
 					p2[0] = (float)(p1[0] + sUnitWidth - 1), p2[1] = p1[1];

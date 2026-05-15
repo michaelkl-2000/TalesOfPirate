@@ -97,7 +97,7 @@ CEvent* CEventMgr::CreateEvent(DWORD dwEventID) {
 
 	bool IsEnabled = true;
 	if (pInfo->sEventType == enumEVENT_TYPE_ENTITY) {
-		IsEnabled = ((dwEventID & 0xf000) >> 12) == mission::ENTITY_ENABLE;
+		IsEnabled = ((dwEventID & 0xf000) >> 12) == +Corsairs::Common::Mission::EntityState::ENTITY_ENABLE;
 	}
 
 	for (events::iterator it = _events.begin(); it != _events.end(); it++) {

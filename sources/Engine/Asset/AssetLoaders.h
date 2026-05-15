@@ -495,9 +495,9 @@ class ZRBlockData;
 namespace Corsairs::Engine::Render {
 
 // Используем типы формата файла без квалификации (using-declaration,
-// не using-directive — глобально namespace Corsairs::Util::Map не открываем).
-using ::Corsairs::Util::Map::MPMapFileHeader;
-using ::Corsairs::Util::Map::SNewFileTile;
+// не using-directive — глобально namespace Corsairs::Util не открываем).
+using ::Corsairs::Util::MPMapFileHeader;
+using ::Corsairs::Util::SNewFileTile;
 
 enum class MapLoadStatus : std::uint32_t {
     Ok = 0,
@@ -592,16 +592,16 @@ private:
     std::uint32_t _bulkBaseOffset{0};
 };
 
-// Текущий формат записи .map. См. Corsairs::Util::Map::kMapFlagCurrent.
+// Текущий формат записи .map. См. Corsairs::Util::kMapFlagCurrent.
 class MapLoader {
 public:
     // kMapFlagBase (780624) + 3. Совпадает с kMapFlagCurrent из MPMapDef.h —
     // именно эта версия пишется обратно в Save и принимается runtime'ом.
-    static constexpr std::int32_t kCurrentMapFlag = ::Corsairs::Util::Map::kMapFlagCurrent;
+    static constexpr std::int32_t kCurrentMapFlag = ::Corsairs::Util::kMapFlagCurrent;
     // kMapFlagBase + 2 (kMapFlagLegacy). Принимается на чтение, но в
     // round-trip-тестах считается legacy: Save всегда сохраняет в актуальной
     // версии, runtime читает оба значения.
-    static constexpr std::int32_t kLegacyMapFlag = ::Corsairs::Util::Map::kMapFlagLegacy;
+    static constexpr std::int32_t kLegacyMapFlag = ::Corsairs::Util::kMapFlagLegacy;
 
     // Снапшот-API (round-trip-тесты, тулзы).
     [[nodiscard]] static LW_RESULT Load(MapInfo& info, std::string_view file);

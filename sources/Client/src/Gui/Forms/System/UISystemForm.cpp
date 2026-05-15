@@ -176,7 +176,7 @@ namespace {
 	//  вызывающая сторона по этому флагу решает, нужно ли сохранять файл на диск.
 	//  Sentinel заведомо отличен от value, чтобы отличить "ключа нет" от
 	//  "ключ есть и равен value" одним вызовом GetInt64.
-	bool SetInt64IfChanged(Corsairs::Util::Ini::IniSection& sec, std::string_view key, std::int64_t value) {
+	bool SetInt64IfChanged(Corsairs::Util::IniSection& sec, std::string_view key, std::int64_t value) {
 		//  Sentinel — заведомо отличный от value: используется как маркер "ключа нет".
 		constexpr auto kMin = std::numeric_limits<std::int64_t>::min();
 		constexpr auto kMax = std::numeric_limits<std::int64_t>::max();

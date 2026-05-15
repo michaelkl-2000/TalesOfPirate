@@ -1,136 +1,93 @@
 #include "Effect/EffParamRecordStore.h"
-#include <sstream>
+
+#include <charconv>
+#include <cstdint>
+#include <string_view>
 
 
 namespace Corsairs::Common::Effect {
 
-GameRecordset<EFF_Param>::RecordEntry EffParamRecordStore::ReadRecord(SqliteStatement& stmt) {
-	EFF_Param record{};
+namespace {
+	// Разбить CSV-строку на токены. Пустые токены сохраняются как "".
+	// Возвращает число фактически считанных токенов (не больше N).
+	template <std::size_t N>
+	std::size_t SplitCsvStrings(std::string_view text, std::array<std::string, N>& out) {
+		for (auto& s : out) {
+			s.clear();
+		}
+		if (text.empty()) {
+			return 0;
+		}
+		std::size_t i = 0;
+		std::size_t pos = 0;
+		while (i < N) {
+			std::size_t comma = text.find(',', pos);
+			std::size_t end   = (comma == std::string_view::npos) ? text.size() : comma;
+			out[i++].assign(text.data() + pos, end - pos);
+			if (comma == std::string_view::npos) {
+				break;
+			}
+			pos = comma + 1;
+		}
+		return i;
+	}
+
+	// Разбить CSV-строку на N int32. Пустые/неразобранные — fallback.
+	template <std::size_t N>
+	void SplitCsvInts(std::string_view text, std::array<std::int32_t, N>& out, std::int32_t fallback) {
+		out.fill(fallback);
+		if (text.empty()) {
+			return;
+		}
+		std::size_t i = 0;
+		std::size_t pos = 0;
+		while (i < N) {
+			std::size_t comma = text.find(',', pos);
+			std::size_t end   = (comma == std::string_view::npos) ? text.size() : comma;
+			std::int32_t v = fallback;
+			std::from_chars(text.data() + pos, text.data() + end, v);
+			out[i++] = v;
+			if (comma == std::string_view::npos) {
+				break;
+			}
+			pos = comma + 1;
+		}
+	}
+} // namespace
+
+GameRecordset<EffParamRecord>::RecordEntry EffParamRecordStore::ReadRecord(SqliteStatement& stmt) {
+	EffParamRecord record{};
 	int col = 0;
 
-	record.Id    = stmt.GetInt(col++);
+	record.Id       = stmt.GetInt(col++);
+	record.DataName = stmt.GetText(col++);
 
-	// name → szName и DataName
-	{
-		auto name = stmt.GetText(col++);
-		strncpy(record.szName, name.data(), sizeof(record.szName) - 1);
-		record.szName[sizeof(record.szName) - 1] = '\0';
-		record.DataName = name;
-	}
-
-	// models — "model0,model1,..."
-	{
-		std::string text(stmt.GetText(col++));
-		std::istringstream ss(text);
-		std::string token;
-		record.nModelNum = 0;
-		for (int i = 0; i < 8; i++) {
-			record.strModel[i][0] = '\0';
-			if (std::getline(ss, token, ',')) {
-				if (!token.empty()) {
-					strncpy(record.strModel[i], token.c_str(), sizeof(record.strModel[i]) - 1);
-					record.strModel[i][sizeof(record.strModel[i]) - 1] = '\0';
-					record.nModelNum++;
-				}
-			}
+	std::size_t nModels = SplitCsvStrings(stmt.GetText(col++), record.Models);
+	record.ModelNum = 0;
+	for (std::size_t i = 0; i < nModels; ++i) {
+		if (!record.Models[i].empty()) {
+			++record.ModelNum;
 		}
 	}
 
-	record.nVel = stmt.GetInt(col++);
+	record.Vel = stmt.GetInt(col++);
 
-	// parts — "part0,part1,..."
-	{
-		std::string text(stmt.GetText(col++));
-		std::istringstream ss(text);
-		std::string token;
-		record.nParNum = 0;
-		for (int i = 0; i < 8; i++) {
-			record.strPart[i][0] = '\0';
-			if (std::getline(ss, token, ',')) {
-				if (!token.empty()) {
-					strncpy(record.strPart[i], token.c_str(), sizeof(record.strPart[i]) - 1);
-					record.strPart[i][sizeof(record.strPart[i]) - 1] = '\0';
-					record.nParNum++;
-				}
-			}
+	std::size_t nParts = SplitCsvStrings(stmt.GetText(col++), record.Parts);
+	record.PartNum = 0;
+	for (std::size_t i = 0; i < nParts; ++i) {
+		if (!record.Parts[i].empty()) {
+			++record.PartNum;
 		}
 	}
 
-	// dummies — "d0,d1,..."
-	{
-		std::string text(stmt.GetText(col++));
-		std::istringstream ss(text);
-		std::string token;
-		for (int i = 0; i < 8; i++) {
-			record.nDummy[i] = -1;
-			if (std::getline(ss, token, ','))
-				record.nDummy[i] = std::stoi(token);
-		}
-	}
+	SplitCsvInts(stmt.GetText(col++), record.Dummies, -1);
 
-	record.nRenderIdx = stmt.GetInt(col++);
-	record.nLightID   = stmt.GetInt(col++);
+	record.RenderIdx = stmt.GetInt(col++);
+	record.LightId   = stmt.GetInt(col++);
+	record.Result    = stmt.GetText(col++);
 
-	{
-		auto text = stmt.GetText(col++);
-		strncpy(record.strResult, text.data(), sizeof(record.strResult) - 1);
-		record.strResult[sizeof(record.strResult) - 1] = '\0';
-	}
-
-	std::string name(record.szName);
+	std::string name = record.DataName;
 	return {record.Id, std::move(name), std::move(record)};
-}
-
-void EffParamRecordStore::Insert(SqliteDatabase& db, const EFF_Param& r) {
-	try {
-		EnsureCreated(db, TABLE_NAME, CREATE_TABLE_SQL);
-		auto stmt = db.Prepare(
-			"INSERT OR REPLACE INTO eff_params "
-			"(id,name,models,vel,parts,dummies,render_idx,light_id,result) "
-			"VALUES (?,?,?,?,?,?,?,?,?)");
-		int p = 1;
-		stmt.Bind(p++, r.Id);
-		stmt.Bind(p++, std::string_view(r.szName));
-
-		// models
-		{
-			std::string models;
-			for (int i = 0; i < r.nModelNum; i++) {
-				if (i > 0) models += ',';
-				models += r.strModel[i];
-			}
-			stmt.Bind(p++, models);
-		}
-
-		stmt.Bind(p++, r.nVel);
-
-		// parts
-		{
-			std::string parts;
-			for (int i = 0; i < r.nParNum; i++) {
-				if (i > 0) parts += ',';
-				parts += r.strPart[i];
-			}
-			stmt.Bind(p++, parts);
-		}
-
-		// dummies
-		{
-			std::string dummies;
-			for (int i = 0; i < 8; i++) {
-				if (i > 0) dummies += ',';
-				dummies += std::to_string(r.nDummy[i]);
-			}
-			stmt.Bind(p++, dummies);
-		}
-
-		stmt.Bind(p++, r.nRenderIdx);
-		stmt.Bind(p++, r.nLightID);
-		stmt.Bind(p++, std::string_view(r.strResult));
-		stmt.Step();
-	} catch (const std::exception& e) {
-		ToLogService("errors", LogLevel::Error, "EffParamRecordStore::Insert(id={}) failed: {}", r.Id, e.what());
-	}
 }
 
 } // namespace Corsairs::Common::Effect

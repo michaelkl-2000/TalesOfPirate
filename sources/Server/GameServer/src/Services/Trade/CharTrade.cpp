@@ -14,9 +14,9 @@ using namespace Corsairs::Common::Localization;
 //---------------------------------------------------------
 using namespace std;
 
-mission::CTradeSystem g_TradeSystem;
+Corsairs::Common::Mission::CTradeSystem g_TradeSystem;
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	//----------------------------------------------------
 	// CTradeData implemented
@@ -36,7 +36,7 @@ namespace mission
 	}
 
 	// 
-	BOOL CTradeSystem::Request( BYTE byType, CCharacter& character, DWORD dwAcceptID )
+	BOOL CTradeSystem::Request( TradeCharType byType, CCharacter& character, DWORD dwAcceptID )
 	{
 		if(character.GetPlyMainCha()->IsStoreEnable())
 		{
@@ -161,7 +161,7 @@ namespace mission
 			return FALSE;
         }
 		
-		if( byType == mission::TRADE_CHAR )
+		if( byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR )
 		{
 			pMain = pMain->GetPlyMainCha();
 			pChar = pChar->GetPlyMainCha();
@@ -227,7 +227,7 @@ namespace mission
 		return ( dwxDist + dwyDist < dwDist * 100 );
 	}
 
-	BOOL CTradeSystem::Accept( BYTE byType, CCharacter& character, DWORD dwRequestID )
+	BOOL CTradeSystem::Accept( TradeCharType byType, CCharacter& character, DWORD dwRequestID )
 	{
 		if( character.GetBoat() )
 		{
@@ -371,7 +371,7 @@ namespace mission
             return FALSE;
         }
 
-		if( byType == mission::TRADE_CHAR )
+		if( byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR )
 		{
 			pMain = pMain->GetPlyMainCha();
 			pChar = pChar->GetPlyMainCha();
@@ -465,7 +465,7 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CTradeSystem::Cancel( BYTE byType, CCharacter& character, DWORD dwCharID )
+	BOOL CTradeSystem::Cancel( TradeCharType byType, CCharacter& character, DWORD dwCharID )
 	{
 		CCharacter* pMain = &character;
 		if( !pMain->GetPlyMainCha() )
@@ -474,7 +474,7 @@ namespace mission
 			pMain->SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00010) );
 		}
 
-		if( byType == mission::TRADE_CHAR )
+		if( byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR )
 		{
 			pMain = pMain->GetPlyMainCha();
 		}
@@ -553,7 +553,7 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CTradeSystem::Clear( BYTE byType, CCharacter& character )
+	BOOL CTradeSystem::Clear( TradeCharType byType, CCharacter& character )
 	{
 		CCharacter* pMain = &character;
 		if( !pMain->GetPlyMainCha() )
@@ -562,7 +562,7 @@ namespace mission
 			pMain->SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00010) );
 		}
 
-		if( byType == mission::TRADE_CHAR )
+		if( byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR )
 		{
 			pMain = pMain->GetPlyMainCha();
 		}
@@ -622,14 +622,14 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CTradeSystem::AddIMP(BYTE byType, CCharacter& character, DWORD dwCharID, BYTE byOpType, DWORD dwMoney)
+	BOOL CTradeSystem::AddIMP(TradeCharType byType, CCharacter& character, DWORD dwCharID, TradeOpType byOpType, DWORD dwMoney)
 	{
 			CCharacter* pMain = &character;
 		if (!pMain->GetPlyMainCha()){
 			pMain->SystemNotice(RES_STRING(GM_CHARTRADE_CPP_00010));
 		}
 
-		if (byType == mission::TRADE_CHAR)
+		if (byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR)
 		{
 			pMain = pMain->GetPlyMainCha();
 		}
@@ -678,11 +678,11 @@ namespace mission
 			return FALSE;
 		}
 
-		if (byOpType == TRADE_DRAGMONEY_ITEM){
+		if (byOpType == TradeOpType::TRADE_DRAGMONEY_ITEM){
 			pMain->SystemNotice(RES_STRING(GM_CHARTRADE_CPP_00039));
 			return FALSE;
 		}
-		else if (byOpType == TRADE_DRAGMONEY_TRADE){
+		else if (byOpType == TradeOpType::TRADE_DRAGMONEY_TRADE){
 			DWORD dwCharIMP = pMain->GetIMP();
 			pItemData->dwIMP = dwMoney;
 			if (pItemData->dwIMP > 2000000){
@@ -707,14 +707,14 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CTradeSystem::AddMoney( BYTE byType, CCharacter& character, DWORD dwCharID, BYTE byOpType, DWORD dwMoney )
+	BOOL CTradeSystem::AddMoney( TradeCharType byType, CCharacter& character, DWORD dwCharID, TradeOpType byOpType, DWORD dwMoney )
 	{
 		CCharacter* pMain = &character;
 		if( !pMain->GetPlyMainCha() ){
 			pMain->SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00010) );
 		}
 
-		if( byType == mission::TRADE_CHAR )
+		if( byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR )
 		{
 			pMain = pMain->GetPlyMainCha();
 		}else{
@@ -761,11 +761,11 @@ namespace mission
 			return FALSE;
 		}
 
-		if( byOpType == TRADE_DRAGMONEY_ITEM ){
+		if( byOpType == TradeOpType::TRADE_DRAGMONEY_ITEM ){
 			pMain->SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00039) );
 			return FALSE;
 		}
-		else if( byOpType == TRADE_DRAGMONEY_TRADE ){
+		else if( byOpType == TradeOpType::TRADE_DRAGMONEY_TRADE ){
 			DWORD dwCharMoney = (long)pMain->m_CChaAttr.GetAttr( ATTR_GD );
 			pItemData->dwMoney = dwMoney;
 			if( pItemData->dwMoney > dwCharMoney )
@@ -788,7 +788,7 @@ namespace mission
 	}
 
 	//     
-	BOOL CTradeSystem::AddItem( BYTE byType, CCharacter& character, DWORD dwCharID, BYTE byOpType, BYTE byIndex, BYTE byItemIndex, BYTE byCount )
+	BOOL CTradeSystem::AddItem( TradeCharType byType, CCharacter& character, DWORD dwCharID, TradeOpType byOpType, BYTE byIndex, BYTE byItemIndex, BYTE byCount )
 	{
 		CCharacter* pMain = &character;
 		if( pMain->GetPlayer() == NULL )
@@ -802,7 +802,7 @@ namespace mission
 			pMain->SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00010) );
 		}
 
-		if( byType == mission::TRADE_CHAR )
+		if( byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR )
 		{
 			pMain = pMain->GetPlyMainCha();
 		}
@@ -877,7 +877,7 @@ namespace mission
 		}
 		
 		// 
-		if( byOpType == TRADE_DRAGTO_ITEM )
+		if( byOpType == TradeOpType::TRADE_DRAGTO_ITEM )
 		{
 			if( byIndex >= ROLE_MAXNUM_TRADEDATA )
 			{
@@ -909,7 +909,7 @@ namespace mission
 			}
 
 			auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McCharTradeItemMessage{
-				pMain->GetID(), TRADE_DRAGTO_ITEM,
+				pMain->GetID(), TradeOpType::TRADE_DRAGTO_ITEM,
 				Corsairs::Net::Msg::McCharTradeItemRemoveData{
 					static_cast<int64_t>(pItemData->ItemArray[byIndex].byIndex),
 					static_cast<int64_t>(byIndex), static_cast<int64_t>(byCount)
@@ -929,7 +929,7 @@ namespace mission
 						pTradeData->pRequest->ReflectINFof( pMain, packet );
 			pTradeData->pAccept->ReflectINFof( pMain, packet );
 		}
-		else if( byOpType == TRADE_DRAGTO_TRADE )
+		else if( byOpType == TradeOpType::TRADE_DRAGTO_TRADE )
 		{
 			if( byIndex >= ROLE_MAXNUM_TRADEDATA )
 			{
@@ -1137,7 +1137,7 @@ namespace mission
 
 			Corsairs::Net::Msg::McCharTradeItemMessage msg;
 			msg.mainChaId = pMain->GetID();
-			msg.opType = TRADE_DRAGTO_TRADE;
+			msg.opType = TradeOpType::TRADE_DRAGTO_TRADE;
 			msg.data = std::move(addData);
 			auto packet = Corsairs::Net::Msg::serialize(msg);
 			pTradeData->pRequest->ReflectINFof( pMain, packet );
@@ -1153,7 +1153,7 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CTradeSystem::ValidateItemData( BYTE byType, CCharacter& character, DWORD dwCharID )
+	BOOL CTradeSystem::ValidateItemData( TradeCharType byType, CCharacter& character, DWORD dwCharID )
 	{
 		CCharacter* pMain = &character;
 		if( !pMain->GetPlyMainCha() )
@@ -1162,7 +1162,7 @@ namespace mission
 			pMain->SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00010) );
 		}
 
-		if( byType == mission::TRADE_CHAR )
+		if( byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR )
 		{
 			pMain = pMain->GetPlyMainCha();
 		}
@@ -1238,7 +1238,7 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CTradeSystem::ValidateTrade( BYTE byType, CCharacter& character, DWORD dwCharID )
+	BOOL CTradeSystem::ValidateTrade( TradeCharType byType, CCharacter& character, DWORD dwCharID )
 	{
 		CCharacter* pMain = &character;
 		if( !pMain->GetPlyMainCha() )
@@ -1247,7 +1247,7 @@ namespace mission
 			pMain->SystemNotice( RES_STRING(GM_CHARTRADE_CPP_00010) );
 		}
 
-		if( byType == mission::TRADE_CHAR )
+		if( byType == Corsairs::Common::Mission::TradeCharType::TRADE_CHAR )
 		{
 			pMain = pMain->GetPlyMainCha();
 		}
@@ -1427,7 +1427,7 @@ namespace mission
 
 				//  :   (   )
 				auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McCharTradeResultMessage{
-					CMD_MC_CHARTRADE_RESULT, TRADE_FAILER
+					CMD_MC_CHARTRADE_RESULT, TradeOpType::TRADE_FAILER
 				});
 				pTradeData->pAccept->ReflectINFof( pMain, packet );
 				pTradeData->pRequest->ReflectINFof( pMain, packet );
@@ -1938,7 +1938,7 @@ namespace mission
 
 				//  :   (   )
 				auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McCharTradeResultMessage{
-					CMD_MC_CHARTRADE_RESULT, TRADE_FAILER
+					CMD_MC_CHARTRADE_RESULT, TradeOpType::TRADE_FAILER
 				});
 				pAccept->ReflectINFof( pMain, packet );
 				pRequest->ReflectINFof( pMain, packet );
@@ -2048,7 +2048,7 @@ namespace mission
 
 			//  :   ()
 			auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McCharTradeResultMessage{
-				CMD_MC_CHARTRADE_RESULT, TRADE_SUCCESS
+				CMD_MC_CHARTRADE_RESULT, TradeOpType::TRADE_SUCCESS
 			});
 			pAccept->ReflectINFof( pMain, packet );
 			pRequest->ReflectINFof( pMain, packet );

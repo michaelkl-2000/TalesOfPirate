@@ -78,36 +78,36 @@ namespace {
 		}
 	}
 
-	// ---- LuaBridge-адаптеры для Corsairs::Util::Ini::IniSection / Corsairs::Util::Ini::IniFile ----------------
+	// ---- LuaBridge-адаптеры для Corsairs::Util::IniSection / Corsairs::Util::IniFile ----------------
 	// Нужны потому что нативные методы принимают std::string_view, а LuaBridge
 	// передаёт std::string из Lua. Лямбды конвертируют корректно и избегают
 	// зависимости от std::string_view в интерфейсе Lua.
 
-	std::string IniSection_GetString(const Corsairs::Util::Ini::IniSection* self,
+	std::string IniSection_GetString(const Corsairs::Util::IniSection* self,
 									 const std::string& key,
 									 const std::string& def) {
 		return self ? self->GetString(key, def) : def;
 	}
 
-	int64_t IniSection_GetInt64(const Corsairs::Util::Ini::IniSection* self,
+	int64_t IniSection_GetInt64(const Corsairs::Util::IniSection* self,
 								const std::string& key,
 								int64_t def) {
 		return self ? self->GetInt64(key, def) : def;
 	}
 
-	std::string IniSection_GetName(const Corsairs::Util::Ini::IniSection* self) {
+	std::string IniSection_GetName(const Corsairs::Util::IniSection* self) {
 		return self ? self->GetName() : std::string{};
 	}
 
-	int IniSection_ItemCount(const Corsairs::Util::Ini::IniSection* self) {
+	int IniSection_ItemCount(const Corsairs::Util::IniSection* self) {
 		return self ? self->ItemCount() : 0;
 	}
 
-	Corsairs::Util::Ini::IniSection* IniFile_Section(Corsairs::Util::Ini::IniFile* self, const std::string& name) {
+	Corsairs::Util::IniSection* IniFile_Section(Corsairs::Util::IniFile* self, const std::string& name) {
 		return self ? &(*self)[name] : nullptr;
 	}
 
-	int IniFile_SectCount(const Corsairs::Util::Ini::IniFile* self) {
+	int IniFile_SectCount(const Corsairs::Util::IniFile* self) {
 		return self ? self->SectCount() : 0;
 	}
 } // namespace
@@ -140,19 +140,19 @@ void ConsoleBridge::_RegisterLuaNamespace() {
 	if (!g_LuaState) {
 		return;
 	}
-	// Регистрируем типы Corsairs::Util::Ini::IniSection и Corsairs::Util::Ini::IniFile с обёрнутыми методами
+	// Регистрируем типы Corsairs::Util::IniSection и Corsairs::Util::IniFile с обёрнутыми методами
 	// (std::string-signature для удобной работы из Lua) + глобалы-функции
 	// консоли. Не используем LuaBridge-namespace "console" — init.lua создаёт
 	// свою таблицу `console` как реестр команд; namespace создавал бы
 	// конфликтующую метатаблицу и приводил к AV на lua_getfield.
 	luabridge::getGlobalNamespace(g_LuaState)
-		.beginClass<Corsairs::Util::Ini::IniSection>("IniSection")
+		.beginClass<Corsairs::Util::IniSection>("IniSection")
 		.addFunction("GetString", IniSection_GetString)
 		.addFunction("GetInt64", IniSection_GetInt64)
 		.addFunction("GetName", IniSection_GetName)
 		.addFunction("ItemCount", IniSection_ItemCount)
 		.endClass()
-		.beginClass<Corsairs::Util::Ini::IniFile>("IniFile")
+		.beginClass<Corsairs::Util::IniFile>("IniFile")
 		.addFunction("Section", IniFile_Section)
 		.addFunction("SectCount", IniFile_SectCount)
 		.endClass()

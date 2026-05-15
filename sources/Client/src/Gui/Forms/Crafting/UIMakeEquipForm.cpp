@@ -15,7 +15,8 @@
 #include "WorldScene.h"
 #include "Character.h"
 #include "UIBoxForm.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "Item/ItemRecord.h"
 
 using namespace std;
@@ -120,8 +121,8 @@ namespace GUI {
 
 	//-----------------------------------------------------------------------------
 	void CMakeEquipMgr::ShowConfirmDialog(long lMoney) {
-		char szBuf[255] = {0};
-		strncpy_s(szBuf, sizeof(szBuf), SafeVFormat(GetLanguageString(568), lMoney).c_str(), _TRUNCATE);
+		std::string szBuf;
+		szBuf = SafeVFormat(GetLanguageString(568), lMoney);
 		GUI::stSelectBox* pBox = g_stUIBox.ShowSelectBox(_evtConfirmEvent, szBuf, true);
 		pBox->frmDialog->evtEscClose = _evtConfirmCancelEvent;
 	}
@@ -934,7 +935,7 @@ namespace GUI {
 		switch (m_iType) {
 		case MAKE_EQUIP_TYPE:
 			if (IsMakeGem() && cmdItem[0]->GetCommand() && cmdItem[1]->GetCommand()) {
-				labForgeGold->SetCaption(StringSplitNum(CalMakeEquipMoney()));
+				labForgeGold->SetCaption(StringSplitNum(CalMakeEquipMoney()).c_str());
 				btnYes->SetIsEnabled(true);
 			}
 			else {
@@ -944,7 +945,7 @@ namespace GUI {
 			break;
 		case EQUIP_FUSION_TYPE:
 			if (cmdRouleau->GetCommand() && cmdItem[0]->GetCommand() && cmdItem[1]->GetCommand()) {
-				labForgeGold->SetCaption(StringSplitNum(CalMakeEquipMoney()));
+				labForgeGold->SetCaption(StringSplitNum(CalMakeEquipMoney()).c_str());
 				btnYes->SetIsEnabled(true);
 			}
 			else {
@@ -954,7 +955,7 @@ namespace GUI {
 			break;
 		case EQUIP_UPGRADE_TYPE:
 			if (cmdRouleau->GetCommand() && cmdItem[0]->GetCommand() && cmdItem[1]->GetCommand()) {
-				labForgeGold->SetCaption(StringSplitNum(CalMakeEquipMoney()));
+				labForgeGold->SetCaption(StringSplitNum(CalMakeEquipMoney()).c_str());
 				btnYes->SetIsEnabled(true);
 			}
 			else {
@@ -963,7 +964,7 @@ namespace GUI {
 			}
 		case ELF_SHIFT_TYPE:
 			if (cmdRouleau->GetCommand() && cmdItem[0]->GetCommand() && cmdItem[1]->GetCommand()) {
-				labForgeGold->SetCaption(StringSplitNum(CalMakeEquipMoney()));
+				labForgeGold->SetCaption(StringSplitNum(CalMakeEquipMoney()).c_str());
 				btnYes->SetIsEnabled(true);
 			}
 			else {

@@ -605,10 +605,10 @@ struct Blake2sTestVector {
 // =============================================================================
 
 [[nodiscard]] bool RunMpMapDefSelfTest() {
-    using ::Corsairs::Util::Map::MPMapFileHeader;
-    using ::Corsairs::Util::Map::SNewFileTile;
-    using ::Corsairs::Util::Map::TileInfo_Pack;
-    using ::Corsairs::Util::Map::TileInfo_Unpack;
+    using ::Corsairs::Util::MPMapFileHeader;
+    using ::Corsairs::Util::SNewFileTile;
+    using ::Corsairs::Util::TileInfo_Pack;
+    using ::Corsairs::Util::TileInfo_Unpack;
 
     if (sizeof(MPMapFileHeader) != 20) {
         ToLogService(kLogChannel, LogLevel::Error,

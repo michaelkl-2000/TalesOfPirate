@@ -132,9 +132,9 @@ CItem* GamePool::AcquireItem()
     return p;
 }
 
-mission::CTalkNpc* GamePool::AcquireTalkNpc()
+Corsairs::Common::Mission::CTalkNpc* GamePool::AcquireTalkNpc()
 {
-    mission::CTalkNpc* p = _tnpcPool.Get();
+    Corsairs::Common::Mission::CTalkNpc* p = _tnpcPool.Get();
     long handle = NewEntityHandle(kTagTalkNpc);
     p->SetHandle(handle);
 
@@ -147,18 +147,18 @@ mission::CTalkNpc* GamePool::AcquireTalkNpc()
     return p;
 }
 
-mission::CEventEntity* GamePool::AcquireEventEntity(BYTE byType)
+Corsairs::Common::Mission::CEventEntity* GamePool::AcquireEventEntity(BYTE byType)
 {
-    mission::CEventEntity* p = nullptr;
+    Corsairs::Common::Mission::CEventEntity* p = nullptr;
     uint32_t tag = 0;
 
     switch (byType)
     {
-    case mission::RESOURCE_ENTITY:
+    case +Corsairs::Common::Mission::EntityType::RESOURCE_ENTITY:
         p = _resourcePool.Get();
         tag = kTagResource;
         break;
-    case mission::BERTH_ENTITY:
+    case +Corsairs::Common::Mission::EntityType::BERTH_ENTITY:
         p = _berthPool.Get();
         tag = kTagBerth;
         break;
@@ -232,13 +232,13 @@ void GamePool::ReleaseEntity(Entity* entity)
         _itemPool.Release(static_cast<CItem*>(entity));
         break;
     case kTagTalkNpc:
-        _tnpcPool.Release(static_cast<mission::CTalkNpc*>(entity));
+        _tnpcPool.Release(static_cast<Corsairs::Common::Mission::CTalkNpc*>(entity));
         break;
     case kTagBerth:
-        _berthPool.Release(static_cast<mission::CBerthEntity*>(entity));
+        _berthPool.Release(static_cast<Corsairs::Common::Mission::CBerthEntity*>(entity));
         break;
     case kTagResource:
-        _resourcePool.Release(static_cast<mission::CResourceEntity*>(entity));
+        _resourcePool.Release(static_cast<Corsairs::Common::Mission::CResourceEntity*>(entity));
         break;
     default:
         ToLogService("errors", LogLevel::Error,
@@ -349,9 +349,9 @@ void GamePool::ForEachItem(const std::function<void(CItem*)>& fn)
     }
 }
 
-void GamePool::ForEachTalkNpc(const std::function<void(mission::CTalkNpc*)>& fn)
+void GamePool::ForEachTalkNpc(const std::function<void(Corsairs::Common::Mission::CTalkNpc*)>& fn)
 {
-    std::vector<mission::CTalkNpc*> snapshot;
+    std::vector<Corsairs::Common::Mission::CTalkNpc*> snapshot;
     {
         std::shared_lock lock(_indexMutex);
         snapshot.reserve(_tnpcPool.GetUsedCount());
@@ -360,11 +360,11 @@ void GamePool::ForEachTalkNpc(const std::function<void(mission::CTalkNpc*)>& fn)
             uint32_t tag = static_cast<uint32_t>((kv.first >> 24) & 0xFFu);
             if (tag == kTagTalkNpc)
             {
-                snapshot.push_back(static_cast<mission::CTalkNpc*>(kv.second));
+                snapshot.push_back(static_cast<Corsairs::Common::Mission::CTalkNpc*>(kv.second));
             }
         }
     }
-    for (mission::CTalkNpc* p : snapshot)
+    for (Corsairs::Common::Mission::CTalkNpc* p : snapshot)
     {
         fn(p);
     }

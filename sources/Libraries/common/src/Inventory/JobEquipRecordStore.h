@@ -7,7 +7,7 @@
 
 namespace Corsairs::Common::Inventory {
 
-class JobEquipRecordStore : public GameRecordset<CJobEquipRecord> {
+class JobEquipRecordStore : public GameRecordset<JobEquipRecord> {
 public:
 	static JobEquipRecordStore* Instance() {
 		static JobEquipRecordStore instance{};
@@ -33,13 +33,13 @@ public:
 	}
 
 	// Временный метод для миграции данных из старого CJobEquipRecordSet
-	static void Insert(SqliteDatabase& db, const CJobEquipRecord& record);
+	static void Insert(SqliteDatabase& db, const JobEquipRecord& record);
 
 protected:
 	RecordEntry ReadRecord(SqliteStatement& stmt) override;
 };
 
-CJobEquipRecord* GetJobEquipRecordInfo(int nTypeID, const std::source_location& loc = std::source_location::current());
+JobEquipRecord* GetJobEquipRecordInfo(int nTypeID, const std::source_location& loc = std::source_location::current());
 
 } // namespace Corsairs::Common::Inventory
 

@@ -886,7 +886,7 @@ void CMemoEx::ParseMisPage() {
 
 		for (int i = 0; i < m_PageInfo.byNeedNum; i++) {
 			string strTemp = "  ";
-			if (m_PageInfo.MisNeed[i].byType == mission::MIS_NEED_ITEM) {
+			if (m_PageInfo.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_ITEM) {
 				strTemp += GetLanguageString(705);
 				CItemRecord* pItem = GetItemRecordInfo(m_PageInfo.MisNeed[i].wParam1);
 				if (!pItem) {
@@ -910,7 +910,7 @@ void CMemoEx::ParseMisPage() {
 					strTemp += num;
 				}
 			}
-			else if (m_PageInfo.MisNeed[i].byType == mission::MIS_NEED_KILL) {
+			else if (m_PageInfo.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_KILL) {
 				strTemp += GetLanguageString(709);
 				CChaRecord* pInfo = GetChaRecordInfo(m_PageInfo.MisNeed[i].wParam1);
 				if (!pInfo) {
@@ -920,7 +920,7 @@ void CMemoEx::ParseMisPage() {
 				}
 				else {
 					strTemp += GetLanguageString(707);
-					strTemp += pInfo->Name;
+					strTemp += pInfo->DataName;
 					strTemp += GetLanguageString(708);
 				}
 				{
@@ -934,7 +934,7 @@ void CMemoEx::ParseMisPage() {
 					strTemp += num;
 				}
 			}
-			else if (m_PageInfo.MisNeed[i].byType == mission::MIS_NEED_DESP) {
+			else if (m_PageInfo.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_DESP) {
 				strTemp += m_PageInfo.MisNeed[i].szNeed;
 			}
 			else {
@@ -976,7 +976,7 @@ void CMemoEx::ParseMisPage() {
 		dwColor = 0xFF000000;
 		m_sNumInfo++;
 		m_MemoInfo[m_sNumInfo].strDesp = GetLanguageString(711);
-		if (m_PageInfo.byPrizeSelType == mission::PRZIE_SELALL) {
+		if (m_PageInfo.byPrizeSelType == +Corsairs::Common::Mission::MissionPrizeSelectType::PRZIE_SELALL) {
 			//m_MemoInfo[m_sNumInfo].strDesp += "()";
 		}
 		else {
@@ -992,11 +992,11 @@ void CMemoEx::ParseMisPage() {
 		std::string szItem;
 		for (int n = 0; n < m_PageInfo.byPrizeNum; n++) {
 			szItem = "./texture/ui/system/error.png";
-			if (m_PageInfo.MisPrize[n].byType == mission::MIS_PRIZE_ITEM) {
+			if (m_PageInfo.MisPrize[n].byType == +Corsairs::Common::Mission::MissionPrizeType::MIS_PRIZE_ITEM) {
 				m_sNumInfo++;
 				m_MemoInfo[m_sNumInfo].sxPos = sCom;
 				m_MemoInfo[m_sNumInfo].syPos = sRow;
-				m_MemoInfo[m_sNumInfo].byData = mission::MIS_PRIZE_ITEM;
+				m_MemoInfo[m_sNumInfo].byData = +Corsairs::Common::Mission::MissionPrizeType::MIS_PRIZE_ITEM;
 				m_MemoInfo[m_sNumInfo].sData = m_PageInfo.MisPrize[n].wParam1;
 				CItemRecord* pItem = GetItemRecordInfo(m_PageInfo.MisPrize[n].wParam1);
 				if (pItem) {
@@ -1037,11 +1037,11 @@ void CMemoEx::ParseMisPage() {
 				sRow += 2;
 				sCom = 1;
 			}
-			else if (m_PageInfo.MisPrize[n].byType == mission::MIS_PRIZE_MONEY) {
+			else if (m_PageInfo.MisPrize[n].byType == +Corsairs::Common::Mission::MissionPrizeType::MIS_PRIZE_MONEY) {
 				m_sNumInfo++;
 				m_MemoInfo[m_sNumInfo].sxPos = sCom;
 				m_MemoInfo[m_sNumInfo].syPos = sRow;
-				m_MemoInfo[m_sNumInfo].byData = mission::MIS_PRIZE_ITEM;
+				m_MemoInfo[m_sNumInfo].byData = +Corsairs::Common::Mission::MissionPrizeType::MIS_PRIZE_ITEM;
 				m_MemoInfo[m_sNumInfo].sData = m_PageInfo.MisPrize[n].wParam1;
 				CItemRecord* pItem = GetItemRecordInfo(194);
 				if (pItem) {
@@ -1074,11 +1074,11 @@ void CMemoEx::ParseMisPage() {
 				sRow += 2;
 				sCom = 1;
 			}
-			else if (m_PageInfo.MisPrize[n].byType == mission::MIS_PRIZE_FAME) {
+			else if (m_PageInfo.MisPrize[n].byType == +Corsairs::Common::Mission::MissionPrizeType::MIS_PRIZE_FAME) {
 				m_sNumInfo++;
 				m_MemoInfo[m_sNumInfo].sxPos = sCom;
 				m_MemoInfo[m_sNumInfo].syPos = sRow;
-				m_MemoInfo[m_sNumInfo].byData = mission::MIS_PRIZE_ITEM;
+				m_MemoInfo[m_sNumInfo].byData = +Corsairs::Common::Mission::MissionPrizeType::MIS_PRIZE_ITEM;
 				m_MemoInfo[m_sNumInfo].sData = m_PageInfo.MisPrize[n].wParam1;
 				CItemRecord* pItem = GetItemRecordInfo(195);
 				if (pItem) {
@@ -1111,11 +1111,11 @@ void CMemoEx::ParseMisPage() {
 				sRow += 2;
 				sCom = 1;
 			}
-			else if (m_PageInfo.MisPrize[n].byType == mission::MIS_PRIZE_CESS) {
+			else if (m_PageInfo.MisPrize[n].byType == +Corsairs::Common::Mission::MissionPrizeType::MIS_PRIZE_CESS) {
 				m_sNumInfo++;
 				m_MemoInfo[m_sNumInfo].sxPos = sCom;
 				m_MemoInfo[m_sNumInfo].syPos = sRow;
-				m_MemoInfo[m_sNumInfo].byData = mission::MIS_PRIZE_ITEM;
+				m_MemoInfo[m_sNumInfo].byData = +Corsairs::Common::Mission::MissionPrizeType::MIS_PRIZE_ITEM;
 				m_MemoInfo[m_sNumInfo].sData = m_PageInfo.MisPrize[n].wParam1;
 				CItemRecord* pItem = GetItemRecordInfo(195);
 				if (pItem) {
@@ -1328,7 +1328,7 @@ void CMemoEx::Refresh() {
 }
 
 BOOL CMemoEx::IsSelPrize() {
-	return m_PageInfo.byPrizeNum > 0 && m_PageInfo.byPrizeSelType == mission::PRIZE_SELONE;
+	return m_PageInfo.byPrizeNum > 0 && m_PageInfo.byPrizeSelType == +Corsairs::Common::Mission::MissionPrizeSelectType::PRIZE_SELONE;
 }
 
 bool CMemoEx::MouseRun(int x, int y, DWORD key) {

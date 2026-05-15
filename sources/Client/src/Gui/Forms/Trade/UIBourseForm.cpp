@@ -25,7 +25,8 @@
 #include "UICozeForm.h"
 #include "UIGoodsGrid.h"
 #include "UIEquipForm.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 using namespace std;
 using namespace GUI;
 

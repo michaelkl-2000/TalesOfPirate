@@ -1013,7 +1013,7 @@ module CommandMessages =
 
     type ChaEventInfo = { EntityId: int64; EntityType: int64; EventId: int64; EventName: string }
 
-    /// Константы типов потребностей квеста (mission::MIS_NEED_TYPE).
+    /// Константы типов потребностей квеста (Corsairs::Common::Mission::MissionNeedType).
     [<Literal>]
     let MIS_NEED_ITEM = 0L
     [<Literal>]

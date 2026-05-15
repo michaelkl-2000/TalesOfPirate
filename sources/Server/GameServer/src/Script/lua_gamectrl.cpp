@@ -206,7 +206,7 @@ void AddHelpNPC(CCharacter* pNPC) {
 
 // NPC
 void AddHelpNPC_typed(const std::string& name) {
-	GamePool::Instance().ForEachTalkNpc([&name](mission::CTalkNpc* pCTNpc) {
+	GamePool::Instance().ForEachTalkNpc([&name](Corsairs::Common::Mission::CTalkNpc* pCTNpc) {
 		if (!strcmp(pCTNpc->GetName(), name.c_str())) {
 			AddHelpNPC(pCTNpc);
 		}

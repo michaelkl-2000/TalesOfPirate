@@ -547,7 +547,7 @@ bool CPlayer::SetRepairPosInfo(char chPosType, char chPosID)
 	{
 		if (chPosID < enumEQUIP_HEAD || chPosID >= enumEQUIP_NUM)
 			return false;
-		if (!g_IsRealItemID(pCCha->m_SChaPart.SLink[chPosID].sID))
+		if (!IsRealItemId(pCCha->m_SChaPart.SLink[chPosID].sID))
 			return false;
 		m_SRepairItem = pCCha->m_SChaPart.SLink[chPosID];
 		m_pSRepairItem = &pCCha->m_SChaPart.SLink[chPosID];
@@ -1159,7 +1159,7 @@ void CPlayer::CheckChaItemFinalData()
 	CCharacter	*pCMainCha = GetMainCha();
 	for (int i = 0; i < enumEQUIP_NUM; i++)
 	{
-		if (g_IsRealItemID(pCMainCha->m_SChaPart.SLink[i].sID))
+		if (IsRealItemId(pCMainCha->m_SChaPart.SLink[i].sID))
 		{
 			pCMainCha->m_SChaPart.SLink[i].InitAttr();
 			g_luaAPI.Call(szScript, &pCMainCha->m_SChaPart.SLink[i]);
@@ -1347,8 +1347,8 @@ CCharacter* CPlayer::GetBoat(BYTE byIndex) {
 	return (byIndex >= MAX_CHAR_BOAT) ? nullptr : m_Boat[byIndex];
 }
 
-mission::CStallData* CPlayer::GetStallData()                           { return m_pStallData; }
-void                 CPlayer::SetStallData(mission::CStallData* pData) { m_pStallData = pData; }
+Corsairs::Common::Mission::CStallData* CPlayer::GetStallData()                           { return m_pStallData; }
+void                 CPlayer::SetStallData(Corsairs::Common::Mission::CStallData* pData) { m_pStallData = pData; }
 
 bool        CPlayer::LoadMapMaskBase64(std::string_view mapName, std::string_view base64Data) { return m_CMapMask.LoadBase64(mapName, base64Data); }
 std::string CPlayer::SaveMapMaskBase64(std::string_view mapName) const                         { return m_CMapMask.SaveBase64(mapName); }

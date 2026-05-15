@@ -73,14 +73,14 @@ public:
 
 	// NPC
 	BOOL	SummonNpc( const char szNpc[], USHORT sAreaID, USHORT sTime );
-	mission::CNpc* FindNpc( const char szName[] );
+	Corsairs::Common::Mission::CNpc* FindNpc( const char szName[] );
 
 protected:
 	std::string m_strMapName;
 	std::unique_ptr<Corsairs::Common::NPC::NpcRecordStore> m_pNpcStore;
 
 	// NPC
-	mission::CNpc*	m_NpcList[ROLE_MAXNUM_MAPNPC];
+	Corsairs::Common::Mission::CNpc*	m_NpcList[ROLE_MAXNUM_MAPNPC];
 	USHORT			m_sNumNpc;
 
 };

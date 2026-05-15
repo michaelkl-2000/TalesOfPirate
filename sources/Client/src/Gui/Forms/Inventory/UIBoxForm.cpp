@@ -6,7 +6,8 @@
 #include "uilabel.h"
 #include "tools.h"
 #include "uiformmgr.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 using namespace GUI;
 
 // Был static char szBuf[80] — переведено на std::string по месту использования.
@@ -382,7 +383,7 @@ void stTradeBox::Refresh() {
 		}
 	}
 
-	labPrice->SetCaption(StringSplitNum((int)((float)n * fUnitMoney)));
+	labPrice->SetCaption(StringSplitNum((int)((float)n * fUnitMoney)).c_str());
 }
 
 //---------------------------------------------------------------------------

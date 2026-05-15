@@ -70,7 +70,7 @@ bool ConsoleProcessor::HandleChar(char ch) {
 		if (_input.empty()) {
 			return true;
 		}
-		// _input уже в UTF-8 (накапливается через Corsairs::Util::Encoding::AppendAnsiByteAsUtf8).
+		// _input уже в UTF-8 (накапливается через Corsairs::Util::AppendAnsiByteAsUtf8).
 		_AddText(">" + _input, false);
 		if (_cmdHandler) {
 			std::string out = _cmdHandler(_input);
@@ -86,17 +86,17 @@ bool ConsoleProcessor::HandleChar(char ch) {
 	}
 	else if (ch == 0x08) {
 		// Backspace — удаляет последний UTF-8 codepoint
-		Corsairs::Util::Encoding::PopLastUtf8Codepoint(_input);
+		Corsairs::Util::PopLastUtf8Codepoint(_input);
 	}
 	else if (_input.size() < 48) {
-		Corsairs::Util::Encoding::AppendAnsiByteAsUtf8(static_cast<unsigned char>(ch), _input);
+		Corsairs::Util::AppendAnsiByteAsUtf8(static_cast<unsigned char>(ch), _input);
 	}
 
 	return true;
 }
 
 std::string ConsoleProcessor::GetDisplayLine() const {
-	// _input уже в UTF-8 (накопление через Corsairs::Util::Encoding::AppendAnsiByteAsUtf8
+	// _input уже в UTF-8 (накопление через Corsairs::Util::AppendAnsiByteAsUtf8
 	// в HandleChar).
 	std::string out;
 	out.reserve(_input.size() + 2);

@@ -9,9 +9,9 @@
 
 //---------------------------------------------------------
 
-mission::CForgeSystem g_ForgeSystem;
+Corsairs::Common::Mission::CForgeSystem g_ForgeSystem;
 
-namespace mission {
+namespace Corsairs::Common::Mission {
 	void CForgeSystem::ForgeItem(CCharacter& character, BYTE byIndex) {
 		//
 		if (character.m_CKitbag.IsLock()) {

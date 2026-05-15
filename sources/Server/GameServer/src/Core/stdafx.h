@@ -53,13 +53,15 @@
 #include "util.h"
 
 using Corsairs::Util::ThrowRuntimeError;
-#include "Core/i18n.h"
+#include "Localization/i18n.h"
 #include "point.h"
 #include "Core/Timer.h"
 #include "Network/CompCommand.h"
 #include "Item/ItemContent.h"
 #include "Core/CommFunc.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
 #include "CommandMessages.h"
 #include "logutil.h"
 
@@ -76,3 +78,4 @@ using namespace Corsairs::Common::Character;
 using namespace Corsairs::Common::Item;
 using namespace Corsairs::Common::Database;
 using namespace Corsairs::Common::World;
+using namespace Corsairs::Common::Mission;

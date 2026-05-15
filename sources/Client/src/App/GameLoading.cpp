@@ -101,7 +101,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 
 unsigned __stdcall LoadingThread(void* param) {
 	::SetThreadName("loading");
-	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::SetPerThreadCRTExceptionBehavior();
 	GameLoading* load = (GameLoading*)param;
 	ATOM ret = MyRegisterClass(g_hInstance);
 

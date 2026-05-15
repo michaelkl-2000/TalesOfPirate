@@ -61,10 +61,10 @@ void CGameApp::_HandleMsg(DWORD dwTypeID, DWORD dwParam1, DWORD dwParam2) {
 		if (!scene) return;
 
 		if (dwParam1 == 1000) {
-			char szBuf[128] = {0};
+			std::string szBuf;
 			{
 				auto _str = SafeVFormat(GetLanguageString(135), WSAGetLastError());
-				strncpy_s(szBuf, sizeof(szBuf), _str.c_str(), _TRUNCATE);
+				szBuf = _str;
 			}
 			g_stUIBox.ShowMsgBox(_Disconnect, szBuf);
 			return;
@@ -105,7 +105,7 @@ void CGameApp::_HandleMsg(DWORD dwTypeID, DWORD dwParam1, DWORD dwParam2) {
 	case APP_SWITCH_MAP_FAILED: {
 		g_pGameApp->Waiting(false);
 
-		const std::string szBuf = std::format("{}[{}]", g_GetServerError(dwParam1), dwParam1);
+		const std::string szBuf = std::format("{}[{}]", GetServerError(dwParam1), dwParam1);
 		g_stUIBox.ShowMsgBox(_SwitchMapFailed, szBuf.c_str());
 	}
 	break;

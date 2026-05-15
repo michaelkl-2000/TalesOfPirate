@@ -9,7 +9,7 @@
 #include "Character/Character.h"
 
 //---------------------------------------------------------
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	class CForgeSystem
 	{
@@ -20,7 +20,7 @@ namespace mission
 
 }
 
-extern mission::CForgeSystem g_ForgeSystem;
+extern Corsairs::Common::Mission::CForgeSystem g_ForgeSystem;
 
 //---------------------------------------------------------
 

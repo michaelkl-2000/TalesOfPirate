@@ -9,7 +9,11 @@ namespace Corsairs::Common::NPC {}
 using namespace Corsairs::Common::NPC;
 #include "Entity/EntitySpawn.h"
 #include "Character/Character.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 #include "App/GameAppNet.h"
 #include "World/SubMap.h"
 #include "Network/CompCommand.h"
@@ -251,7 +255,7 @@ void CNpcSpawn::Clear()
 	m_pNpcStore.reset();
 }
 
-mission::CNpc* CNpcSpawn::FindNpc( const char szName[] )
+Corsairs::Common::Mission::CNpc* CNpcSpawn::FindNpc( const char szName[] )
 {
 	for( int i = 0; i < m_sNumNpc; i++ )
 	{
@@ -264,7 +268,7 @@ mission::CNpc* CNpcSpawn::FindNpc( const char szName[] )
 long CNpcSpawn::Load( SubMap& submap )
 {
 	// NPC
-	memset( m_NpcList, 0, sizeof(mission::CNpc*)*ROLE_MAXNUM_MAPNPC );
+	memset( m_NpcList, 0, sizeof(Corsairs::Common::Mission::CNpc*)*ROLE_MAXNUM_MAPNPC );
 	m_sNumNpc = 0;
 
 	ToLogService("common", "Loading NPCs for map '{}'... ", m_strMapName);
@@ -289,8 +293,8 @@ long CNpcSpawn::Load( SubMap& submap )
 		}
 
 		switch (pNpcRecord->sNpcType) {
-			case mission::CNpc::TALK: {
-				mission::CTalkNpc* pTalk = g_pGameApp->GetNewTNpc();
+			case Corsairs::Common::Mission::CNpc::TALK: {
+				Corsairs::Common::Mission::CTalkNpc* pTalk = g_pGameApp->GetNewTNpc();
 				if (pTalk == nullptr) {
 					break;
 				}
@@ -298,7 +302,7 @@ long CNpcSpawn::Load( SubMap& submap )
 					pTalk->Free();
 					return;
 				}
-				Corsairs::Util::Square SShape = {{pNpcRecord->dwxPos0, pNpcRecord->dwyPos0}, pCharRecord->sRadii};
+				Corsairs::Util::Square SShape = {{pNpcRecord->dwxPos0, pNpcRecord->dwyPos0}, pCharRecord->Radii};
 				if (!submap.Enter(&SShape, pTalk)) {
 					pTalk->Free();
 					return;

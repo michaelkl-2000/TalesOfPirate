@@ -8,9 +8,9 @@
 extern int GetChaPhotoTexID(int nTypeID);
 
 inline int GetEffectPhotoTexID(int nTypeID) {
-	Corsairs::Common::Effect::CEffectInfo* pInfo = Corsairs::Common::Effect::GetEffectInfo(nTypeID);
+	Corsairs::Common::Effect::CEffectRecord* pInfo = Corsairs::Common::Effect::GetEffectInfo(nTypeID);
 	if (pInfo) {
-		return pInfo->nPhotoTexID;
+		return pInfo->PhotoTexId;
 	}
 	return 0;
 }

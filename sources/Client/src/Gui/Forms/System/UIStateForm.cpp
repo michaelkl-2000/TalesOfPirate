@@ -187,7 +187,7 @@ void CStateMgr::RefreshStateFrm() {
 	}
 
 	if (labStateJob) {
-		labStateJob->SetCaption(g_GetJobName((short)pCChaAttr->get(ATTR_JOB)));
+		labStateJob->SetCaption(GetJobName((short)pCChaAttr->get(ATTR_JOB)));
 	}
 
 	if (labStateLevel) {

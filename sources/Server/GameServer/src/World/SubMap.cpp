@@ -151,7 +151,7 @@ CItem* SubMap::ItemSpawn(const SItemGrid *pItemInfo, std::int32_t lPosX, std::in
 //=============================================================================
 // chCtrlType CompCommand.h EChaCtrlType
 //=============================================================================
-CCharacter* SubMap::ChaSpawn(std::int32_t lChaInfoID, char chCtrlType, int16_t sAngle, Corsairs::Util::Point *pSPos, bool bEyeshotAbility, const char *cszChaName, const long clSearchRadius)
+CCharacter* SubMap::ChaSpawn(std::int32_t lChaInfoID, Corsairs::Common::Character::EChaCtrlType chCtrlType, int16_t sAngle, Corsairs::Util::Point *pSPos, bool bEyeshotAbility, const char *cszChaName, const long clSearchRadius)
 {
 	CCharacter	*pCCha;
 	CChaRecord	*pCChaRecord;
@@ -177,7 +177,7 @@ CCharacter* SubMap::ChaSpawn(std::int32_t lChaInfoID, char chCtrlType, int16_t s
 	pCCha->SetAngle(sAngle);
 	Corsairs::Util::Square SShape = {*pSPos, pCCha->m_pCChaRecord->Radii};
 	if (!cszChaName)
-		pCCha->_name = pCCha->m_pCChaRecord->Name;
+		pCCha->_name = pCCha->m_pCChaRecord->DataName;
 	else
 		pCCha->_name = cszChaName;
 	pCCha->SetEyeshotAbility(bEyeshotAbility);
@@ -290,7 +290,7 @@ bool SubMap::IsMoveAble(Entity *pCEnt, std::int32_t lPosX, std::int32_t lPosY)
 	CFightAble	*pCCha = 0;
 	if (!pCEnt || !(pCCha = pCEnt->IsFightAble()))
 		return false;
-	return g_IsMoveAble(static_cast<EChaCtrlType>(pCCha->m_CChaAttr.GetAttr(ATTR_CHATYPE)), pCCha->m_pCChaRecord->Territory, pCEnt->GetAreaAttr()); //
+	return ::IsMoveAble(static_cast<EChaCtrlType>(pCCha->m_CChaAttr.GetAttr(ATTR_CHATYPE)), pCCha->m_pCChaRecord->Territory, pCEnt->GetAreaAttr()); //
 }
 
 BOOL SubMap::LoadEventEntity()

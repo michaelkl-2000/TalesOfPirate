@@ -239,7 +239,7 @@ void CCharacter::TradeClear( CPlayer& player )
 	//
 	if( m_pTradeData )
 	{
-		g_TradeSystem.Clear( mission::TRADE_CHAR, *this );
+		g_TradeSystem.Clear(Corsairs::Common::Mission::TradeCharType::TRADE_CHAR, *this );
 	}
 
 	BYTE byNumBoat = player.GetNumBoat();
@@ -250,7 +250,7 @@ void CCharacter::TradeClear( CPlayer& player )
 		{
 			if( pBoat->m_pTradeData )
 			{
-				g_TradeSystem.Clear( mission::TRADE_BOAT, *pBoat );
+				g_TradeSystem.Clear(Corsairs::Common::Mission::TradeCharType::TRADE_BOAT, *pBoat );
 			}
 		}
 	}
@@ -310,7 +310,7 @@ bool CCharacter::IsPlayerFocusCha(void)
 
 bool CCharacter::IsPlayerOwnCha(void)
 {
-	return IsPlayerCha() && (getAttr(ATTR_CHATYPE) == EChaCtrlType::PLAYER);
+	return IsPlayerCha() && (getAttr<EChaCtrlType>(ATTR_CHATYPE) == EChaCtrlType::PLAYER);
 }
 
 void CCharacter::WriteInt64PartInfo(Corsairs::Net::WPacket& packet)
@@ -507,25 +507,25 @@ void CCharacter::OnBeginSeen(CCharacter *pCCha)
 	else
 		msg.seeType = enumENTITY_SEEN_NEW;
 
-	mission::CEventEntity* pEntity = IsEvent();
+	Corsairs::Common::Mission::CEventEntity* pEntity = IsEvent();
 	if( pEntity )
 	{
 		std::uint16_t	usEventID = pEntity->GetInfoID();
-		BYTE byData;
+		EntityState byData;
 		pEntity->GetState( *pCCha, byData );
-		usEventID |= byData<<12;
+		usEventID |= (std::uint16_t)byData<<12;
 		GetEvent().SetID(usEventID);
 	}
 
 	FillBaseInfo(msg.base, LOOK_OTHER);
 
 	BYTE byState = 0, byShowType = 0;
-	mission::CNpc* pNpc = IsNpc();
+	Corsairs::Common::Mission::CNpc* pNpc = IsNpc();
 	if( pNpc )
 	{
-		if( pNpc->GetType() == mission::CNpc::TALK )
+		if( pNpc->GetType() == Corsairs::Common::Mission::CNpc::TALK )
 		{
-			mission::CTalkNpc* pTalk = (mission::CTalkNpc*)pNpc;
+			Corsairs::Common::Mission::CTalkNpc* pTalk = (Corsairs::Common::Mission::CTalkNpc*)pNpc;
 			pTalk->MissionProc( *pCCha, byState );
 		}
 		byShowType = pNpc->GetShowType();
@@ -574,20 +574,20 @@ void CCharacter::OnEndSeen(CCharacter *pCCha)
 
 	//  :
 	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McChaEndSeeMessage{
-		(GetPlayer() && GetPlayer() == pCCha->GetPlayer() && getAttr(ATTR_CHATYPE) == EChaCtrlType::PLAYER)
+		(GetPlayer() && GetPlayer() == pCCha->GetPlayer() && getAttr<EChaCtrlType>(ATTR_CHATYPE) == EChaCtrlType::PLAYER)
 			? enumENTITY_SEEN_SWITCH : enumENTITY_SEEN_NEW,
 		m_ID
 	});
 	pCCha->ReflectINFof(this,pk);
 
 	// npc
-	mission::CNpc* pNpc = IsNpc();
+	Corsairs::Common::Mission::CNpc* pNpc = IsNpc();
 	if( pNpc )
 	{
-		if( pNpc->GetType() == mission::CNpc::TALK )
+		if( pNpc->GetType() == Corsairs::Common::Mission::CNpc::TALK )
 		{
 			// NPC
-			mission::CTalkNpc* pTalk = (mission::CTalkNpc*)pNpc;
+			Corsairs::Common::Mission::CTalkNpc* pTalk = (Corsairs::Common::Mission::CTalkNpc*)pNpc;
 			pCCha->ClearMissionState( GetID() );
 		}
 	}
@@ -655,7 +655,7 @@ SItemGrid* CCharacter::GetEquipItem(char chPart)
 		return nullptr;
 	}
 
-	if (!g_IsRealItemID(m_SChaPart.SLink[chPart].sID))
+	if (!IsRealItemId(m_SChaPart.SLink[chPart].sID))
 	{
 		return nullptr;
 	}
@@ -745,7 +745,7 @@ bool CCharacter::SetEquipValid(char chEquipPos, bool bValid, bool bSyn)
 	if (chEquipPos < 0 || chEquipPos >= enumEQUIP_NUM)
 		return false;
 	SItemGrid	*pSEquipIt = &m_SChaPart.SLink[ chEquipPos];
-	if (!g_IsRealItemID(pSEquipIt->sID))
+	if (!IsRealItemId(pSEquipIt->sID))
 		return false;
 
 	CCharacter	*pCMainCha = GetPlyMainCha();
@@ -1702,7 +1702,7 @@ void CCharacter::Die()
 		{
 			DWORD dwCharID = ( GetPlyMainCha() == GetPlyMainCha()->m_pTradeData->pRequest ) ? GetPlyMainCha()->m_pTradeData->pAccept->GetID():
 					GetPlyMainCha()->m_pTradeData->pRequest->GetID();
-			g_TradeSystem.Cancel( mission::TRADE_CHAR, *GetPlyMainCha(), dwCharID );
+			g_TradeSystem.Cancel( Corsairs::Common::Mission::TradeCharType::TRADE_CHAR, *GetPlyMainCha(), dwCharID );
 		}
 
 		BYTE byNumBoat = GetPlayer()->GetNumBoat();
@@ -1715,7 +1715,7 @@ void CCharacter::Die()
 				{
 					DWORD dwCharID = ( pBoat == pBoat->m_pTradeData->pRequest ) ? pBoat->m_pTradeData->pAccept->GetID():
 						pBoat->m_pTradeData->pRequest->GetID();
-					g_TradeSystem.Cancel( mission::TRADE_BOAT, *pBoat, dwCharID );
+					g_TradeSystem.Cancel( Corsairs::Common::Mission::TradeCharType::TRADE_BOAT, *pBoat, dwCharID );
 				}
 			}
 		}
@@ -2087,7 +2087,7 @@ BOOL CCharacter::SetEntityState( DWORD dwEntityID, BYTE byState )
 	return TRUE;
 }
 
-BOOL CCharacter::ResetMissionState( mission::CTalkNpc& npc )
+BOOL CCharacter::ResetMissionState( Corsairs::Common::Mission::CTalkNpc& npc )
 {
 	if( GetPlayer() == NULL )
 		return FALSE;
@@ -2218,7 +2218,7 @@ BOOL CCharacter::IsConvoyNpc( WORD wRoleID, BYTE byIndex, WORD wNpcCharID )
 	return FALSE;
 }
 
-BOOL CCharacter::AddTrigger( const mission::TRIGGER_DATA& Data )
+BOOL CCharacter::AddTrigger( const Corsairs::Common::Mission::TRIGGER_DATA& Data )
 {
 	if( GetPlayer() )
 	{
@@ -2399,7 +2399,7 @@ BOOL CCharacter::HasRandMission( WORD wRoleID )
 	return FALSE;
 }
 
-BOOL CCharacter::AddRandMission( WORD wRoleID, WORD wScriptID, BYTE byType, BYTE byLevel, DWORD dwExp, DWORD dwMoney, USHORT sPrizeData, USHORT sPrizeType, BYTE byNumData )
+BOOL CCharacter::AddRandMission( WORD wRoleID, WORD wScriptID, MissionRandType byType, BYTE byLevel, DWORD dwExp, DWORD dwMoney, USHORT sPrizeData, USHORT sPrizeType, BYTE byNumData )
 {
 	if( GetPlayer() )
 	{
@@ -2408,7 +2408,7 @@ BOOL CCharacter::AddRandMission( WORD wRoleID, WORD wScriptID, BYTE byType, BYTE
 	return FALSE;
 }
 
-BOOL CCharacter::SetRandMissionData( WORD wRoleID, BYTE byIndex, const mission::MISSION_DATA& RandData )
+BOOL CCharacter::SetRandMissionData( WORD wRoleID, BYTE byIndex, const Corsairs::Common::Mission::MISSION_DATA& RandData )
 {
 	if( GetPlayer() )
 	{
@@ -2417,7 +2417,7 @@ BOOL CCharacter::SetRandMissionData( WORD wRoleID, BYTE byIndex, const mission::
 	return FALSE;
 }
 
-BOOL CCharacter::GetRandMission( WORD wRoleID, BYTE& byType, BYTE& byLevel, DWORD& dwExp, DWORD& dwMoney, USHORT& sPrizeData, USHORT& sPrizeType, BYTE& byNumData )
+BOOL CCharacter::GetRandMission( WORD wRoleID, MissionRandType& byType, BYTE& byLevel, DWORD& dwExp, DWORD& dwMoney, USHORT& sPrizeData, USHORT& sPrizeType, BYTE& byNumData )
 {
 	if( GetPlayer() )
 	{
@@ -2426,7 +2426,7 @@ BOOL CCharacter::GetRandMission( WORD wRoleID, BYTE& byType, BYTE& byLevel, DWOR
 	return FALSE;
 }
 
-BOOL CCharacter::GetRandMissionData( WORD wRoleID, BYTE byIndex, mission::MISSION_DATA& RandData )
+BOOL CCharacter::GetRandMissionData( WORD wRoleID, BYTE byIndex, Corsairs::Common::Mission::MISSION_DATA& RandData )
 {
 	if( GetPlayer() )
 	{
@@ -4743,7 +4743,7 @@ void CCharacter::AfterObjDie(CCharacter *pCAtk, CCharacter *pCDead)
 				bExecProc = false;
 		}
 		if (bExecProc)
-			GetPlayer()->MisEventProc( mission::TE_KILL, (std::uint16_t)pCDead->GetCat(), pCDead->GetID() );
+			GetPlayer()->MisEventProc( Corsairs::Common::Mission::TriggerEvent::TE_KILL, (std::uint16_t)pCDead->GetCat(), pCDead->GetID() );
 	}
 }
 
@@ -4751,7 +4751,7 @@ void CCharacter::AfterPeekItem(int16_t sItemID, int16_t sNum)
 {
 	if( GetPlayer() )
 	{
-		GetPlayer()->MisEventProc( mission::TE_GET_ITEM, sItemID, sNum );
+		GetPlayer()->MisEventProc( Corsairs::Common::Mission::TriggerEvent::TE_GET_ITEM, sItemID, sNum );
 	}
 }
 
@@ -4759,7 +4759,7 @@ void CCharacter::AfterEquipItem(int16_t sItemID, std::uint16_t sTriID)
 {
 	if( GetPlayer() && sTriID != 0 )
 	{
-		GetPlayer()->MisEventProc( mission::TE_EQUIP_ITEM, sItemID, sTriID );
+		GetPlayer()->MisEventProc( Corsairs::Common::Mission::TriggerEvent::TE_EQUIP_ITEM, sItemID, sTriID );
 	}
 }
 
@@ -4767,7 +4767,7 @@ void CCharacter::EntryMapUnit( BYTE byMapID, WORD wxPos, WORD wyPos )
 {
 	if( GetPlayer() )
 	{
-		GetPlayer()->MisEventProc( mission::TE_GOTO_MAP, byMapID, (wxPos<<16)|wyPos );
+		GetPlayer()->MisEventProc( Corsairs::Common::Mission::TriggerEvent::TE_GOTO_MAP, byMapID, (wxPos<<16)|wyPos );
 	}
 }
 
@@ -4775,12 +4775,12 @@ void CCharacter::OnMissionTime()
 {
 	if( GetPlayer() )
 	{
-		GetPlayer()->MisEventProc( mission::TE_GAME_TIME, 0, 0 );
+		GetPlayer()->MisEventProc( Corsairs::Common::Mission::TriggerEvent::TE_GAME_TIME, 0, 0 );
 	}
-	mission::CNpc* pNpc = this->IsNpc();
+	Corsairs::Common::Mission::CNpc* pNpc = this->IsNpc();
 	if( pNpc )
 	{
-		pNpc->EventProc( mission::TE_GAME_TIME, 0, 0 );
+		pNpc->EventProc( Corsairs::Common::Mission::TriggerEvent::TE_GAME_TIME, 0, 0 );
 	}
 }
 
@@ -4800,7 +4800,7 @@ void CCharacter::OnLevelUp( USHORT sLevel )
 			pMainCha->ReflectINFof(pMainCha,l_wpk);
 		}
 
-		GetPlayer()->MisEventProc( mission::TE_LEVEL_UP, sLevel, 0 );
+		GetPlayer()->MisEventProc( Corsairs::Common::Mission::TriggerEvent::TE_LEVEL_UP, sLevel, 0 );
 	}
 }
 
@@ -4816,7 +4816,7 @@ void CCharacter::OnCharBorn()
 {
 	if( GetPlayer() )
 	{
-		GetPlayer()->MisEventProc( mission::TE_MAP_INIT, 0, 0 );
+		GetPlayer()->MisEventProc( Corsairs::Common::Mission::TriggerEvent::TE_MAP_INIT, 0, 0 );
 	}
 }
 
@@ -5025,13 +5025,13 @@ void CCharacter::ChangeItem(bool bEquip, SItemGrid *pItemCont, char chLinkID)
 		fLvEffect3 = float(pItemCont->GetItemLevel() - nLv) / 100;//remove the starting at 80%
 		for (int i = ITEMATTR_COE_STR; i <= ITEMATTR_COE_COL; i++)
 		{
-			lChaAttrType = g_ConvItemAttrTypeToCha(i);
+			lChaAttrType = ConvItemAttrTypeToCha(i);
 			std::int32_t lTemp = pItemCont->GetAttr(i);
 			m_CChaAttr.AddAttr(lChaAttrType, std::int32_t(chType * lTemp * (lTemp > 0 ? fLvEffect1 + fLvEffect2 : float(1.0) - fLvEffect3) ));
 		}
 		for (int i = ITEMATTR_VAL_STR; i <= ITEMATTR_VAL_PDEF; i++)
 		{
-			lChaAttrType = g_ConvItemAttrTypeToCha(i);
+			lChaAttrType = ConvItemAttrTypeToCha(i);
 			std::int32_t lTemp = pItemCont->GetAttr(i);
 			m_CChaAttr.AddAttr(lChaAttrType, std::int32_t(chType * lTemp * (lTemp > 0 ? fLvEffect1 + fLvEffect2 : float(1.0) - fLvEffect3) ));
 		}
@@ -5040,13 +5040,13 @@ void CCharacter::ChangeItem(bool bEquip, SItemGrid *pItemCont, char chLinkID)
 	{
 		for (int i = ITEMATTR_COE_STR; i <= ITEMATTR_COE_COL; i++)
 		{
-			lChaAttrType = g_ConvItemAttrTypeToCha(i);
+			lChaAttrType = ConvItemAttrTypeToCha(i);
 			std::int32_t lTemp = pItemCont->GetAttr(i);
 			m_CChaAttr.AddAttr(lChaAttrType, std::int32_t(chType * pItemCont->GetAttr(i)));
 		}
 		for (int i = ITEMATTR_VAL_STR; i <= ITEMATTR_VAL_PDEF; i++)
 		{
-			lChaAttrType = g_ConvItemAttrTypeToCha(i);
+			lChaAttrType = ConvItemAttrTypeToCha(i);
 			m_CChaAttr.AddAttr(lChaAttrType, std::int32_t(chType * pItemCont->GetAttr(i)));
 		}
 	}
@@ -5082,9 +5082,9 @@ void CCharacter::SkillRefresh()
 		if (!pCSkillRecord)
 			continue;
 		if (pCSkillRecord->chFightType == enumSKILL_SEE_LIVE) //
-			nActive = g_IsUseSeaLiveSkill((std::int32_t)getAttr(ATTR_BOAT_PART), pCSkillRecord);
+			nActive = IsUseSeaLiveSkill((std::int32_t)getAttr(ATTR_BOAT_PART), pCSkillRecord);
 		else
-			nActive = g_IsUseSkill(pCLook, pCSkillRecord);
+			nActive = IsUseSkill(pCLook, pCSkillRecord);
 
 		if (pCSkillRecord->chType == enumSKILL_ACTIVE || pCSkillRecord->chType == enumSKILL_INBORN) //
 		{
@@ -5252,16 +5252,17 @@ void CCharacter::SynLook(char chLookType, bool verbose)
 
 void CCharacter::ChaInitEquip(void)
 {
-	CJobEquipRecord	*pCInitEquip = JobEquipRecordStore::Instance()->Get((int)m_CChaAttr.GetAttr(ATTR_JOB));
-	if (!pCInitEquip)
+	JobEquipRecord* pCInitEquip = JobEquipRecordStore::Instance()->Get(static_cast<int>(m_CChaAttr.GetAttr(ATTR_JOB)));
+	if (!pCInitEquip) {
 		return;
+	}
 
 	SItemGrid	GridCont;
-	for (short i = 0; i < defJOB_INIT_EQUIP_MAX; i++)
+	for (short i = 0; i < pCInitEquip->ItemIds.size(); ++i)
 	{
-		if (pCInitEquip->sItemID[i] > 0)
+		if (pCInitEquip->ItemIds[i] > 0)
 		{
-			GridCont.sID = pCInitEquip->sItemID[i];
+			GridCont.sID = pCInitEquip->ItemIds[i];
 			GridCont.sNum = 1;
 			GridCont.SetDBParam(-1, 0);
 			ItemInstance(enumITEM_INST_BUY, &GridCont);
@@ -5870,7 +5871,7 @@ void CCharacter::SupplyBoat()
 	}
 }
 
-BOOL CCharacter::BoatSelected( BYTE byType, BYTE byIndex )
+BOOL CCharacter::BoatSelected( BoatListType byType, BYTE byIndex )
 {
 	if( !GetPlayer() ) {
 		return FALSE;
@@ -5889,7 +5890,7 @@ BOOL CCharacter::BoatSelected( BYTE byType, BYTE byIndex )
 	GetPlayer()->GetBerth( sBerthID, sxPos, syPos, sDir );
 	CCharacter* pChar = GetPlayer()->GetMainCha();
 
-	if( byType == mission::BERTH_REPAIR_LIST )
+	if( byType == Corsairs::Common::Mission::BoatListType::BERTH_REPAIR_LIST )
 	{
 		BOAT_BERTH_DATA Data;
 		memset( &Data, 0, sizeof(BOAT_BERTH_DATA) );
@@ -5947,7 +5948,7 @@ BOOL CCharacter::BoatSelected( BYTE byType, BYTE byIndex )
 		SystemNotice( RES_STRING(GM_CHARACTER_CPP_00077), pBoat->GetName(), dwReHp );
 		g_luaAPI.Call("Ship_ExAttrCheck", pChar, pBoat);
 	}
-	else if( byType == mission::BERTH_SALVAGE_LIST )
+	else if( byType == Corsairs::Common::Mission::BoatListType::BERTH_SALVAGE_LIST )
 	{
 		BOAT_BERTH_DATA Data;
 		memset( &Data, 0, sizeof(BOAT_BERTH_DATA) );
@@ -6000,7 +6001,7 @@ BOOL CCharacter::BoatSelected( BYTE byType, BYTE byIndex )
 		}
 		g_luaAPI.Call("Ship_ExAttrCheck", pChar, pBoat);
 	}
-	else if( byType == mission::BERTH_SUPPLY_LIST )
+	else if( byType == Corsairs::Common::Mission::BoatListType::BERTH_SUPPLY_LIST )
 	{
 		BOAT_BERTH_DATA Data;
 		memset( &Data, 0, sizeof(BOAT_BERTH_DATA) );
@@ -6058,7 +6059,7 @@ BOOL CCharacter::BoatSelected( BYTE byType, BYTE byIndex )
 		SystemNotice( RES_STRING(GM_CHARACTER_CPP_00081), pBoat->GetName(), dwReSp );
 		g_luaAPI.Call("Ship_ExAttrCheck", pChar, pBoat);
 	}
-	else if( byType == mission::BERTH_BOATLEVEL_LIST )
+	else if( byType == Corsairs::Common::Mission::BoatListType::BERTH_BOATLEVEL_LIST )
 	{
 		BOAT_BERTH_DATA Data;
 		memset( &Data, 0, sizeof(BOAT_BERTH_DATA) );
@@ -6126,18 +6127,18 @@ BOOL CCharacter::BoatSelected( BYTE byType, BYTE byIndex )
 	return TRUE;
 }
 
-BOOL CCharacter::BoatBerthList( DWORD dwNpcID, BYTE byType, USHORT sBerthID, USHORT sxPos, USHORT syPos, USHORT sDir )
+BOOL CCharacter::BoatBerthList( DWORD dwNpcID, BoatListType byType, USHORT sBerthID, USHORT sxPos, USHORT syPos, USHORT sDir )
 {
 	if( GetPlayer() )
 	{
 		BOAT_BERTH_DATA Data;
 		memset( &Data, 0, sizeof(BOAT_BERTH_DATA) );
 		BYTE byNumBoat;
-		if( byType == mission::BERTH_SALVAGE_LIST )
+		if( byType == Corsairs::Common::Mission::BoatListType::BERTH_SALVAGE_LIST )
 		{
 			GetPlayer()->GetDeadBerthBoat( sBerthID, byNumBoat, Data );
 		}
-		else if( byType == mission::BERTH_LUANCH_LIST )
+		else if( byType == Corsairs::Common::Mission::BoatListType::BERTH_LUANCH_LIST )
 		{
 			GetPlayer()->GetAllBerthBoat( sBerthID, byNumBoat, Data );
 		}
@@ -6232,7 +6233,7 @@ BOOL CCharacter::BoatPackBagList( USHORT sBerthID, BYTE byType, BYTE byLevel )
 
 		Corsairs::Net::Msg::McBerthListMessage msg;
 		msg.npcId = 0;
-		msg.type = mission::BERTH_BAG_LIST;
+		msg.type = Corsairs::Common::Mission::BoatListType::BERTH_BAG_LIST;
 		msg.count = byNumBoat;
 		for( BYTE i = 0;i < byNumBoat; i++ )
 			msg.names.push_back(Data.szName[i]);
@@ -6828,8 +6829,8 @@ CCharacter* CCharacter::GetBoat()
 
 BOOL CCharacter::ViewItemInfo( const Corsairs::Net::Msg::CmActionViewItemData& msg )
 {
-	BYTE byType = static_cast<BYTE>(msg.viewType);
-	if( byType == mission::VIEW_CHAR_BAG )
+	auto byType = msg.viewType;
+	if( byType == Corsairs::Common::Mission::ViewItemType::VIEW_CHAR_BAG )
 	{
 		int16_t	sGridID = static_cast<int16_t>(msg.param);
 		CItemRecord* pItem = (CItemRecord*)GetItemRecordInfo( m_CKitbag.GetID( sGridID ) );
@@ -6851,7 +6852,7 @@ BOOL CCharacter::ViewItemInfo( const Corsairs::Net::Msg::CmActionViewItemData& m
 		USHORT sItemID;
 		DWORD dwBoatID;
 		CCharacter* pOwner = NULL;
-		if( byType == mission::VIEW_CHARTRADE_SELF )
+		if( byType == Corsairs::Common::Mission::ViewItemType::VIEW_CHARTRADE_SELF )
 		{
 
 			if( this->m_pTradeData )
@@ -6886,7 +6887,7 @@ BOOL CCharacter::ViewItemInfo( const Corsairs::Net::Msg::CmActionViewItemData& m
 				}
 			}
 		}
-		else if( byType == mission::VIEW_CHARTRADE_OTHER )
+		else if( byType == Corsairs::Common::Mission::ViewItemType::VIEW_CHARTRADE_OTHER )
 		{
 			if( this->m_pTradeData )
 			{
@@ -6952,12 +6953,12 @@ BOOL CCharacter::HasGuild()
 	return GetGuildID() > 0 && GetGuildState() == emGldMembStatNormal;
 }
 
-void CCharacter::SetStallData( mission::CStallData* pData )
+void CCharacter::SetStallData( Corsairs::Common::Mission::CStallData* pData )
 {
 	if( GetPlayer() ) GetPlayer()->SetStallData( pData );
 }
 
-mission::CStallData* CCharacter::GetStallData()
+Corsairs::Common::Mission::CStallData* CCharacter::GetStallData()
 {
 	return GetPlayer() ? GetPlayer()->GetStallData() : NULL;
 }
@@ -7732,8 +7733,8 @@ bool CCharacter::HairAction(bool bLock)   { return SetNarmalSkillState(bLock, SS
 bool CCharacter::RepairAction(bool bLock) { return SetNarmalSkillState(bLock, SSTATE_FORGE, 1); }
 bool CCharacter::ForgeAction(bool bLock)  { return SetNarmalSkillState(bLock, SSTATE_FORGE, 1); }
 
-void                 CCharacter::SetTradeData(mission::CTradeData* pData) { m_pTradeData = pData; }
-mission::CTradeData* CCharacter::GetTradeData()                           { return m_pTradeData; }
+void                 CCharacter::SetTradeData(Corsairs::Common::Mission::CTradeData* pData) { m_pTradeData = pData; }
+Corsairs::Common::Mission::CTradeData* CCharacter::GetTradeData()                           { return m_pTradeData; }
 
 bool CCharacter::IsBoat(void)         { return m_pCChaRecord->ModalType == EChaModalType::BOAT; }
 bool CCharacter::HasTradeAction(void) { return m_CSkillState.HasState(85); }

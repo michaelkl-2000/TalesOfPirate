@@ -1,5 +1,7 @@
 ﻿#include "stdafx.h"
 #include "NetChat.h"
+#include "TextFilter.h"
+using namespace Corsairs::Util;
 #include "UITeam.h"
 #include "UIChat.h"
 #include "GameApp.h"
@@ -132,7 +134,7 @@ void NetPCTeam(stNetPCTeam& pcteam) {
 
 		if (auto pCha = g_stUIBoat.GetHuman(); pCha) {
 			const std::string buffer = std::format("{} Lv{} {}", pCha->getHumanName(), pCha->getLv(),
-					g_GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
+					GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
 			const std::string buf = std::format("In a Party ({} of 5)", pcteam.count);
 			updateDiscordPresence(buffer.c_str(), buf.c_str());
 		}
@@ -150,7 +152,7 @@ void NetPCTeam(stNetPCTeam& pcteam) {
 		int nArea = pScene->_pTerrain->GetTile(pCha->GetCurX() / 100, pCha->GetCurY() / 100)->getIsland();
 
 		const std::string buffer = std::format("{} Lv{} {}", pCha->getHumanName(), pCha->getLv(),
-				g_GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
+				GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
 
 		std::string buf;
 		if (CAreaInfo* pArea = GetAreaInfo(nArea); pArea) {
@@ -175,7 +177,7 @@ void NetPCTeam(stNetPCTeam& pcteam) {
 
 		if (auto pCha = g_stUIBoat.GetHuman(); pCha) {
 			const std::string buffer = std::format("{} Lv{} {}", pCha->getHumanName(), pCha->getLv(),
-					g_GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
+					GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
 			const std::string buf = std::format("In a Party ({} of 5)", pcteam.count);
 			updateDiscordPresence(buffer.c_str(), buf.c_str());
 		}
@@ -194,7 +196,7 @@ void NetPCTeam(stNetPCTeam& pcteam) {
 
 		if (auto pCha = g_stUIBoat.GetHuman(); pCha) {
 			const std::string buffer = std::format("{} Lv{} {}", pCha->getHumanName(), pCha->getLv(),
-					g_GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
+					GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
 			const std::string buf = std::format("In a Party ({} of 5)", pcteam.count);
 			updateDiscordPresence(buffer.c_str(), buf.c_str());
 		}

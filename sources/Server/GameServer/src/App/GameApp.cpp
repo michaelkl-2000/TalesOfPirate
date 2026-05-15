@@ -6,6 +6,8 @@
 //=============================================================================
 
 #include "Core/stdafx.h"
+#include "TextFilter.h"
+using namespace Corsairs::Util;
 namespace Corsairs::Common::Progression {}
 using namespace Corsairs::Common::Progression;
 namespace Corsairs::Common::Mount {}
@@ -388,7 +390,7 @@ BOOL CGameApp::Init() {
 		ToLogService("common", "error ID base!!!");
 	m_ItemIdent.m_maxID = 1;
 
-	// GamePool::Instance() инициализируется лениво, память выделяется по запросу через TrackedPool.
+	// GamePool::Instance() инициализируется лениво, память выделяется по запросу через Corsairs::Util::TrackedPool.
 	g_pCSystemCha = GetNewCharacter();
 	g_pCSystemCha->SetID(m_Ident.GetID());
 	//g_pCSystemCha->SetName("");
@@ -397,7 +399,7 @@ BOOL CGameApp::Init() {
 
 	//LG("init", "Entity\n");
 	ToLogService("common", "start to assign every Entity memory");
-	// TrackedPool не требует Init() — std::pmr выделяет по запросу
+	// Corsairs::Util::TrackedPool не требует Init() — std::pmr выделяет по запросу
 
 	//LG("init", "...\n");
 	ToLogService("common", "initialization every form...");
@@ -1015,7 +1017,7 @@ CItem* CGameApp::GetNewItem() {
 }
 
 // NPC
-mission::CTalkNpc* CGameApp::GetNewTNpc() {
+Corsairs::Common::Mission::CTalkNpc* CGameApp::GetNewTNpc() {
 	return GamePool::Instance().AcquireTalkNpc();
 }
 
@@ -1076,7 +1078,7 @@ BOOL CGameApp::InitMap() {
 	//LG("init", "...\n");
 	ToLogService("common", "initialization map list...");
 
-	mission::g_WorldEudemon.Load("Eudemon", g_Config.m_szEqument, -1);
+	Corsairs::Common::Mission::g_WorldEudemon.Load("Eudemon", g_Config.m_szEqument, -1);
 
 	//Map
 	m_mapnum = static_cast<short>(g_Config.m_mapList.size());
@@ -1198,21 +1200,21 @@ void CGameApp::LoadItemInfo() {
 }
 
 BOOL CGameApp::ReloadNpcInfo(CCharacter& character) {
-	GamePool::Instance().ForEachTalkNpc([&character](mission::CTalkNpc* pTalkNpc) {
+	GamePool::Instance().ForEachTalkNpc([&character](Corsairs::Common::Mission::CTalkNpc* pTalkNpc) {
 		if (!pTalkNpc->InitScript(pTalkNpc->GetInitFunc(), pTalkNpc->GetName())) {
 			character.SystemNotice(RES_STRING(GM_GAMEAPP_CPP_00001), pTalkNpc->GetInitFunc(), pTalkNpc->GetName());
 		}
 	});
 
-	//mission::g_WorldEudemon.Load( "Eudemon", "", -1 );
-	mission::g_WorldEudemon.Load("Eudemon", "Eudemon", -1);
+	//Corsairs::Common::Mission::g_WorldEudemon.Load( "Eudemon", "", -1 );
+	Corsairs::Common::Mission::g_WorldEudemon.Load("Eudemon", "Eudemon", -1);
 	return TRUE;
 }
 
-mission::CNpc* CGameApp::FindNpc(const char szName[]) {
+Corsairs::Common::Mission::CNpc* CGameApp::FindNpc(const char szName[]) {
 	if (szName) {
 		for (short i = 0; i < m_mapnum; i++) {
-			mission::CNpc* pNpc = m_MapList[i]->FindNpc(szName);
+			Corsairs::Common::Mission::CNpc* pNpc = m_MapList[i]->FindNpc(szName);
 			if (pNpc) return pNpc;
 		}
 	}
@@ -1398,7 +1400,7 @@ void  CGameApp::SetGlobalRates(float droprate, float exprate) {
 float CGameApp::GetGlobalDropRate()      { return m_fGlobalDropRate; }
 float CGameApp::GetGlobalExpRate()       { return m_fGlobalExpRate; }
 
-mission::CEventEntity* CGameApp::CreateEntity(BYTE byType) {
+Corsairs::Common::Mission::CEventEntity* CGameApp::CreateEntity(BYTE byType) {
 	return GamePool::Instance().AcquireEventEntity(byType);
 }
 

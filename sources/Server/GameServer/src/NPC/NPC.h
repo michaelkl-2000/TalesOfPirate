@@ -13,7 +13,7 @@ namespace Corsairs::Common::NPC { class CNpcRecord; }
 namespace Corsairs::Common::Character { class ChaRecord; }
 using CChaRecord = Corsairs::Common::Character::ChaRecord;
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	#define EN_OK						 0		//
 	#define EN_FAILER					-1		//
@@ -47,10 +47,10 @@ namespace mission
 		virtual BOOL IsMapNpc( const char szMap[], USHORT sID );
 
 		// 
-		virtual BOOL AddNpcTrigger( WORD wID, mission::TRIGGER_EVENT e, WORD wParam1, WORD wParam2, WORD wParam3, WORD wParam4 );
+		virtual BOOL AddNpcTrigger( WORD wID, Corsairs::Common::Mission::TriggerEvent e, WORD wParam1, WORD wParam2, WORD wParam3, WORD wParam4 );
 
 		// 
-		virtual BOOL EventProc( TRIGGER_EVENT e, WPARAM wParam, LPARAM lParam );
+		virtual BOOL EventProc( TriggerEvent e, WPARAM wParam, LPARAM lParam );
 
 		//npcID
 		virtual void        SetScriptID(USHORT sID);
@@ -115,10 +115,10 @@ namespace mission
 		virtual BOOL IsMapNpc( const char szMap[], USHORT sID );
 
 		// 
-		virtual BOOL AddNpcTrigger( WORD wID, mission::TRIGGER_EVENT e, WORD wParam1, WORD wParam2, WORD wParam3, WORD wParam4 );
+		virtual BOOL AddNpcTrigger( WORD wID, Corsairs::Common::Mission::TriggerEvent e, WORD wParam1, WORD wParam2, WORD wParam3, WORD wParam4 );
 
 		// 
-		virtual BOOL EventProc( TRIGGER_EVENT e, WPARAM wParam, LPARAM lParam );
+		virtual BOOL EventProc( TriggerEvent e, WPARAM wParam, LPARAM lParam );
 
 		// NPC
 		virtual void Summoned( USHORT sTime );

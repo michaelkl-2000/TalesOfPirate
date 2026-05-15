@@ -3,10 +3,12 @@
 
 namespace Corsairs::Common::Localization {}
 using namespace Corsairs::Common::Localization;
-#include "Core/StringLib.h"
+#include "StringLib.h"
 #include "EncodingUtil.h"
 
 using namespace std;
+
+namespace Corsairs::Util {
 
 string CutFaceText(string& text, size_t cutLimitlen) {
 	string retStr = text;
@@ -33,10 +35,10 @@ string CutFaceText(string& text, size_t cutLimitlen) {
 	// UTF-8: если позиция разреза попала внутрь multi-byte codepoint,
 	// отступаем назад до начала ближайшего codepoint (starter-байт).
 	if (cutLimitlen < text.size()
-		&& !Corsairs::Util::Encoding::IsUtf8StartByte(static_cast<unsigned char>(text[cutLimitlen]))) {
+		&& !Corsairs::Util::IsUtf8StartByte(static_cast<unsigned char>(text[cutLimitlen]))) {
 		size_t safe = cutLimitlen;
 		while (safe > 0
-			&& !Corsairs::Util::Encoding::IsUtf8StartByte(static_cast<unsigned char>(text[safe]))) {
+			&& !Corsairs::Util::IsUtf8StartByte(static_cast<unsigned char>(text[safe]))) {
 			--safe;
 		}
 		retStr = text.substr(0, safe);
@@ -51,11 +53,11 @@ string CutFaceText(string& text, size_t cutLimitlen) {
 	return retStr;
 }
 
-int StringNewLine(char* pOutBuf, unsigned int nWidth, const char* pInBuf, unsigned int nInLen) {
+std::string StringNewLine(std::string_view input, unsigned int nWidth) {
 	if (0 == _stricmp(GetLanguageString(0).c_str(), "english")) {
-		return StringNewLineEng(pOutBuf, nWidth, pInBuf, nInLen);
+		return StringNewLineEng(input, nWidth);
 	}
-	else {
-		return StringNewLineChs(pOutBuf, nWidth, pInBuf, nInLen);
-	}
+	return StringNewLineChs(input, nWidth);
 }
+
+} // namespace Corsairs::Util

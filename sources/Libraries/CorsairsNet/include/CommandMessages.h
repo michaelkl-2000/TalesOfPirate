@@ -6,6 +6,7 @@
 
 #include "Packet.h"
 #include "../../common/src/Network/NetCommand.h"
+#include "../../common/src/Core/RoleCommon.h"
 #include <string>
 #include <vector>
 #include <optional>
@@ -15,6 +16,8 @@
 
 namespace Corsairs::Net {
 	namespace Msg {
+
+		using namespace Corsairs::Common::Mission;
 		// =================================================================
 		//
 		// =================================================================
@@ -5923,7 +5926,7 @@ namespace Corsairs::Net {
 		};
 
 		struct McTriggerActionMessage {
-			int64_t type;
+			TriggerEvent type;
 			int64_t id;
 			int64_t num;
 			int64_t count;
@@ -6072,43 +6075,43 @@ namespace Corsairs::Net {
 		};
 
 		struct CmRequestTradeMessage {
-			int64_t type;
+			Common::Mission::TradeCharType type;
 			int64_t charId;
 		};
 
 		struct CmAcceptTradeMessage {
-			int64_t type;
+			Common::Mission::TradeCharType type;
 			int64_t charId;
 		};
 
 		struct CmCancelTradeMessage {
-			int64_t type;
+			Common::Mission::TradeCharType type;
 			int64_t charId;
 		};
 
 		struct CmValidateTradeDataMessage {
-			int64_t type;
+			TradeCharType type;
 			int64_t charId;
 		};
 
 		struct CmValidateTradeMessage {
-			int64_t type;
+			TradeCharType type;
 			int64_t charId;
 		};
 
 		struct CmAddItemMessage {
-			int64_t type;
+			TradeCharType type;
 			int64_t charId;
-			int64_t opType;
+			Common::Mission::TradeOpType opType;
 			int64_t index;
 			int64_t itemIndex;
 			int64_t count;
 		};
 
 		struct CmAddMoneyMessage {
-			int64_t type;
+			TradeCharType type;
 			int64_t charId;
-			int64_t opType;
+			TradeOpType opType;
 			int64_t isImp;
 			int64_t money;
 		};
@@ -6147,7 +6150,7 @@ namespace Corsairs::Net {
 
 		struct CmSelectBoatListMessage {
 			int64_t npcId;
-			int64_t type;
+			BoatListType type;
 			int64_t index;
 		};
 
@@ -6690,7 +6693,7 @@ namespace Corsairs::Net {
 		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_RESULT:
 		struct McCharTradeResultMessage {
 			int64_t subCmd;
-			int64_t result;
+			TradeOpType result;
 		};
 
 		//    (CM/MC)
@@ -6856,14 +6859,14 @@ namespace Corsairs::Net {
 			std::vector<std::string> items;
 		};
 
-		///     (mission::MIS_NEED_TYPE).
+		///     (Corsairs::Common::Mission::MissionNeedType).
 		constexpr int64_t MIS_NEED_ITEM = 0;
 		constexpr int64_t MIS_NEED_KILL = 1;
 		constexpr int64_t MIS_NEED_DESP = 5;
 
 		///    (   needType).
 		struct MisNeedEntry {
-			int64_t needType = 0;
+			MissionNeedType needType = MissionNeedType::MIS_NEED_ITEM;
 			int64_t param1 = 0;
 			int64_t param2 = 0;
 			int64_t param3 = 0; // MIS_NEED_ITEM/KILL
@@ -7811,7 +7814,7 @@ namespace Corsairs::Net {
 		};
 
 		struct CmActionViewItemData {
-			int64_t viewType = 0;
+			ViewItemType viewType = ViewItemType::VIEW_CHAR_BAG;
 			int64_t param = 0;
 		};
 
@@ -8364,7 +8367,7 @@ namespace Corsairs::Net {
 		inline WPacket serialize(const McTriggerActionMessage& m) {
 			WPacket w(40);
 			w.WriteCmd(CMD_MC_TRIGGER_ACTION);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.id);
 			w.WriteInt64(m.num);
 			w.WriteInt64(m.count);
@@ -8541,7 +8544,7 @@ namespace Corsairs::Net {
 		inline WPacket serialize(const CmRequestTradeMessage& m) {
 			WPacket w(24);
 			w.WriteCmd(CMD_CM_CHARTRADE_REQUEST);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.charId);
 			return w;
 		}
@@ -8549,7 +8552,7 @@ namespace Corsairs::Net {
 		inline WPacket serialize(const CmAcceptTradeMessage& m) {
 			WPacket w(24);
 			w.WriteCmd(CMD_CM_CHARTRADE_ACCEPT);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.charId);
 			return w;
 		}
@@ -8557,7 +8560,7 @@ namespace Corsairs::Net {
 		inline WPacket serialize(const CmCancelTradeMessage& m) {
 			WPacket w(24);
 			w.WriteCmd(CMD_CM_CHARTRADE_CANCEL);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.charId);
 			return w;
 		}
@@ -8565,7 +8568,7 @@ namespace Corsairs::Net {
 		inline WPacket serialize(const CmValidateTradeDataMessage& m) {
 			WPacket w(24);
 			w.WriteCmd(CMD_CM_CHARTRADE_VALIDATEDATA);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.charId);
 			return w;
 		}
@@ -8573,7 +8576,7 @@ namespace Corsairs::Net {
 		inline WPacket serialize(const CmValidateTradeMessage& m) {
 			WPacket w(24);
 			w.WriteCmd(CMD_CM_CHARTRADE_VALIDATE);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.charId);
 			return w;
 		}
@@ -8581,9 +8584,9 @@ namespace Corsairs::Net {
 		inline WPacket serialize(const CmAddItemMessage& m) {
 			WPacket w(56);
 			w.WriteCmd(CMD_CM_CHARTRADE_ITEM);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.charId);
-			w.WriteInt64(m.opType);
+			w.WriteInt64(static_cast<int64_t>(m.opType));
 			w.WriteInt64(m.index);
 			w.WriteInt64(m.itemIndex);
 			w.WriteInt64(m.count);
@@ -8593,9 +8596,9 @@ namespace Corsairs::Net {
 		inline WPacket serialize(const CmAddMoneyMessage& m) {
 			WPacket w(48);
 			w.WriteCmd(CMD_CM_CHARTRADE_MONEY);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.charId);
-			w.WriteInt64(m.opType);
+			w.WriteInt64(static_cast<int64_t>(m.opType));
 			w.WriteInt64(m.isImp);
 			w.WriteInt64(m.money);
 			return w;
@@ -8652,7 +8655,7 @@ namespace Corsairs::Net {
 			WPacket w(32);
 			w.WriteCmd(CMD_CM_BOAT_SELECT);
 			w.WriteInt64(m.npcId);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.index);
 			return w;
 		}
@@ -9927,7 +9930,7 @@ namespace Corsairs::Net {
 		}
 
 		inline void deserialize(RPacket& pk, McTriggerActionMessage& m) {
-			m.type = pk.ReadInt64();
+			m.type = (TriggerEvent)pk.ReadInt64();
 			m.id = pk.ReadInt64();
 			m.num = pk.ReadInt64();
 			m.count = pk.ReadInt64();
@@ -10065,43 +10068,43 @@ namespace Corsairs::Net {
 		}
 
 		inline void deserialize(RPacket& pk, CmRequestTradeMessage& m) {
-			m.type = pk.ReadInt64();
+			m.type = static_cast<TradeCharType>(pk.ReadInt64());
 			m.charId = pk.ReadInt64();
 		}
 
 		inline void deserialize(RPacket& pk, CmAcceptTradeMessage& m) {
-			m.type = pk.ReadInt64();
+			m.type = static_cast<TradeCharType>(pk.ReadInt64());
 			m.charId = pk.ReadInt64();
 		}
 
 		inline void deserialize(RPacket& pk, CmCancelTradeMessage& m) {
-			m.type = pk.ReadInt64();
+			m.type = static_cast<TradeCharType>(pk.ReadInt64());
 			m.charId = pk.ReadInt64();
 		}
 
 		inline void deserialize(RPacket& pk, CmValidateTradeDataMessage& m) {
-			m.type = pk.ReadInt64();
+			m.type = static_cast<TradeCharType>(pk.ReadInt64());
 			m.charId = pk.ReadInt64();
 		}
 
 		inline void deserialize(RPacket& pk, CmValidateTradeMessage& m) {
-			m.type = pk.ReadInt64();
+			m.type = static_cast<TradeCharType>(pk.ReadInt64());
 			m.charId = pk.ReadInt64();
 		}
 
 		inline void deserialize(RPacket& pk, CmAddItemMessage& m) {
-			m.type = pk.ReadInt64();
+			m.type = static_cast<TradeCharType>(pk.ReadInt64());
 			m.charId = pk.ReadInt64();
-			m.opType = pk.ReadInt64();
+			m.opType = static_cast<TradeOpType>(pk.ReadInt64());
 			m.index = pk.ReadInt64();
 			m.itemIndex = pk.ReadInt64();
 			m.count = pk.ReadInt64();
 		}
 
 		inline void deserialize(RPacket& pk, CmAddMoneyMessage& m) {
-			m.type = pk.ReadInt64();
+			m.type = static_cast<TradeCharType>(pk.ReadInt64());
 			m.charId = pk.ReadInt64();
-			m.opType = pk.ReadInt64();
+			m.opType = static_cast<TradeOpType>(pk.ReadInt64());
 			m.isImp = pk.ReadInt64();
 			m.money = pk.ReadInt64();
 		}
@@ -10140,7 +10143,7 @@ namespace Corsairs::Net {
 
 		inline void deserialize(RPacket& pk, CmSelectBoatListMessage& m) {
 			m.npcId = pk.ReadInt64();
-			m.type = pk.ReadInt64();
+			m.type = (BoatListType)pk.ReadInt64();
 			m.index = pk.ReadInt64();
 		}
 
@@ -10880,7 +10883,7 @@ namespace Corsairs::Net {
 			}
 			case ActionType::ITEM_INFO: {
 				CmActionViewItemData d;
-				d.viewType = pk.ReadInt64();
+				d.viewType = (ViewItemType)pk.ReadInt64();
 				d.param = pk.ReadInt64();
 				m.data = d;
 				break;
@@ -11147,13 +11150,13 @@ namespace Corsairs::Net {
 		inline void serializeMisNeeds(WPacket& w, const std::vector<MisNeedEntry>& needs) {
 			w.WriteInt64(static_cast<int64_t>(needs.size()));
 			for (const auto& n : needs) {
-				w.WriteInt64(n.needType);
-				if (n.needType == MIS_NEED_ITEM || n.needType == MIS_NEED_KILL) {
+				w.WriteInt64(static_cast<int64_t>(n.needType));
+				if (n.needType == MissionNeedType::MIS_NEED_ITEM || n.needType == MissionNeedType::MIS_NEED_KILL) {
 					w.WriteInt64(n.param1);
 					w.WriteInt64(n.param2);
 					w.WriteInt64(n.param3);
 				}
-				else if (n.needType == MIS_NEED_DESP) {
+				else if (n.needType == MissionNeedType::MIS_NEED_DESP) {
 					w.WriteString(n.desp);
 				}
 			}
@@ -11388,7 +11391,7 @@ namespace Corsairs::Net {
 				for (auto& item : page.items) {
 					w.WriteInt64(item.itemId);
 				}
-				//  TRADE_GOODS (type==1)  .  count/price/level
+				//  TradeOpType::TRADE_GOODS (type==1)  .  count/price/level
 				if (m.tradeType == 1) {
 					for (auto& item : page.items) {
 						w.WriteInt64(item.count);
@@ -11806,13 +11809,13 @@ namespace Corsairs::Net {
 			auto count = pk.ReadInt64();
 			needs.resize(static_cast<size_t>(count));
 			for (auto& n : needs) {
-				n.needType = pk.ReadInt64();
-				if (n.needType == MIS_NEED_ITEM || n.needType == MIS_NEED_KILL) {
+				n.needType = (MissionNeedType)pk.ReadInt64();
+				if (n.needType == MissionNeedType::MIS_NEED_ITEM || n.needType == MissionNeedType::MIS_NEED_KILL) {
 					n.param1 = pk.ReadInt64();
 					n.param2 = pk.ReadInt64();
 					n.param3 = pk.ReadInt64();
 				}
-				else if (n.needType == MIS_NEED_DESP) {
+				else if (n.needType == MissionNeedType::MIS_NEED_DESP) {
 					n.desp = pk.ReadString();
 				}
 			}
@@ -12012,7 +12015,7 @@ namespace Corsairs::Net {
 				for (auto& item : page.items) {
 					item.itemId = pk.ReadInt64();
 				}
-				//  TRADE_GOODS (type==1)  .  count/price/level
+				//  TradeOpType::TRADE_GOODS (type==1)  .  count/price/level
 				if (m.tradeType == 1) {
 					for (auto& item : page.items) {
 						item.count = pk.ReadInt64();
@@ -12416,7 +12419,7 @@ namespace Corsairs::Net {
 			WPacket w(24);
 			w.WriteCmd(CMD_MC_CHARTRADE);
 			w.WriteInt64(m.subCmd);
-			w.WriteInt64(m.result);
+			w.WriteInt64(static_cast<int64_t>(m.result));
 			return w;
 		}
 
@@ -12962,7 +12965,7 @@ namespace Corsairs::Net {
 		/// CMD_MC_BERTH_LIST:    .
 		struct McBerthListMessage {
 			int64_t npcId = 0;
-			int64_t type = 0;
+			BoatListType type = BoatListType::BERTH_TRADE_LIST;
 			int64_t count = 0;
 			std::vector<std::string> names;
 		};
@@ -13103,7 +13106,7 @@ namespace Corsairs::Net {
 			int64_t instAttr[ITEM_INSTANCE_ATTR_NUM][2] = {};
 		};
 
-		///      (TRADE_DRAGTO_ITEM).
+		///      (TradeOpType::TRADE_DRAGTO_ITEM).
 		struct McCharTradeItemRemoveData {
 			int64_t bagIndex = 0; //
 			int64_t tradeIndex = 0; //
@@ -13113,7 +13116,7 @@ namespace Corsairs::Net {
 		///      (std::variant).
 		using TradeEquipData = std::variant<TradeBoatData, TradeItemData>;
 
-		///      (TRADE_DRAGTO_TRADE).
+		///      (TradeOpType::TRADE_DRAGTO_TRADE).
 		struct McCharTradeItemAddData {
 			int64_t itemId = 0;
 			int64_t bagIndex = 0;
@@ -13124,10 +13127,10 @@ namespace Corsairs::Net {
 		};
 
 		/// CMD_MC_CHARTRADE + CMD_MC_CHARTRADE_ITEM:    .
-		/// opType   : TRADE_DRAGTO_ITEM  Remove, TRADE_DRAGTO_TRADE  Add.
+		/// opType   : TradeOpType::TRADE_DRAGTO_ITEM  Remove, TradeOpType::TRADE_DRAGTO_TRADE  Add.
 		struct McCharTradeItemMessage {
 			int64_t mainChaId = 0;
-			int64_t opType = 0;
+			Common::Mission::TradeOpType opType = Common::Mission::TradeOpType::TRADE_SALE;
 			std::variant<McCharTradeItemRemoveData, McCharTradeItemAddData> data;
 		};
 
@@ -13145,7 +13148,7 @@ namespace Corsairs::Net {
 			WPacket w(256);
 			w.WriteCmd(CMD_MC_BERTH_LIST);
 			w.WriteInt64(m.npcId);
-			w.WriteInt64(m.type);
+			w.WriteInt64(static_cast<int64_t>(m.type));
 			w.WriteInt64(m.count);
 			for (const auto& n : m.names) w.WriteString(n);
 			return w;
@@ -13280,7 +13283,7 @@ namespace Corsairs::Net {
 			w.WriteCmd(CMD_MC_CHARTRADE);
 			w.WriteInt64(CMD_MC_CHARTRADE_ITEM);
 			w.WriteInt64(m.mainChaId);
-			w.WriteInt64(m.opType);
+			w.WriteInt64(static_cast<int64_t>(m.opType));
 			//   : Remove  Add
 			if (auto* rem = std::get_if<McCharTradeItemRemoveData>(&m.data)) {
 				w.WriteInt64(rem->bagIndex);
@@ -13370,7 +13373,7 @@ namespace Corsairs::Net {
 		//  Deserialize: McBerthListMessage
 		inline void deserialize(RPacket& pk, McBerthListMessage& m) {
 			m.npcId = pk.ReadInt64();
-			m.type = pk.ReadInt64();
+			m.type = (BoatListType)pk.ReadInt64();
 			m.count = pk.ReadInt64();
 			m.names.resize(static_cast<size_t>(m.count));
 			for (auto& n : m.names) n = pk.ReadString();
@@ -13514,9 +13517,9 @@ namespace Corsairs::Net {
 		//  Deserialize: McCharTradeItemMessage
 		inline void deserialize(RPacket& pk, McCharTradeItemMessage& m) {
 			m.mainChaId = pk.ReadInt64();
-			m.opType = pk.ReadInt64();
-			if (m.opType == 3) {
-				// TRADE_DRAGTO_ITEM
+			m.opType = static_cast<TradeOpType>(pk.ReadInt64());
+			if (m.opType == TradeOpType::TRADE_DRAGTO_ITEM) {
+				// TradeOpType::TRADE_DRAGTO_ITEM
 				McCharTradeItemRemoveData d;
 				d.bagIndex = pk.ReadInt64();
 				d.tradeIndex = pk.ReadInt64();
@@ -13524,7 +13527,7 @@ namespace Corsairs::Net {
 				m.data = std::move(d);
 			}
 			else {
-				// TRADE_DRAGTO_TRADE
+				// TradeOpType::TRADE_DRAGTO_TRADE
 				McCharTradeItemAddData d;
 				d.itemId = pk.ReadInt64();
 				d.bagIndex = pk.ReadInt64();
@@ -13618,7 +13621,7 @@ namespace Corsairs::Net {
 		//  Deserialize: McCharTradeResultMessage
 		inline void deserialize(RPacket& pk, McCharTradeResultMessage& m) {
 			m.subCmd = CMD_MC_CHARTRADE_RESULT;
-			m.result = pk.ReadInt64();
+			m.result = (TradeOpType)pk.ReadInt64();
 		}
 
 		//  Struct + Deserialize: McHelpInfoMessage
@@ -13631,7 +13634,7 @@ namespace Corsairs::Net {
 
 		inline void deserialize(RPacket& pk, McHelpInfoMessage& m) {
 			m.type = pk.ReadInt64();
-			// MIS_HELP_DESP=0, MIS_HELP_IMAGE=1, MIS_HELP_BICKER=3  ; MIS_HELP_SOUND=2
+			// MissionHelpType::MIS_HELP_DESP=0, MissionHelpType::MIS_HELP_IMAGE=1, MissionHelpType::MIS_HELP_BICKER=3  ; MissionHelpType::MIS_HELP_SOUND=2
 			if (m.type == 0 || m.type == 1 || m.type == 3) {
 				m.desp = pk.ReadString();
 			}

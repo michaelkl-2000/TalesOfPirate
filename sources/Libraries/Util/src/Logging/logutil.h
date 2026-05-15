@@ -23,7 +23,7 @@ std::string SafeVFormat(std::string_view _Fmt, _Types... _Args) {
 	return std::vformat(_Fmt, std::make_format_args(_Args...));
 }
 
-namespace Corsairs::Util::Log {
+namespace Corsairs::Util {
 	//        
 	enum class LogLevel {
 		Trace,
@@ -155,25 +155,25 @@ namespace Corsairs::Util::Log {
 }
 
 //   LogLevel  ostream (  LogStream::Write)
-std::ostream& operator<<(std::ostream& stream, const Corsairs::Util::Log::LogLevel& io);
+std::ostream& operator<<(std::ostream& stream, const Corsairs::Util::LogLevel& io);
 
 //  std::formatter  LogLevel ( std::format)
 template <>
-struct std::formatter<Corsairs::Util::Log::LogLevel> : std::formatter<std::string> {
+struct std::formatter<Corsairs::Util::LogLevel> : std::formatter<std::string> {
 	template <class format_context>
-	auto format(const Corsairs::Util::Log::LogLevel& io, format_context& ctx) const {
+	auto format(const Corsairs::Util::LogLevel& io, format_context& ctx) const {
 		switch (io) {
-		case Corsairs::Util::Log::LogLevel::Trace:
+		case Corsairs::Util::LogLevel::Trace:
 			return formatter<string>::format("Trace", ctx);
-		case Corsairs::Util::Log::LogLevel::Debug:
+		case Corsairs::Util::LogLevel::Debug:
 			return formatter<string>::format("Debug", ctx);
-		case Corsairs::Util::Log::LogLevel::Info:
+		case Corsairs::Util::LogLevel::Info:
 			return formatter<string>::format("Info", ctx);
-		case Corsairs::Util::Log::LogLevel::Warning:
+		case Corsairs::Util::LogLevel::Warning:
 			return formatter<string>::format("Warning", ctx);
-		case Corsairs::Util::Log::LogLevel::Error:
+		case Corsairs::Util::LogLevel::Error:
 			return formatter<string>::format("Error", ctx);
-		case Corsairs::Util::Log::LogLevel::Fatal:
+		case Corsairs::Util::LogLevel::Fatal:
 			return formatter<string>::format("Fatal", ctx);
 		}
 
@@ -184,9 +184,9 @@ struct std::formatter<Corsairs::Util::Log::LogLevel> : std::formatter<std::strin
 // CLAUDE.md запрещает `using namespace ...` в глобальной области .h, поэтому
 // проброс делается per-name. 2300+ callsites используют эти имена без квалификации;
 // возможный follow-up — отказаться от шима и перейти на полную квалификацию.
-using Corsairs::Util::Log::LogLevel;
-using Corsairs::Util::Log::LogManager;
-using Corsairs::Util::Log::LogStream;
-using Corsairs::Util::Log::LogUtilEntry;
-using Corsairs::Util::Log::g_logManager;
-using Corsairs::Util::Log::ToLogService;
+using Corsairs::Util::LogLevel;
+using Corsairs::Util::LogManager;
+using Corsairs::Util::LogStream;
+using Corsairs::Util::LogUtilEntry;
+using Corsairs::Util::g_logManager;
+using Corsairs::Util::ToLogService;

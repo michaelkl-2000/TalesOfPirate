@@ -67,11 +67,11 @@ void CGameScene::HandleSceneMsg(int nMsgType, int nParam1, int nParam2, int nPar
 
 		//{lemon add@2004.9.2 for create binding effect
 		for (int n = 0; n < pInfo->EeffID; n++) {
-			CMagicInfo* peffInfo = GetMagicInfo(pInfo->FeffID[n]);
+			CEffectRecord* peffInfo = GetEffectInfo(pInfo->FeffID[n]);
 			if (!peffInfo) {
 				continue;
 			}
-			for (int m = 0; m < peffInfo->nDummyNum; m++) {
+			for (int m = 0; m < peffInfo->DummyCount; m++) {
 				pEffect = GetFirstInvalidEffObj();
 				if (!pEffect || !pEffect->Create(pInfo->FeffID[n])) {
 					ToLogService("errors", LogLevel::Error, "create cha`s effect fail,ID {}", pInfo->FeffID[n]);
@@ -84,7 +84,7 @@ void CGameScene::HandleSceneMsg(int nMsgType, int nParam1, int nParam2, int nPar
 				}
 				else {
 					//pEffect->setDummy(peffInfo->nDummy[m]);
-					pEffect->setFollowObj((CSceneNode*)pCha, NODE_CHA, peffInfo->nDummy[m]);
+					pEffect->setFollowObj((CSceneNode*)pCha, NODE_CHA, peffInfo->Dummies[m]);
 				}
 				//pEffect->setChaID(pCha->getID());
 				if (pCha->IsBoat() && (pInfo->FeffID[n] == EFFECT_RIPPLE2)) {
@@ -378,13 +378,13 @@ void CGameScene::HandleSceneMsg(int nMsgType, int nParam1, int nParam2, int nPar
 			}
 			break;
 		}
-		CMagicInfo* pInfo = GetMagicInfo(nParam1);
+		CEffectRecord* pInfo = GetEffectInfo(nParam1);
 		if (!pInfo)
 			return;
-		if (pInfo->LightID <= 0)
+		if (pInfo->LightId <= 0)
 			return;
 		else {
-			pObj = AddSceneObj(pInfo->LightID);
+			pObj = AddSceneObj(pInfo->LightId);
 			if (pObj) {
 				pObj->setChaType(3);
 				pObj->setChaID(nParam2);

@@ -18,7 +18,8 @@
 #include "Network/CompCommand.h"
 #include "GameApp.h"
 #include "Character.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "uiboatform.h"
 #include "UIGuildChallengeForm.h"
 

@@ -1003,9 +1003,9 @@ CSelectChaScene& CSelectChaScene::GetCurrScene() {
 }
 
 void CSelectChaScene::SelectChaError(int error_no, const char* error_info) {
-	g_pGameApp->MsgBox(g_GetServerError(error_no));
+	g_pGameApp->MsgBox(GetServerError(error_no));
 	ToLogService("errors", LogLevel::Error, "{} Error, Code:{}, Info: {}", error_info, error_no,
-				 g_GetServerError(error_no));
+				 GetServerError(error_no));
 	CGameApp::Waiting(false);
 }
 

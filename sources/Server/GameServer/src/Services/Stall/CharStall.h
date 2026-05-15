@@ -8,7 +8,7 @@
 #include "Character/Character.h"
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	typedef struct _STALL_GOODS
 	{
@@ -55,7 +55,7 @@ namespace mission
 	};
 }
 
-extern mission::CStallSystem g_StallSystem;
+extern Corsairs::Common::Mission::CStallSystem g_StallSystem;
 
 //---------------------------------------------------------
 #endif // _CHARSTALL_H_

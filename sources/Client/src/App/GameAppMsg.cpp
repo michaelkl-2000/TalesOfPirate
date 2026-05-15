@@ -1038,9 +1038,9 @@ void CheckSkillEffect(CSkillRecord* pSkill, int nEffectID) {
 	string name;
 	if (nEffectID >= 1000 && nEffectID < 2000) {
 		int n = nEffectID % 1000;
-		EFF_Param* pEFF = GetEFFParam(n);
+		EffParamRecord* pEFF = GetEFFParam(n);
 		if (pEFF) {
-			name = pEFF->szName;
+			name = pEFF->DataName;
 		}
 	}
 	else if (nEffectID >= 2000 && nEffectID < 3000) {
@@ -1051,7 +1051,7 @@ void CheckSkillEffect(CSkillRecord* pSkill, int nEffectID) {
 		}
 	}
 	else {
-		CMagicInfo* pInfo = GetMagicInfo(nEffectID);
+		CEffectRecord* pInfo = GetEffectInfo(nEffectID);
 		if (pInfo) {
 			name = pInfo->DataName;
 		}
@@ -1312,7 +1312,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 				int nCharID = pMain->getTypeID() - 1;
 				if (nCharID < 0 || nCharID > 3) {
 					g_logManager.InternalLog(LogLevel::Error, "errors",
-											 SafeVFormat(GetLanguageString(126), pMain->GetDefaultChaInfo()->Name,
+											 SafeVFormat(GetLanguageString(126), pMain->GetDefaultChaInfo()->DataName,
 														 RefineID));
 					return strRes.c_str();
 				}
@@ -1481,7 +1481,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 				string name;
 				bool IsDel = false;
 				for (int i = nStart; i < nEnd; i++) {
-					CMagicInfo* pInfo = GetMagicInfo(i);
+					CEffectRecord* pInfo = GetEffectInfo(i);
 					if (!pInfo) continue;
 
 					IsDel = false;
@@ -1840,7 +1840,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 		int nListID = 1;
 		int nPoseCount = Corsairs::Util::Str2Int(strList[nListID++]);
 		int pose[100] = {0};
-		char szBuf[50] = {0};
+		std::string szBuf;
 		for (int i = 0; i < nPoseCount; i++) {
 			pose[i] = Corsairs::Util::Str2Int(strList[nListID++]);
 		}

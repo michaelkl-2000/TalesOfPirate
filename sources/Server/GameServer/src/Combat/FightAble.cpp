@@ -330,10 +330,11 @@ void CFightAble::SkillTarEffect(SFireUnit* pSFireSrc) {
 	BeUseSkill(lOldHP, lNowHP, pSrcCha, pSFireSrc->pCSkillRecord->chHelpful);
 
 	//
-	if (m_CChaAttr.GetAttr(ATTR_CHATYPE) != EChaCtrlType::MONS_MINE && m_CChaAttr.
-		GetAttr(ATTR_CHATYPE) != EChaCtrlType::MONS_TREE
-		&& m_CChaAttr.GetAttr(ATTR_CHATYPE) != EChaCtrlType::MONS_FISH && m_CChaAttr.
-		GetAttr(ATTR_CHATYPE) != EChaCtrlType::MONS_DBOAT) {
+	const auto eChaType = m_CChaAttr.GetAttr<EChaCtrlType>(ATTR_CHATYPE);
+	if (eChaType != EChaCtrlType::MONS_MINE
+		&& eChaType != EChaCtrlType::MONS_TREE
+		&& eChaType != EChaCtrlType::MONS_FISH
+		&& eChaType != EChaCtrlType::MONS_DBOAT) {
 		//
 		if (lOldHP > 0 && lNowHP <= 0) {
 			SetDie(pSrcCha);
@@ -489,7 +490,7 @@ void CFightAble::BeUseSkill(std::int32_t lPreHp, std::int32_t lNowHp, CCharacter
 }
 
 void CFightAble::SetMonsterFightObj(std::uint32_t ulObjWorldID, std::int32_t lObjHandle) {
-	if (m_SFightInit.chTarType == 0 && m_CChaAttr.GetAttr(ATTR_CHATYPE) != EChaCtrlType::PLAYER) {
+	if (m_SFightInit.chTarType == 0 && m_CChaAttr.GetAttr<EChaCtrlType>(ATTR_CHATYPE) != EChaCtrlType::PLAYER) {
 		m_SFightInit.chTarType = 1;
 		m_SFightInit.lTarInfo1 = ulObjWorldID;
 		m_SFightInit.lTarInfo2 = lObjHandle;
@@ -857,7 +858,7 @@ void CFightAble::SynLookEnergy(void) {
 	SItemGrid* pItem;
 	for (int i = 0; i < enumEQUIP_NUM; i++) {
 		pItem = &pCMainCha->m_SChaPart.SLink[i];
-		if (!g_IsRealItemID(pItem->sID))
+		if (!IsRealItemId(pItem->sID))
 			energyData.energy[i] = 0;
 		else
 			energyData.energy[i] = pItem->sEnergy[0];
@@ -934,7 +935,7 @@ void CFightAble::WriteLookEnergy(Corsairs::Net::WPacket& pk) {
 	SItemGrid* pItem;
 	for (int i = 0; i < enumEQUIP_NUM; i++) {
 		pItem = &IsCharacter()->m_SChaPart.SLink[i];
-		if (!g_IsRealItemID(pItem->sID))
+		if (!IsRealItemId(pItem->sID))
 			pk.WriteInt64(0);
 		else
 			pk.WriteInt64(pItem->sEnergy[0]);
@@ -991,7 +992,7 @@ bool CFightAble::SkillExpend(int16_t sExecTime) {
 				break;
 
 			pGrid = &pCMainCha->m_SChaPart.SLink[m_SFightInit.pCSkillRecord->sConchNeed[i][0]];
-			if (!g_IsRealItemID(pGrid->sID))
+			if (!IsRealItemId(pGrid->sID))
 				continue;
 			sNeedEnergy -= pGrid->sEnergy[0];
 			if (sNeedEnergy <= 0)
@@ -1009,7 +1010,7 @@ bool CFightAble::SkillExpend(int16_t sExecTime) {
 			SItemGrid* pGrid;
 			for (int i = 0; i < defSKILL_ITEM_NEED_NUM; i++) {
 				pGrid = &pCMainCha->m_SChaPart.SLink[m_SFightInit.pCSkillRecord->sConchNeed[i][0]];
-				if (!g_IsRealItemID(pGrid->sID))
+				if (!IsRealItemId(pGrid->sID))
 					continue;
 				sNeedEnergy -= pGrid->sEnergy[0];
 				if (sNeedEnergy > 0)
@@ -1242,7 +1243,7 @@ CCharacter* CFightAble::SkillPopBoat(std::int32_t lPosX, std::int32_t lPosY, int
 	sUnitY = static_cast<int16_t>(lPosY / sUnitHeight);
 	m_submap->GetTerrainCellAttr(sUnitX, sUnitY, usAreaAttr);
 
-	if (g_IsSea(usAreaAttr)) //
+	if (IsSea(usAreaAttr)) //
 	{
 		Corsairs::Util::Point SPos = {lPosX, lPosY};
 		if (sDir == -1)
@@ -1450,7 +1451,7 @@ bool CFightAble::IsRightSkillTar(CFightAble* pSkillSrc, char chSkillObjType, cha
 	bool bIsTeammate = pSkillSrc->IsTeammate(this);
 	bool bIsFriend = pSkillSrc->IsFriend(this);
 
-	int nCheckRet = g_IsRightSkillTar((long)m_CChaAttr.GetAttr(ATTR_CHATYPE), !IsLiveing(),
+	int nCheckRet = ::IsRightSkillTar((long)m_CChaAttr.GetAttr(ATTR_CHATYPE), !IsLiveing(),
 									  IsCharacter()->GetActControl(ActControl::BEUSE_SKILL), GetAreaAttr(),
 									  (long)pSkillSrc->m_CChaAttr.GetAttr(ATTR_CHATYPE), chSkillObjType,
 									  chSkillObjHabitat, chSkillEffType, bIsTeammate, bIsFriend, pSkillSrc == this);
@@ -1721,7 +1722,7 @@ bool CFightAble::GetTrowItemPos(std::int32_t* plPosX, std::int32_t* plPosY) {
 
 	std::uint16_t usAreaAttr = pCMap->GetAreaAttr(Pos);
 
-	if (g_IsLand(usAreaAttr) != g_IsLand(GetAreaAttr()))
+	if (IsLand(usAreaAttr) != IsLand(GetAreaAttr()))
 		Pos = pCCtrlCha->GetPos();
 	else {
 		if (pCMap->IsBlock(int16_t(Pos.X / pCMap->GetBlockCellWidth()), int16_t(Pos.Y / pCMap->GetBlockCellHeight())))

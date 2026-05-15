@@ -65,7 +65,7 @@ void CProCirculateCS::BeginAction(CCharacter* pCha, DWORD type, void* param, CAc
 
 				const std::string buf = std::format("In {}", pArea->DataName);
 				const std::string buffer = std::format("{} Lv{} {}", pCha->getHumanName(), pCha->getLv(),
-						g_GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
+						GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
 				if (pCha->GetTeamLeaderID() > 0) {
 				}
 				else {
@@ -74,7 +74,7 @@ void CProCirculateCS::BeginAction(CCharacter* pCha, DWORD type, void* param, CAc
 			}
 			else {
 				const std::string buffer = std::format("{} Lv{} {}", pCha->getHumanName(), pCha->getLv(),
-						g_GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
+						GetJobName((short)pCha->getGameAttr()->get(ATTR_JOB)));
 				updateDiscordPresence(buffer.c_str(), "Sailing");
 			}
 

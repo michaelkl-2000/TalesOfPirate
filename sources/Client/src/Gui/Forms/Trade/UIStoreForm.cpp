@@ -18,7 +18,8 @@ using namespace Corsairs::Common::Localization;
 #include "uiBoatForm.h"
 #include "packetcmd.h"
 #include "Character.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "SceneItem.h"
 
 #include <time.h>
@@ -889,7 +890,7 @@ namespace GUI {
 		m_stStoreGui[nSeq].labName->SetCaption(szName);
 		m_stStoreGui[nSeq].labName->SetIsShow(true);
 
-		m_stStoreGui[nSeq].labPrice->SetCaption(StringSplitNum(nPrice, 3, ','));
+		m_stStoreGui[nSeq].labPrice->SetCaption(StringSplitNum(nPrice, 3, ',').c_str());
 		m_stStoreGui[nSeq].labPrice->SetIsShow(true);
 
 		const std::string limited = StringLimit(szRemark, 25);
@@ -1444,9 +1445,8 @@ namespace GUI {
 		if (num > 0) {
 			g_stUIStore.m_nExchangeNum = num;
 
-			char szBuffer[MAX_PATH] = {0};
-			strncpy_s(szBuffer, sizeof(szBuffer),
-					  SafeVFormat(GetLanguageString(905), g_stUIStore.m_nExchangeNum).c_str(), _TRUNCATE); // : %d
+			std::string szBuffer;
+			szBuffer = SafeVFormat(GetLanguageString(905), g_stUIStore.m_nExchangeNum); // : %d
 			CBoxMgr::ShowSelectBox(_evtExchangeCheckEvent, szBuffer, true);
 		}
 	}

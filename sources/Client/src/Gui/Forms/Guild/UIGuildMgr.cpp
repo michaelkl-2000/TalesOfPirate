@@ -4,6 +4,7 @@
 
 
 #include "stdafx.h"
+#include "TextFilter.h"
 #include "UIPage.h"
 #include "netguild.h"
 #include "UIFormMgr.h"
@@ -28,7 +29,8 @@
 #include "NetChat.h"
 #include "UIsystemform.h"
 #include "GlobalVar.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "UITreeView.h"
 #include "UIGraph.h"
 
@@ -507,7 +509,7 @@ void CUIGuildMgr::RefreshForm() {
 }
 
 void CUIGuildMgr::RefreshAttribute() {
-	char buf[50];
+	std::string buf;
 	m_plabGuildName->SetCaption(CGuildData::GetGuildName().c_str());
 	m_plabGuildMaster->SetCaption(CGuildData::GetGuildMasterName().c_str());
 	m_plabGuildMottoName->SetCaption(CGuildData::GetGuildMottoName().c_str());
@@ -535,13 +537,13 @@ void CUIGuildMgr::RefreshAttribute() {
 		//m_plabGuildState->SetCaption(strState.c_str());
 		__int64 remain = CGuildData::GetRemainTime();
 		if (remain > 1440) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(611), remain / 1440);
+			buf = FmtLang(GetLanguageString(611), remain / 1440);
 		}
 		else if (remain > 60) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(612), remain / 60);
+			buf = FmtLang(GetLanguageString(612), remain / 60);
 		}
 		else {
-			FmtLang(buf, sizeof(buf), GetLanguageString(613), remain);
+			buf = FmtLang(GetLanguageString(613), remain);
 		}
 		//m_plabGuildRemainTime->SetCaption(buf);
 	}

@@ -1,6 +1,6 @@
 ﻿#include "StdAfx.h"
 #include "Tools.h"
-#include <strstream>
+#include <sstream>
 
 using namespace std;
 
@@ -10,8 +10,7 @@ string ConvertNumToChinese(int num) {
 	char szNum[255] = {0};
 	itoa(num, szNum, 10);
 
-	char szBuf[255] = {0};
-	std::ostrstream str(szBuf, sizeof(szBuf));
+	std::ostringstream str;
 
 	const char* pszPos = szNum;
 	if (*pszPos == '-') {
@@ -86,7 +85,7 @@ string ConvertNumToChinese(int num) {
 			}
 		}
 	}
-	str << ends;
+	str << std::ends;
 
 	// ,
 	string rv = str.str();

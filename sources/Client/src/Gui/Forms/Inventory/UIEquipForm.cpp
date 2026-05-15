@@ -25,7 +25,8 @@
 #include "ProCirculate.h"
 #include "stpose.h"
 #include "uiboxform.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "UICheckBox.h"
 #include "UIDoublePwdForm.h"
 #include "UIStoreForm.h"
@@ -1486,7 +1487,7 @@ void CEquipMgr::UpdateIMP(int IMP) {
 	lIMP = IMP;
 	//CForm* frmInv = _FindForm("frmInv");
 	CLabel* lblIMP = dynamic_cast<CLabel*>(frmInv->Find("labItemIMPnumber"));
-	lblIMP->SetCaption(StringSplitNum(IMP));
+	lblIMP->SetCaption(StringSplitNum(IMP).c_str());
 }
 
 void CEquipMgr::FrameMove(DWORD dwTime) {
@@ -1516,7 +1517,7 @@ void CEquipMgr::FrameMove(DWORD dwTime) {
 
 
 			if (frmInv->GetIsShow()) {
-				lblGold->SetCaption(StringSplitNum(pGameAttr->get(ATTR_GD)));
+				lblGold->SetCaption(StringSplitNum(pGameAttr->get(ATTR_GD)).c_str());
 
 				for (int i = 0; i < enumEQUIP_NUM; i++)
 					_imgCharges[i].Next();
@@ -1792,7 +1793,7 @@ void CEquipMgr::_evtRMouseGridEvent(CGuiData* pSender, CCommandObj* pItem, int n
 	}
 	//TODO: Possible collision with new right click menu method with boat information
 	stNetItemInfo info;
-	info.chType = mission::VIEW_CHAR_BAG;
+	info.chType = +Corsairs::Common::Mission::ViewItemType::VIEW_CHAR_BAG;
 	info.sGridID = nGridID;
 	CS_BeginAction(g_stUIBoat.GetHuman(), enumACTION_ITEM_INFO, &info);
 }
@@ -1802,8 +1803,8 @@ void CEquipMgr::_evtRepairEvent(CCompent* pSender, int nMsgType, int x, int y, D
 }
 
 void CEquipMgr::ShowRepairMsg(const char* pItemName, long lMoney) {
-	char szBuf[255] = {0};
-	FmtLang(szBuf, sizeof(szBuf), GetLanguageString(559), pItemName, lMoney);
+	std::string szBuf;
+	szBuf = FmtLang(GetLanguageString(559), pItemName, lMoney);
 	g_stUIBox.ShowSelectBox(_evtRepairEvent, szBuf, true);
 }
 

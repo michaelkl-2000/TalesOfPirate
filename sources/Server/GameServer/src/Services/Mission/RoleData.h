@@ -7,10 +7,14 @@
 
 
 #include "App/GameAppNet.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 
 	// 
@@ -278,7 +282,7 @@ namespace mission
 	{
 		WORD wTriggerID;	// ID
 		WORD wMissionID;	// ID()
-		BYTE byType;		// 
+		TriggerEvent byType;		//
 		WORD wParam1;		// 3
 		WORD wParam2;		// 4,
 		WORD wParam3;		// ()
@@ -286,8 +290,8 @@ namespace mission
 		WORD wParam5;
 		WORD wParam6;
 
-		BYTE byIsDel : 1;	// 
-		BYTE byParam : 7;
+		BYTE byIsDel;	//
+		BYTE byParam;
 
 	} TRIGGER_DATA, *PTRIGGER_DATA;
 
@@ -298,8 +302,8 @@ namespace mission
 	{
 		WORD wTID;			// ID
 		WORD wParam;
-		BYTE byType;		// 
-		WORD wParam1;		// 
+		TriggerEvent byType;		//
+		WORD wParam1;		//
 		WORD wParam2;
 		WORD wParam3;
 		WORD wParam4;
@@ -319,12 +323,12 @@ namespace mission
 		void*	pData;					// 
 	} MISSION_DATA, *PMISSION_DATA;
 
-	typedef struct _MISSION_INFO
+	typedef struct
 	{
 		WORD	wRoleID;				// ID
-		BYTE	byState : 3;			// 
-		BYTE	byMisType : 5;			// 
-		BYTE	byType;					// 
+		BYTE	byState;			//
+		MissionType	byMisType;			//
+		MissionRandType	byType;					//
 		BYTE	byLevel;				// 
 		BYTE	byNumData;				// 
 		DWORD	dwExp;					// 

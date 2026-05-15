@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------
 
 #include "StdAfx.h"
+#include "TextFilter.h"
 #include "UIGlobalVar.h"
 #include "uiformmgr.h"
 #include "uilabel.h"
@@ -19,7 +20,8 @@
 #include "UIList.h"
 #include "uilabel.h"
 #include "GameApp.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "Character.h"
 #include "UIGraph.h"
 #include "UIGrid.h"

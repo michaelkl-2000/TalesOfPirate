@@ -15,7 +15,7 @@
 #include <fcntl.h>
 #include "CrushSystem.h"
 
-namespace Corsairs::Util::Log {
+namespace Corsairs::Util {
 	//         
 	std::mutex _consoleLock{};
 
@@ -179,7 +179,7 @@ namespace Corsairs::Util::Log {
 
 		//  :
 		_logThread = std::thread([this]() {
-			Crush::SetPerThreadCRTExceptionBehavior();
+			SetPerThreadCRTExceptionBehavior();
 			::SetThreadName("logger");
 
 			std::int32_t _dumpCounter{};
@@ -259,7 +259,7 @@ namespace Corsairs::Util::Log {
 		// (joinит thread), затем уже Codes/Names. Без этого финальный
 		// DrainQueue в logger thread'е падал на CODES.find() после
 		// деструкции namespace-scope CODES (см. ConsoleColor.cpp).
-		Corsairs::Util::Console::ForceInit();
+		Corsairs::Util::ForceInit();
 	}
 
 	LogManager::~LogManager() {

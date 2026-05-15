@@ -1,5 +1,6 @@
 ﻿#include "StdAfx.h"
 #include "UICozeForm.h"
+#include "TextFilter.h"
 #include "uiformmgr.h"
 #include "uiform.h"
 #include "uicheckbox.h"
@@ -16,7 +17,8 @@
 #include "packetcmd.h"
 #include "uiheadsay.h"
 #include "uitextparse.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "UIBoatForm.h"
 #include "UIGlobalVar.h"
 #include "UIMiniMapForm.h"

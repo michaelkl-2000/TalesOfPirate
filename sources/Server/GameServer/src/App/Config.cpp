@@ -1,7 +1,8 @@
 #include "Core/stdafx.h"
 #include "App/Config.h"
 #include "IniFile.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 
 #include <filesystem>
 
@@ -79,7 +80,7 @@ bool CGameConfig::Load(char *pszFileName)
 {
 	ToLogService("common", "Load Game Config File [{}]", pszFileName);
 
-	auto cfg = Corsairs::Util::Ini::IniFile(pszFileName);
+	auto cfg = Corsairs::Util::IniFile(pszFileName);
 
 	auto& id = cfg["ID"];
 	strncpy_s(m_szName, sizeof(m_szName), id.GetString("name", m_szName).c_str(), _TRUNCATE);
@@ -232,9 +233,9 @@ bool CGameConfig::Reload(char *pszFileName)
 {
 	ToLogService("common", "Reload Game Config File [{}]", pszFileName);
 
-	Corsairs::Util::Ini::IniFile cfg;
+	Corsairs::Util::IniFile cfg;
 	try {
-		cfg = Corsairs::Util::Ini::IniFile(pszFileName);
+		cfg = Corsairs::Util::IniFile(pszFileName);
 	} catch (const std::exception& e) {
 		ToLogService("common", LogLevel::Error, "Config reload error: {}", e.what());
 		return false;
@@ -298,7 +299,7 @@ bool CGameCommand::Load(const char *pszFileName)
 {
 	ToLogService("common", "Load Command Config [{}]", pszFileName);
 
-	auto cfg = Corsairs::Util::Ini::IniFile(pszFileName);
+	auto cfg = Corsairs::Util::IniFile(pszFileName);
 
 	// Все команды в одной секции (или без секций — попадут в дефолтную при чтении)
 	// Ищем по всем секциям

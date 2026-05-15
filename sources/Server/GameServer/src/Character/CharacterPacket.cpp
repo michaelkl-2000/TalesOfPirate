@@ -366,7 +366,7 @@ void CCharacter::WriteLookData(Corsairs::Net::WPacket &WtPk, char chLookType, ch
 {
 	WtPk.WriteInt64(chSynType);
 	WtPk.WriteInt64(m_SChaPart.sTypeID);
-	if( m_CChaAttr.GetAttr(ATTR_CHATYPE) == EChaCtrlType::PLAYER && IsBoat() )
+	if( m_CChaAttr.GetAttr<EChaCtrlType>(ATTR_CHATYPE) == EChaCtrlType::PLAYER && IsBoat() )
 	{
 		WtPk.WriteInt64(1); // 
 		WtPk.WriteInt64(m_SChaPart.sPosID);
@@ -659,7 +659,7 @@ void CCharacter::FillBaseInfo(Corsairs::Net::Msg::ChaBaseInfo &b, char chLookTyp
 	b.look.synType = enumSYN_LOOK_SWITCH;
 	b.look.typeId = m_SChaPart.sTypeID;
 
-	if (m_CChaAttr.GetAttr(ATTR_CHATYPE) == EChaCtrlType::PLAYER && IsBoat())
+	if (m_CChaAttr.GetAttr<EChaCtrlType>(ATTR_CHATYPE) == EChaCtrlType::PLAYER && IsBoat())
 	{
 		b.look.isBoat = true;
 		b.look.boatParts.posId = m_SChaPart.sPosID;

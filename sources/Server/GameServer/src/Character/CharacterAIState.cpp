@@ -20,7 +20,7 @@ void CCharacter::OnAI(DWORD dwCurTime)
 	
 	m_pHate->UpdateHarmRec(this); // 
 
-	if (IsPlayerCha() && getAttr(ATTR_CHATYPE) != EChaCtrlType::PLAYER_PET)	return;
+	if (IsPlayerCha() && getAttr<EChaCtrlType>(ATTR_CHATYPE) != EChaCtrlType::PLAYER_PET)	return;
 
 	if(!g_bEnableAI) return;
 

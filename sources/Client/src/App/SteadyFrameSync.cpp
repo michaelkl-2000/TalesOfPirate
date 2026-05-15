@@ -123,7 +123,7 @@ bool SteadyFrameSync::Init() {
 	//  раньше это делал static _SleepThreadProc.
 	_thread = std::jthread([this](std::stop_token stop) {
 		::SetThreadName("steady-frame");
-		Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
+		Corsairs::Util::SetPerThreadCRTExceptionBehavior();
 		_SleepLoop(stop);
 	});
 

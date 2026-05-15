@@ -6,7 +6,11 @@
 //=============================================================================
 #include "Core/stdafx.h"
 #include "Combat/Action.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 #include "Combat/MoveAble.h"
 #include "Character/Character.h"
 

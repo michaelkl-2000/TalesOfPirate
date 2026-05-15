@@ -2,6 +2,8 @@
 #include "logutil.h"
 #include <format>
 
+namespace Corsairs::Util {
+
 // ============================================================================
 // Вспомогательные функции
 // ============================================================================
@@ -793,3 +795,5 @@ void OdbcTransaction::Rollback() {
 					  reinterpret_cast<SQLPOINTER>(SQL_AUTOCOMMIT_ON), SQL_IS_UINTEGER);
 	_finished = true;
 }
+
+} // namespace Corsairs::Util

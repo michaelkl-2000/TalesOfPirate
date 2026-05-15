@@ -735,7 +735,7 @@ void CMouseDown::FrameMove() {
 BOOL CALLBACK CMouseDown::_EnumWindowsProc(HWND hWnd, LPARAM lParam) {
 	return TRUE;
 
-	static char szBuf[1024] = {0};
+	static char szBuf[256];
 	GetWindowText(hWnd, szBuf, sizeof(szBuf));
 	if (szBuf[0] != '\0' && strstr(szBuf, GetLanguageString(197).c_str()) != nullptr) {
 		extern void CS_Logout();

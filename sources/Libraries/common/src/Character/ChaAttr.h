@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 namespace Corsairs::Common::Character {
 
@@ -33,6 +34,16 @@ public:
     void           Init(std::int32_t id, bool applyProgressionDefaults = true);
 
     [[nodiscard]] std::int32_t GetAttr(std::int32_t no) const;
+
+    // Типизированный getter: возвращает значение атрибута как enum.
+    // Используется там, где известно, что атрибут хранит значение enum-домена
+    // (например, ATTR_CHATYPE → EChaCtrlType). Скрывает static_cast внутри.
+    template <typename TEnum>
+        requires std::is_enum_v<TEnum>
+    [[nodiscard]] TEnum GetAttr(std::int32_t no) const {
+        return static_cast<TEnum>(GetAttr(no));
+    }
+
     std::int32_t   SetAttr(std::int32_t no, std::int32_t val);
     [[nodiscard]] std::int32_t GetAttrMaxVal(std::int32_t no) const;
     std::int32_t   DirectSetAttr(std::int32_t no, std::int32_t val);

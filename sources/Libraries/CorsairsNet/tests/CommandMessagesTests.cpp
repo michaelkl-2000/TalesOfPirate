@@ -2413,13 +2413,13 @@ TEST(GameplayPhase1, McColourNoticeMessage_Roundtrip) {
 }
 
 TEST(GameplayPhase1, McTriggerActionMessage_Roundtrip) {
-    //   :  + ID +  + 
-    McTriggerActionMessage original{3, 256, 10, 5};
+    //
+    McTriggerActionMessage original{TriggerEvent::TE_GAME_TIME, 256, 10, 5};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     McTriggerActionMessage restored;
     deserialize(r, restored);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.id, restored.id);
     ASSERT_EQ(original.num, restored.num);
     ASSERT_EQ(original.count, restored.count);
@@ -2642,85 +2642,85 @@ TEST(GameplayPhase2, CmItemRepairAskMessage_Roundtrip) {
 }
 
 TEST(GameplayPhase2, CmRequestTradeMessage_Roundtrip) {
-    //      
-    CmRequestTradeMessage original{1, 42};
+    //
+    CmRequestTradeMessage original{TradeCharType::TRADE_BOAT, 42};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     CmRequestTradeMessage restored;
     deserialize(r, restored);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.charId, restored.charId);
 }
 
 TEST(GameplayPhase2, CmAcceptTradeMessage_Roundtrip) {
-    //   
-    CmAcceptTradeMessage original{1, 99};
+    //
+    CmAcceptTradeMessage original{TradeCharType::TRADE_BOAT, 99};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     CmAcceptTradeMessage restored;
     deserialize(r, restored);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.charId, restored.charId);
 }
 
 TEST(GameplayPhase2, CmCancelTradeMessage_Roundtrip) {
-    //  
-    CmCancelTradeMessage original{1, 99};
+    //
+    CmCancelTradeMessage original{TradeCharType::TRADE_BOAT, 99};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     CmCancelTradeMessage restored;
     deserialize(r, restored);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.charId, restored.charId);
 }
 
 TEST(GameplayPhase2, CmValidateTradeDataMessage_Roundtrip) {
-    //     
-    CmValidateTradeDataMessage original{2, 150};
+    //
+    CmValidateTradeDataMessage original{static_cast<TradeCharType>(2), 150};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     CmValidateTradeDataMessage restored;
     deserialize(r, restored);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.charId, restored.charId);
 }
 
 TEST(GameplayPhase2, CmValidateTradeMessage_Roundtrip) {
-    //    
-    CmValidateTradeMessage original{2, 150};
+    //
+    CmValidateTradeMessage original{static_cast<TradeCharType>(2), 150};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     CmValidateTradeMessage restored;
     deserialize(r, restored);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.charId, restored.charId);
 }
 
 TEST(GameplayPhase2, CmAddItemMessage_Roundtrip) {
-    //     : , ID , , , 
-    CmAddItemMessage original{1, 42, 0, 5, 3001, 10};
+    //     : , ID , , ,
+    CmAddItemMessage original{TradeCharType::TRADE_BOAT, 42, TradeOpType::TRADE_SALE, 5, 3001, 10};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     CmAddItemMessage restored;
     deserialize(r, restored);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.charId, restored.charId);
-    ASSERT_EQ(original.opType, restored.opType);
+    ASSERT_EQ(+original.opType, +restored.opType);
     ASSERT_EQ(original.index, restored.index);
     ASSERT_EQ(original.itemIndex, restored.itemIndex);
     ASSERT_EQ(original.count, restored.count);
 }
 
 TEST(GameplayPhase2, CmAddMoneyMessage_Roundtrip) {
-    //    :  , 25000 
-    CmAddMoneyMessage original{1, 42, 0, 0, 25000};
+    //    :  , 25000
+    CmAddMoneyMessage original{TradeCharType::TRADE_BOAT, 42, TradeOpType::TRADE_SALE, 0, 25000};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     CmAddMoneyMessage restored;
     deserialize(r, restored);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.charId, restored.charId);
-    ASSERT_EQ(original.opType, restored.opType);
+    ASSERT_EQ(+original.opType, +restored.opType);
     ASSERT_EQ(original.isImp, restored.isImp);
     ASSERT_EQ(original.money, restored.money);
 }
@@ -2788,14 +2788,14 @@ TEST(GameplayPhase2, CmUpdateBoatMessage_Roundtrip) {
 }
 
 TEST(GameplayPhase2, CmSelectBoatListMessage_Roundtrip) {
-    //      
-    CmSelectBoatListMessage original{600, 2, 5};
+    //
+    CmSelectBoatListMessage original{600, BoatListType::BERTH_BAG_LIST, 5};
     auto w = serialize(original);
     RPacket r(w.Data(), w.GetPacketSize());
     CmSelectBoatListMessage restored;
     deserialize(r, restored);
     ASSERT_EQ(original.npcId, restored.npcId);
-    ASSERT_EQ(original.type, restored.type);
+    ASSERT_EQ(+original.type, +restored.type);
     ASSERT_EQ(original.index, restored.index);
 }
 
@@ -3645,8 +3645,8 @@ TEST(GameplayPhase3, McMisPageMessage_Roundtrip_ItemKill) {
     McMisPageMessage original;
     original.cmd = 1; original.npcId = 5001; original.name = "Kill the Pirates";
     original.needs = {
-        {MIS_NEED_ITEM, 100, 5, 0, ""},
-        {MIS_NEED_KILL, 200, 10, 3, ""}
+        {MissionNeedType::MIS_NEED_ITEM, 100, 5, 0, ""},
+        {MissionNeedType::MIS_NEED_KILL, 200, 10, 3, ""}
     };
     original.prizeSelType = 0;
     original.prizes = {{0, 300, 1}};
@@ -3659,10 +3659,10 @@ TEST(GameplayPhase3, McMisPageMessage_Roundtrip_ItemKill) {
     ASSERT_EQ(original.npcId, restored.npcId);
     ASSERT_EQ(original.name, restored.name);
     ASSERT_EQ(2u, restored.needs.size());
-    ASSERT_EQ(MIS_NEED_ITEM, restored.needs[0].needType);
+    ASSERT_EQ(+MissionNeedType::MIS_NEED_ITEM, +restored.needs[0].needType);
     ASSERT_EQ(100, restored.needs[0].param1);
     ASSERT_EQ(5, restored.needs[0].param2);
-    ASSERT_EQ(MIS_NEED_KILL, restored.needs[1].needType);
+    ASSERT_EQ(+MissionNeedType::MIS_NEED_KILL, +restored.needs[1].needType);
     ASSERT_EQ(200, restored.needs[1].param1);
     ASSERT_EQ(10, restored.needs[1].param2);
     ASSERT_EQ(3, restored.needs[1].param3);
@@ -3676,7 +3676,7 @@ TEST(GameplayPhase3, McMisPageMessage_Roundtrip_Desp) {
     McMisPageMessage original;
     original.cmd = 2; original.npcId = 6001; original.name = "Explore the Island";
     original.needs = {
-        {MIS_NEED_DESP, 0, 0, 0, "Find the hidden cave entrance"}
+        {MissionNeedType::MIS_NEED_DESP, 0, 0, 0, "Find the hidden cave entrance"}
     };
     original.prizeSelType = 1;
     original.prizes = {{1, 500, 2}, {0, 400, 3}};
@@ -3686,7 +3686,7 @@ TEST(GameplayPhase3, McMisPageMessage_Roundtrip_Desp) {
     McMisPageMessage restored;
     deserialize(r, restored);
     ASSERT_EQ(1u, restored.needs.size());
-    ASSERT_EQ(MIS_NEED_DESP, restored.needs[0].needType);
+    ASSERT_EQ(+MissionNeedType::MIS_NEED_DESP, +restored.needs[0].needType);
     ASSERT_EQ("Find the hidden cave entrance", restored.needs[0].desp);
     ASSERT_EQ(2u, restored.prizes.size());
     ASSERT_EQ(original.description, restored.description);
@@ -3712,8 +3712,8 @@ TEST(GameplayPhase3, McMisLogInfoMessage_Roundtrip) {
     McMisLogInfoMessage original;
     original.misId = 7001; original.name = "Skeleton Hunt";
     original.needs = {
-        {MIS_NEED_KILL, 300, 10, 0, ""},
-        {MIS_NEED_DESP, 0, 0, 0, "Defeat 10 skeleton warriors"}
+        {MissionNeedType::MIS_NEED_KILL, 300, 10, 0, ""},
+        {MissionNeedType::MIS_NEED_DESP, 0, 0, 0, "Defeat 10 skeleton warriors"}
     };
     original.prizeSelType = 0;
     original.prizes = {{0, 1000, 1}};
@@ -3725,9 +3725,9 @@ TEST(GameplayPhase3, McMisLogInfoMessage_Roundtrip) {
     ASSERT_EQ(original.misId, restored.misId);
     ASSERT_EQ(original.name, restored.name);
     ASSERT_EQ(2u, restored.needs.size());
-    ASSERT_EQ(MIS_NEED_KILL, restored.needs[0].needType);
+    ASSERT_EQ(+MissionNeedType::MIS_NEED_KILL, +restored.needs[0].needType);
     ASSERT_EQ(300, restored.needs[0].param1);
-    ASSERT_EQ(MIS_NEED_DESP, restored.needs[1].needType);
+    ASSERT_EQ(+MissionNeedType::MIS_NEED_DESP, +restored.needs[1].needType);
     ASSERT_EQ("Defeat 10 skeleton warriors", restored.needs[1].desp);
     ASSERT_EQ(1u, restored.prizes.size());
     ASSERT_EQ(original.description, restored.description);
@@ -4000,7 +4000,7 @@ TEST(GameplayPhase3, McBlackMarketExchangeAsrMessage_Roundtrip) {
 // =================================================================
 
 TEST(TradeStoreStall, McTradeAllDataMessage_TradeGoods_Roundtrip) {
-    //    NPC: tradeType=1 (TRADE_GOODS)   count/price/level
+    //    NPC: tradeType=1 (TradeOpType::TRADE_GOODS)   count/price/level
     McTradeAllDataMessage original;
     original.npcId = 5001; original.tradeType = 1; original.param = 42;
     TradePage page1; page1.itemType = 10;

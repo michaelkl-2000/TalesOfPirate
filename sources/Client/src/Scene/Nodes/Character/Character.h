@@ -258,7 +258,7 @@ public:
 
 	CSceneItem* GetAttackItem(); // ?
 
-	void PlayAni(char* pAni, int nMax); // 
+	void PlayAni(const std::int8_t* pAni, int nMax); //
 	void StopAni(); // 
 
 	int GetPose(int pose);

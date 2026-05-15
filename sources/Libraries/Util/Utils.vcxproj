@@ -56,7 +56,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\Logging;$(ProjectDir)src\Encoding;$(ProjectDir)src\Diagnostic;$(ProjectDir)src\Math;$(ProjectDir)src\Map;$(ProjectDir)src\Config;$(ProjectDir)src\Crypto;$(ProjectDir)src\Database;$(ProjectDir)src\Memory;$(ProjectDir)src\Text;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -77,7 +77,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\Logging;$(ProjectDir)src\Encoding;$(ProjectDir)src\Diagnostic;$(ProjectDir)src\Math;$(ProjectDir)src\Map;$(ProjectDir)src\Config;$(ProjectDir)src\Crypto;$(ProjectDir)src\Database;$(ProjectDir)src\Memory;$(ProjectDir)src\Text;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -92,42 +92,38 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\algo.cpp" />
-    <ClCompile Include="src\Database.cpp" />
-    <ClCompile Include="src\Point.cpp" />
-    <ClCompile Include="src\IniFile.cpp" />
-    <ClCompile Include="src\md5c.c" />
-    <ClCompile Include="src\pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="src\util.cpp" />
-    <ClCompile Include="src\newlogutil.cpp" />
-    <ClCompile Include="src\CrushSystem.cpp" />
-    <ClCompile Include="src\ConsoleColor.cpp" />
-    <ClCompile Include="src\EncodingUtil.cpp" />
-    <ClCompile Include="src\MPMapDef.cpp" />
+    <ClCompile Include="src\Crypto\algo.cpp" />
+    <ClCompile Include="src\Crypto\md5c.c" />
+    <ClCompile Include="src\Database\Database.cpp" />
+    <ClCompile Include="src\Math\Point.cpp" />
+    <ClCompile Include="src\Config\IniFile.cpp" />
+    <ClCompile Include="src\Text\util.cpp" />
+    <ClCompile Include="src\Text\StringLib.cpp" />
+    <ClCompile Include="src\Text\TextFilter.cpp" />
+    <ClCompile Include="src\Logging\newlogutil.cpp" />
+    <ClCompile Include="src\Logging\ConsoleColor.cpp" />
+    <ClCompile Include="src\Diagnostic\CrushSystem.cpp" />
+    <ClCompile Include="src\Encoding\EncodingUtil.cpp" />
+    <ClCompile Include="src\Map\MPMapDef.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\algo.h" />
-    <ClInclude Include="include\Database.h" />
-    <ClInclude Include="include\PointerCast.h" />
-    <ClInclude Include="include\Point.h" />
-    <ClInclude Include="include\IniFile.h" />
-    <ClInclude Include="include\ThrowRuntimeError.h" />
-    <ClInclude Include="include\TrackedPool.h" />
-    <ClInclude Include="include\MPMapDef.h" />
-    <ClInclude Include="include\pch.h" />
-    <ClInclude Include="include\singleton.h" />
-    <ClInclude Include="include\util.h" />
-    <ClInclude Include="src\md5.h" />
-    <ClInclude Include="include\logutil.h" />
-    <ClInclude Include="include\ConsoleColor.h" />
-    <ClInclude Include="include\CrushSystem.h" />
-    <ClInclude Include="include\EncodingUtil.h" />
+    <ClInclude Include="src\Crypto\algo.h" />
+    <ClInclude Include="src\Crypto\md5.h" />
+    <ClInclude Include="src\Database\Database.h" />
+    <ClInclude Include="src\Memory\PointerCast.h" />
+    <ClInclude Include="src\Memory\SlotMap.h" />
+    <ClInclude Include="src\Memory\TrackedPool.h" />
+    <ClInclude Include="src\Math\Point.h" />
+    <ClInclude Include="src\Config\IniFile.h" />
+    <ClInclude Include="src\Diagnostic\ThrowRuntimeError.h" />
+    <ClInclude Include="src\Diagnostic\CrushSystem.h" />
+    <ClInclude Include="src\Map\MPMapDef.h" />
+    <ClInclude Include="src\Text\util.h" />
+    <ClInclude Include="src\Text\StringLib.h" />
+    <ClInclude Include="src\Text\TextFilter.h" />
+    <ClInclude Include="src\Logging\logutil.h" />
+    <ClInclude Include="src\Logging\ConsoleColor.h" />
+    <ClInclude Include="src\Encoding\EncodingUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

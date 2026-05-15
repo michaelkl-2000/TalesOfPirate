@@ -576,9 +576,9 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 
 	// 
 	const std::string_view terrain(CGameApp::GetCurScene()->GetTerrainName());
-	if (Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "garner")
-		|| Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "magicsea")
-		|| Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "darkblue")) {
+	if (Corsairs::Util::EqualsIgnoreCaseAscii(terrain, "garner")
+		|| Corsairs::Util::EqualsIgnoreCaseAscii(terrain, "magicsea")
+		|| Corsairs::Util::EqualsIgnoreCaseAscii(terrain, "darkblue")) {
 		struct SApplyInfo {
 			int nAreaID; //  AreaSet  ID
 			int x, y;
@@ -605,7 +605,7 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 		//{	54,	611,	2097	},	//
 		//     };
 
-		if (Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "garner")) {
+		if (Corsairs::Util::EqualsIgnoreCaseAscii(terrain, "garner")) {
 			stApply[0].nAreaID = 1;
 			stApply[0].x = 2218;
 			stApply[0].y = 2759;
@@ -638,7 +638,7 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 			stApply[7].x = 611;
 			stApply[7].y = 2097;
 		}
-		if (Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "magicsea")) {
+		if (Corsairs::Util::EqualsIgnoreCaseAscii(terrain, "magicsea")) {
 			stApply[0].nAreaID = 57;
 			stApply[0].x = 781;
 			stApply[0].y = 3118;
@@ -671,7 +671,7 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 			stApply[7].x = 0;
 			stApply[7].y = 0;
 		}
-		if (Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(terrain, "darkblue")) {
+		if (Corsairs::Util::EqualsIgnoreCaseAscii(terrain, "darkblue")) {
 			stApply[0].nAreaID = 20;
 			stApply[0].x = 1319;
 			stApply[0].y = 521;
@@ -749,7 +749,7 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 			return;
 		}
 		/* Removed by Mdr May 2020 FPO Beta
-				char szBuf[256] = {0};
+				std::string szBuf;
 				sprintf(szBuf, " Point: %d, %d ", ptCurMouse.x, ptCurMouse.y);
 		
 				SIZE size;
@@ -807,7 +807,7 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 				nLevelSum += pMonsterInfo[i]->Lv;
 				nMonCount++;
 
-				strMonsterName[i] = std::format(" {}. {}   LV:{:2} ", nMonCount, pMonsterInfo[i]->Name, pMonsterInfo[i]->Lv);
+				strMonsterName[i] = std::format(" {}. {}   LV:{:2} ", nMonCount, pMonsterInfo[i]->DataName, pMonsterInfo[i]->Lv);
 
 				SIZE size;
 				FontManager::Instance().Get(FontSlot::TipText)->GetTextSize(strMonsterName[i].c_str(), &size);

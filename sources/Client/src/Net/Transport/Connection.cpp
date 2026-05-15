@@ -35,7 +35,7 @@ bool Connection::Connect(const char* hostname, uint16_t port, uint32_t timeout) 
 	//     (TcpClient::Connect )
 	m_connectThread = std::thread([this]() {
 		::SetThreadName("net-connect");
-		Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
+		Corsairs::Util::SetPerThreadCRTExceptionBehavior();
 		bool ok = m_netif->GetClient().Connect(m_hostname, m_port, m_timeout);
 
 		std::lock_guard<std::mutex> lock(m_mtx);

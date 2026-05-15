@@ -2,13 +2,10 @@
 //---------------------------------------------------------
 #pragma once
 
-#ifndef _EVENTENTITY_H_
-#define _EVENTENTITY_H_
-
 #include "Character/Character.h"
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	class CEventEntity : public CCharacter
 	{
@@ -18,8 +15,8 @@ namespace mission
 
 		virtual CEventEntity* IsEvent() { return this; }
 
-		virtual void SetType() { m_byType = BASE_ENTITY; }
-		BYTE	GetType() { return m_byType; }
+		virtual void SetType() { m_byType = EntityType::BASE_ENTITY; }
+		EntityType	GetType() { return m_byType; }
 		USHORT	GetInfoID() { return m_sInfoID; }
 
 		virtual void Clear();
@@ -31,10 +28,10 @@ namespace mission
 		virtual HRESULT MsgProc( CCharacter& character, Corsairs::Net::RPacket& packet );
 
 		// 
-		virtual void GetState( CCharacter& character, BYTE& byState ) { byState = ENTITY_DISABLE; }
+		virtual void GetState( CCharacter& character, EntityState& byState ) { byState = EntityState::ENTITY_DISABLE; }
 
 	protected:	
-		BYTE	m_byType;	// 
+		EntityType	m_byType;	//
 		USHORT  m_sInfoID;  // ID
 	};
 
@@ -45,7 +42,7 @@ namespace mission
 		virtual ~CResourceEntity();
 
 		virtual void Clear();
-		virtual void SetType() { m_byType = RESOURCE_ENTITY; }
+		virtual void SetType() { m_byType = EntityType::RESOURCE_ENTITY; }
 
 		// 
 		BOOL SetData( USHORT sItemID, USHORT sNum, USHORT sTime );
@@ -54,7 +51,7 @@ namespace mission
 		virtual HRESULT MsgProc( CCharacter& character, Corsairs::Net::RPacket& packet );
 
 		// 
-		virtual void GetState( CCharacter& character, BYTE& byState );
+		virtual void GetState( CCharacter& character, EntityState& byState );
 
 	private:
 		USHORT	m_sID;		// ID
@@ -69,7 +66,7 @@ namespace mission
 		virtual ~CTransitEntity();
 
 		virtual void Clear();
-		virtual void SetType() { m_byType = TRANSIT_ENTITY; }
+		virtual void SetType() { m_byType = EntityType::TRANSIT_ENTITY; }
 
 		// 
 		BOOL SetData( const char szMap[], USHORT sxPos, USHORT syPos );
@@ -78,7 +75,7 @@ namespace mission
 		virtual HRESULT MsgProc( CCharacter& character, Corsairs::Net::RPacket& packet );
 
 		// 
-		virtual void GetState( CCharacter& character, BYTE& byState );
+		virtual void GetState( CCharacter& character, EntityState& byState );
 
 	private:
 		// 
@@ -94,7 +91,7 @@ namespace mission
 		virtual ~CBerthEntity();
 
 		virtual void Clear();
-		virtual void SetType() { m_byType = BERTH_ENTITY; }
+		virtual void SetType() { m_byType = EntityType::BERTH_ENTITY; }
 
 		// 
 		BOOL SetData( USHORT sBerthID, USHORT sxPos, USHORT syPos, USHORT sDir );
@@ -103,7 +100,7 @@ namespace mission
 		virtual HRESULT MsgProc( CCharacter& character, Corsairs::Net::RPacket& packet );
 
 		// 
-		virtual void GetState( CCharacter& character, BYTE& byState );
+		virtual void GetState( CCharacter& character, EntityState& byState );
 
 	private:
 		USHORT m_sxPos;
@@ -113,5 +110,3 @@ namespace mission
 	};
 }
 //---------------------------------------------------------
-
-#endif // _EVENTENTITY_H_

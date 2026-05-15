@@ -21,7 +21,7 @@ BOOL CTradeLogDB::Init()
 			_db.Open(s_szDsn);
 			ToLogService("common", "TradeLogDB: connected");
 		}
-		catch (const OdbcException& e) {
+		catch (const Corsairs::Util::OdbcException& e) {
 			ToLogService("common", LogLevel::Error, "TradeLogDB connect failed: {}", e.what());
 			return FALSE;
 		}
@@ -59,7 +59,7 @@ void CTradeLogDB::ExecLogSQL(const char* gameServerName, const char* action,
 		cmd.SetParam("@memo", std::string_view(pszTrade));
 		cmd.ExecuteNonQuery();
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "TradeLogDB insert failed: {}", e.what());
 	}
 }

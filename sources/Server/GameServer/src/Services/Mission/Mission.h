@@ -8,7 +8,7 @@
 #include "Services/Mission/RoleData.h"
 //---------------------------------------------------------
 class CCharacter;
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	class CCharMission
 	{
@@ -36,7 +36,7 @@ namespace mission
 		void	SetMisChar( CCharacter& character ) { m_pRoleChar = &character; }
 
 		// 
-		BOOL	MisEventProc( TRIGGER_EVENT e, WPARAM wParam, LPARAM lParam );
+		BOOL	MisEventProc( TriggerEvent e, WPARAM wParam, LPARAM lParam );
 
 		// 
 		BOOL	MisAddTrigger( const TRIGGER_DATA& Data );
@@ -91,10 +91,10 @@ namespace mission
 
 		// 
 		BOOL	MisHasRandMission( WORD wRoleID );
-		BOOL	MisAddRandMission( WORD wRoleID, WORD wScriptID, BYTE byType, BYTE byLevel, DWORD dwExp, DWORD dwMoney, USHORT sPrizeData, USHORT sPrizeType, BYTE byNumData );
-		BOOL	MisSetRandMissionData( WORD wRoleID, BYTE byIndex, const mission::MISSION_DATA& RandData );
-		BOOL	MisGetRandMission( WORD wRoleID, BYTE& byType, BYTE& byLevel, DWORD& dwExp, DWORD& dwMoney, USHORT& sPrizeData, USHORT& sPrizeType, BYTE& byNumData );
-		BOOL	MisGetRandMissionData( WORD wRoleID, BYTE byIndex, mission::MISSION_DATA& RandData );
+		BOOL	MisAddRandMission( WORD wRoleID, WORD wScriptID, MissionRandType byType, BYTE byLevel, DWORD dwExp, DWORD dwMoney, USHORT sPrizeData, USHORT sPrizeType, BYTE byNumData );
+		BOOL	MisSetRandMissionData( WORD wRoleID, BYTE byIndex, const Corsairs::Common::Mission::MISSION_DATA& RandData );
+		BOOL	MisGetRandMission( WORD wRoleID, MissionRandType& byType, BYTE& byLevel, DWORD& dwExp, DWORD& dwMoney, USHORT& sPrizeData, USHORT& sPrizeType, BYTE& byNumData );
+		BOOL	MisGetRandMissionData( WORD wRoleID, BYTE byIndex, Corsairs::Common::Mission::MISSION_DATA& RandData );
 
 		// npc(NPC)
 		BOOL	MisHasSendNpcItemFlag( WORD wRoleID, WORD wNpcID );

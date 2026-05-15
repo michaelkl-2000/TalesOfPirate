@@ -8,43 +8,50 @@
 
 #include "Core/CommFunc.h"
 using namespace Corsairs::Common::Skill;
-#include "Core/GameCommon.h"
+#include "Localization/i18n.h"
+#include <algorithm>
+#include <cctype>
 #include <charconv>
+#include <cstdint>
+#include <cstring>
+#include <filesystem>
+#include <format>
+#include <regex>
 #include <string_view>
 #include <vector>
 
 using namespace std;
 
-const char	*g_szJobName[MAX_JOB_TYPE] = 
-{\
-"Newbie",\
-"Swordsman",\
-"Hunter",\
-"Sailor",\
-"Explorer",\
-"Herbalist",\
-"Engineer",\
-"Merchant",\
-"Champion",\
-"Crusader",\
-"White Knight",\
-"Animal Tamer",\
-"Sharpshooter",\
-"Cleric",\
-"Seal master",\
-"Captain",\
-"Voyager",\
-"Upstart",\
-"Engineer",\
+const char* g_szJobName[MAX_JOB_TYPE] = {
+	"Newbie",
+	"Swordsman",
+	"Hunter",
+	"Sailor",
+	"Explorer",
+	"Herbalist",
+	"Engineer",
+	"Merchant",
+	"Champion",
+	"Crusader",
+	"White Knight",
+	"Animal Tamer",
+	"Sharpshooter",
+	"Cleric",
+	"Seal master",
+	"Captain",
+	"Voyager",
+	"Upstart",
+	"Engineer",
 };
 
-const char	*g_szCityName[defMAX_CITY_NUM] =
-{\
-"Argent city",\
-"Thundoria Castle",\
-"Shaitan City",\
-"Icicle",\
+namespace Corsairs::Common::Network {
+const char* g_szCityName[defMAX_CITY_NUM] = {
+	"Argent city",
+	"Thundoria Castle",
+	"Shaitan City",
+	"Icicle",
 };
+} // namespace Corsairs::Common::Network
 
 const long g_PartIdRange[PLAY_NUM][enumEQUIP_NUM + 1][2] = 
 {
@@ -102,7 +109,7 @@ const long g_PartIdRange[PLAY_NUM][enumEQUIP_NUM + 1][2] =
 		/*FACE */	2291,				2294,
 };
 
-bool g_IsValidLook( int nType, int nPart, long nValue )
+bool IsValidLook( int nType, int nPart, long nValue )
 {
 	if( (nType>=1 && nType<=PLAY_NUM) && (nPart>=0 && nPart<enumEQUIP_NUM + 1)  )
 	{
@@ -113,12 +120,102 @@ bool g_IsValidLook( int nType, int nPart, long nValue )
 	return false;
 }
 
-BOOL IsDist( int x1, int y1, int x2, int y2, DWORD dwDist )
+bool IsDist(int x1, int y1, int x2, int y2, std::uint32_t dwDist)
 {
-	DWORD dwxDist = ( x1 - x2 ) * ( x1 - x2 );
-	DWORD dwyDist = ( y1 - y2 ) * ( y1 - y2 );
+	std::uint32_t dwxDist = (x1 - x2) * (x1 - x2);
+	std::uint32_t dwyDist = (y1 - y2) * (y1 - y2);
 	dwDist *= dwDist;
-	return ( dwxDist + dwyDist < dwDist * 10000 );
+	return (dwxDist + dwyDist < dwDist * 10000);
+}
+
+bool FileExists(std::string_view szFileName)
+{
+	std::error_code ec;
+	return std::filesystem::exists(std::filesystem::path(szFileName.data(), szFileName.data() + szFileName.size()), ec);
+}
+
+bool IsEmail(std::string_view email)
+{
+	static const std::regex pattern(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
+	return std::regex_match(email.begin(), email.end(), pattern);
+}
+
+const char* GetServerError(int error_code)
+{
+	switch (error_code) {
+	case ERR_AP_INVALIDUSER:   return "Invalid Account";
+	case ERR_AP_INVALIDPWD:    return "Password incorrect";
+	case ERR_AP_ACTIVEUSER:    return "Account activation failed";
+	case ERR_AP_DISABLELOGIN:  return "Your cha is currently in logout save mode, please try logging in again later.";
+	case ERR_AP_LOGGED:        return "This account is already online";
+	case ERR_AP_BANUSER:       return "Account has been banned";
+	case ERR_AP_GPSLOGGED:     return "This GroupServer has login";
+	case ERR_AP_GPSAUTHFAIL:   return "This GroupServer Verification failed";
+	case ERR_AP_SAVING:        return "Saving your character, please try again in 15 seconds...";
+	case ERR_AP_LOGINTWICE:    return "Your account is logged on far away";
+	case ERR_AP_ONLINE:        return "Your account is already online";
+	case ERR_AP_DISCONN:       return "GroupServer disconnected";
+	case ERR_AP_UNKNOWNCMD:    return "unknown agreement, don't deal with";
+	case ERR_AP_TLSWRONG:      return "local saving error";
+	case ERR_AP_NOBILL:        return "This account has expired, please topup!";
+
+	case ERR_PT_LOGFAIL:       return "GateServer to GroupServer login failed";
+	case ERR_PT_SAMEGATENAME:  return "GateServer and login GateServer have similar name";
+	case ERR_PT_INVALIDDAT:    return "Ineffective data model";
+	case ERR_PT_INERR:         return "server link operation integrality error ";
+	case ERR_PT_NETEXCP:       return "Account server has encountered a malfunction";
+	case ERR_PT_DBEXCP:        return "database server malfunction";
+	case ERR_PT_INVALIDCHA:    return "Current account does not have a request (Select/Delete) to character";
+	case ERR_PT_TOMAXCHA:      return "reached the maximum number of characters you can create";
+	case ERR_PT_BONUSCHARS:    return "You don't have the necessary levels to create another character";
+	case ERR_PT_SAMECHANAME:   return "Character name already exist";
+	case ERR_PT_INVALIDBIRTH:  return "illegal birth place";
+	case ERR_PT_TOOBIGCHANM:   return "Character name is too long";
+	case ERR_PT_ISGLDLEADER:   return "Guild must have a leader, please disband your guild first then delete your character";
+	case ERR_PT_ERRCHANAME:    return "Illegal character name";
+	case ERR_PT_SERVERBUSY:    return "System is busy, please try again later";
+	case ERR_PT_TOOBIGPW2:     return "second code length illegal";
+	case ERR_PT_INVALID_PW2:   return "Cha second password not created";
+	case ERR_PT_BADBOY:        return "My child, you are very bold. You have been reported to the authority. Please do not commit the offense again!";
+	case ERR_PT_BANUSER:       return RES_STRING(CO_COMMFUNC_H_00031);
+	case ERR_PT_PBANUSER:      return RES_STRING(CO_COMMFUNC_H_00108);
+
+	case ERR_MC_NETEXCP:       return "Discovered exceptional line error on GateServer";
+	case ERR_MC_NOTSELCHA:     return "current not yet handled character state";
+	case ERR_MC_NOTPLAY:       return "Currently not in gameplay, unable to send ENDPLAY command";
+	case ERR_MC_NOTARRIVE:     return "target map cannot be reached";
+	case ERR_MC_TOOMANYPLY:    return "This server is currently full, please select another server!";
+	case ERR_MC_NOTLOGIN:      return "Youa re not login";
+	case ERR_MC_VER_ERROR:     return "Client version error, server refused connection!";
+	case ERR_MC_ENTER_ERROR:   return "failed to enter map!";
+	case ERR_MC_ENTER_POS:     return "Map position illegal, you'll be sent back to your birth city, please relog!";
+	case ERR_MC_BANUSER:       return RES_STRING(CO_COMMFUNC_H_00031);
+	case ERR_MC_PBANUSER:      return RES_STRING(CO_COMMFUNC_H_00108);
+
+	case ERR_TM_OVERNAME:      return "GameServer name repeated";
+	case ERR_TM_OVERMAP:       return "GameServerMapNameRepeated";
+	case ERR_TM_MAPERR:        return "GameServer map assign language error";
+
+	case ERR_SUCCESS:          return "Jack is too BT, correct also will ask me if anything is wrong!";
+	}
+
+	// default-branch — диагностический код ошибки + текст диапазона. Раньше тут жил
+	// общий static char[500] с itoa+strcat — UB в многопоточном сервере. thread_local
+	// держит буфер per-thread, std::format безопасно собирает строку.
+	thread_local std::string buffer;
+	const int bucket = (error_code / 500) * 500;
+
+	const char* range = nullptr;
+	switch (bucket) {
+	case ERR_MC_BASE: range = "(GameServer/GateServer->Client return error code space 1-500)"; break;
+	case ERR_PT_BASE: range = "(GroupServer->GateServer return error code range 501-1000)"; break;
+	case ERR_AP_BASE: range = "(AccountServer->GroupServe return error code from 1001-1500)"; break;
+	case ERR_MT_BASE: range = "(GameServer->GateServer return error code range 1501-2000)"; break;
+	default:          range = "(Jack is too insane, he made a mistake that I don't even know.)"; break;
+	}
+
+	buffer = std::format("{}{}", error_code, range);
+	return buffer.c_str();
 }
 
 namespace Corsairs::Common::Network {
@@ -137,16 +234,16 @@ const char* g_GetAreaName( int nValue )
 }
 } // namespace Corsairs::Common::Network
 
-inline bool g_IsRealItemID(int nItemID)
+bool IsRealItemId(int nItemID)
 {
-	if (nItemID > 0 && nItemID != enumEQUIP_BOTH_HAND && nItemID != enumEQUIP_TOTEM)
-		return true;
-	return false;
+	return nItemID > 0
+		&& nItemID != enumEQUIP_BOTH_HAND
+		&& nItemID != enumEQUIP_TOTEM;
 }
 
 static inline int GetItemType( int nItemID )
 {
-	if( g_IsRealItemID(nItemID) )
+	if( IsRealItemId(nItemID) )
 	{
 		CItemRecord* pItem = GetItemRecordInfo( nItemID );
 		if( pItem )
@@ -160,7 +257,7 @@ static inline int GetItemType( int nItemID )
 	return nItemID;
 }
 
-int g_GetItemSkill( int nLeftItemID, int nRightItemID )
+int GetItemSkill( int nLeftItemID, int nRightItemID )
 {
 	int nRightType = GetItemType( nRightItemID );
 	int nLeftType = GetItemType( nLeftItemID );
@@ -222,7 +319,7 @@ int g_GetItemSkill( int nLeftItemID, int nRightItemID )
 	return -1;
 }
 
-int g_IsUseSkill( stNetChangeChaPart *pSEquip, int nSkillID )
+int IsUseSkill( stNetChangeChaPart *pSEquip, int nSkillID )
 {
 	CSkillRecord *p =  GetSkillRecordInfo( nSkillID );
 	if( !p )
@@ -395,13 +492,15 @@ int g_IsUseSkill( stNetChangeChaPart *pSEquip, int nSkillID )
 // bIsTeammate 
 // bIsSelf 
 //=============================================================================
-int	g_IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int nTChaArea,
+int	IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int nTChaArea,
 					  int nSChaCtrlType, int nSSkillObjType, int nSSkillObjHabitat, int nSSkillEffType,
 					  bool bIsTeammate, bool bIsFriend, bool bIsSelf)
 {
-	bool bTIsPlayer = g_IsPlyCtrlCha(nTChaCtrlType);
+	const auto eTChaCtrlType = static_cast<EChaCtrlType>(nTChaCtrlType);
 
-	if (g_IsNPCCtrlCha(nTChaCtrlType)) // NPC
+	bool bTIsPlayer = IsPlyCtrlCha(eTChaCtrlType);
+
+	if (IsNpcCtrlCha(eTChaCtrlType)) // NPC
 		return enumESKILL_FAILD_NPC;
 	if (!bTChaBeSkilled) // 
 		return enumESKILL_FAILD_NOT_SKILLED;
@@ -445,22 +544,22 @@ int	g_IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int 
 			return enumESKILL_FAILD_ONLY_DIEPLY;
 	}
 
-	if (nTChaCtrlType == EChaCtrlType::MONS_TREE) // 
+	if (eTChaCtrlType == EChaCtrlType::MONS_TREE) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_TREE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if (nTChaCtrlType == EChaCtrlType::MONS_MINE) // 
+	else if (eTChaCtrlType == EChaCtrlType::MONS_MINE) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_MINE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if(nTChaCtrlType == EChaCtrlType::MONS_FISH) // 
+	else if(eTChaCtrlType == EChaCtrlType::MONS_FISH) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_FISH)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if (nTChaCtrlType == EChaCtrlType::MONS_DBOAT) // 
+	else if (eTChaCtrlType == EChaCtrlType::MONS_DBOAT) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_SALVAGE)
 			return enumESKILL_FAILD_ESP_MONS;
@@ -468,27 +567,27 @@ int	g_IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int 
 
 	if (nSSkillObjType == enumSKILL_TYPE_REPAIR)
 	{
-		if (nTChaCtrlType != EChaCtrlType::MONS_REPAIRABLE)
+		if (eTChaCtrlType != EChaCtrlType::MONS_REPAIRABLE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	if (nSSkillObjType == enumSKILL_TYPE_TREE)
 	{
-		if (nTChaCtrlType != EChaCtrlType::MONS_TREE)
+		if (eTChaCtrlType != EChaCtrlType::MONS_TREE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if (nSSkillObjType == enumSKILL_TYPE_MINE)
 	{
-		if (nTChaCtrlType != EChaCtrlType::MONS_MINE)
+		if (eTChaCtrlType != EChaCtrlType::MONS_MINE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if(nSSkillObjType == enumSKILL_TYPE_FISH)
 	{
-		if (nTChaCtrlType != EChaCtrlType::MONS_FISH)
+		if (eTChaCtrlType != EChaCtrlType::MONS_FISH)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if (nSSkillObjType == enumSKILL_TYPE_SALVAGE)
 	{
-		if (nTChaCtrlType != EChaCtrlType::MONS_DBOAT)
+		if (eTChaCtrlType != EChaCtrlType::MONS_DBOAT)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 
@@ -520,124 +619,286 @@ int	g_IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int 
 }
 
 //------------------------------------------------------------------------
-//	CTextFilter 
+//	Перенесённые из CommFunc.h inline-функции
 //------------------------------------------------------------------------
 
-BYTE           CTextFilter::m_NowSign[eTableMax][8];
-vector<string> CTextFilter::m_FilterTable[eTableMax];
-static CTextFilter g_textFilterBin;
-
-namespace {
-// UTF-8: позиция `pos` в `text` — начало символа (не continuation-байт)?
-inline bool IsUtf8CharStart(std::string_view text, size_t pos)
+bool IsSea(unsigned short usAreaMask)
 {
-	if (pos >= text.size()) return false;
-	return (static_cast<unsigned char>(text[pos]) & 0xC0) != 0x80;
-}
-} // namespace
-
-CTextFilter::CTextFilter()
-{
-	ZeroMemory(m_NowSign, sizeof(m_NowSign));
+	return !(usAreaMask & enumAREA_TYPE_LAND);
 }
 
-bool CTextFilter::Add(const eFilterTable eTable, std::string_view filterText)
+bool IsLand(unsigned short usAreaMask)
 {
-	if (filterText.empty()) return false;
+	return (usAreaMask & enumAREA_TYPE_LAND) || (usAreaMask & enumAREA_TYPE_BRIDGE);
+}
 
-	m_FilterTable[eTable].emplace_back(filterText);
+int IsUseSkill(stNetChangeChaPart* pSEquip, CSkillRecord* p)
+{
+	if (!p) return -1;
+	return IsUseSkill(pSEquip, p->Id);
+}
 
-	for (size_t i = 0; i < filterText.size(); i++) {
-		BYTE j = static_cast<BYTE>(filterText[i]) / 32;
-		int  n = (static_cast<int>(i) + j) % 8;
-		m_NowSign[eTable][n] += static_cast<BYTE>(j + i);
+int IsUseSeaLiveSkill(long lFitNo, CSkillRecord* p)
+{
+	if (!p) return -1;
+
+	for (int i = 0; i < defSKILL_ITEM_NEED_NUM; i++) {
+		if (p->sItemNeed[0][i][0] == cchSkillRecordKeyValue)
+			break;
+
+		if (p->sItemNeed[0][i][0] == enumSKILL_ITEM_NEED_ID) {
+			if (p->sItemNeed[0][i][1] == lFitNo)
+				return 1;
+		}
 	}
+	return 0;
+}
+
+bool IsPlyCtrlCha(EChaCtrlType eChaCtrlType)
+{
+	return eChaCtrlType == EChaCtrlType::PLAYER
+		|| eChaCtrlType == EChaCtrlType::PLAYER_PET;
+}
+
+bool IsMonsCtrlCha(EChaCtrlType eChaCtrlType)
+{
+	return eChaCtrlType == EChaCtrlType::MONS
+		|| eChaCtrlType == EChaCtrlType::MONS_TREE
+		|| eChaCtrlType == EChaCtrlType::MONS_MINE
+		|| eChaCtrlType == EChaCtrlType::MONS_FISH
+		|| eChaCtrlType == EChaCtrlType::MONS_DBOAT
+		|| eChaCtrlType == EChaCtrlType::MONS_REPAIRABLE;
+}
+
+bool IsNpcCtrlCha(EChaCtrlType eChaCtrlType)
+{
+	return eChaCtrlType == EChaCtrlType::NPC
+		|| eChaCtrlType == EChaCtrlType::NPC_EVENT;
+}
+
+bool IsChaEnemyCtrlSide(EChaCtrlType eSCtrlType, EChaCtrlType eTCtrlType)
+{
+	if (IsPlyCtrlCha(eSCtrlType) && IsPlyCtrlCha(eTCtrlType))
+		return false;
+	if (IsMonsCtrlCha(eSCtrlType) && IsMonsCtrlCha(eTCtrlType))
+		return false;
 	return true;
 }
 
-bool CTextFilter::IsLegalText(const eFilterTable eTable, std::string_view text)
+long ConvItemAttrTypeToCha(long lItemAttrType)
 {
-	for (const auto& pattern : m_FilterTable[eTable]) {
-		if (!CheckLegalText(text, pattern)) {
+	if (lItemAttrType >= ITEMATTR_COE_STR && lItemAttrType <= ITEMATTR_COE_PDEF)
+		return lItemAttrType + (ATTR_ITEMC_STR - ITEMATTR_COE_STR);
+	if (lItemAttrType >= ITEMATTR_VAL_STR && lItemAttrType <= ITEMATTR_VAL_PDEF)
+		return lItemAttrType + (ATTR_ITEMV_STR - ITEMATTR_VAL_STR);
+	return 0;
+}
+
+short GetRangeParamNum(char RangeType)
+{
+	short sParamNum = 0;
+	switch (RangeType) {
+	case enumRANGE_TYPE_STICK:
+	case enumRANGE_TYPE_FAN:
+		sParamNum = 2;
+		break;
+	case enumRANGE_TYPE_SQUARE:
+	case enumRANGE_TYPE_CIRCLE:
+		sParamNum = 1;
+		break;
+	}
+	return sParamNum + 1;
+}
+
+bool IsMoveAble(EChaCtrlType eChaCtrlType, char chChaTerrType, unsigned short usAreaMask)
+{
+	bool terrainOk = false;
+	if (chChaTerrType == defCHA_TERRITORY_DISCRETIONAL) {
+		terrainOk = true;
+	}
+	else if (chChaTerrType == defCHA_TERRITORY_LAND) {
+		if ((usAreaMask & enumAREA_TYPE_LAND) || (usAreaMask & enumAREA_TYPE_BRIDGE))
+			terrainOk = true;
+	}
+	else if (chChaTerrType == defCHA_TERRITORY_SEA) {
+		if (!(usAreaMask & enumAREA_TYPE_LAND))
+			terrainOk = true;
+	}
+
+	// В мирной зоне (NOT_FIGHT) монстры не могут двигаться — блокировка агро.
+	bool fightOk = true;
+	if (usAreaMask & enumAREA_TYPE_NOT_FIGHT) {
+		if (IsMonsCtrlCha(eChaCtrlType))
+			fightOk = false;
+	}
+
+	return terrainOk && fightOk;
+}
+
+const char* GetJobName(short sJobID)
+{
+	if (sJobID < 0 || sJobID >= MAX_JOB_TYPE)
+		return g_szJobName[0];
+	return g_szJobName[sJobID];
+}
+
+short GetJobId(std::string_view szJobName)
+{
+	for (short i = 0; i < MAX_JOB_TYPE; i++) {
+		if (szJobName == g_szJobName[i])
+			return i;
+	}
+	return 0;
+}
+
+const char* GetCityName(short sCityID)
+{
+	if (sCityID < 0 || sCityID >= defMAX_CITY_NUM)
+		return "";
+	return g_szCityName[sCityID];
+}
+
+short GetCityId(std::string_view szCityName)
+{
+	for (short i = 0; i < defMAX_CITY_NUM; i++) {
+		if (szCityName == g_szCityName[i])
+			return i;
+	}
+	return -1;
+}
+
+bool IsSeatPose(int pose)
+{
+	return pose == 16;
+}
+
+bool IsValidFightState(int nState)
+{
+	return nState < enumFSTATE_TARGET_NO;
+}
+
+bool ExistStateIsDie(char chState)
+{
+	return chState >= enumEXISTS_WITHERING;
+}
+
+const char* GetItemAttrExplain(int v)
+{
+	// COE и VAL диапазоны параллельны (см. ItemAttrType.h) — нормализуем VAL→COE,
+	// чтобы убрать ранее существовавшее дублирование 21 case'а.
+	if (v >= ITEMATTR_VAL_STR && v <= ITEMATTR_VAL_COL) {
+		v = v - ITEMATTR_VAL_STR + ITEMATTR_COE_STR;
+	}
+
+	switch (v) {
+	case ITEMATTR_COE_STR:    return "Strength Bonus";
+	case ITEMATTR_COE_AGI:    return "Agility Bonus";
+	case ITEMATTR_COE_DEX:    return "Accuracy Bonus";
+	case ITEMATTR_COE_CON:    return "Constitution Bonus";
+	case ITEMATTR_COE_STA:    return "Spirit Bonus";
+	case ITEMATTR_COE_LUK:    return "Luck Bonus";
+	case ITEMATTR_COE_ASPD:   return "Attack Speed Bonus";
+	case ITEMATTR_COE_ADIS:   return "Attack Range Bonus";
+	case ITEMATTR_COE_MNATK:  return "Minimum Attack Bonus";
+	case ITEMATTR_COE_MXATK:  return "Maximum Attack Bonus";
+	case ITEMATTR_COE_DEF:    return "Defense Bonus";
+	case ITEMATTR_COE_MXHP:   return "Maximum HP Bonus";
+	case ITEMATTR_COE_MXSP:   return "Maximum SP Bonus";
+	case ITEMATTR_COE_FLEE:   return "Dodge Rate Bonus";
+	case ITEMATTR_COE_HIT:    return "Hit Rate Bonus";
+	case ITEMATTR_COE_CRT:    return "Critical Hitrate Bonus";
+	case ITEMATTR_COE_MF:     return "Drop Rate Bonus";
+	case ITEMATTR_COE_HREC:   return "HP Recovery Speed Bonus";
+	case ITEMATTR_COE_SREC:   return "SP Recovery Speed Bonus";
+	case ITEMATTR_COE_MSPD:   return "Movement Speed Bonus";
+	case ITEMATTR_COE_COL:    return "Material Mining Speed Bonus";
+	case ITEMATTR_VAL_PDEF:   return "Physical Resist Bonus";
+	case ITEMATTR_MAXURE:     return "Max Durability";
+	case ITEMATTR_MAXENERGY:  return "Max Energy";
+	default:                  return "Unknown tools characteristics";
+	}
+}
+
+bool IsAlphanumeric(std::string_view text)
+{
+	return std::all_of(text.begin(), text.end(), [](unsigned char c) { return std::isalnum(c) != 0; });
+}
+
+bool IsNumeric(std::string_view text)
+{
+	return std::all_of(text.begin(), text.end(), [](unsigned char c) { return std::isdigit(c) != 0; });
+}
+
+bool IsValidName(std::string_view name)
+{
+	// Legacy GBK-проверка имени: latin/digit разрешены, multi-byte (старший бит) парами,
+	// 0xA1 0xA1 (двойной "пустой" символ GBK) — запрещён.
+	// TODO: после UTF-8 миграции переписать через Corsairs::Util::IsUtf8StartByte —
+	// текущая логика ловит UTF-8 continuation-байты как валидные части пары, что почти
+	// работает, но запрещает имена с continuation-байтом <=0x80 (которых не бывает в
+	// валидном UTF-8, так что в практике безопасно, но логика concept-mismatch).
+	bool inMultiByte = false;
+	for (std::size_t i = 0; i < name.size(); i++) {
+		if (!name[i]) {
 			return false;
 		}
-	}
-	return true;
-}
 
-bool CTextFilter::Filter(const eFilterTable eTable, std::string& text)
-{
-	bool ret = false;
-	for (const auto& pattern : m_FilterTable[eTable]) {
-		if (ReplaceText(text, pattern)) {
-			ret = true;
+		if (inMultiByte) {
+			if (name[i - 1] == 0xA1 && name[i] == 0xA1) {
+				return false;
+			}
+			if (name[i] > 0x3F && name[i] < 0xFF && name[i] != 0x7F) {
+				inMultiByte = false;
+			}
+			else {
+				return false;
+			}
 		}
-	}
-	return ret;
-}
-
-bool CTextFilter::ReplaceText(std::string& text, std::string_view filterText)
-{
-	if (filterText.empty()) return false;
-
-	bool       ret       = false;
-	const bool leadStart = IsUtf8CharStart(filterText, 0);
-	size_t     pos       = text.find(filterText);
-
-	while (pos != std::string::npos) {
-		if (leadStart == IsUtf8CharStart(text, pos)) {
-			text.replace(pos, filterText.size(), filterText.size(), '*');
-			ret = true;
-			pos = text.find(filterText, pos + filterText.size());
+		else if (name[i] > 0x80 && name[i] < 0xFF) {
+			inMultiByte = true;
+		}
+		else if ((name[i] >= 'A' && name[i] <= 'Z')
+			|| (name[i] >= 'a' && name[i] <= 'z')
+			|| (name[i] >= '0' && name[i] <= '9')) {
+			// допустимый ASCII-символ
 		}
 		else {
-			pos = text.find(filterText, pos + 1);
-		}
-	}
-	return ret;
-}
-
-bool CTextFilter::CheckLegalText(std::string_view text, std::string_view illegalText)
-{
-	if (illegalText.empty()) return true;
-
-	const bool leadStart = IsUtf8CharStart(illegalText, 0);
-	size_t     pos       = text.find(illegalText);
-
-	while (pos != std::string::npos) {
-		if (leadStart == IsUtf8CharStart(text, pos)) {
 			return false;
 		}
-		pos = text.find(illegalText, pos + 1);
 	}
-	return true;
+	return !inMultiByte;
 }
 
-bool CTextFilter::LoadFile(std::string_view fileName, const eFilterTable eTable)
+const char* GetUseItemFailedInfo(short sErrorID)
 {
-	if (fileName.empty()) return false;
-
-	std::ifstream filterTxt(std::string(fileName), std::ios::in);
-	if (!filterTxt.is_open()) return false;
-
-	std::string line;
-	while (std::getline(filterTxt, line)) {
-		if (!line.empty() && line.back() == '\r') {
-			line.pop_back();
-		}
-		if (!line.empty()) {
-			m_FilterTable[eTable].emplace_back(std::move(line));
-		}
+	switch (sErrorID) {
+	case enumITEMOPT_SUCCESS:           return "Item operation succesful";
+	case enumITEMOPT_ERROR_NONE:        return "Equipment does not exist";
+	case enumITEMOPT_ERROR_KBFULL:      return "Inventory is full";
+	case enumITEMOPT_ERROR_UNUSE:       return "Failed to use item";
+	case enumITEMOPT_ERROR_UNPICKUP:    return "Rl??EC?";
+	case enumITEMOPT_ERROR_UNTHROW:     return "Item cannot be thrown";
+	case enumITEMOPT_ERROR_UNDEL:       return "Item cannot be destroyed";
+	case enumITEMOPT_ERROR_KBLOCK:      return "inventory is currently locked";
+	case enumITEMOPT_ERROR_DISTANCE:    return "Distance too far";
+	case enumITEMOPT_ERROR_EQUIPLV:     return "Equipment level mismatch";
+	case enumITEMOPT_ERROR_EQUIPJOB:    return "Does not meet the class requirement for the equipment";
+	case enumITEMOPT_ERROR_STATE:       return "Unable to operate items under the current condition";
+	case enumITEMOPT_ERROR_PROTECT:     return "Item is being protected";
+	case enumITEMOPT_ERROR_AREA:        return "different region type";
+	case enumITEMOPT_ERROR_BODY:        return "type of build does not match";
+	case enumITEMOPT_ERROR_TYPE:        return "Unable to store this item";
+	case enumITEMOPT_ERROR_INVALID:     return "Item not in used";
+	case enumITEMOPT_ERROR_KBRANGE:     return "out of inventory range";
+	case enumITEMOPT_ERROR_EXPIRATION:  return "This item is expired.";
+	default:                            return "Unknown item usage failure code";
 	}
-	return true;
 }
 
-const BYTE* CTextFilter::GetNowSign(const eFilterTable eTable)
-{
-	return m_NowSign[eTable];
-}
+// CTextFilter — реализация перенесена в Libraries/Util/src/Text/TextFilter.cpp
+// в рамках Ф8 (2026-05).
 
-void String2Item(const char* pszData, SItemGrid* SGridCont) {
+void String2Item(std::string_view pszData, SItemGrid* SGridCont) {
 	const short csSubNum = 8 + enumITEMDBP_MAXNUM + defITEM_INSTANCE_ATTR_NUM_VER110 * 2 + 1;
 	std::string strSubList[csSubNum];
 

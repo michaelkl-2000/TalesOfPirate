@@ -97,7 +97,7 @@ bool CMagicCtrl::Create(int iID, CMPResManger* pCResMagr) {
 
 		return true;
 	}
-	EFF_Param* pParam;
+	EffParamRecord* pParam;
 	pParam = GetEFFParam(iID);
 	if (!pParam)
 		return false;
@@ -108,7 +108,7 @@ bool CMagicCtrl::Create(int iID, CMPResManger* pCResMagr) {
 	}
 	_CpModel.clear();
 
-	_iModelNum = pParam->nModelNum;
+	_iModelNum = pParam->ModelNum;
 	if (_iModelNum <= 0)
 		return false;
 	_CpModel.resize(_iModelNum);
@@ -117,7 +117,7 @@ bool CMagicCtrl::Create(int iID, CMPResManger* pCResMagr) {
 	s_string strName;
 	for (n = 0; n < _iModelNum; n++) {
 		_CpModel[n] = NULL;
-		strName = pParam->strModel[n];
+		strName = pParam->Models[n].c_str();
 		tid = pCResMagr->GetEffectID(strName);
 		if (tid == -1) {
 			return false;
@@ -127,14 +127,14 @@ bool CMagicCtrl::Create(int iID, CMPResManger* pCResMagr) {
 		_CpModel[n]->BindingEffect(pCResMagr->GetEffectByID(tid));
 		_CpModel[n]->BindingRes(pCResMagr);
 	}
-	_iRnederIdx = pParam->nRenderIdx;
+	_iRnederIdx = pParam->RenderIdx;
 
 	_vecPartCtrl.clear();
 
 	_iLightID = 0;
 
-	_iLightID = pParam->nLightID;
-	_strResult = pParam->strResult;
+	_iLightID = pParam->LightId;
+	_strResult = pParam->Result.c_str();
 	SAFE_DELETE(_pPartResult);
 	if (_strResult != "0") {
 		int tid = pCResMagr->GetPartCtrlID(_strResult + ".par");
@@ -151,15 +151,15 @@ bool CMagicCtrl::Create(int iID, CMPResManger* pCResMagr) {
 	_idx = iID;
 	_fStartDist = 0;
 
-	m_fVel = (float)pParam->nVel;
-	_iPartNum = pParam->nParNum;
+	m_fVel = (float)pParam->Vel;
+	_iPartNum = pParam->PartNum;
 	if (_iPartNum <= 0)
 		return true;
 
 	s_string str;
 	_vecPartCtrl.resize(_iPartNum);
 	for (n = 0; n < _iPartNum; n++) {
-		str = pParam->strPart[n];
+		str = pParam->Parts[n].c_str();
 		str += ".par";
 		tid = pCResMagr->GetPartCtrlID(str);
 		if (tid == -1) {
@@ -173,7 +173,7 @@ bool CMagicCtrl::Create(int iID, CMPResManger* pCResMagr) {
 			if (_CpModel[0]->m_vecEffect[0]->IsItem()) {
 				_vecPartCtrl[0].SetStripItem((MPSceneItem*)_CpModel[0]->m_vecEffect[0]->_pCModel, true);
 			}
-		_vecDummy.push_back(pParam->nDummy[n]);
+		_vecDummy.push_back(pParam->Dummies[n]);
 	}
 
 

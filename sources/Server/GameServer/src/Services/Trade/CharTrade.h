@@ -8,7 +8,7 @@
 
 #include "Character/Character.h"
 //---------------------------------------------------------
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	typedef struct _TRADE_DATA
 	{
@@ -70,21 +70,21 @@ namespace mission
 		~CTradeSystem();
 
 		// 
-		BOOL Request( BYTE byType, CCharacter& character, DWORD dwAcceptID );
-		BOOL Accept( BYTE byType, CCharacter& character,  DWORD dwRequestID );
-		BOOL Cancel( BYTE byType, CCharacter& character,  DWORD dwCharID );
+		BOOL Request( TradeCharType byType, CCharacter& character, DWORD dwAcceptID );
+		BOOL Accept( TradeCharType byType, CCharacter& character,  DWORD dwRequestID );
+		BOOL Cancel( TradeCharType byType, CCharacter& character,  DWORD dwCharID );
 		
 		// 
-		BOOL Clear( BYTE byType, CCharacter& character );
+		BOOL Clear( TradeCharType byType, CCharacter& character );
 
 		// 
-		BOOL ValidateItemData( BYTE byType, CCharacter& character, DWORD dwCharID );
-		BOOL ValidateTrade( BYTE byType, CCharacter& character, DWORD dwCharID );
+		BOOL ValidateItemData( TradeCharType byType, CCharacter& character, DWORD dwCharID );
+		BOOL ValidateTrade( TradeCharType byType, CCharacter& character, DWORD dwCharID );
 
 		// 
-		BOOL AddItem( BYTE byType, CCharacter& character, DWORD dwCharID, BYTE byOpType, BYTE byIndex, BYTE byItemIndex, BYTE byCount );
-		BOOL AddMoney( BYTE byType, CCharacter& charactar, DWORD dwCharID, BYTE byOpType, DWORD dwMoney );
-		BOOL AddIMP(BYTE byType, CCharacter& charactar, DWORD dwCharID, BYTE byOpType, DWORD dwMoney);
+		BOOL AddItem( TradeCharType byType, CCharacter& character, DWORD dwCharID, TradeOpType byOpType, BYTE byIndex, BYTE byItemIndex, BYTE byCount );
+		BOOL AddMoney( TradeCharType byType, CCharacter& charactar, DWORD dwCharID, TradeOpType byOpType, DWORD dwMoney );
+		BOOL AddIMP(TradeCharType byType, CCharacter& charactar, DWORD dwCharID, TradeOpType byOpType, DWORD dwMoney);
 		BOOL IsTradeDist( CCharacter& Char1, CCharacter& Char2, DWORD dwDist );
 	private:
 		void ResetItemState( CCharacter& character, CTradeData& TradeData );
@@ -93,7 +93,7 @@ namespace mission
 
 }
 
-extern mission::CTradeSystem g_TradeSystem;
+extern Corsairs::Common::Mission::CTradeSystem g_TradeSystem;
 
 //---------------------------------------------------------
 

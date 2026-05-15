@@ -13,7 +13,11 @@
 #include "Character/ChaAttr.h"
 #include "Character/CharacterRecord.h"
 #include "Skill/SkillRecord.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 #include "Combat/SkillState.h"
 #include "Inventory/SkillBag.h"
 #include "Core/Timer.h"
@@ -176,6 +180,22 @@ public:
 
 	std::int32_t		setAttr(int nIdx, LONG32 lValue, int nType = 0);
 	std::int32_t		getAttr(int nIdx);
+
+	// Типизированный getter: возвращает значение атрибута как enum.
+	// Используется там, где известно, что атрибут хранит значение enum-домена
+	// (например, ATTR_CHATYPE → EChaCtrlType). Скрывает static_cast внутри.
+	template <typename TEnum>
+		requires std::is_enum_v<TEnum>
+	TEnum getAttr(int nIdx) {
+		return static_cast<TEnum>(getAttr(nIdx));
+	}
+
+	// Типизированный setter для enum-атрибутов (зеркало typed getAttr).
+	template <typename TEnum>
+		requires std::is_enum_v<TEnum>
+	std::int32_t setAttr(int nIdx, TEnum eValue, int nType = 0) {
+		return setAttr(nIdx, static_cast<LONG32>(eValue), nType);
+	}
 	virtual void	AfterAttrChange(int nIdx, std::int32_t lOldVal, std::int32_t lNewVal);
 	void			SetDie(CCharacter *pCSkillSrcCha);
 	virtual void	Die();

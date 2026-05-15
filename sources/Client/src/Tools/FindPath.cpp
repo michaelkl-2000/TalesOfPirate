@@ -420,7 +420,7 @@ BYTE* CFindPath::GetTempTerrain(CGameScene* pScene, CCharacter* pCha, int iCurX,
 
 				//
 				if (*pValue == 0) {
-					if (!g_IsMoveAble(pCha->getChaCtrlType(), Territory,
+					if (!IsMoveAble(pCha->getChaCtrlType(), Territory,
 									  (EAreaMask)pTer->GetBlock()->GetTileRegionAttr(tm * 50 / 100, tn * 50 / 100)))
 						*pValue = 1;
 
@@ -820,7 +820,7 @@ void CFindPathEx::CalculateGuideStraight() {
 
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -841,7 +841,7 @@ void CFindPathEx::CalculateGuideStraight() {
 
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -864,7 +864,7 @@ void CFindPathEx::CalculateGuideStraight() {
 
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -885,7 +885,7 @@ void CFindPathEx::CalculateGuideStraight() {
 
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -915,7 +915,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			int idx = 0;
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -939,7 +939,7 @@ void CFindPathEx::CalculateGuideStraight() {
 
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -963,7 +963,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			int idx = 0;
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -990,7 +990,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			int idx = 0;
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -1014,7 +1014,7 @@ void CFindPathEx::CalculateGuideStraight() {
 
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -1038,7 +1038,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			int idx = 0;
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -1065,7 +1065,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			int idx = 0;
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -1089,7 +1089,7 @@ void CFindPathEx::CalculateGuideStraight() {
 
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -1113,7 +1113,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			int idx = 0;
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -1140,7 +1140,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			int idx = 0;
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -1164,7 +1164,7 @@ void CFindPathEx::CalculateGuideStraight() {
 
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
@@ -1188,7 +1188,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			float idx = 0;
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
-					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
+					if (!IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
 									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {

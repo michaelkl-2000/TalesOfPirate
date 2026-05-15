@@ -53,9 +53,9 @@ int main(int argc, char* argv[]) {
 	C_PRINT("Loading %s\n", szConfigFileN);
 
 	::SetThreadName("main");
-	Corsairs::Util::Crush::SetGlobalCRTExceptionBehavior();
-	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
-	Corsairs::Util::Crush::SetupDumpSetting("log\\game_server\\dumps");
+	Corsairs::Util::SetGlobalCRTExceptionBehavior();
+	Corsairs::Util::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::SetupDumpSetting("log\\game_server\\dumps");
 	g_logManager.InitLogger("log\\game_server");
 	g_logManager.EnableGlobalConsole(true);
 

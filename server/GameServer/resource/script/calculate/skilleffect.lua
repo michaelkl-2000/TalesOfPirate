@@ -3,7 +3,10 @@ print("[**] Calculate Files [**]")
 print("-- [Loading] SkillEffect")
 
 dofile(GetResPath("script\\calculate\\exp_and_level.lua"))
-dofile(GetResPath("script\\calculate\\JobType.lua"))
+-- JOB_TYPE_* и JobType.* регистрируются из C++ (RegisterJobTypeScript,
+-- см. sources/Server/GameServer/src/Script/JobTypeScript.cpp).
+-- Источник истины — enum class Corsairs::Common::Character::JobType
+-- в sources/Libraries/common/src/Core/JobType.h (макрос JOB_TYPE_LIST).
 dofile(GetResPath("script\\calculate\\AttrType.lua"))
 dofile(GetResPath("script\\calculate\\Init_Attr.lua"))
 dofile(GetResPath("script\\calculate\\ItemAttrType.lua"))

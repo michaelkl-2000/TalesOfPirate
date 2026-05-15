@@ -106,9 +106,8 @@ bool CEditor::Init() {
 	edtSetBrushHeight = dynamic_cast<CEdit*>(frmEditor->Find("edtSetBrushHeight"));
 	if (!edtSetBrushHeight) return Error(GetLanguageString(45).c_str(), frmEditor->GetName(), "edtSetBrushHeight");
 	edtSetBrushHeight->evtKeyChar = _evtSetBrushHeightKeyChar;
-	char buf[10] = {0};
-	itoa(g_Editor.m_nBrushHeight, buf, 10);
-	edtSetBrushHeight->SetCaption(buf);
+	std::string buf = std::to_string(g_Editor.m_nBrushHeight);
+	edtSetBrushHeight->SetCaption(buf.c_str());
 
 	chkModifyHeight = dynamic_cast<CCheckBox*>(frmEditor->Find("chkModifyHeight"));
 	if (!chkModifyHeight) return Error(GetLanguageString(45).c_str(), frmEditor->GetName(), "chkModifyHeight");

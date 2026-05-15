@@ -14,9 +14,9 @@ using namespace Corsairs::Common::Localization;
 
 using namespace std;
 //---------------------------------------------------------
-mission::CStallSystem g_StallSystem;
+Corsairs::Common::Mission::CStallSystem g_StallSystem;
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	#define MAX_STALL_MONEY 1000000000 // 1
 
@@ -930,7 +930,7 @@ return;
 	void CStallSystem::SyncData( CCharacter& character, CCharacter& staller )
 	{
 		//  :   
-		mission::CStallData* pData = staller.GetStallData();
+		Corsairs::Common::Mission::CStallData* pData = staller.GetStallData();
 		if( pData == NULL ) return;
 		CKitbag& Bag = staller.m_CKitbag;
 

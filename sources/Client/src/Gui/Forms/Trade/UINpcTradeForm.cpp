@@ -11,7 +11,8 @@
 #include "uiboxform.h"
 #include "uiedit.h"
 #include "uiboatform.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 
 using namespace GUI;
 
@@ -408,10 +409,8 @@ void CNpcTradeMgr::LocalBuyFromNpc(CGoodsGrid* pNpcGrid, CGoodsGrid* pSelfGrid, 
 		return;
 	}
 	else {
-		char buf[256] = {0};
-		strncpy_s(buf, sizeof(buf),
-				  SafeVFormat(GetLanguageString(742), pBuy->GetName(), StringSplitNum(pBuy->GetPrice())).c_str(),
-				  _TRUNCATE);
+		std::string buf;
+		buf = SafeVFormat(GetLanguageString(742), pBuy->GetName(), StringSplitNum(pBuy->GetPrice()));
 		if (g_stUIBox.ShowSelectBox(_BuyEquipYesNoTradeEvent, buf, true)) {
 			_sBuy.dwNpcID = _dwNpcID;
 			_sBuy.nBuyGrid = nBuyGrid;
@@ -438,7 +437,7 @@ void CNpcTradeMgr::LocalSaleToNpc(CGoodsGrid* pNpcGrid, CGoodsGrid* pSelfGrid, i
 		}
 	}
 	else {
-		char buf[256] = {0};
+		std::string buf;
 		if (pSaleItem->GetItemInfo()->sType == 43) {
 			CBoat* pBoat = g_stUIBoat.FindBoat(pSaleItem->GetData().GetDBParam(enumITEMDBP_INST_ID));
 			if (pBoat) {
@@ -446,8 +445,7 @@ void CNpcTradeMgr::LocalSaleToNpc(CGoodsGrid* pNpcGrid, CGoodsGrid* pSelfGrid, i
 			}
 		}
 
-		strncpy_s(buf, sizeof(buf),
-				  SafeVFormat(GetLanguageString(743), pSaleItem->GetName(), StringSplitNum(nPrice)).c_str(), _TRUNCATE);
+		buf = SafeVFormat(GetLanguageString(743), pSaleItem->GetName(), StringSplitNum(nPrice));
 		if (g_stUIBox.ShowSelectBox(_SaleEquipYesNoTradeEvent, buf, true)) {
 			_sSale.dwNpcID = _dwNpcID;
 			_sSale.nIndex = pSelfGrid->GetDragIndex();

@@ -16,7 +16,8 @@
 #include "Character.h"
 #include "GameApp.h"
 
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 
 namespace GUI {
 	//=======================================================================
@@ -50,7 +51,7 @@ namespace GUI {
 	}
 
 	void CGuildBankMgr::UpdateGuildGold(const char* value) {
-		labGuildMoney->SetCaption(StringSplitNum(value));
+		labGuildMoney->SetCaption(StringSplitNum(value).c_str());
 	}
 
 	void CGuildBankMgr::_OnClickGoldPut(CGuiData* pSender, int x, int y, DWORD key) {

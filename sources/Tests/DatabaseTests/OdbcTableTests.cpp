@@ -14,15 +14,15 @@ struct TestRow {
 };
 
 // Тестовая таблица с Column DSL
-class TestTable : public OdbcTable<TestRow> {
+class TestTable : public Corsairs::Util::OdbcTable<TestRow> {
 public:
-	explicit TestTable(OdbcDatabase& db)
+	explicit TestTable(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "test_odbc_table", {
-			MakeColumn("id",        &TestRow::id, PrimaryKey),
-			MakeColumn("name",      &TestRow::name),
-			MakeColumn("value",     &TestRow::value),
-			MakeColumn("big_value", &TestRow::bigValue),
-			MakeColumn("score",     &TestRow::score),
+			Corsairs::Util::MakeColumn("id",        &TestRow::id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("name",      &TestRow::name),
+			Corsairs::Util::MakeColumn("value",     &TestRow::value),
+			Corsairs::Util::MakeColumn("big_value", &TestRow::bigValue),
+			Corsairs::Util::MakeColumn("score",     &TestRow::score),
 		}) {}
 };
 
@@ -30,8 +30,8 @@ public:
 // Хелпер: подготовка тестовой таблицы
 // ============================================================================
 
-static OdbcDatabase& GetTestDb() {
-	static OdbcDatabase db;
+static Corsairs::Util::OdbcDatabase& GetTestDb() {
+	static Corsairs::Util::OdbcDatabase db;
 	static bool initialized = false;
 	if (!initialized) {
 		// Используем переменную окружения или дефолтный connection string
@@ -45,7 +45,7 @@ static OdbcDatabase& GetTestDb() {
 	return db;
 }
 
-static void EnsureTestTable(OdbcDatabase& db) {
+static void EnsureTestTable(Corsairs::Util::OdbcDatabase& db) {
 	try {
 		db.CreateCommand(
 			"IF OBJECT_ID('test_odbc_table', 'U') IS NOT NULL DROP TABLE test_odbc_table"
@@ -64,7 +64,7 @@ static void EnsureTestTable(OdbcDatabase& db) {
 	).ExecuteNonQuery();
 }
 
-static void InsertTestRow(OdbcDatabase& db, int id, const char* name, int value, int64_t bigValue, double score) {
+static void InsertTestRow(Corsairs::Util::OdbcDatabase& db, int id, const char* name, int value, int64_t bigValue, double score) {
 	db.CreateCommand("INSERT INTO test_odbc_table (id, name, value, big_value, score) VALUES (?, ?, ?, ?, ?)")
 		.SetParam(1, id)
 		.SetParam(2, std::string_view(name))

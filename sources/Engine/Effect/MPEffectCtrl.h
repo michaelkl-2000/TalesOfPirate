@@ -14,7 +14,7 @@ class CMPEffectCtrl;
 #include "Database/AssetDatabase.h"
 #include "Database/TableData.h"
 
-inline Corsairs::Common::Effect::EFF_Param* GetEFFParam(int nTypeID) {
+inline Corsairs::Common::Effect::EffParamRecord* GetEFFParam(int nTypeID) {
 	return Corsairs::Common::Effect::EffParamRecordStore::Instance()->Get(nTypeID);
 }
 

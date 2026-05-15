@@ -1,7 +1,7 @@
 #include "MPMapDef.h"
 
 
-namespace Corsairs::Util::Map {
+namespace Corsairs::Util {
 
 void TileInfo_Pack(const std::uint8_t* pbtTile,
                    std::uint32_t& tileInfo,
@@ -35,4 +35,4 @@ void TileInfo_Unpack(std::uint32_t tileInfo,
     pbtTile[7] = static_cast<std::uint8_t>((tileInfo >> kTileAlpha3Shift) & kTileAlphaMask);
 }
 
-} // namespace Corsairs::Util::Map
+} // namespace Corsairs::Util

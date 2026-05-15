@@ -21,7 +21,7 @@
 #include <string>
 #include <unordered_set>
 
-namespace mission {
+namespace Corsairs::Common::Mission {
 	class CStallData;
 }
 
@@ -39,7 +39,7 @@ class GateServer;
 
 
 //NOTE(Ogge): This should describe a player as a entity
-class CPlayer : public GatePlayer, public mission::CCharMission {
+class CPlayer : public GatePlayer, public Corsairs::Common::Mission::CCharMission {
 public:
 	CPlayer();
 
@@ -90,7 +90,7 @@ public:
 	std::uint32_t   GetLoginChaType(void);
 	std::uint32_t   GetLoginChaID(void);
 
-	//mission::CCharMission& GetMission() { return *(mission::CCharMission*)this; }
+	//Corsairs::Common::Mission::CCharMission& GetMission() { return *(Corsairs::Common::Mission::CCharMission*)this; }
 
 	void AddTeamMember(uplayer*);
 	void ClearTeamMember();
@@ -204,8 +204,8 @@ public:
 	BOOL ClearBoat(DWORD dwBoatDBID);
 	void RefreshBoatAttr(void);
 
-	mission::CStallData* GetStallData();
-	void                 SetStallData(mission::CStallData* pData);
+	Corsairs::Common::Mission::CStallData* GetStallData();
+	void                 SetStallData(Corsairs::Common::Mission::CStallData* pData);
 
 	// Загрузка/сохранение base64 для конкретной карты (используется БД-слоем).
 	bool         LoadMapMaskBase64(std::string_view mapName, std::string_view base64Data);
@@ -339,7 +339,7 @@ private:
 	CCharacter* m_pMakingBoat;
 
 	//
-	mission::CStallData* m_pStallData;
+	Corsairs::Common::Mission::CStallData* m_pStallData;
 
 	//
 	struct {

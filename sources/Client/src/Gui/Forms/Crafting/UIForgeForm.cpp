@@ -21,7 +21,8 @@
 #include "UIProgressBar.h"
 #include "WorldScene.h"
 #include "UIList.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 
 
 using namespace GUI;
@@ -157,8 +158,8 @@ void CForgeMgr::ShowForge(bool bShow, bool isMilling) {
 
 //---------------------------------------------------------------------------
 void CForgeMgr::ShowConfirmDialog(long lMoney) {
-	char szBuf[255] = {0};
-	FmtLang(szBuf, sizeof(szBuf), GetLanguageString(568), lMoney);
+	std::string szBuf;
+	szBuf = FmtLang(GetLanguageString(568), lMoney);
 	g_stUIBox.ShowSelectBox(_evtConfirmEvent, szBuf, true);
 }
 
@@ -669,7 +670,7 @@ void CForgeMgr::SetForgeUI() {
 	if (cmdForgeItem[EQUIP]->GetCommand()
 		&& cmdForgeItem[GEN_STONE]->GetCommand()
 		&& cmdForgeItem[FORGE_STONE]->GetCommand()) {
-		labForgeGold->SetCaption(StringSplitNum(m_isMilling ? CalMillingMoney() : CalForgeMoney()));
+		labForgeGold->SetCaption(StringSplitNum(m_isMilling ? CalMillingMoney() : CalForgeMoney()).c_str());
 		assert(btnYes);
 		btnYes->SetIsEnabled(true);
 	}

@@ -1082,7 +1082,7 @@ void CCharacter::UpdateTileColor() {
 	}
 }
 
-void CCharacter::PlayAni(char* pAni, int nMax) {
+void CCharacter::PlayAni(const std::int8_t* pAni, int nMax) {
 	_Special.AllFalse();
 	_nHeightOff = 0;
 
@@ -1980,7 +1980,7 @@ void CCharacter::SynchroSkillState(stSkillState* pState, int nCount) {
 				g_pGameApp->EnableCameraFollow(FALSE);
 			}
 
-			PlayAni(CChaStateMgr::GetLastActInfo()->nActBehave, CChaStateMgr::GetLastActInfo()->GetActNum());
+			PlayAni(reinterpret_cast<const std::int8_t*>(CChaStateMgr::GetLastActInfo()->nActBehave), CChaStateMgr::GetLastActInfo()->GetActNum());
 		}
 	}
 

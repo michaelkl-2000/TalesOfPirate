@@ -1,6 +1,10 @@
 ﻿#ifndef PROCIRCULATE_H
 #define PROCIRCULATE_H
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 
 class CActionState;
 namespace Corsairs::Common::Character { class CChaAttr; }

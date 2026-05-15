@@ -103,8 +103,8 @@ void CMisLogForm::_MouseEvent(CCompent* pSender, int nMsgType, int x, int y, DWO
 			// Get mission info
 			g_stUIMisLog.GetMisData(g_stUIMisLog.m_wMisID, byType, szData, 32);
 
-			char szBuf[256] = {0};
-			//if( byType==mission::MIS_TREENODE_RAND )
+			std::string szBuf;
+			//if( byType==Corsairs::Common::Mission::MIS_TREENODE_RAND )
 			//{
 			//	int nMoney = 100;
 			//	if( CCharacter* pMain = g_stUIBoat.GetHuman() )
@@ -114,7 +114,7 @@ void CMisLogForm::_MouseEvent(CCompent* pSender, int nMsgType, int x, int y, DWO
 			//}
 			//else
 			//{
-			strncpy_s(szBuf, sizeof(szBuf), SafeVFormat(GetLanguageString(723), szData).c_str(), _TRUNCATE);
+			szBuf = SafeVFormat(GetLanguageString(723), szData);
 			//}
 
 
@@ -236,7 +236,7 @@ BOOL CMisLogForm::AddNode(WORD wMisID, BYTE byState, BYTE& byType) {
 	pTreeNode->SetTag(dwData);
 
 	// Determine which display node category
-	if (byType == mission::MIS_TREENODE_NORMAL) {
+	if (byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_NORMAL) {
 		if (m_pNormal == NULL) {
 			CItem* pTemp = new CItem(GetLanguageString(728).c_str(), COLOR_BLACK);
 			m_pNormal = new CTreeNode(m_pMisTree, pTemp);
@@ -245,7 +245,7 @@ BOOL CMisLogForm::AddNode(WORD wMisID, BYTE byState, BYTE& byType) {
 		}
 		m_pNormal->AddNode(pTreeNode);
 	}
-	else if (byType == mission::MIS_TREENODE_HISTORY) {
+	else if (byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_HISTORY) {
 		if (m_pHistory == NULL) {
 			CItem* pTemp = new CItem(GetLanguageString(729).c_str(), COLOR_BLACK);
 			m_pHistory = new CTreeNode(m_pMisTree, pTemp);
@@ -254,7 +254,7 @@ BOOL CMisLogForm::AddNode(WORD wMisID, BYTE byState, BYTE& byType) {
 		}
 		m_pHistory->AddNode(pTreeNode);
 	}
-	else if (byType == mission::MIS_TREENODE_GUILD) {
+	else if (byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_GUILD) {
 		if (m_pGuild == NULL) {
 			CItem* pTemp = new CItem(GetLanguageString(730).c_str(), COLOR_BLACK);
 			m_pGuild = new CTreeNode(m_pMisTree, pTemp);
@@ -363,13 +363,13 @@ void CMisLogForm::MisClear(WORD wMisID) {
 	}
 
 	CTreeNodeObj* pNode = NULL;
-	if (m_LogList.MisLog[nIndex].byType == mission::MIS_TREENODE_NORMAL) {
+	if (m_LogList.MisLog[nIndex].byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_NORMAL) {
 		pNode = m_pNormal;
 	}
-	else if (m_LogList.MisLog[nIndex].byType == mission::MIS_TREENODE_HISTORY) {
+	else if (m_LogList.MisLog[nIndex].byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_HISTORY) {
 		pNode = m_pHistory;
 	}
-	else if (m_LogList.MisLog[nIndex].byType == mission::MIS_TREENODE_GUILD) {
+	else if (m_LogList.MisLog[nIndex].byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_GUILD) {
 		pNode = m_pGuild;
 	}
 	else {
@@ -452,13 +452,13 @@ void CMisLogForm::MisLogState(WORD wMisID, BYTE byState) {
 	}
 
 	CTreeNodeObj* pNode = NULL;
-	if (m_LogList.MisLog[i].byType == mission::MIS_TREENODE_NORMAL) {
+	if (m_LogList.MisLog[i].byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_NORMAL) {
 		pNode = m_pNormal;
 	}
-	else if (m_LogList.MisLog[i].byType == mission::MIS_TREENODE_HISTORY) {
+	else if (m_LogList.MisLog[i].byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_HISTORY) {
 		pNode = m_pHistory;
 	}
-	else if (m_LogList.MisLog[i].byType == mission::MIS_TREENODE_GUILD) {
+	else if (m_LogList.MisLog[i].byType == +Corsairs::Common::Mission::MissionTreeNodeType::MIS_TREENODE_GUILD) {
 		pNode = m_pGuild;
 	}
 	else {

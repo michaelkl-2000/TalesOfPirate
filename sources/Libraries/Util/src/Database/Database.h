@@ -29,6 +29,8 @@
 #include <algorithm>
 #include <cctype>
 
+namespace Corsairs::Util {
+
 // ============================================================================
 // OdbcException
 // ============================================================================
@@ -431,3 +433,5 @@ private:
 		BindParams(cmd, index + 1, std::forward<Rest>(rest)...);
 	}
 };
+
+} // namespace Corsairs::Util

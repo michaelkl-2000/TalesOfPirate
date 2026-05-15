@@ -1,5 +1,7 @@
 ﻿#include "StdAfx.h"
 #include "UIChat.h"
+#include "TextFilter.h"
+using namespace Corsairs::Util;
 #include "UITeam.h"
 #include "uiformmgr.h"
 #include "uitreeview.h"
@@ -112,7 +114,7 @@ bool CChat::Init() {
 	//ifstream filterTxt("scripts\\table\\filter.txt",ios::in);
 	//if (filterTxt.is_open())
 	//{
-	//	char buf[500]={0};
+	//	std::string buf;
 	//	filterTxt.getline(buf,500);
 	//	while (!filterTxt.fail())
 	//	{

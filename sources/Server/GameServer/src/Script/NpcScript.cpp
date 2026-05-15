@@ -14,7 +14,7 @@ using namespace Corsairs::Common::NPC;
 #include "World/AreaRecordStore.h"
 #include "Script/lua_gamectrl.h"
 //---------------------------------------------------------
-using namespace mission;
+using namespace Corsairs::Common::Mission;
 
 //   trade- (   MsgProc )
 void LogTrade(const std::string& msg)
@@ -356,10 +356,10 @@ void ShowExchangeData(CCharacter* cha, CCharacter* npc, luabridge::LuaRef ex)
 //
 //    Lua "mission":
 //   mission.need.count
-//   mission.need[n].tp            (MIS_NEED_ITEM/KILL/DESP)
+//   mission.need[n].tp            (MissionNeedType::MIS_NEED_ITEM/KILL/DESP)
 //   mission.need[n].p1            ( param1 ,    DESP — desp-string)
 //   mission.need[n].p2
-//   mission.need[n].p3            ( MIS_NEED_ITEM  KILL)
+//   mission.need[n].p3            ( MissionNeedType::MIS_NEED_ITEM  KILL)
 //   mission.prize.seltp
 //   mission.prize.count
 //   mission.prize[i].tp
@@ -376,11 +376,11 @@ std::vector<Corsairs::Net::Msg::MisNeedEntry> read_mis_needs(luabridge::LuaRef n
 		luabridge::LuaRef r = needT[n];
 		if (!r.isTable()) continue;
 		Corsairs::Net::Msg::MisNeedEntry e{};
-		e.needType = lua_as_int(r["tp"]);
-		if (e.needType == mission::MIS_NEED_DESP) {
+		e.needType = (MissionNeedType)lua_as_int(r["tp"]);
+		if (e.needType == Corsairs::Common::Mission::MissionNeedType::MIS_NEED_DESP) {
 			e.desp = lua_as_string(r["p1"]);
 		}
-		else { // MIS_NEED_ITEM / MIS_NEED_KILL
+		else { // MissionNeedType::MIS_NEED_ITEM / MissionNeedType::MIS_NEED_KILL
 			e.param1 = lua_as_int(r["p1"]);
 			e.param2 = lua_as_int(r["p2"]);
 			e.param3 = lua_as_int(r["p3"]);
@@ -699,7 +699,7 @@ bool build_trade_message(luabridge::LuaRef trade, int tradeType,
                          Corsairs::Net::Msg::McTradeAllDataMessage& msg)
 {
 	if (!trade.isTable() || !npc) return false;
-	const bool isGoods = (tradeType == static_cast<int>(mission::TRADE_GOODS));
+	const bool isGoods = (tradeType == static_cast<int>(+Corsairs::Common::Mission::TradeOpType::TRADE_GOODS));
 
 	msg.npcId     = static_cast<int64_t>(npc->GetID());
 	msg.tradeType = static_cast<int64_t>(tradeType);
@@ -831,7 +831,7 @@ std::string GetMonsterName(int sMonsterID)
 	CChaRecord* pRec = GetChaRecordInfo(static_cast<USHORT>(sMonsterID));
 	if (pRec)
 	{
-		strncpy(szName, pRec->Name.c_str(), 64 - 1);
+		strncpy(szName, pRec->DataName.c_str(), 64 - 1);
 	}
 
 	return szName;
@@ -1091,7 +1091,7 @@ int AddNpcTrigger(CNpc* pNpc, int wID, int e, int wParam1, int wParam2, int wPar
 {
 	if (!pNpc) return LUA_FALSE;
 	BOOL bRet = pNpc->AddNpcTrigger(
-		static_cast<WORD>(wID), static_cast<mission::TRIGGER_EVENT>(e),
+		static_cast<WORD>(wID), static_cast<Corsairs::Common::Mission::TriggerEvent>(e),
 		static_cast<WORD>(wParam1), static_cast<WORD>(wParam2),
 		static_cast<WORD>(wParam3), static_cast<WORD>(wParam4));
 	return bRet ? LUA_TRUE : LUA_FALSE;

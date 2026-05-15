@@ -73,9 +73,6 @@
     <ClCompile Include="src\Core\CommFunc.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\StringLib.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\Character\ChaAttr.cpp">
       <Filter>Character</Filter>
     </ClCompile>
@@ -298,23 +295,14 @@
     <ClInclude Include="src\Core\CommFunc.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCommon.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\JobType.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\RoleCommon.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\StringLib.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\ToolClass.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\i18n.h">
-      <Filter>Core</Filter>
+    <ClInclude Include="src\Localization\i18n.h">
+      <Filter>Localization</Filter>
     </ClInclude>
     <ClInclude Include="src\Crypto\Blake2s.h">
       <Filter>Crypto</Filter>

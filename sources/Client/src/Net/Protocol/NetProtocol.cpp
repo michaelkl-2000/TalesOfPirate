@@ -149,7 +149,7 @@ void NetLoginFailure(unsigned short Errno) {
 	return;
 #endif
 
-	ToLogService("ui", "NetLoginFailure - Errno:{}, Info:{}", Errno, g_GetServerError(Errno));
+	ToLogService("ui", "NetLoginFailure - Errno:{}, Info:{}", Errno, GetServerError(Errno));
 
 	CLoginScene* pScene = dynamic_cast<CLoginScene*>(CGameApp::GetCurScene());
 	if (!pScene) {
@@ -204,7 +204,7 @@ void NetBeginPlay(unsigned short Errno) // Look up errno in NetRetCode.h
 	return;
 #endif
 
-	ToLogService("ui", "NetBeginPlay - Errno:{}, Info:{}", Errno, g_GetServerError(Errno));
+	ToLogService("ui", "NetBeginPlay - Errno:{}, Info:{}", Errno, GetServerError(Errno));
 
 	CSelectChaScene& rkScene = CSelectChaScene::GetCurrScene();
 	rkScene.SelectChaError(Errno, "NetBeginPlay");
@@ -260,7 +260,7 @@ void NetNewCha(unsigned short Errno) // Look up errno in NetRetCode.h
 	return;
 #endif
 
-	ToLogService("ui", "NetNewCha - Errno:{}, Info:{}", Errno, g_GetServerError(Errno));
+	ToLogService("ui", "NetNewCha - Errno:{}, Info:{}", Errno, GetServerError(Errno));
 
 	CCreateChaScene& rkScene = CCreateChaScene::GetCurrScene();
 
@@ -282,7 +282,7 @@ void NetDelCha(unsigned short Errno) // Look up errno in NetRetCode.h
 	return;
 #endif
 
-	ToLogService("ui", "NetDelCha - Errno:{}, Info:{}", Errno, g_GetServerError(Errno));
+	ToLogService("ui", "NetDelCha - Errno:{}, Info:{}", Errno, GetServerError(Errno));
 
 	CSelectChaScene& rkScene = CSelectChaScene::GetCurrScene();
 
@@ -440,7 +440,8 @@ void stNetActorCreate::SetValue(CCharacter* pCha) {
 	pCha->setPos(SArea.Centre.X, SArea.Centre.Y);
 	pCha->SetServerPos(SArea.Centre.X, SArea.Centre.Y);
 	pCha->setYaw(sAngle);
-	pCha->setChaCtrlType(static_cast<EChaCtrlType>(chCtrlType));
+	const auto eCtrlType = static_cast<EChaCtrlType>(chCtrlType);
+	pCha->setChaCtrlType(eCtrlType);
 	pCha->SetTeamLeaderID(ulTLeaderID);
 	pCha->setHumanID(ulCommID);
 	pCha->setHumanName(szCommName);
@@ -460,7 +461,7 @@ void stNetActorCreate::SetValue(CCharacter* pCha) {
 #ifdef _LOG_NAME_
 	g_logManager.InternalLog(LogLevel::Debug, "common", std::format("SeeType:{}, Create Cha:{}, Type:{}",
 																	static_cast<int>(chSeeType), pCha->getName(),
-																	pCha->GetDefaultChaInfo()->Name));
+																	pCha->GetDefaultChaInfo()->DataName));
 	g_logManager.InternalLog(LogLevel::Debug, "common",
 							 std::format("CommID:{}, CommName:{}, MottoName:{}", ulCommID, szCommName, strMottoName));
 	g_logManager.InternalLog(LogLevel::Debug, "common",
@@ -500,6 +501,8 @@ CCharacter* stNetActorCreate::CreateCha() {
 	// Create character and apply look
 	CChaRecord* pChaRec = GetChaRecordInfo(ulChaID);
 	if (!pChaRec) return NULL;
+
+	const auto eCtrlType = static_cast<EChaCtrlType>(chCtrlType);
 
 	if (pChaRec->ModalType == EChaModalType::BOAT) {
 		p = CGameApp::GetCurScene()->AddBoat(SLookInfo.SLook);
@@ -560,7 +563,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 		}
 		p->SetHide(TRUE);
 	}
-	else if (chCtrlType == EChaCtrlType::PLAYER) {
+	else if (eCtrlType == EChaCtrlType::PLAYER) {
 		g_stUIChat.GetTeamMgr()->Find(enumTeamRoad)->Add(ulWorldID, szCommName.c_str(), strMottoName.c_str(), sIcon);
 	}
 
@@ -595,7 +598,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 		}
 	}
 
-	switch (chCtrlType) {
+	switch (eCtrlType) {
 	case EChaCtrlType::MONS_TREE:
 	case EChaCtrlType::MONS_MINE:
 		p->GetActor()->SetSleep();
@@ -681,7 +684,7 @@ void NetSynSkillState(DWORD dwCharID, stNetSkillState* pSSkillState) {
 }
 
 void NetActorSkillRep(unsigned int nID, stNetNotiSkillRepresent& SSkillRep) {
-	bool isRep = g_IsValidFightState(SSkillRep.sState);
+	bool isRep = IsValidFightState(SSkillRep.sState);
 
 	// Find attacker
 	CCharacter* pCha = CGameApp::GetCurScene()->SearchByID(nID);
@@ -1129,7 +1132,7 @@ void NetSwitchMap(stNetSwitchMap& switchmap) {
 		return;
 	}
 
-	g_stUIMap.RefreshMapName(pInfo->DataName);
+	g_stUIMap.RefreshMapName(pInfo->DataName.c_str());
 
 	CGameApp::Waiting(false);
 	CWorldScene* s = dynamic_cast<CWorldScene*>(CGameApp::GetCurScene());
@@ -1518,49 +1521,49 @@ void NetShowBoatList(DWORD dwNpcID, BYTE byNumBoat, const BOAT_BERTH_DATA& Data,
 											   _launch_list->SetNpcID(dwNpcID);
 
 	// ShowBoatList( byNumBoat, Data );
-	if (byType == mission::BERTH_LUANCH_LIST) {
+	if (byType == +Corsairs::Common::Mission::BoatListType::BERTH_LUANCH_LIST) {
 		((CWorldScene*)g_pGameApp->GetCurScene())->GetShipMgr()->
 												   _launch_list->Update(byNumBoat, &Data);
 	}
-	else if (byType == mission::BERTH_TRADE_LIST) {
+	else if (byType == +Corsairs::Common::Mission::BoatListType::BERTH_TRADE_LIST) {
 		((CWorldScene*)g_pGameApp->GetCurScene())->GetShipMgr()->
 												   _launch_list->Update(byNumBoat, &Data, xShipLaunchList::eTrade);
 	}
-	else if (byType == mission::BERTH_BAG_LIST) {
+	else if (byType == +Corsairs::Common::Mission::BoatListType::BERTH_BAG_LIST) {
 		((CWorldScene*)g_pGameApp->GetCurScene())->GetShipMgr()->
 												   _launch_list->Update(byNumBoat, &Data, xShipLaunchList::eBag);
 	}
-	else if (byType == mission::BERTH_REPAIR_LIST) {
+	else if (byType == +Corsairs::Common::Mission::BoatListType::BERTH_REPAIR_LIST) {
 		((CWorldScene*)g_pGameApp->GetCurScene())->GetShipMgr()->
 												   _launch_list->Update(byNumBoat, &Data, xShipLaunchList::eRepair);
 	}
-	else if (byType == mission::BERTH_SALVAGE_LIST) {
+	else if (byType == +Corsairs::Common::Mission::BoatListType::BERTH_SALVAGE_LIST) {
 		((CWorldScene*)g_pGameApp->GetCurScene())->GetShipMgr()->
 												   _launch_list->Update(byNumBoat, &Data, xShipLaunchList::eSalvage);
 	}
-	else if (byType == mission::BERTH_SUPPLY_LIST) {
+	else if (byType == +Corsairs::Common::Mission::BoatListType::BERTH_SUPPLY_LIST) {
 		((CWorldScene*)g_pGameApp->GetCurScene())->GetShipMgr()->
 												   _launch_list->Update(byNumBoat, &Data, xShipLaunchList::eSupply);
 	}
-	else if (byType == mission::BERTH_BOATLEVEL_LIST) {
+	else if (byType == +Corsairs::Common::Mission::BoatListType::BERTH_BOATLEVEL_LIST) {
 		((CWorldScene*)g_pGameApp->GetCurScene())->GetShipMgr()->
 												   _launch_list->Update(byNumBoat, &Data, xShipLaunchList::eUpgrade);
 	}
 }
 
 void NetShowTrade(const NET_TRADEINFO& TradeInfo, BYTE byCmd, DWORD dwNpcID, DWORD dwParam) {
-	if (byCmd == mission::TRADE_GOODS) {
+	if (byCmd == +Corsairs::Common::Mission::TradeOpType::TRADE_GOODS) {
 		// Goods exchange trading (dwParam is first boat ID)
 		g_stUIBourse.ShowBourse(TradeInfo, byCmd, dwNpcID, dwParam);
 	}
-	else if (byCmd == mission::TRADE_SALE || byCmd == mission::TRADE_BUY) {
+	else if (byCmd == +Corsairs::Common::Mission::TradeOpType::TRADE_SALE || byCmd == +Corsairs::Common::Mission::TradeOpType::TRADE_BUY) {
 		// Normal trading
 		g_stUINpcTrade.ShowTradePage(TradeInfo, byCmd, dwNpcID);
 	}
 }
 
 void NetUpdateTradeAllData(const NET_TRADEINFO& TradeInfo, BYTE byCmd, DWORD dwNpcID, DWORD dwParam) {
-	if (byCmd == mission::TRADE_GOODS && dwNpcID == g_stUIBourse.GetNpcId() && g_stUIBourse.IsShow()) {
+	if (byCmd == +Corsairs::Common::Mission::TradeOpType::TRADE_GOODS && dwNpcID == g_stUIBourse.GetNpcId() && g_stUIBourse.IsShow()) {
 		if (0 == dwParam)
 			dwParam = g_stUIBourse.GetBoatId();
 		// Refresh all data
@@ -1576,10 +1579,10 @@ void NetUpdateTradeData(DWORD dwNpcID, BYTE byPage, BYTE byIndex, USHORT sItemID
 }
 
 void NetTradeResult(BYTE byCmd, BYTE byIndex, BYTE byCount, USHORT sItemID, DWORD dwMoney) {
-	if (byCmd == mission::TRADE_SALE) {
+	if (byCmd == +Corsairs::Common::Mission::TradeOpType::TRADE_SALE) {
 		g_stUINpcTrade.SaleToNpc(byIndex, byCount, sItemID, dwMoney);
 	}
-	else if (byCmd == mission::TRADE_BUY) {
+	else if (byCmd == +Corsairs::Common::Mission::TradeOpType::TRADE_BUY) {
 		g_stUINpcTrade.BuyFromNpc(byIndex, byCount, sItemID, dwMoney);
 	}
 	return;
@@ -1599,7 +1602,7 @@ void NetCancelCharTrade(DWORD dwCharID) {
 
 void NetTradeAddBoat(DWORD dwCharID, BYTE byOpType, USHORT sItemID, BYTE byIndex,
 					 BYTE byCount, BYTE byItemIndex, const NET_CHARTRADE_BOATDATA& Data) {
-	if (byOpType == mission::TRADE_DRAGTO_ITEM) {
+	if (byOpType == +Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_ITEM) {
 		//
 		g_stUITrade.DragTradeToItem(dwCharID, byIndex, byItemIndex);
 	}
@@ -1611,7 +1614,7 @@ void NetTradeAddBoat(DWORD dwCharID, BYTE byOpType, USHORT sItemID, BYTE byIndex
 
 void NetTradeAddItem(DWORD dwCharID, BYTE byOpType, USHORT sItemID, BYTE byIndex,
 					 BYTE byCount, BYTE byItemIndex, const NET_CHARTRADE_ITEMDATA& Data) {
-	if (byOpType == mission::TRADE_DRAGTO_ITEM) {
+	if (byOpType == +Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_ITEM) {
 		g_stUITrade.DragTradeToItem(dwCharID, byIndex, byItemIndex);
 	}
 	else {
@@ -2225,7 +2228,7 @@ void NetEntityStateChange(DWORD dwEntityID, BYTE byState) {
 
 	CEvent* pEvent = pCha->getEvent();
 	if (pEvent) {
-		pEvent->SetIsEnabled(byState == mission::ENTITY_ENABLE ? true : false);
+		pEvent->SetIsEnabled(byState == +Corsairs::Common::Mission::EntityState::ENTITY_ENABLE ? true : false);
 	}
 }
 
@@ -2238,7 +2241,7 @@ void NetTriggerAction(stNetNpcMission& info) {
 	strncpy_s(szData, sizeof(szData), GetLanguageString(2).c_str(), _TRUNCATE);
 
 	switch (info.byType) {
-	case mission::TE_KILL: {
+	case +Corsairs::Common::Mission::TriggerEvent::TE_KILL: {
 		CMissionTrigger* pMission = new CMissionTrigger;
 		pMission->SetData(info);
 
@@ -2260,7 +2263,7 @@ void NetTriggerAction(stNetNpcMission& info) {
 		}
 	}
 	break;
-	case mission::TE_GET_ITEM: {
+	case +Corsairs::Common::Mission::TriggerEvent::TE_GET_ITEM: {
 		CItemRecord* pItem = GetItemRecordInfo(info.sID);
 		if (pItem) {
 			strncpy(szData, pItem->szName.c_str(), sizeof(szData));
@@ -2268,12 +2271,12 @@ void NetTriggerAction(stNetNpcMission& info) {
 		g_pGameApp->ShowMidText(SafeVFormat(GetLanguageString(289), szData, info.sCount, info.sNum));
 	}
 	break;
-	case mission::TE_GAME_TIME:
-	case mission::TE_CHAT:
-	case mission::TE_EQUIP_ITEM:
-	case mission::TE_GOTO_MAP:
-	case mission::TE_LEVEL_UP:
-	case mission::TE_MAP_INIT: {
+	case +Corsairs::Common::Mission::TriggerEvent::TE_GAME_TIME:
+	case +Corsairs::Common::Mission::TriggerEvent::TE_CHAT:
+	case +Corsairs::Common::Mission::TriggerEvent::TE_EQUIP_ITEM:
+	case +Corsairs::Common::Mission::TriggerEvent::TE_GOTO_MAP:
+	case +Corsairs::Common::Mission::TriggerEvent::TE_LEVEL_UP:
+	case +Corsairs::Common::Mission::TriggerEvent::TE_MAP_INIT: {
 	}
 	break;
 	default: {

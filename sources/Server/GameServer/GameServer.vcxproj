@@ -64,7 +64,7 @@
     <ClCompile>
       <ExceptionHandling>Async</ExceptionHandling>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\..\Libraries\Util\include;$(ProjectDir)..\..\Libraries\Common\src;$(ProjectDir)..\..\Libraries\Util\include;$(ProjectDir)..\..\Libraries\LuaJIT\src;$(ProjectDir)..\..\Libraries\LuaBridge\include;$(ProjectDir)..\..\Libraries\icu\include;$(ProjectDir)..\..\Libraries\CorsairsNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\..\Libraries\Util\src;..\..\Libraries\Util\src\Logging;..\..\Libraries\Util\src\Encoding;..\..\Libraries\Util\src\Diagnostic;..\..\Libraries\Util\src\Math;..\..\Libraries\Util\src\Map;..\..\Libraries\Util\src\Config;..\..\Libraries\Util\src\Crypto;..\..\Libraries\Util\src\Database;..\..\Libraries\Util\src\Memory;..\..\Libraries\Util\src\Text;$(ProjectDir)..\..\Libraries\Common\src;$(ProjectDir)..\..\Libraries\Util\src;..\..\Libraries\Util\src\Logging;..\..\Libraries\Util\src\Encoding;..\..\Libraries\Util\src\Diagnostic;..\..\Libraries\Util\src\Math;..\..\Libraries\Util\src\Map;..\..\Libraries\Util\src\Config;..\..\Libraries\Util\src\Crypto;..\..\Libraries\Util\src\Database;..\..\Libraries\Util\src\Memory;..\..\Libraries\Util\src\Text;$(ProjectDir)..\..\Libraries\LuaJIT\src;$(ProjectDir)..\..\Libraries\LuaBridge\include;$(ProjectDir)..\..\Libraries\icu\include;$(ProjectDir)..\..\Libraries\CorsairsNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -100,7 +100,7 @@
     <ClCompile>
       <ExceptionHandling>Async</ExceptionHandling>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\..\Libraries\Util\include;$(ProjectDir)..\..\Libraries\Common\src;$(ProjectDir)..\..\Libraries\Util\include;$(ProjectDir)..\..\Libraries\LuaJIT\src;$(ProjectDir)..\..\Libraries\LuaBridge\include;$(ProjectDir)..\..\Libraries\icu\include;$(ProjectDir)..\..\Libraries\CorsairsNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\..\Libraries\Util\src;..\..\Libraries\Util\src\Logging;..\..\Libraries\Util\src\Encoding;..\..\Libraries\Util\src\Diagnostic;..\..\Libraries\Util\src\Math;..\..\Libraries\Util\src\Map;..\..\Libraries\Util\src\Config;..\..\Libraries\Util\src\Crypto;..\..\Libraries\Util\src\Database;..\..\Libraries\Util\src\Memory;..\..\Libraries\Util\src\Text;$(ProjectDir)..\..\Libraries\Common\src;$(ProjectDir)..\..\Libraries\Util\src;..\..\Libraries\Util\src\Logging;..\..\Libraries\Util\src\Encoding;..\..\Libraries\Util\src\Diagnostic;..\..\Libraries\Util\src\Math;..\..\Libraries\Util\src\Map;..\..\Libraries\Util\src\Config;..\..\Libraries\Util\src\Crypto;..\..\Libraries\Util\src\Database;..\..\Libraries\Util\src\Memory;..\..\Libraries\Util\src\Text;$(ProjectDir)..\..\Libraries\LuaJIT\src;$(ProjectDir)..\..\Libraries\LuaBridge\include;$(ProjectDir)..\..\Libraries\icu\include;$(ProjectDir)..\..\Libraries\CorsairsNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;NDEBUG;WINDOWS_IGNORE_PACKING_MISMATCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -178,6 +178,7 @@
     <ClInclude Include="src\Player\Player.h" />
     <ClInclude Include="src\Combat\Range.h" />
     <ClInclude Include="src\Script\RecordScript.h" />
+    <ClInclude Include="src\Script\JobTypeScript.h" />
     <ClInclude Include="src\Services\Mission\RoleData.h" />
     <ClInclude Include="src\Script\Script.h" />
     <ClInclude Include="src\Combat\SkillState.h" />
@@ -248,6 +249,7 @@
     <ClCompile Include="src\Services\Picture\Picture.cpp" />
     <ClCompile Include="src\Player\Player.cpp" />
     <ClCompile Include="src\Script\RecordScript.cpp" />
+    <ClCompile Include="src\Script\JobTypeScript.cpp" />
     <ClCompile Include="src\Script\Script.cpp" />
     <ClCompile Include="src\Player\gtplayer.cpp" />
     <ClCompile Include="src\World\StateCellGrid.cpp" />

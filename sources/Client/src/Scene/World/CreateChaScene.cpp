@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "TextFilter.h"
+using namespace Corsairs::Util;
 
 #include "createchascene.h"
 #include "EncodingUtil.h"
@@ -1177,7 +1179,7 @@ void CCreateChaScene::_ChaFoundFrmMouseEvent(CCompent* pSender, int nMsgType,
 											 int x, int y, DWORD dwKey) {
 	string strName = pSender->GetName();
 
-	if (!Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmFound")) {
+	if (!Corsairs::Util::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmFound")) {
 		return;
 	}
 
@@ -1222,7 +1224,7 @@ void CCreateChaScene::_ChaCityFrmMouseEvent(CCompent* pSender, int nMsgType,
 	string strName = pSender->GetName();
 
 
-	if (!Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmCity")) {
+	if (!Corsairs::Util::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmCity")) {
 		return;
 	}
 
@@ -1262,7 +1264,7 @@ void CCreateChaScene::_QuitFrmMouseEvent(CCompent* pSender, int nMsgType,
 										 int x, int y, DWORD dwKey) {
 	string strName = pSender->GetName();
 
-	if (!Corsairs::Util::Encoding::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmQuit")) {
+	if (!Corsairs::Util::EqualsIgnoreCaseAscii(pSender->GetForm()->GetName(), "frmQuit")) {
 		return;
 	}
 
@@ -1667,15 +1669,15 @@ void CCreateChaScene::NewChaError(int error_no, const char* error_info) {
 		m_bSameNameError = true;
 		frmChaFound->ShowModal();
 
-		g_pGameApp->MsgBox(g_GetServerError(error_no));
+		g_pGameApp->MsgBox(GetServerError(error_no));
 		ToLogService("errors", LogLevel::Error, "{} Error, Code:{}, Info: {}", error_info, error_no,
-					 g_GetServerError(error_no));
+					 GetServerError(error_no));
 		CGameApp::Waiting(false);
 	}
 	else {
-		g_pGameApp->MsgBox(g_GetServerError(error_no));
+		g_pGameApp->MsgBox(GetServerError(error_no));
 		ToLogService("errors", LogLevel::Error, "{} Error, Code:{}, Info: {}", error_info, error_no,
-					 g_GetServerError(error_no));
+					 GetServerError(error_no));
 		CGameApp::Waiting(false);
 
 		if (!m_bSameNameError) {

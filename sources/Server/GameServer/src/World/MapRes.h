@@ -24,7 +24,7 @@ class SubMap;
 
 using namespace Corsairs::Util;
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	class CNpc;
 }
@@ -179,7 +179,7 @@ public:
 	void		BeginGetUsedCopy(void);
 	SubMap*		GetNextUsedCopy(void);
 
-	mission::CNpc*		FindNpc( const char szName[] );
+	Corsairs::Common::Mission::CNpc*		FindNpc( const char szName[] );
 
 	// 
 	struct

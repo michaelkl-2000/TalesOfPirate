@@ -1,7 +1,8 @@
 ﻿#include "StdAfx.h"
 
 #include "UIText.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "uiformmgr.h"
 #include "uiedit.h"
 #include "UIRender.h"
@@ -800,8 +801,8 @@ void CFormMgr::ShowDebugInfo() {
 	data5 = (int)_show.size() + (int)_modal.size(); //
 	data6 = (int)_modal.size(); //
 	data7 = (int)CGuiTime::_times.size();
-	char headerBuf[1024] = {0};
-	FmtLang(headerBuf, sizeof(headerBuf), GetLanguageString(576), data0, data1, data2, data3, data4, data5, data6, data7,
+	std::string headerBuf;
+	headerBuf = FmtLang( GetLanguageString(576), data0, data1, data2, data3, data4, data5, data6, data7,
 			totalTick);
 	GetRender().FillFrame(0, 0, ui::GetWidth(headerBuf), 11);
 	ui::Render(headerBuf, 0, 0, COLOR_WHITE);

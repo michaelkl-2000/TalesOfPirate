@@ -20,7 +20,7 @@
 // ===========================================================================
 
 
-namespace Corsairs::Util::Map {
+namespace Corsairs::Util {
 
 // ---------------------------------------------------------------------------
 // Версии формата.
@@ -121,4 +121,4 @@ void TileInfo_Unpack(std::uint32_t tileInfo,
                      std::uint8_t baseTex,
                      std::uint8_t* pbtTile) noexcept;
 
-} // namespace Corsairs::Util::Map
+} // namespace Corsairs::Util

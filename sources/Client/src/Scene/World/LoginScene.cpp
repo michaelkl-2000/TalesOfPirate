@@ -961,14 +961,14 @@ void CLoginScene::_evtVerErrorFrm(CCompent* pSender, int nMsgType, int x, int y,
 void CLoginScene::Error(int error_no, const std::string& error_info) {
 	CGameApp::Waiting(false);
 	ToLogService("errors", LogLevel::Error, "{} Error, Code:{}, Info: {}", error_info, error_no,
-				 g_GetServerError(error_no));
+				 GetServerError(error_no));
 
 	if (ERR_MC_VER_ERROR == error_no) {
 		CBoxMgr::ShowSelectBox(_evtVerErrorFrm, GetLanguageString(181).c_str(), true);
 		return;
 	}
 
-	CGameApp::MsgBox(g_GetServerError(error_no));
+	CGameApp::MsgBox(GetServerError(error_no));
 }
 
 void CLoginScene::ReSetNewCha() {

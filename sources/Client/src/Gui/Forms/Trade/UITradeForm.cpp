@@ -17,7 +17,8 @@
 #include "Core/RoleCommon.h"
 #include "ShipFactory.h"
 #include "Core/RoleCommon.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 using namespace GUI;
 using namespace std;
 //---------------------------------------------------------------------------
@@ -110,11 +111,11 @@ void CTradeMgr::ShowCharTradeRequest(BYTE byType, DWORD dwRequestID) {
 		if (!pCha) return;
 	}
 
-	char szBuf[80] = {0};
-	if (byType == mission::TRADE_CHAR)
-		strncpy_s(szBuf, sizeof(szBuf), SafeVFormat(GetLanguageString(779), pCha->getHumanName()).c_str(), _TRUNCATE);
+	std::string szBuf;
+	if (byType == +Corsairs::Common::Mission::TradeCharType::TRADE_CHAR)
+		szBuf = SafeVFormat(GetLanguageString(779), pCha->getHumanName());
 	else
-		strncpy_s(szBuf, sizeof(szBuf), SafeVFormat(GetLanguageString(780), pCha->getHumanName()).c_str(), _TRUNCATE);
+		szBuf = SafeVFormat(GetLanguageString(780), pCha->getHumanName());
 
 
 	// add by Philip.Wu  2006-06-11  
@@ -137,7 +138,7 @@ void CTradeMgr::_evtSelectYesNoEvent(CCompent* pSender, int nMsgType, int x, int
 	if (name != "btnYes") return;
 
 	stSelectBox* pBox = (stSelectBox*)pSender->GetForm()->GetPointer();
-	CS_AcceptTrade((BYTE)pBox->dwParam, pBox->dwTag);
+	CS_AcceptTrade(static_cast<Corsairs::Common::Mission::TradeCharType>(pBox->dwParam), pBox->dwTag);
 }
 
 void CTradeMgr::_MainMousePlayerTradeEvent(CCompent* pSender, int nMsgType, int x, int y, DWORD dwKey) {
@@ -145,9 +146,9 @@ void CTradeMgr::_MainMousePlayerTradeEvent(CCompent* pSender, int nMsgType, int 
 	if (name == "btnNo" || name == "btnClose") //,
 	{
 		if (g_stUITrade.m_dwMainID == g_stUITrade.m_dwAcceptID)
-			::CS_CancelTrade(g_stUITrade.m_bTradeType, g_stUITrade.m_dwRequestID);
+			::CS_CancelTrade(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwRequestID);
 		else
-			::CS_CancelTrade(g_stUITrade.m_bTradeType, g_stUITrade.m_dwAcceptID);
+			::CS_CancelTrade(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwAcceptID);
 		g_stUITrade.btnTrade->SetIsEnabled(false);
 		g_stUITrade.btnYes->SetIsEnabled(false);
 		g_stUITrade.btnGold->SetIsEnabled(false);
@@ -156,9 +157,9 @@ void CTradeMgr::_MainMousePlayerTradeEvent(CCompent* pSender, int nMsgType, int 
 	}
 	else if (name == "btnYes") {
 		if (g_stUITrade.m_dwMainID == g_stUITrade.m_dwAcceptID)
-			::CS_ValidateTradeData(g_stUITrade.m_bTradeType, g_stUITrade.m_dwRequestID);
+			::CS_ValidateTradeData(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwRequestID);
 		else
-			::CS_ValidateTradeData(g_stUITrade.m_bTradeType, g_stUITrade.m_dwAcceptID);
+			::CS_ValidateTradeData(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwAcceptID);
 
 		g_stUITrade.btnYes->SetIsEnabled(false);
 		g_stUITrade.btnGold->SetIsEnabled(false);
@@ -169,9 +170,9 @@ void CTradeMgr::_MainMousePlayerTradeEvent(CCompent* pSender, int nMsgType, int 
 	}
 	else if (name == "btnTrade") {
 		if (g_stUITrade.m_dwMainID == g_stUITrade.m_dwAcceptID)
-			::CS_ValidateTrade(g_stUITrade.m_bTradeType, g_stUITrade.m_dwRequestID);
+			::CS_ValidateTrade(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwRequestID);
 		else
-			::CS_ValidateTrade(g_stUITrade.m_bTradeType, g_stUITrade.m_dwAcceptID);
+			::CS_ValidateTrade(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwAcceptID);
 		g_stUITrade.btnTrade->SetIsEnabled(false);
 		return;
 	}
@@ -196,7 +197,7 @@ void CTradeMgr::_evtIMPFormEvent(CCompent* pSender, int nMsgType, int x, int y, 
 	else
 		dwCharID = g_stUITrade.m_dwRequestID;
 
-	CS_AddIMP(g_stUITrade.m_bTradeType, dwCharID, mission::TRADE_DRAGMONEY_TRADE, pBox->GetNumber());
+	CS_AddIMP(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), dwCharID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGMONEY_TRADE, pBox->GetNumber());
 }
 
 void CTradeMgr::_evtGoldFormEvent(CCompent* pSender, int nMsgType, int x, int y, DWORD dwKey) {
@@ -211,7 +212,7 @@ void CTradeMgr::_evtGoldFormEvent(CCompent* pSender, int nMsgType, int x, int y,
 	else
 		dwCharID = g_stUITrade.m_dwRequestID;
 
-	CS_AddMoney(g_stUITrade.m_bTradeType, dwCharID, mission::TRADE_DRAGMONEY_TRADE, pBox->GetNumber());
+	CS_AddMoney(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), dwCharID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGMONEY_TRADE, pBox->GetNumber());
 }
 
 void CTradeMgr::ShowCharTrade(BYTE byType, DWORD dwAcceptID, DWORD dwRequestID) {
@@ -226,7 +227,7 @@ void CTradeMgr::ShowCharTrade(BYTE byType, DWORD dwAcceptID, DWORD dwRequestID) 
 	CCharacter* pRequestCha(NULL);
 	CCharacter* pAcceptCha(NULL);
 
-	if (mission::TRADE_CHAR == byType) //
+	if (+Corsairs::Common::Mission::TradeCharType::TRADE_CHAR == byType) //
 	{
 		frmRequest = g_stUIEquip.GetItemForm();
 		grdRequest = g_stUIEquip.GetGoodsGrid(); //Grid
@@ -234,7 +235,7 @@ void CTradeMgr::ShowCharTrade(BYTE byType, DWORD dwAcceptID, DWORD dwRequestID) 
 		pRequestCha = pScene->SearchByHumanID(dwRequestID);
 		pAcceptCha = pScene->SearchByHumanID(dwAcceptID);
 	}
-	else if (mission::TRADE_BOAT == byType) //,,ID
+	else if (+Corsairs::Common::Mission::TradeCharType::TRADE_BOAT == byType) //,,ID
 	{
 		CCharacter* pMain = CGameScene::GetMainCha();
 		if (!pMain) return;
@@ -305,8 +306,8 @@ void CTradeMgr::ShowCharTrade(BYTE byType, DWORD dwAcceptID, DWORD dwRequestID) 
 	chkTrade->SetIsChecked(false);
 
 	btnYes->SetIsEnabled(true);
-	btnGold->SetIsEnabled(m_bTradeType == mission::TRADE_CHAR);
-	btnIMP->SetIsEnabled(m_bTradeType == mission::TRADE_CHAR);
+	btnGold->SetIsEnabled(m_bTradeType == +Corsairs::Common::Mission::TradeCharType::TRADE_CHAR);
+	btnIMP->SetIsEnabled(m_bTradeType == +Corsairs::Common::Mission::TradeCharType::TRADE_CHAR);
 	btnTrade->SetIsEnabled(false);
 
 	string strPlayTradeLabName(""); //labPlayertradeNameCaption
@@ -385,7 +386,7 @@ void CTradeMgr::ShowCharTradeMoney(DWORD dwCharID, DWORD dwMoney) {
 	if (!labOtherGold) return;
 	if (!labSelfGold) return;
 
-	const char* szBuf = StringSplitNum(static_cast<int>(dwMoney));
+	std::string szBuf = StringSplitNum(static_cast<int>(dwMoney));
 	if (dwCharID == m_dwMainID) {
 		labSelfGold->SetCaption(szBuf);
 	}
@@ -400,7 +401,7 @@ void CTradeMgr::ShowCharTradeIMP(DWORD dwCharID, DWORD dwMoney) {
 	if (!labOtherIMP) return;
 	if (!labSelfIMP) return;
 
-	const char* szBuf = StringSplitNum(static_cast<int>(dwMoney));
+	std::string szBuf = StringSplitNum(static_cast<int>(dwMoney));
 	if (dwCharID == m_dwMainID) {
 		labSelfIMP->SetCaption(szBuf);
 	}
@@ -417,13 +418,13 @@ void CTradeMgr::_evtLocalSaleEvent(CCompent* pSender, int nMsgType, int x, int y
 
 	stSale* p = (stSale*)pBox->pointer;
 	//commented out to fix issue with stacked items, replaced with if statement.
-	//CS_AddItem( g_stUITrade.m_bTradeType, p->dwSaleID, mission::TRADE_DRAGTO_TRADE, p->nGridID, p->nDragID, pBox->GetNumber() );
+	//CS_AddItem( g_stUITrade.m_bTradeType, p->dwSaleID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_TRADE, p->nGridID, p->nDragID, pBox->GetNumber() );
 
 	if (g_stUITrade.m_dwMainID == g_stUITrade.m_dwAcceptID)
-		CS_AddItem(g_stUITrade.m_bTradeType, g_stUITrade.m_dwRequestID, mission::TRADE_DRAGTO_TRADE, p->nGridID,
+		CS_AddItem(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwRequestID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_TRADE, p->nGridID,
 				   p->nDragID, pBox->GetNumber());
 	else
-		CS_AddItem(g_stUITrade.m_bTradeType, g_stUITrade.m_dwAcceptID, mission::TRADE_DRAGTO_TRADE, p->nGridID,
+		CS_AddItem(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwAcceptID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_TRADE, p->nGridID,
 				   p->nDragID, pBox->GetNumber());
 }
 
@@ -449,20 +450,20 @@ void CTradeMgr::LocalSaleItem(CGoodsGrid* pSaleGrid, CGoodsGrid* pSelfGrid, int 
 	}
 
 	if (m_dwMainID == m_dwAcceptID)
-		CS_AddItem(g_stUITrade.m_bTradeType, m_dwRequestID, mission::TRADE_DRAGTO_TRADE, nGridID,
+		CS_AddItem(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), m_dwRequestID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_TRADE, nGridID,
 				   pSelfGrid->GetDragIndex(), pItem->GetTotalNum());
 	else
-		CS_AddItem(g_stUITrade.m_bTradeType, m_dwAcceptID, mission::TRADE_DRAGTO_TRADE, nGridID,
+		CS_AddItem(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), m_dwAcceptID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_TRADE, nGridID,
 				   pSelfGrid->GetDragIndex(), pItem->GetTotalNum());
 }
 
 void CTradeMgr::LocalCancelItem(CGoodsGrid* pSaleGrid, CGoodsGrid* pSelfGrid, int nGridID, CCommandObj* pItem) {
 	if (!pItem->GetIsValid()) return;
 	if (m_dwMainID == m_dwAcceptID)
-		CS_AddItem(g_stUITrade.m_bTradeType, m_dwRequestID, mission::TRADE_DRAGTO_ITEM, pSaleGrid->GetDragIndex(),
+		CS_AddItem(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), m_dwRequestID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_ITEM, pSaleGrid->GetDragIndex(),
 				   nGridID, 0);
 	else
-		CS_AddItem(g_stUITrade.m_bTradeType, m_dwAcceptID, mission::TRADE_DRAGTO_ITEM, pSaleGrid->GetDragIndex(),
+		CS_AddItem(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), m_dwAcceptID, Corsairs::Common::Mission::TradeOpType::TRADE_DRAGTO_ITEM, pSaleGrid->GetDragIndex(),
 				   nGridID, 0);
 }
 
@@ -565,7 +566,7 @@ void CTradeMgr::_evtSelfRMouseGridEvent(CGuiData* pSender, CCommandObj* pItem, i
 	if (!pItemCommand || pItemCommand->GetItemInfo()->sType != 43) return;
 
 	stNetItemInfo info;
-	info.chType = mission::VIEW_CHARTRADE_SELF;
+	info.chType = +Corsairs::Common::Mission::ViewItemType::VIEW_CHARTRADE_SELF;
 	info.sGridID = nGridID;
 	CS_BeginAction(g_stUIBoat.GetHuman(), enumACTION_ITEM_INFO, &info);
 }
@@ -577,7 +578,7 @@ void CTradeMgr::_evtOtherRMouseGridEvent(CGuiData* pSender, CCommandObj* pItem, 
 	if (!pItemCommand || pItemCommand->GetItemInfo()->sType != 43) return;
 
 	stNetItemInfo info;
-	info.chType = mission::VIEW_CHARTRADE_OTHER;
+	info.chType = +Corsairs::Common::Mission::ViewItemType::VIEW_CHARTRADE_OTHER;
 	info.sGridID = nGridID;
 	CS_BeginAction(g_stUIBoat.GetHuman(), enumACTION_ITEM_INFO, &info);
 }
@@ -587,7 +588,7 @@ void CTradeMgr::_evtOtherRMouseGridEvent(CGuiData* pSender, CCommandObj* pItem, 
 void CTradeMgr::CloseAllForm() {
 	// 
 	if (IsTrading()) {
-		::CS_CancelTrade(g_stUITrade.m_bTradeType, g_stUITrade.m_dwRequestID);
+		::CS_CancelTrade(static_cast<Corsairs::Common::Mission::TradeCharType>(g_stUITrade.m_bTradeType), g_stUITrade.m_dwRequestID);
 	}
 
 	// 

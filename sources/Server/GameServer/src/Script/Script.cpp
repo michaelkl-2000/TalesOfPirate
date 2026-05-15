@@ -7,6 +7,7 @@
 #include "Script/CharScript.h"
 #include "Script/EntityScript.h"
 #include "Script/RecordScript.h"
+#include "Script/JobTypeScript.h"
 
 //---------------------------------------------------------
 extern const char* GetResPath(const char *pszRes);
@@ -17,7 +18,7 @@ extern const char* GetResPath(const char *pszRes);
 #include "App/GameAppNet.h"
 #include "Player/Player.h"
 #include "World/MapEntry.h"
-namespace mission { class CEventEntity; }
+namespace Corsairs::Common::Mission { class CEventEntity; }
 
 CCharacter* g_pNoticeChar = NULL;
 lua_State* g_pLuaState = NULL;
@@ -41,10 +42,10 @@ BOOL InitLuaScript()
 	luabridge::getGlobalNamespace(g_pLuaState)
 		.beginClass<CCharacter>("CCharacter").endClass()
 		.beginClass<SubMap>("SubMap").endClass()
-		.deriveClass<mission::CEventEntity, CCharacter>("CEventEntity").endClass()
-		.deriveClass<mission::CNpc, CCharacter>("CNpc").endClass()
-		.deriveClass<mission::CTalkNpc, mission::CNpc>("CTalkNpc").endClass()
-		.deriveClass<mission::CWorldEudemon, mission::CNpc>("CWorldEudemon").endClass()
+		.deriveClass<Corsairs::Common::Mission::CEventEntity, CCharacter>("CEventEntity").endClass()
+		.deriveClass<Corsairs::Common::Mission::CNpc, CCharacter>("CNpc").endClass()
+		.deriveClass<Corsairs::Common::Mission::CTalkNpc, Corsairs::Common::Mission::CNpc>("CTalkNpc").endClass()
+		.deriveClass<Corsairs::Common::Mission::CWorldEudemon, Corsairs::Common::Mission::CNpc>("CWorldEudemon").endClass()
 		.beginClass<Corsairs::Net::RPacket>("RPacket").endClass()
 		.beginClass<Corsairs::Net::WPacket>("WPacket").endClass()
 		.beginClass<CMapRes>("CMapRes").endClass()
@@ -81,6 +82,9 @@ BOOL RegisterScript()
 		return FALSE;
 
 	if( !RegisterRecordScript() )
+		return FALSE;
+
+	if( !RegisterJobTypeScript() )
 		return FALSE;
 
 	return TRUE;

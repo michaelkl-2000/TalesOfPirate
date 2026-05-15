@@ -54,7 +54,7 @@ using Corsairs::Engine::Diagnostic::EngineDiag;
 using Corsairs::Client::Diagnostic::GameDiagnostic;
 
 
-Corsairs::Util::Ini::IniFile g_SystemIni;
+Corsairs::Util::IniFile g_SystemIni;
 
 #define MAX_LOADSTRING 100
 
@@ -127,13 +127,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	std::string strParam = lpCmdLine;
 
 	::SetThreadName("main");
-	Corsairs::Util::Crush::SetGlobalCRTExceptionBehavior();
-	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
-	Corsairs::Util::Crush::SetupDumpSetting("log\\game\\dumps");
+	Corsairs::Util::SetGlobalCRTExceptionBehavior();
+	Corsairs::Util::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::SetupDumpSetting("log\\game\\dumps");
 	g_logManager.InitLogger("log\\game");
 	g_logManager.EnableGlobalConsole(true);
 
-	g_SystemIni = Corsairs::Util::Ini::IniFile("./user/system.ini");
+	g_SystemIni = Corsairs::Util::IniFile("./user/system.ini");
 	GlobalAppConfig.Load();
 
 	//  Передаём в Engine флаг прогрева массовых ресурсов (см. GameConfig.h
@@ -770,7 +770,7 @@ HANDLE hOutputWrite = 0;
 
 DWORD WINAPI ReadStdout(LPVOID lpvThreadParam) {
 	::SetThreadName("read-stdout");
-	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::SetPerThreadCRTExceptionBehavior();
 	CHAR lpBuffer[256];
 	DWORD nBytesRead;
 

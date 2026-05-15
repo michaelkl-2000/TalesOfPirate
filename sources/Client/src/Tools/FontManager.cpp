@@ -85,7 +85,7 @@ FontManager& FontManager::Instance() {
 	return inst;
 }
 
-void FontManager::Init(Corsairs::Util::Ini::IniFile& ini) {
+void FontManager::Init(Corsairs::Util::IniFile& ini) {
 	const std::string systemFont = ini["Fonts"].GetString("SystemFont", "PTSans");
 	_resolvedFamily = ResolveGdiFamily(systemFont);
 	if (_resolvedFamily.empty()) {

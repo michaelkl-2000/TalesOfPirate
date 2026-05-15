@@ -1,31 +1,26 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: JobInitEquip.h
 // Creater: ZhangXuedong
 // Date: 2005.01.08
-// Comment:
+// Comment: Запись таблицы начального снаряжения по классам персонажа.
 //=============================================================================
 
-#ifndef JOBINITEQUIP_H
-#define JOBINITEQUIP_H
+#pragma once
 
-#include <tchar.h>
-#include "util.h"
+#include <array>
+#include <cstdint>
+
 #include "Database/TableData.h"
-
-#define defJOB_INIT_EQUIP_MAX	6
 
 
 namespace Corsairs::Common::Inventory {
 
-class CJobEquipRecord : public EntityData
+inline constexpr std::size_t JOB_INIT_EQUIP_MAX = 6;
+
+struct JobEquipRecord : public EntityData
 {
-public:
-	char	chID;			//
-	char	chJob;			//
-	short	sItemID[defJOB_INIT_EQUIP_MAX];		//
+	std::int8_t                                       Job{0};
+	std::array<std::int16_t, JOB_INIT_EQUIP_MAX>      ItemIds{};
 };
 
-
 } // namespace Corsairs::Common::Inventory
-
-#endif // JOBINITEQUIP_H

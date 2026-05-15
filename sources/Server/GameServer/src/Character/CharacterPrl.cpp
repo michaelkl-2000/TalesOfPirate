@@ -153,13 +153,13 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 	case CMD_CM_CHARTRADE_REQUEST: {
 		Corsairs::Net::Msg::CmRequestTradeMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		g_TradeSystem.Request(static_cast<BYTE>(msg.type), *this, static_cast<DWORD>(msg.charId));
+		g_TradeSystem.Request(msg.type, *this, static_cast<DWORD>(msg.charId));
 	}
 	break;
 	case CMD_CM_CHARTRADE_ACCEPT: {
 		Corsairs::Net::Msg::CmAcceptTradeMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		g_TradeSystem.Accept(static_cast<BYTE>(msg.type), *this, static_cast<DWORD>(msg.charId));
+		g_TradeSystem.Accept(msg.type, *this, static_cast<DWORD>(msg.charId));
 	}
 	break;
 	case CMD_CM_CHARTRADE_REJECT: {
@@ -168,46 +168,44 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 	case CMD_CM_CHARTRADE_CANCEL: {
 		Corsairs::Net::Msg::CmCancelTradeMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		g_TradeSystem.Cancel(static_cast<BYTE>(msg.type), *this, static_cast<DWORD>(msg.charId));
+		g_TradeSystem.Cancel(msg.type, *this, static_cast<DWORD>(msg.charId));
 	}
 	break;
 	case CMD_CM_CHARTRADE_ITEM: {
 		Corsairs::Net::Msg::CmAddItemMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		g_TradeSystem.AddItem(static_cast<BYTE>(msg.type), *this, static_cast<DWORD>(msg.charId),
-							  static_cast<BYTE>(msg.opType), static_cast<BYTE>(msg.index),
+		g_TradeSystem.AddItem(msg.type, *this, static_cast<DWORD>(msg.charId),
+							  msg.opType, static_cast<BYTE>(msg.index),
 							  static_cast<BYTE>(msg.itemIndex), static_cast<BYTE>(msg.count));
 	}
 	break;
 	case CMD_CM_CHARTRADE_MONEY: {
 		Corsairs::Net::Msg::CmAddMoneyMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		BYTE byType = static_cast<BYTE>(msg.type);
 		DWORD dwCharID = static_cast<DWORD>(msg.charId);
-		BYTE byOpType = static_cast<BYTE>(msg.opType);
 		BYTE currency = static_cast<BYTE>(msg.isImp);
 		DWORD dwMondy = static_cast<DWORD>(msg.money);
 
 		if (currency == 0) {
 			//gold
-			g_TradeSystem.AddMoney(byType, *this, dwCharID, byOpType, dwMondy);
+			g_TradeSystem.AddMoney(msg.type, *this, dwCharID, msg.opType, dwMondy);
 		}
 		else if (currency == 1) {
 			//IMPS
-			g_TradeSystem.AddIMP(byType, *this, dwCharID, byOpType, dwMondy);
+			g_TradeSystem.AddIMP(msg.type, *this, dwCharID, msg.opType, dwMondy);
 		}
 	}
 	break;
 	case CMD_CM_CHARTRADE_VALIDATEDATA: {
 		Corsairs::Net::Msg::CmValidateTradeDataMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		g_TradeSystem.ValidateItemData(static_cast<BYTE>(msg.type), *this, static_cast<DWORD>(msg.charId));
+		g_TradeSystem.ValidateItemData(msg.type, *this, static_cast<DWORD>(msg.charId));
 	}
 	break;
 	case CMD_CM_CHARTRADE_VALIDATE: {
 		Corsairs::Net::Msg::CmValidateTradeMessage msg;
 		Corsairs::Net::Msg::deserialize(pk, msg);
-		g_TradeSystem.ValidateTrade(static_cast<BYTE>(msg.type), *this, static_cast<DWORD>(msg.charId));
+		g_TradeSystem.ValidateTrade(msg.type, *this, static_cast<DWORD>(msg.charId));
 	}
 	break;
 	case CMD_CM_CREATE_BOAT: {
@@ -269,7 +267,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 				break;
 			}
 		}
-		BoatSelected(static_cast<BYTE>(msg.type), static_cast<BYTE>(msg.index));
+		BoatSelected(msg.type, static_cast<BYTE>(msg.index));
 	}
 	break;
 	case CMD_CM_BOAT_BAGSEL: {
@@ -289,7 +287,7 @@ void CCharacter::ProcessPacket(unsigned short usCmd, Corsairs::Net::RPacket& pk)
 		DWORD dwEntityID = pk.ReadInt64();
 		CCharacter* pCha = m_submap->FindCharacter(dwEntityID, GetShape().Centre);
 		if (pCha == NULL) break;
-		mission::CEventEntity* pEntity = pCha->IsEvent();
+		Corsairs::Common::Mission::CEventEntity* pEntity = pCha->IsEvent();
 		if (pEntity) {
 			pEntity->MsgProc(*this, pk);
 			break;
@@ -1191,9 +1189,9 @@ void CCharacter::Handle_Say(const Corsairs::Net::Msg::CmSayMessage& sayMsg) {
 }
 
 void CCharacter::Handle_RequestTalk(std::uint32_t npcId, Corsairs::Net::RPacket& pk) {
-	if (npcId == mission::g_WorldEudemon.GetID()) {
+	if (npcId == Corsairs::Common::Mission::g_WorldEudemon.GetID()) {
 		ToLogService("trade", "Handle_RequestTalk cha={} npcId={} -> WorldEudemon", GetLogName(), npcId);
-		mission::g_WorldEudemon.MsgProc(*this, pk);
+		Corsairs::Common::Mission::g_WorldEudemon.MsgProc(*this, pk);
 		return;
 	}
 	CCharacter* pCha = m_submap->FindCharacter(npcId, GetShape().Centre);
@@ -1203,7 +1201,7 @@ void CCharacter::Handle_RequestTalk(std::uint32_t npcId, Corsairs::Net::RPacket&
 			GetLogName(), npcId, GetShape().Centre.X, GetShape().Centre.Y);
 		return;
 	}
-	mission::CNpc* pNpc = pCha->IsNpc();
+	Corsairs::Common::Mission::CNpc* pNpc = pCha->IsNpc();
 	if (pNpc) {
 		ToLogService("trade", "Handle_RequestTalk cha={} npcId={} -> CNpc::MsgProc [{}] packet={}",
 			GetLogName(), npcId, pCha->GetLogName(), pk.PrintCommand());
@@ -2346,7 +2344,7 @@ void CCharacter::BeginAction(const Corsairs::Net::Msg::CmBeginActionMessage& msg
 		auto WtPk = Corsairs::Net::Msg::serialize(actionMsg);
 		NotiChgToEyeshot(WtPk);
 
-		bool bToSeat = g_IsSeatPose(sPose);
+		bool bToSeat = IsSeatPose(sPose);
 		if ((bToSeat && m_SSeat.chIsSeat) || (!bToSeat && !m_SSeat.chIsSeat))
 			break;
 

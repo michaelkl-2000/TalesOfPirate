@@ -1,6 +1,6 @@
 // GamePool — современная замена CEntityAlloc / CPlayerAlloc.
 //
-// Сингтон с TrackedPool<T> на каждый тип сущности и словарями для O(1)-поиска
+// Сингтон с Corsairs::Util::TrackedPool<T> на каждый тип сущности и словарями для O(1)-поиска
 // по стабильному handle. Handle генерируется монотонным серийником на тип
 // (старшие 8 бит — тэг типа, младшие 24 бита — серийник, при переполнении —
 // повторная попытка пока слот занят). Указатели отслеживаются отдельными
@@ -33,7 +33,7 @@ class CPlayer;
 class CCharacter;
 class CItem;
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
     class CTalkNpc;
     class CEventEntity;
@@ -54,8 +54,8 @@ public:
     CPlayer*                                AcquirePlayer();
     CCharacter*                             AcquireCharacter();
     CItem*                                  AcquireItem();
-    mission::CTalkNpc*                      AcquireTalkNpc();
-    mission::CEventEntity*                  AcquireEventEntity(BYTE byType);
+    Corsairs::Common::Mission::CTalkNpc*                      AcquireTalkNpc();
+    Corsairs::Common::Mission::CEventEntity*                  AcquireEventEntity(BYTE byType);
 
     // Release — возврат в пул. Диспатч по тэгу handle.
     void    ReleasePlayer(CPlayer* player);
@@ -83,7 +83,7 @@ public:
     void    ForEachPlayer(const std::function<void(CPlayer*)>& fn);
     void    ForEachCharacter(const std::function<void(CCharacter*)>& fn);
     void    ForEachItem(const std::function<void(CItem*)>& fn);
-    void    ForEachTalkNpc(const std::function<void(mission::CTalkNpc*)>& fn);
+    void    ForEachTalkNpc(const std::function<void(Corsairs::Common::Mission::CTalkNpc*)>& fn);
 
     // Мониторинг (количество живых объектов по типу).
     size_t  GetPlayerCount() const      { return _playerPool.GetUsedCount(); }
@@ -104,12 +104,12 @@ private:
     long    NewEntityHandle(uint32_t tag);
     long    NewPlayerHandle(uint32_t tag);
 
-    TrackedPool<CPlayer>                        _playerPool{"Player"};
-    TrackedPool<CCharacter>                     _chaPool{"Character"};
-    TrackedPool<CItem>                          _itemPool{"Item"};
-    TrackedPool<mission::CTalkNpc>              _tnpcPool{"TalkNpc"};
-    TrackedPool<mission::CBerthEntity>          _berthPool{"Berth"};
-    TrackedPool<mission::CResourceEntity>       _resourcePool{"Resource"};
+    Corsairs::Util::TrackedPool<CPlayer>                        _playerPool{"Player"};
+    Corsairs::Util::TrackedPool<CCharacter>                     _chaPool{"Character"};
+    Corsairs::Util::TrackedPool<CItem>                          _itemPool{"Item"};
+    Corsairs::Util::TrackedPool<Corsairs::Common::Mission::CTalkNpc>              _tnpcPool{"TalkNpc"};
+    Corsairs::Util::TrackedPool<Corsairs::Common::Mission::CBerthEntity>          _berthPool{"Berth"};
+    Corsairs::Util::TrackedPool<Corsairs::Common::Mission::CResourceEntity>       _resourcePool{"Resource"};
 
     mutable std::shared_mutex                   _indexMutex;
     std::unordered_map<long, Entity*>           _entityByHandle;

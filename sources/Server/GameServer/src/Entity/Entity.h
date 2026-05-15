@@ -22,7 +22,7 @@ class CChaListNode;
 class CEyeshotCell;
 struct SSkillStateUnit;
 
-namespace mission {
+namespace Corsairs::Common::Mission {
 	class CNpc;
 	class CEventEntity;
 };
@@ -158,8 +158,8 @@ public:
 	virtual Monster*               IsMonster();
 	virtual CCharacter*            IsCharacter();
 	virtual CAttachable*           IsAttachable();
-	virtual mission::CNpc*         IsNpc();
-	virtual mission::CEventEntity* IsEvent();
+	virtual Corsairs::Common::Mission::CNpc*         IsNpc();
+	virtual Corsairs::Common::Mission::CEventEntity* IsEvent();
 
 	void          BeginSee(Entity* obj);
 	void          EndSee(Entity* obj);

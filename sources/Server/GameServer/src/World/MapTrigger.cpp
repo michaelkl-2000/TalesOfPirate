@@ -5,7 +5,7 @@
 
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 
 

@@ -8,7 +8,7 @@
 #include "NPC/NPC.h"
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	class CWorldEudemon : public CNpc
 	{

@@ -1,35 +1,70 @@
-﻿//=============================================================================
+//=============================================================================
 // FileName: JobType.h
 // Creater: ZhangXuedong
 // Date: 2005.03.18
 // Comment: Job Type
 //=============================================================================
 
-#ifndef JOBTYPE_H
-#define JOBTYPE_H
+#pragma once
 
-const long	JOB_TYPE_XINSHOU		= 0;	// ""
-const long	JOB_TYPE_JIANSHI		= 1;	// ""
-const long	JOB_TYPE_LIEREN			= 2;	// ""
-const long	JOB_TYPE_SHUISHOU		= 3;	// ""
-const long	JOB_TYPE_MAOXIANZHE		= 4;	// ""
-const long	JOB_TYPE_QIYUANSHI		= 5;	// ""
-const long	JOB_TYPE_JISHI			= 6;	// ""
-const long	JOB_TYPE_SHANGREN		= 7;	// ""
-const long	JOB_TYPE_JUJS			= 8;	// ""
-const long	JOB_TYPE_SHUANGJS		= 9;	// ""
-const long	JOB_TYPE_JIANDUNSHI		= 10;	// ""
-const long	JOB_TYPE_XUNSHOUSHI		= 11;	// ""
-const long	JOB_TYPE_JUJISHOU		= 12;	// ""
-const long	JOB_TYPE_SHENGZHIZHE	= 13;	// ""
-const long	JOB_TYPE_FENGYINSHI		= 14;	// ""
-const long	JOB_TYPE_CHUANZHANG		= 15;	// ""
-const long	JOB_TYPE_HANGHAISHI		= 16;	// ""
-const long	JOB_TYPE_BAOFAHU		= 17;	// ""
-const long	JOB_TYPE_GONGCHENGSHI	= 18;	// ""
+#include <cstdint>
 
-const long	MAX_JOB_TYPE			= 19;	// 
+// Класс персонажа (Job). Имена-пиньинь сохраняются для совместимости с
+// серверным CharacterPacket.cpp / NetProtocol.cpp (case-метки свитчей) и с
+// уже написанными Lua-скриптами (AttrCalculate.lua и др.).
+// Underlying-тип uint8_t — значения 0..18, прицельно компактно для сетевых пакетов.
+//
+// SINGLE SOURCE OF TRUTH — макрос JOB_TYPE_LIST(X). Из него генерируется:
+//   - enum class Corsairs::Common::Character::JobType
+//   - legacy-алиасы JOB_TYPE_XINSHOU ... JOB_TYPE_GONGCHENGSHI (int32_t)
+//   - таблица для регистрации в Lua (см. Server/.../Script/JobTypeScript.cpp)
+// При добавлении новой профессии достаточно добавить одну строку в JOB_TYPE_LIST.
+//
+// enum class живёт в Corsairs::Common::Character; legacy-алиасы и MAX_JOB_TYPE /
+// g_szJobName остаются в глобальной области для совместимости с многочисленными
+// callsite'ами, не находящимися в этом namespace.
+// TODO: после wrapping `Item` и др. потребителей — перенести MAX_JOB_TYPE
+// и g_szJobName в Corsairs::Common::Character и убрать legacy-алиасы.
 
-extern const char	*g_szJobName[MAX_JOB_TYPE];
+// X(имя, числовое значение, английское описание)
+#define JOB_TYPE_LIST(X)                  \
+    X(XINSHOU,      0,  "Newbie")         \
+    X(JIANSHI,      1,  "Swordsman")      \
+    X(LIEREN,       2,  "Hunter")         \
+    X(SHUISHOU,     3,  "Sailor")         \
+    X(MAOXIANZHE,   4,  "Explorer")       \
+    X(QIYUANSHI,    5,  "Herbalist")      \
+    X(JISHI,        6,  "Artisan")        \
+    X(SHANGREN,     7,  "Merchant")       \
+    X(JUJS,         8,  "Champion")       \
+    X(SHUANGJS,     9,  "Crusader")       \
+    X(JIANDUNSHI,   10, "WhiteKnight")    \
+    X(XUNSHOUSHI,   11, "AnimalTamer")    \
+    X(JUJISHOU,     12, "Sharpshooter")   \
+    X(SHENGZHIZHE,  13, "Cleric")         \
+    X(FENGYINSHI,   14, "SealMaster")     \
+    X(CHUANZHANG,   15, "Captain")        \
+    X(HANGHAISHI,   16, "Voyager")        \
+    X(BAOFAHU,      17, "Upstart")        \
+    X(GONGCHENGSHI, 18, "Engineer")
 
-#endif // JOBTYPE_H
+namespace Corsairs::Common::Character {
+
+enum class JobType : std::uint8_t {
+#define X(name, value, comment) name = value,
+    JOB_TYPE_LIST(X)
+#undef X
+};
+
+} // namespace Corsairs::Common::Character
+
+inline constexpr std::int32_t MAX_JOB_TYPE = 19;
+
+// Совместимостные алиасы для case-меток в switch'ах CharacterPacket.cpp /
+// NetProtocol.cpp и для legacy-кода, который ещё ожидает integer-константы.
+// Новый код использовать `Corsairs::Common::Character::JobType::JUJS` напрямую.
+#define X(name, value, comment) inline constexpr std::int32_t JOB_TYPE_##name = value;
+JOB_TYPE_LIST(X)
+#undef X
+
+extern const char* g_szJobName[MAX_JOB_TYPE];

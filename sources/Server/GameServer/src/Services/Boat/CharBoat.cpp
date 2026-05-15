@@ -1,6 +1,8 @@
 // CharBoat.cpp created by knight 2005.4.18
 //---------------------------------------------------------
 #include "Core/stdafx.h"
+#include "TextFilter.h"
+using namespace Corsairs::Util;
 namespace Corsairs::Common::Mount {}
 using namespace Corsairs::Common::Mount;
 #include "Services/Boat/CharBoat.h"
@@ -14,9 +16,9 @@ using namespace Corsairs::Common::Mount;
 #include "Script/LuaAPI.h"
 
 //---------------------------------------------------------
-mission::CCharBoat g_CharBoat;
+Corsairs::Common::Mission::CCharBoat g_CharBoat;
 
-namespace mission {
+namespace Corsairs::Common::Mission {
 	void CCharBoat::UpdateBoat(const BOAT_DATA& Data) {
 	}
 
@@ -70,7 +72,7 @@ namespace mission {
 		BOOL bRet = TRUE;
 		USHORT sPf = (USHORT)owner.getAttr(ATTR_JOB);
 		for (BYTE i = 0; i < pInfo->sNumPfLimit; i++) {
-			strcat(szData, g_GetJobName(pInfo->sPfLimit[i]));
+			strcat(szData, GetJobName(pInfo->sPfLimit[i]));
 			if (i + 1 < pInfo->sNumPfLimit) {
 				strcat(szData, "");
 			}

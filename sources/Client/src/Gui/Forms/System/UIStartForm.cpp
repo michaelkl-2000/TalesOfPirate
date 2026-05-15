@@ -48,7 +48,8 @@ using namespace Corsairs::Common::NPC;
 // Add by lark.li 20080811 begin
 #include "UITeam.h"
 // End
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "LootFilter.h"
 
 using namespace std;
@@ -1202,7 +1203,7 @@ void CStartMgr::_evtPopMenu(CGuiData* pSender, int x, int y, DWORD key) {
 			&& ((!pCha->IsBoat() && !pMain->IsBoat())
 				|| (pCha->IsBoat() && pMain->IsBoat()))) {
 			if (pMain->IsBoat() || pMain->getGameAttr()->get(ATTR_LV) >= 6) {
-				CS_RequestTrade(mission::TRADE_CHAR, mainMouseRight->nTag);
+				CS_RequestTrade(Corsairs::Common::Mission::TradeCharType::TRADE_CHAR, mainMouseRight->nTag);
 			}
 			else {
 				// 6
@@ -1262,7 +1263,7 @@ void CStartMgr::_evtPopMenu(CGuiData* pSender, int x, int y, DWORD key) {
 		CCharacter* pCha = (CCharacter*)mainMouseRight->GetPointer();
 		CCharacter* pMain = CGameScene::GetMainCha();
 		if (pCha && pMain && pCha->IsBoat() && pMain->IsBoat()) {
-			CS_RequestTrade(mission::TRADE_BOAT, mainMouseRight->nTag);
+			CS_RequestTrade(Corsairs::Common::Mission::TradeCharType::TRADE_BOAT, mainMouseRight->nTag);
 		}
 		else {
 			g_pGameApp->SysInfo(GetLanguageString(767));

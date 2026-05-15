@@ -7,7 +7,7 @@
 #include "Script/lua_gamectrl.h"
 
 //---------------------------------------------------------
-using namespace mission;
+using namespace Corsairs::Common::Mission;
 
 std::tuple<int, SubMap*> GetCurSubmap()
 {
@@ -20,9 +20,9 @@ std::tuple<int, SubMap*> GetCurSubmap()
 	return {LUA_TRUE, g_pScriptMap};
 }
 
-std::tuple<int, mission::CEventEntity*> CreateEventEntity(int byType, SubMap* pMap, const std::string& name, int sID, int sInfoID, int dwxPos, int dwyPos, int sDir)
+std::tuple<int, Corsairs::Common::Mission::CEventEntity*> CreateEventEntity(int byType, SubMap* pMap, const std::string& name, int sID, int sInfoID, int dwxPos, int dwyPos, int sDir)
 {
-	mission::CEventEntity* pEntity = g_pGameApp->CreateEntity((BYTE)byType);
+	Corsairs::Common::Mission::CEventEntity* pEntity = g_pGameApp->CreateEntity((BYTE)byType);
 	if (!pMap || !pEntity)
 	{
 		return {LUA_FALSE, nullptr};
@@ -43,15 +43,15 @@ int SetEntityData_raw(lua_State* L)
 	}
 
 	BOOL bRet = FALSE;
-	auto pEntityResult = luabridge::Stack<mission::CEventEntity*>::get(L, 1);
+	auto pEntityResult = luabridge::Stack<Corsairs::Common::Mission::CEventEntity*>::get(L, 1);
 	if (!pEntityResult) { PARAM_ERROR return 0; }
-	mission::CEventEntity* pEntity = *pEntityResult;
+	Corsairs::Common::Mission::CEventEntity* pEntity = *pEntityResult;
 	switch (pEntity->GetType())
 	{
-	case BASE_ENTITY:
+	case EntityType::BASE_ENTITY:
 		break;
 
-	case RESOURCE_ENTITY:
+	case EntityType::RESOURCE_ENTITY:
 		{
 			bValid = lua_gettop(L) >= 4;
 			if (!bValid)
@@ -62,14 +62,14 @@ int SetEntityData_raw(lua_State* L)
 			USHORT sItemID = (USHORT)lua_tonumber(L, 2);
 			USHORT sCount = (USHORT)lua_tonumber(L, 3);
 			USHORT sTime = (USHORT)lua_tonumber(L, 4);
-			bRet = ((mission::CResourceEntity*)pEntity)->SetData(sItemID, sCount, sTime);
+			bRet = ((Corsairs::Common::Mission::CResourceEntity*)pEntity)->SetData(sItemID, sCount, sTime);
 		}
 		break;
 
-	case TRANSIT_ENTITY:
+	case EntityType::TRANSIT_ENTITY:
 		break;
 
-	case BERTH_ENTITY:
+	case EntityType::BERTH_ENTITY:
 		{
 			bValid = lua_gettop(L) >= 5;
 			if (!bValid)
@@ -81,7 +81,7 @@ int SetEntityData_raw(lua_State* L)
 			USHORT sxPos = (USHORT)lua_tonumber(L, 3);
 			USHORT syPos = (USHORT)lua_tonumber(L, 4);
 			USHORT sDir = (USHORT)lua_tonumber(L, 5);
-			bRet = ((mission::CBerthEntity*)pEntity)->SetData(sBerthID, sxPos, syPos, sDir);
+			bRet = ((Corsairs::Common::Mission::CBerthEntity*)pEntity)->SetData(sBerthID, sxPos, syPos, sDir);
 		}
 		break;
 

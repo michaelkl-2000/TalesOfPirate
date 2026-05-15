@@ -14,11 +14,11 @@
 #include <string>
 #include <string_view>
 
-// Подключаем соседний algo.h через "" — search-list начинается с каталога
-// этого файла, что обходит case-insensitive коллизию с Client/Net/Transport/Algo.h
-// при включении из Client TU. Так все Corsairs::Util-функции из algo (Md5/Base64)
-// доступны автоматически через util.h.
-#include "algo.h"
+// Явный относительный путь к algo.h из соседней подпапки Crypto: обходит
+// case-insensitive коллизию с Client/Net/Transport/Algo.h при включении из
+// Client TU. Так все Corsairs::Util-функции из algo (Md5/Base64) доступны
+// автоматически через util.h.
+#include "../Crypto/algo.h"
 
 namespace Corsairs::Util {
 

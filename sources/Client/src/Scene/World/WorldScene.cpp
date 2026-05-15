@@ -580,7 +580,7 @@ bool CWorldScene::_IsBlock(CCharacter* pCha, int x, int y) {
 	int nY = (int)(vPos.y * 100.0f);
 
 	if (_pTerrain) {
-		return _pTerrain->IsGridBlock(nX / 50, nY / 50) || !g_IsMoveAble(
+		return _pTerrain->IsGridBlock(nX / 50, nY / 50) || !IsMoveAble(
 			pCha->getChaCtrlType(), pCha->GetDefaultChaInfo()->Territory,
 			(EAreaMask)_pTerrain->GetTile(nX / 100, nY / 100)->sRegion);
 	}
@@ -903,7 +903,7 @@ void CWorldScene::_SceneCursor() {
 					&&
 					(
 						_pTerrain->IsGridBlock(nScrX / 50, nScrY / 50)
-						|| !g_IsMoveAble(pMain->getChaCtrlType(), pMain->GetDefaultChaInfo()->Territory,
+						|| !IsMoveAble(pMain->getChaCtrlType(), pMain->GetDefaultChaInfo()->Territory,
 										 (EAreaMask)_pTerrain->GetTile(nScrX / 100, nScrY / 100)->sRegion)
 					)
 				) {

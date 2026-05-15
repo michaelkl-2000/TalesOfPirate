@@ -8,8 +8,10 @@
 #ifndef MAPENTRY_H
 #define MAPENTRY_H
 
+#include <list>
+
 #include "Entity/Entity.h"
-#include "Core/ToolClass.h"
+#include "SlotMap.h"
 #include "World/MapRes.h"
 #include "World/EventRecord.h"
 
@@ -49,9 +51,6 @@ class	CDynMapEntryCell
 public:
 	CDynMapEntryCell();
 
-	void		    SetPos(void *pPos);
-	void*		    GetPos(void);
-
 	void		    SetMapName(const char *cszMapName);
 	const char*	    GetMapName(void) const;
 	void		    SetTMapName(const char *cszTMapName);
@@ -90,9 +89,7 @@ private:
 
 	int16_t	m_sMapCopyNum;
 	int16_t	m_sCopyPlyNum;
-	CListArray<CMapEntryCopyCell>	m_LCopyInfo;
-
-	void*		m_pPos;
+	Corsairs::Util::SlotMap<CMapEntryCopyCell, defMAX_MAP_COPY_NUM>	m_LCopyInfo;
 };
 
 //
@@ -109,7 +106,7 @@ public:
 	void	AfterPlayerLogin(const char *cszName);
 
 private:
-	CResidentList<CDynMapEntryCell>	m_LEntryList;
+	std::list<CDynMapEntryCell>	m_LEntryList;
 };
 
 extern CDynMapEntry g_CDMapEntry;

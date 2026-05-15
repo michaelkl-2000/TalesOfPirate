@@ -35,7 +35,7 @@ std::string PlayerStorage::GetName(std::int32_t cha_id) {
 #define defSHORTCUT_DATA_STRING_LEN	1500
 #define defSSTATE_DATE_STRING_LIN	1024
 
-// g_sql и g_buf удалены — PlayerStorage теперь использует _characters (OdbcTable)
+// g_sql и g_buf удалены — PlayerStorage теперь использует _characters (Corsairs::Util::OdbcTable)
 char g_kitbag[defKITBAG_DATA_STRING_LEN] = {};
 char g_kitbagTmp[defKITBAG_DATA_STRING_LEN] = {};
 char g_equip[defKITBAG_DATA_STRING_LEN] = {};
@@ -62,7 +62,7 @@ bool PlayerStorage::Init(void) {
 		_db.CreateCommand("SELECT TOP 0 atorID FROM character").ExecuteNonQuery();
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		char buffer[255];
 		std::snprintf(buffer, sizeof(buffer), RES_STRING(GM_GAMEDB_CPP_00001), "character");
 		MessageBox(0, buffer, RES_STRING(GM_GAMEDB_CPP_00002), MB_OK);
@@ -93,7 +93,7 @@ bool PlayerStorage::ShowExpRank(CCharacter& pCha, std::int32_t count) {
 		pCha.ReflectINFof(&pCha, l_wpk);
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "ShowExpRank failed: {}", e.what());
 		return false;
 	}
@@ -146,7 +146,7 @@ bool PlayerStorage::ReadAllData(CPlayer& player, std::uint32_t atorID) {
 
 	// Уровень, класс, статы
 	pCha->setAttr(ATTR_LV, row->degree, 1);
-	pCha->setAttr(ATTR_JOB, g_GetJobID(row->job.c_str()), 1);
+	pCha->setAttr(ATTR_JOB, GetJobId(row->job.c_str()), 1);
 	pCha->setAttr(ATTR_GD, row->bomd, 1);
 	pCha->setAttr(ATTR_AP, row->ap, 1);
 	pCha->setAttr(ATTR_TP, row->tp, 1);
@@ -371,7 +371,7 @@ bool PlayerStorage::SaveAllData(CPlayer& pPlayer, char chSaveType, bool bForceWi
 	row.angle = pCha->GetAngle();
 	row.pk_ctrl = pCha->IsInPK();
 	row.degree = pCha->getAttr(ATTR_LV);
-	row.job = g_GetJobName(static_cast<short>(pCha->getAttr(ATTR_JOB)));
+	row.job = GetJobName(static_cast<short>(pCha->getAttr(ATTR_JOB)));
 	row.bomd = pCha->getAttr(ATTR_GD);
 	row.ap = pCha->getAttr(ATTR_AP);
 	row.tp = pCha->getAttr(ATTR_TP);
@@ -619,7 +619,7 @@ bool PlayerStorage::SaveDaily(CPlayer& pPlayer) {
 }
 
 
-// === CTableResource (OdbcDatabase) ===
+// === CTableResource (Corsairs::Util::OdbcDatabase) ===
 
 bool CTableResource::Create(std::int32_t& lDBID, std::int32_t lChaId, std::int32_t lTypeId) {
 	try {
@@ -629,7 +629,7 @@ bool CTableResource::Create(std::int32_t& lDBID, std::int32_t lChaId, std::int32
 		lDBID = std::stol(idStr);
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "CTableResource::Create failed: {}", e.what());
 		return false;
 	}
@@ -664,7 +664,7 @@ bool CTableResource::ReadKitbagData(CCharacter& pCCha) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "ReadKitbagData failed: {}", e.what());
 		return false;
 	}
@@ -683,7 +683,7 @@ bool CTableResource::SaveKitbagData(CCharacter& pCCha) {
 		   .SetParam(2, pCCha.GetKitbagRecDBID()).ExecuteNonQuery();
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveKitbagData failed: {}", e.what());
 		return false;
 	}
@@ -720,7 +720,7 @@ bool CTableResource::ReadKitbagTmpData(CCharacter& pCCha) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "ReadKitbagTmpData failed: {}", e.what());
 		return false;
 	}
@@ -739,7 +739,7 @@ bool CTableResource::SaveKitbagTmpData(CCharacter& pCCha) {
 		   .SetParam(2, pCCha.GetKitbagTmpRecDBID()).ExecuteNonQuery();
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveKitbagTmpData failed: {}", e.what());
 		return false;
 	}
@@ -782,7 +782,7 @@ bool CTableResource::ReadBankData(CPlayer& pCPly, std::int8_t chBankNO) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "ReadBankData failed: {}", e.what());
 		return false;
 	}
@@ -811,7 +811,7 @@ bool CTableResource::SaveBankData(CPlayer& pCPly, std::int8_t chBankNO) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveBankData failed: {}", e.what());
 		return false;
 	}
@@ -839,7 +839,7 @@ bool CTableMapMask::ReadAllMaps(CPlayer& pCPly) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "CTableMapMask::ReadAllMaps failed: {}", e.what());
 		return false;
 	}
@@ -906,7 +906,7 @@ bool CTableMapMask::SaveMap(CPlayer& pCPly, const std::string& mapName,
 		   .ExecuteNonQuery();
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "CTableMapMask::SaveMap failed: {}", e.what());
 		return false;
 	}
@@ -923,7 +923,7 @@ void CTableMapMask::HandleSaveList() {
 		try {
 			_db.CreateCommand(_saveQueue.front()).ExecuteNonQuery();
 		}
-		catch (const OdbcException& e) {
+		catch (const Corsairs::Util::OdbcException& e) {
 			ToLogService("db", LogLevel::Error, "CTableMapMask::HandleSaveList failed: {}", e.what());
 		}
 		_saveQueue.pop_front();
@@ -935,7 +935,7 @@ void CTableMapMask::SaveAll() {
 		try {
 			_db.CreateCommand(sql).ExecuteNonQuery();
 		}
-		catch (const OdbcException& e) {
+		catch (const Corsairs::Util::OdbcException& e) {
 			ToLogService("db", LogLevel::Error, "CTableMapMask::SaveAll failed: {}", e.what());
 		}
 	}
@@ -944,7 +944,7 @@ void CTableMapMask::SaveAll() {
 }
 
 
-// === CTableBoat (OdbcDatabase) ===
+// === CTableBoat (Corsairs::Util::OdbcDatabase) ===
 
 bool CTableBoat::Create(std::uint32_t& dwBoatID, const BOAT_DATA& Data) {
 	try {
@@ -968,7 +968,7 @@ bool CTableBoat::Create(std::uint32_t& dwBoatID, const BOAT_DATA& Data) {
 		dwBoatID = static_cast<std::uint32_t>(std::stol(idStr));
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "CTableBoat::Create failed: {}", e.what());
 		return false;
 	}
@@ -1052,7 +1052,7 @@ bool CTableBoat::GetBoat(CCharacter& Boat) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetBoat failed: {}", e.what());
 		return false;
 	}
@@ -1064,7 +1064,7 @@ bool CTableBoat::SaveBoatTempData(std::uint32_t dwBoatID, std::uint32_t dwOwnerI
 		   .SetParam(1, dwOwnerID).SetParam(2, static_cast<int>(byIsDeleted)).SetParam(3, dwBoatID).ExecuteNonQuery();
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveBoatTempData(id) failed: {}", e.what());
 		return false;
 	}
@@ -1076,7 +1076,7 @@ bool CTableBoat::SaveBoatDelTag(std::uint32_t dwBoatID, std::uint8_t byIsDeleted
 		   .SetParam(1, static_cast<int>(byIsDeleted)).SetParam(2, dwBoatID).ExecuteNonQuery();
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveBoatDelTag failed: {}", e.what());
 		return false;
 	}
@@ -1094,7 +1094,7 @@ bool CTableBoat::SaveBoatTempData(CCharacter& Boat, std::uint8_t byIsDeleted) {
 		   .SetParam(5, dwBoatID).ExecuteNonQuery();
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveBoatTempData(cha) failed: {}", e.what());
 		return false;
 	}
@@ -1147,7 +1147,7 @@ bool CTableBoat::SaveBoat(CCharacter& Boat, std::int8_t chSaveType) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveBoat failed: {}", e.what());
 		return false;
 	}
@@ -1172,7 +1172,7 @@ bool CTableBoat::SaveCabin(CCharacter& Boat, std::int8_t chSaveType) {
 		   .SetParam(1, std::string_view(g_kitbag)).SetParam(2, dwBoatID).ExecuteNonQuery();
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveCabin failed: {}", e.what());
 		return false;
 	}
@@ -1202,7 +1202,7 @@ bool CTableBoat::ReadCabin(CCharacter& Boat) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "ReadCabin failed: {}", e.what());
 		return false;
 	}
@@ -1217,11 +1217,11 @@ bool CGameDB::Init() {
 
 	try {
 		_db.Open(s_szDsn);
-		ToLogService("db", "OdbcDatabase connected");
+		ToLogService("db", "Corsairs::Util::OdbcDatabase connected");
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		MessageBox(NULL, "Database Connection Failed!", "Database Connection Error", MB_ICONERROR | MB_OK);
-		ToLogService("db", LogLevel::Error, "OdbcDatabase connect failed: {}", e.what());
+		ToLogService("db", LogLevel::Error, "Corsairs::Util::OdbcDatabase connect failed: {}", e.what());
 		return false;
 	}
 
@@ -1279,7 +1279,7 @@ bool CGameDB::ReadPlayer(CPlayer& pPlayer, std::uint32_t atorID) {
 			return false;
 		}
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "ReadAllData(account) failed: {}", e.what());
 		return false;
 	}
@@ -1579,7 +1579,7 @@ void CGameDB::Log2(int nType, CCharacter *pCha1, CCharacter *pCha2, const char *
 }*/
 
 // ============================================================================
-// CTableGuild — реализации методов (OdbcDatabase API, параметризованные запросы)
+// CTableGuild — реализации методов (Corsairs::Util::OdbcDatabase API, параметризованные запросы)
 // ============================================================================
 
 //===============CTableGuild Begin===========================================
@@ -1595,7 +1595,7 @@ std::int32_t CTableGuild::Create(CCharacter& pCha, const std::string& guildname,
 			if (reader.Read()) {
 				l_ret_guild_id = reader.GetInt(0);
 			}
-		} catch (const OdbcException&) {
+		} catch (const Corsairs::Util::OdbcException&) {
 			pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00027));
 			ToLogService("common", "found consortia system occur SQL operator error.");
 			return 0;
@@ -1620,7 +1620,7 @@ std::int32_t CTableGuild::Create(CCharacter& pCha, const std::string& guildname,
 			if (affected != 1) {
 				continue; // Кто-то занял слот раньше — пробуем снова
 			}
-		} catch (const OdbcException&) {
+		} catch (const Corsairs::Util::OdbcException&) {
 			pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00031));
 			return 0;
 		}
@@ -1639,7 +1639,7 @@ std::int32_t CTableGuild::Create(CCharacter& pCha, const std::string& guildname,
 	// Уведомление GameServerGroup
 	auto l_wpk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::GmGuildCreateMessage{
 		static_cast<int64_t>(l_ret_guild_id), guildname,
-		g_GetJobName(std::uint16_t(pCha.getAttr(ATTR_JOB))),
+		GetJobName(std::uint16_t(pCha.getAttr(ATTR_JOB))),
 		static_cast<int64_t>(std::uint16_t(pCha.getAttr(ATTR_LV)))
 	});
 	pCha.ReflectINFof(&pCha, l_wpk);
@@ -1681,7 +1681,7 @@ bool CTableGuild::ListAll(CCharacter& pCha, std::int8_t disband_days) {
 		auto l_wpk = Corsairs::Net::Msg::serialize(page);
 		pCha.ReflectINFof(&pCha, l_wpk);
 		return true;
-	} catch (const OdbcException& e) {
+	} catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("common", "found consortia process ODBC interfance transfer error: {}", e.what());
 		return false;
 	} catch (...) {
@@ -1815,7 +1815,7 @@ void CTableGuild::TryForConfirm(CCharacter& pCha, std::uint32_t guildid) {
 		}
 
 		txn.Commit();
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00040));
 		return;
 	}
@@ -1995,7 +1995,7 @@ bool CTableGuild::ListTryPlayer(CCharacter& pCha, char disband_days) {
 		auto l_wpk = Corsairs::Net::Msg::serialize(tryMsg);
 		pCha.ReflectINFof(&pCha, l_wpk);
 		return true;
-	} catch (const OdbcException& e) {
+	} catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("common", "consult apply consortia process memberODBC interface transfer error: {}", e.what());
 		return false;
 	} catch (...) {
@@ -2052,7 +2052,7 @@ bool CTableGuild::Approve(CCharacter& pCha, std::uint32_t chaid) {
 		}
 
 		txn.Commit();
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00046));
 		return false;
 	}
@@ -2121,7 +2121,7 @@ bool CTableGuild::Reject(CCharacter& pCha, std::uint32_t chaid) {
 		}
 
 		txn.Commit();
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00049));
 		return false;
 	}
@@ -2187,7 +2187,7 @@ bool CTableGuild::Kick(CCharacter& pCha, std::uint32_t chaid) {
 		}
 
 		txn.Commit();
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00053));
 		return false;
 	}
@@ -2241,7 +2241,7 @@ bool CTableGuild::Leave(CCharacter& pCha) {
 		}
 
 		txn.Commit();
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00055));
 		return false;
 	}
@@ -2326,7 +2326,7 @@ bool CTableGuild::Disband(CCharacter& pCha, const std::string& passwd) {
 		}
 
 		txn.Commit();
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00062));
 		return false;
 	}
@@ -2481,7 +2481,7 @@ bool CTableGuild::Leizhu(CCharacter& pCha, std::uint8_t byLevel, std::uint32_t d
 		}
 
 		txn.Commit();
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00072));
 		return false;
 	}
@@ -2578,7 +2578,7 @@ bool CTableGuild::Challenge(CCharacter& pCha, std::uint8_t byLevel, std::uint32_
 			}
 
 			txn.Commit();
-		} catch (const OdbcException&) {
+		} catch (const Corsairs::Util::OdbcException&) {
 			pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00072));
 			return false;
 		}
@@ -2642,7 +2642,7 @@ bool CTableGuild::Challenge(CCharacter& pCha, std::uint8_t byLevel, std::uint32_
 		}
 
 		txn.Commit();
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		pCha.SystemNotice(RES_STRING(GM_GAMEDB_CPP_00085));
 		return false;
 	}
@@ -2912,7 +2912,7 @@ bool CTableGuild::ChallWin(bool bUpdate, std::uint8_t byLevel, std::uint32_t dwW
 
 		txn.Commit();
 		return true;
-	} catch (const OdbcException&) {
+	} catch (const Corsairs::Util::OdbcException&) {
 		ToLogService("common", "challenge consortia data referring failed,retry later on");
 		return false;
 	}
@@ -3021,7 +3021,7 @@ CGameDB::CGameDB()
 
 CGameDB::~CGameDB() = default;
 
-OdbcTransaction CGameDB::BeginTransaction() {
+Corsairs::Util::OdbcTransaction CGameDB::BeginTransaction() {
 	return _db.BeginTransaction();
 }
 
@@ -3086,7 +3086,7 @@ bool CGameDB::GetWinItemno(std::int32_t issue, std::string& itemno) {
 		itemno = row->itemno;
 		return !itemno.empty();
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetWinItemno failed: {}", e.what());
 		return false;
 	}
@@ -3101,7 +3101,7 @@ bool CGameDB::GetLotteryIssue(std::int32_t& issue) {
 		issue = row->issue;
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetLotteryIssue failed: {}", e.what());
 		return false;
 	}
@@ -3114,7 +3114,7 @@ bool CGameDB::AddIssue(std::int32_t issue) {
 			issue);
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "AddIssue failed: {}", e.what());
 		return false;
 	}
@@ -3126,7 +3126,7 @@ bool CGameDB::DisuseIssue(std::int32_t issue, std::int32_t state) {
 			"UPDATE LotterySetting SET state = ?, updatetime = getdate() WHERE issue = ?",
 			state, issue) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "DisuseIssue failed: {}", e.what());
 		return false;
 	}
@@ -3137,7 +3137,7 @@ bool CGameDB::LotteryIsExsit(std::int32_t issue, const std::string& itemno) {
 		auto rows = _tickets.FindAll("issue = ? AND itemno = ?", issue, std::string_view(itemno));
 		return !rows.empty();
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "LotteryIsExsit failed: {}", e.what());
 		return false;
 	}
@@ -3172,7 +3172,7 @@ bool CGameDB::AddLotteryTicket(CCharacter& pCCha, std::int32_t issue, char itemn
 			pCCha.m_ID, issue, std::string_view(mainNo, 6));
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "AddLotteryTicket failed: {}", e.what());
 		return false;
 	}
@@ -3216,7 +3216,7 @@ bool CGameDB::CalWinTicket(std::int32_t issue, std::int32_t max, std::string& it
 			std::string_view(itemno), issue);
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "CalWinTicket failed: {}", e.what());
 		return false;
 	}
@@ -3231,7 +3231,7 @@ bool CGameDB::IsValidAmphitheaterTeam(std::int32_t teamID, std::int32_t captainI
 			teamID, captainID, std::string_view(m1), std::string_view(m2));
 		return row.has_value();
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "IsValidAmphitheaterTeam: {}", e.what());
 		return false;
 	}
@@ -3242,7 +3242,7 @@ bool CGameDB::IsMasterRelation(std::int32_t masterID, std::int32_t prenticeID) {
 		auto row = _masters.FindOne("cha_id1 = ? AND cha_id2 = ?", prenticeID, masterID);
 		return row.has_value();
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "IsMasterRelation: {}", e.what());
 		return false;
 	}
@@ -3258,7 +3258,7 @@ bool CGameDB::GetAmphitheaterSeasonAndRound(std::int32_t& season, std::int32_t& 
 		round = row->round;
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetAmphitheaterSeasonAndRound: {}", e.what());
 		return false;
 	}
@@ -3271,7 +3271,7 @@ bool CGameDB::AddAmphitheaterSeason(std::int32_t season) {
 			season);
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "AddAmphitheaterSeason: {}", e.what());
 		return false;
 	}
@@ -3283,7 +3283,7 @@ bool CGameDB::DisuseAmphitheaterSeason(std::int32_t season, std::int32_t state, 
 			"UPDATE AmphitheaterSetting SET state = ?, updatetime = getdate(), winner = ? WHERE season = ?",
 			state, std::string_view(winner), season) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "DisuseAmphitheaterSeason: {}", e.what());
 		return false;
 	}
@@ -3295,7 +3295,7 @@ bool CGameDB::UpdateAmphitheaterRound(std::int32_t season, std::int32_t round) {
 			"UPDATE AmphitheaterSetting SET [round] = ?, updatetime = getdate() WHERE season = ?",
 			round, season) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdateAmphitheaterRound: {}", e.what());
 		return false;
 	}
@@ -3307,7 +3307,7 @@ bool CGameDB::GetAmphitheaterTeamCount(std::int32_t& count) {
 		count = static_cast<int>(rows.size());
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetAmphitheaterTeamCount: {}", e.what());
 		return false;
 	}
@@ -3322,7 +3322,7 @@ bool CGameDB::GetAmphitheaterNoUseTeamID(std::int32_t& teamID) {
 		teamID = row->id;
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetAmphitheaterNoUseTeamID: {}", e.what());
 		return false;
 	}
@@ -3340,7 +3340,7 @@ bool CGameDB::AmphitheaterTeamSignUP(std::int32_t& teamID, std::int32_t captain,
 				static_cast<int>(AmphitheaterTeam::enumUse)),
 			captain, std::string_view(memberStr), teamID) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "AmphitheaterTeamSignUP: {}", e.what());
 		return false;
 	}
@@ -3354,7 +3354,7 @@ bool CGameDB::AmphitheaterTeamCancel(std::int32_t teamID) {
 				static_cast<int>(AmphitheaterTeam::enumNotUse)),
 			teamID) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "AmphitheaterTeamCancel: {}", e.what());
 		return false;
 	}
@@ -3370,7 +3370,7 @@ bool CGameDB::IsAmphitheaterLogin(std::int32_t pActorID) {
 			pActorID, std::string_view(like1), std::string_view(like2));
 		return rows.empty();
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "IsAmphitheaterLogin: {}", e.what());
 		return false;
 	}
@@ -3382,7 +3382,7 @@ bool CGameDB::IsMapFull(std::int32_t MapID, std::int32_t& PActorIDNum) {
 		PActorIDNum = static_cast<int>(rows.size());
 		return PActorIDNum <= 2;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "IsMapFull: {}", e.what());
 		return false;
 	}
@@ -3394,7 +3394,7 @@ bool CGameDB::UpdateMapNum(std::int32_t Teamid, std::int32_t Mapid, std::int32_t
 			"UPDATE AmphitheaterTeam SET mapflag = ? WHERE id = ? AND map = ?",
 			MapFlag, Teamid, Mapid) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdateMapNum: {}", e.what());
 		return false;
 	}
@@ -3409,7 +3409,7 @@ bool CGameDB::GetMapFlag(std::int32_t Teamid, std::int32_t& Mapflag) {
 		Mapflag = row->mapflag;
 		return Mapflag < 2;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetMapFlag: {}", e.what());
 		return false;
 	}
@@ -3432,7 +3432,7 @@ bool CGameDB::SetMaxBallotTeamRelive() {
 			static_cast<int>(AmphitheaterTeam::enumUse)));
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SetMaxBallotTeamRelive: {}", e.what());
 		return false;
 	}
@@ -3448,7 +3448,7 @@ bool CGameDB::SetMatchResult(std::int32_t Teamid1, std::int32_t Teamid2, std::in
 			Id2state, Teamid2);
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SetMatchResult: {}", e.what());
 		return false;
 	}
@@ -3464,7 +3464,7 @@ bool CGameDB::GetCaptainByMapId(std::int32_t Mapid, std::string& Captainid1, std
 		Captainid2 = rows.size() > 1 ? std::to_string(rows[1].captain) : "";
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetCaptainByMapId: {}", e.what());
 		return false;
 	}
@@ -3476,7 +3476,7 @@ bool CGameDB::UpdateMap(std::int32_t Mapid) {
 			"UPDATE AmphitheaterTeam SET map = null WHERE map = ?",
 			Mapid) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdateMap: {}", e.what());
 		return false;
 	}
@@ -3488,7 +3488,7 @@ bool CGameDB::UpdateMapAfterEnter(std::int32_t CaptainID, std::int32_t MapID) {
 			"UPDATE AmphitheaterTeam SET map = ? WHERE captain = ?",
 			MapID, CaptainID) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdateMapAfterEnter: {}", e.what());
 		return false;
 	}
@@ -3511,7 +3511,7 @@ bool CGameDB::GetPromotionAndReliveTeam(std::vector<std::vector<std::string>>& d
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetPromotionAndReliveTeam: {}", e.what());
 		return false;
 	}
@@ -3527,7 +3527,7 @@ bool CGameDB::UpdatReliveNum(std::int32_t ReID) {
 			"UPDATE AmphitheaterTeam SET relivenum = ? WHERE id = ?",
 			row->relivenum + 1, ReID) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdatReliveNum: {}", e.what());
 		return false;
 	}
@@ -3540,7 +3540,7 @@ bool CGameDB::UpdateAbsentTeamRelive() {
 			static_cast<int>(AmphitheaterTeam::enumRelive),
 			static_cast<int>(AmphitheaterTeam::enumUse)) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdateAbsentTeamRelive: {}", e.what());
 		return false;
 	}
@@ -3552,7 +3552,7 @@ bool CGameDB::UpdateWinnum(std::int32_t teamid) {
 			"UPDATE AmphitheaterTeam SET winnum = winnum + 1 WHERE id = ?",
 			teamid) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdateWinnum: {}", e.what());
 		return false;
 	}
@@ -3568,7 +3568,7 @@ bool CGameDB::GetUniqueMaxWinnum(std::int32_t& teamid) {
 		teamid = rows[0].id;
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetUniqueMaxWinnum: {}", e.what());
 		return false;
 	}
@@ -3580,7 +3580,7 @@ bool CGameDB::SetMatchnoState(std::int32_t teamid) {
 			"UPDATE AmphitheaterTeam SET matchno = 1 WHERE id = ?",
 			teamid) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SetMatchnoState: {}", e.what());
 		return false;
 	}
@@ -3593,7 +3593,7 @@ bool CGameDB::UpdateState() {
 			static_cast<int>(AmphitheaterTeam::enumUse),
 			static_cast<int>(AmphitheaterTeam::enumPromotion)) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdateState: {}", e.what());
 		return false;
 	}
@@ -3605,7 +3605,7 @@ bool CGameDB::CloseReliveByState(std::int32_t& statenum) {
 		statenum = static_cast<int>(rows.size());
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "CloseReliveByState: {}", e.what());
 		return false;
 	}
@@ -3617,7 +3617,7 @@ bool CGameDB::CleanMapFlag(std::int32_t teamid1, std::int32_t teamid2) {
 			"UPDATE AmphitheaterTeam SET mapflag = null WHERE id = ? OR id = ?",
 			teamid1, teamid2) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "CleanMapFlag: {}", e.what());
 		return false;
 	}
@@ -3632,7 +3632,7 @@ bool CGameDB::GetStateByTeamid(std::int32_t teamid, std::int32_t& state) {
 		state = row->state;
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetStateByTeamid: {}", e.what());
 		return false;
 	}
@@ -3645,7 +3645,7 @@ bool CGameDB::UpdateIMP(CPlayer& ply) {
 			ply.GetMainCha()->GetIMP(),
 			ply.GetMainCha()->GetID()) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "UpdateIMP: {}", e.what());
 		return false;
 	}
@@ -3658,7 +3658,7 @@ bool CGameDB::SaveGmLv(CPlayer& ply) {
 			ply.GetGMLev(),
 			ply.GetDBActId()) > 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "SaveGmLv: {}", e.what());
 		return false;
 	}
@@ -3672,7 +3672,7 @@ std::uint32_t CGameDB::GetPlayerMasterDBID(CPlayer& pPlayer) {
 		auto row = _masters.FindOne("cha_id1 = ?", static_cast<int>(pPlayer.GetDBChaId()));
 		return row ? static_cast<unsigned long>(row->cha_id2) : 0;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "GetPlayerMasterDBID: {}", e.what());
 		return 0;
 	}
@@ -3694,7 +3694,7 @@ bool CGameDB::CreatePlyBank(CPlayer& pCPly) {
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "CreatePlyBank: {}", e.what());
 		return false;
 	}
@@ -3713,7 +3713,7 @@ bool CGameDB::ReadKitbagTmpData(std::uint32_t res_id, std::string& strData) {
 		strData = row ? row->content : "";
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("store", LogLevel::Error, "ReadKitbagTmpData: {}", e.what());
 		return false;
 	}
@@ -3733,7 +3733,7 @@ bool CGameDB::SaveKitbagTmpData(std::uint32_t res_id, const std::string& strData
 		}
 		return true;
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("store", LogLevel::Error, "SaveKitbagTmpData: {}", e.what());
 		return false;
 	}
@@ -3761,7 +3761,7 @@ void CGameDB::ExecLogSQL(const std::string& pszSQL) {
 	try {
 		_db.CreateCommand(pszSQL).ExecuteNonQuery();
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "ExecLogSQL failed: {}", e.what());
 	}
 }
@@ -3783,7 +3783,7 @@ void CGameDB::ExecTradeLogSQL(const std::string& gameServerName, const std::stri
 			std::string_view(pszChaTo),
 			std::string_view(pszTrade));
 	}
-	catch (const OdbcException& e) {
+	catch (const Corsairs::Util::OdbcException& e) {
 		ToLogService("db", LogLevel::Error, "ExecTradeLogSQL failed: {}", e.what());
 	}
 }

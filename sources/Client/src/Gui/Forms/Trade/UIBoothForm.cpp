@@ -1,6 +1,7 @@
 ﻿#include "StdAfx.h"
 
 #include "UIBoothForm.h"
+#include "TextFilter.h"
 
 #include <vector>
 #include "uiform.h"
@@ -32,7 +33,8 @@
 #include "Item/ItemRecord.h"
 #include "UIEdit.h"
 #include "UIBoxForm.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 
 using namespace std;
 
@@ -472,19 +474,19 @@ namespace GUI {
 			}
 
 			//
-			mission::NET_STALL_ALLDATA netCreateBoothData;
+			Corsairs::Common::Mission::NetStallAllData netCreateBoothData;
 			int iNum(0); //
 			for (int i(0); i < g_stUIBooth.m_iBoothItemMaxNum; i++) {
 				if (g_stUIBooth.m_kBoothItems[i]) {
-					netCreateBoothData.Info[iNum].dwMoney = DWORD(g_stUIBooth.m_kBoothItems[i]->iPrice);
-					netCreateBoothData.Info[iNum].byCount = BYTE(g_stUIBooth.m_kBoothItems[i]->iNum);
-					netCreateBoothData.Info[iNum].byIndex = BYTE(g_stUIBooth.m_kBoothItems[i]->iEquipIndex);
-					netCreateBoothData.Info[iNum].byGrid = BYTE(g_stUIBooth.m_kBoothItems[i]->iBoothIndex);
+					netCreateBoothData.Info[iNum].Money = DWORD(g_stUIBooth.m_kBoothItems[i]->iPrice);
+					netCreateBoothData.Info[iNum].Count = BYTE(g_stUIBooth.m_kBoothItems[i]->iNum);
+					netCreateBoothData.Info[iNum].Index = BYTE(g_stUIBooth.m_kBoothItems[i]->iEquipIndex);
+					netCreateBoothData.Info[iNum].Grid = BYTE(g_stUIBooth.m_kBoothItems[i]->iBoothIndex);
 					iNum++;
 				}
 			}
-			netCreateBoothData.byNum = BYTE(iNum);
-			if (netCreateBoothData.byNum > 0) {
+			netCreateBoothData.Num = BYTE(iNum);
+			if (netCreateBoothData.Num > 0) {
 				//
 				if (CCharacter* pCha = CGameScene::GetMainCha()) {
 					pCha->GetActor()->Stop();

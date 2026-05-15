@@ -9,6 +9,9 @@
 #include "Script/LuaAPI.h"
 #include "Network/NetCommand.h"
 
+#include <algorithm>
+#include <cstring>
+
 using namespace std;
 
 CDynMapEntry	g_CDMapEntry;
@@ -32,13 +35,8 @@ void CDynMapEntryCell::SetCopyNum(int16_t sCopyNum)
 		return;
 	}
 
-	if (m_LCopyInfo.GetSize() == 0)
-		m_LCopyInfo.Init(defMAX_MAP_COPY_NUM);
-	else
-		m_LCopyInfo.Reset();
-
+	m_LCopyInfo.Clear();
 	m_sMapCopyNum = sCopyNum;
-	m_LCopyInfo.SetCapacity(m_sMapCopyNum);
 }
 
 void CDynMapEntryCell::SetEventName(const char *cszEventName)
@@ -112,73 +110,75 @@ void CDynMapEntryCell::SynCopyRun(int16_t sCopyID, char chCdtType, std::int32_t 
 //=============================================================================
 CDynMapEntryCell* CDynMapEntry::Add(CDynMapEntryCell *pCCell)
 {
-	CDynMapEntryCell	*pCObj;
-	pCObj = GetEntry(pCCell->GetTMapName());
-	if (!pCObj)
-		pCObj = m_LEntryList.Add(pCCell);
-	else
+	if (!pCCell) {
+		return nullptr;
+	}
+	CDynMapEntryCell *pCObj = GetEntry(pCCell->GetTMapName());
+	if (!pCObj) {
+		m_LEntryList.push_back(std::move(*pCCell));
+		pCObj = &m_LEntryList.back();
+	}
+	else {
 		pCObj->FreeEnti();
-	if (!pCObj)
-		return NULL;
-	CEvent	*pCEvent = pCObj->GetEvent();
+	}
+	CEvent *pCEvent = pCObj->GetEvent();
 	pCEvent->SetTableRec(pCObj);
-
 	return pCObj;
 }
 
 bool CDynMapEntry::Del(CDynMapEntryCell *pCCell)
 {
-	if (!pCCell)
+	if (!pCCell) {
 		return false;
-
-	pCCell->FreeEnti();
-	return m_LEntryList.Del(pCCell);
+	}
+	auto it = std::find_if(m_LEntryList.begin(), m_LEntryList.end(),
+		[pCCell](const CDynMapEntryCell& c) { return &c == pCCell; });
+	if (it == m_LEntryList.end()) {
+		return false;
+	}
+	it->FreeEnti();
+	m_LEntryList.erase(it);
+	return true;
 }
 
 bool CDynMapEntry::Del(const char *cszTMapName)
 {
-	if (!cszTMapName)
+	if (!cszTMapName) {
 		return false;
-
-	CDynMapEntryCell	*pCCell;
-	m_LEntryList.BeginGet();
-	while (pCCell = m_LEntryList.GetNext())
-	{
-		if (!strncmp(pCCell->GetTMapName(), cszTMapName, MAX_MAPNAME_LENGTH))
-		{
-			pCCell->FreeEnti();
-			return m_LEntryList.Del(pCCell);
-		}
 	}
-
-	return false;
+	auto it = std::find_if(m_LEntryList.begin(), m_LEntryList.end(),
+		[cszTMapName](const CDynMapEntryCell& c) {
+			return std::strncmp(c.GetTMapName(), cszTMapName, MAX_MAPNAME_LENGTH) == 0;
+		});
+	if (it == m_LEntryList.end()) {
+		return false;
+	}
+	it->FreeEnti();
+	m_LEntryList.erase(it);
+	return true;
 }
 
 CDynMapEntryCell* CDynMapEntry::GetEntry(const char *cszTMapName)
 {
-	CDynMapEntryCell	*pCCell;
-	m_LEntryList.BeginGet();
-	while (pCCell = m_LEntryList.GetNext())
-	{
-		if (!strncmp(pCCell->GetTMapName(), cszTMapName, MAX_MAPNAME_LENGTH))
-			return pCCell;
+	if (!cszTMapName) {
+		return nullptr;
 	}
-
-	return NULL;
+	auto it = std::find_if(m_LEntryList.begin(), m_LEntryList.end(),
+		[cszTMapName](const CDynMapEntryCell& c) {
+			return std::strncmp(c.GetTMapName(), cszTMapName, MAX_MAPNAME_LENGTH) == 0;
+		});
+	return it != m_LEntryList.end() ? &*it : nullptr;
 }
 
 void CDynMapEntry::AfterPlayerLogin(const char *cszName)
 {
-	if (!cszName)
+	if (!cszName) {
 		return;
-
-	CDynMapEntryCell	*pCCell;
-	m_LEntryList.BeginGet();
-	while (pCCell = m_LEntryList.GetNext())
-	{
-		string	strScript = "after_player_login_";
-		strScript += pCCell->GetTMapName();
-		g_luaAPI.Call(strScript.c_str(), pCCell, cszName);
+	}
+	for (CDynMapEntryCell& cell : m_LEntryList) {
+		string strScript = "after_player_login_";
+		strScript += cell.GetTMapName();
+		g_luaAPI.Call(strScript.c_str(), &cell, cszName);
 	}
 }
 
@@ -245,12 +245,7 @@ CDynMapEntryCell::CDynMapEntryCell() {
 	m_CEvtObj.Init();
 	m_CEvtObj.SetTouchType(Corsairs::Common::World::enumEVENTT_RANGE);
 	m_CEvtObj.SetExecType(Corsairs::Common::World::enumEVENTE_DMAP_ENTRY);
-
-	m_pPos = nullptr;
 }
-
-void  CDynMapEntryCell::SetPos(void* pPos) { m_pPos = pPos; }
-void* CDynMapEntryCell::GetPos(void)       { return m_pPos; }
 
 void CDynMapEntryCell::SetMapName(const char* cszMapName) {
 	if (!cszMapName) return;
@@ -289,12 +284,48 @@ int16_t  CDynMapEntryCell::GetCopyNum(void)                 { return m_sMapCopyN
 void        CDynMapEntryCell::SetCopyPlyNum(int16_t sCopyNum) { m_sCopyPlyNum = sCopyNum; }
 int16_t  CDynMapEntryCell::GetCopyPlyNum(void)              { return m_sCopyPlyNum; }
 
-CMapEntryCopyCell* CDynMapEntryCell::AddCopy(CMapEntryCopyCell* pCCpyCell) { return m_LCopyInfo.Add(pCCpyCell); }
-CMapEntryCopyCell* CDynMapEntryCell::GetCopy(int16_t sCopyID)           { return m_LCopyInfo.Get(sCopyID); }
-bool               CDynMapEntryCell::ReleaseCopy(CMapEntryCopyCell* p)     { return m_LCopyInfo.Del(p); }
-bool               CDynMapEntryCell::ReleaseCopy(std::int32_t lCopyNO)        { return m_LCopyInfo.Del(lCopyNO); }
+CMapEntryCopyCell* CDynMapEntryCell::AddCopy(CMapEntryCopyCell* pCCpyCell) {
+	if (!pCCpyCell) {
+		return nullptr;
+	}
+	// soft-cap: m_sMapCopyNum может быть меньше шаблонной ёмкости SlotMap'а.
+	if (m_LCopyInfo.GetObjNum() >= static_cast<std::uint32_t>(m_sMapCopyNum)) {
+		return nullptr;
+	}
+	std::uint32_t handle = 0;
+	if (m_LCopyInfo.Register(&handle, *pCCpyCell) != decltype(m_LCopyInfo)::Ok) {
+		return nullptr;
+	}
+	CMapEntryCopyCell* pStored = m_LCopyInfo.GetPtr(handle);
+	if (pStored) {
+		// CopyID в сетевом протоколе — int16, поэтому храним только slot-индекс.
+		pStored->SetPosID(static_cast<std::int32_t>(handle & decltype(m_LCopyInfo)::SlotMaskValue));
+	}
+	return pStored;
+}
+
+CMapEntryCopyCell* CDynMapEntryCell::GetCopy(int16_t sCopyID) {
+	if (sCopyID < 0) {
+		return nullptr;
+	}
+	return m_LCopyInfo.GetPtrBySlot(static_cast<std::uint32_t>(sCopyID));
+}
+
+bool CDynMapEntryCell::ReleaseCopy(CMapEntryCopyCell* p) {
+	if (!p) {
+		return false;
+	}
+	return ReleaseCopy(p->GetPosID());
+}
+
+bool CDynMapEntryCell::ReleaseCopy(std::int32_t lCopyNO) {
+	if (lCopyNO < 0) {
+		return false;
+	}
+	return m_LCopyInfo.UnregisterBySlot(static_cast<std::uint32_t>(lCopyNO));
+}
 
 // --- CDynMapEntry ---
 
-CDynMapEntry::CDynMapEntry()  { m_LEntryList.Init(); }
-CDynMapEntry::~CDynMapEntry() { m_LEntryList.Free(); }
+CDynMapEntry::CDynMapEntry()  = default;
+CDynMapEntry::~CDynMapEntry() = default;

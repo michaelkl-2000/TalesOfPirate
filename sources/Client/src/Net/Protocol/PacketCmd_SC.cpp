@@ -679,7 +679,7 @@ BOOL SC_Say(LPRPACKET pk) {
 	ToLogService("net", "SC_Say src={} bytes[{}]={} text='{}'",
 				 msg.sourceId,
 				 static_cast<int>(msg.content.size()),
-				 Corsairs::Util::Encoding::HexDump(msg.content),
+				 Corsairs::Util::HexDump(msg.content),
 				 msg.content);
 
 	NetSay(l_netsay, msg.color);
@@ -1227,7 +1227,7 @@ BOOL SC_CharacterAction(LPRPACKET pk) {
 		else if (msg.actionType == ActionType::ITEM_FAILED) {
 			stNetSysInfo l_sysinfo;
 			short sFailedID = static_cast<short>(std::get<ActionItemFailedData>(msg.data).failedId);
-			l_sysinfo.m_sysinfo = g_GetUseItemFailedInfo(sFailedID);
+			l_sysinfo.m_sysinfo = GetUseItemFailedInfo(sFailedID);
 			NetSysInfo(l_sysinfo);
 		}
 		else if (msg.actionType == ActionType::LOOK) {
@@ -1617,11 +1617,11 @@ BOOL SC_HelpInfo(LPRPACKET packet) {
 	memset(&Info, 0, sizeof(NET_HELPINFO));
 
 	Info.byType = static_cast<decltype(Info.byType)>(msg.type);
-	if (Info.byType == mission::MIS_HELP_DESP || Info.byType == mission::MIS_HELP_IMAGE ||
-		Info.byType == mission::MIS_HELP_BICKER) {
+	if (Info.byType == +Corsairs::Common::Mission::MissionHelpType::MIS_HELP_DESP || Info.byType == +Corsairs::Common::Mission::MissionHelpType::MIS_HELP_IMAGE ||
+		Info.byType == +Corsairs::Common::Mission::MissionHelpType::MIS_HELP_BICKER) {
 		strncpy(Info.szDesp, msg.desp.c_str(), ROLE_MAXNUM_DESPSIZE - 1);
 	}
-	else if (Info.byType == mission::MIS_HELP_SOUND) {
+	else if (Info.byType == +Corsairs::Common::Mission::MissionHelpType::MIS_HELP_SOUND) {
 		Info.sID = static_cast<decltype(Info.sID)>(msg.soundId);
 	}
 	else {
@@ -1694,13 +1694,13 @@ static void convertTradeMsg(const Corsairs::Net::Msg::McTradeAllDataMessage& msg
 	memset(&Info, 0, sizeof(Info));
 	for (const auto& page : msg.pages) {
 		BYTE byItemType = static_cast<BYTE>(page.itemType);
-		if (byItemType > 3) continue; // TI_WEAPON..TI_SYNTHESIS
+		if (byItemType > 3) continue; // TradeItemType::TI_WEAPON..TradeItemType::TI_SYNTHESIS
 		Info.TradePage[byItemType].byCount = static_cast<BYTE>(page.items.size());
 		if (Info.TradePage[byItemType].byCount > ROLE_MAXNUM_TRADEITEM)
 			Info.TradePage[byItemType].byCount = ROLE_MAXNUM_TRADEITEM;
 		for (BYTE n = 0; n < Info.TradePage[byItemType].byCount; n++) {
 			Info.TradePage[byItemType].sItemID[n] = static_cast<USHORT>(page.items[n].itemId);
-			if (msg.tradeType == mission::TRADE_GOODS) {
+			if (msg.tradeType == +Corsairs::Common::Mission::TradeOpType::TRADE_GOODS) {
 				Info.TradePage[byItemType].sCount[n] = static_cast<USHORT>(page.items[n].count);
 				Info.TradePage[byItemType].dwPrice[n] = static_cast<DWORD>(page.items[n].price);
 				Info.TradePage[byItemType].byLevel[n] = static_cast<BYTE>(page.items[n].level);
@@ -1889,7 +1889,7 @@ BOOL SC_CharTradeInfo(LPRPACKET packet) {
 	case CMD_MC_CHARTRADE_RESULT: {
 		Corsairs::Net::Msg::McCharTradeResultMessage msg;
 		Corsairs::Net::Msg::deserialize(packet, msg);
-		if (msg.result == mission::TRADE_SUCCESS) {
+		if (msg.result == Corsairs::Common::Mission::TradeOpType::TRADE_SUCCESS) {
 			NetTradeSuccess();
 		}
 		else {
@@ -1964,12 +1964,12 @@ BOOL SC_MisPage(LPRPACKET packet) {
 		page.byNeedNum = static_cast<decltype(page.byNeedNum)>(msg.needs.size());
 		for (int i = 0; i < page.byNeedNum; i++) {
 			page.MisNeed[i].byType = static_cast<decltype(page.MisNeed[i].byType)>(msg.needs[i].needType);
-			if (page.MisNeed[i].byType == mission::MIS_NEED_ITEM || page.MisNeed[i].byType == mission::MIS_NEED_KILL) {
+			if (page.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_ITEM || page.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_KILL) {
 				page.MisNeed[i].wParam1 = static_cast<decltype(page.MisNeed[i].wParam1)>(msg.needs[i].param1);
 				page.MisNeed[i].wParam2 = static_cast<decltype(page.MisNeed[i].wParam2)>(msg.needs[i].param2);
 				page.MisNeed[i].wParam3 = static_cast<decltype(page.MisNeed[i].wParam3)>(msg.needs[i].param3);
 			}
-			else if (page.MisNeed[i].byType == mission::MIS_NEED_DESP) {
+			else if (page.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_DESP) {
 				strncpy(page.MisNeed[i].szNeed, msg.needs[i].desp.c_str(), ROLE_MAXNUM_NEEDDESPSIZE - 1);
 			}
 			else {
@@ -2035,12 +2035,12 @@ BOOL SC_MisLogInfo(LPRPACKET packet) {
 	page.byNeedNum = static_cast<decltype(page.byNeedNum)>(msg.needs.size());
 	for (int i = 0; i < page.byNeedNum; i++) {
 		page.MisNeed[i].byType = static_cast<decltype(page.MisNeed[i].byType)>(msg.needs[i].needType);
-		if (page.MisNeed[i].byType == mission::MIS_NEED_ITEM || page.MisNeed[i].byType == mission::MIS_NEED_KILL) {
+		if (page.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_ITEM || page.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_KILL) {
 			page.MisNeed[i].wParam1 = static_cast<decltype(page.MisNeed[i].wParam1)>(msg.needs[i].param1);
 			page.MisNeed[i].wParam2 = static_cast<decltype(page.MisNeed[i].wParam2)>(msg.needs[i].param2);
 			page.MisNeed[i].wParam3 = static_cast<decltype(page.MisNeed[i].wParam3)>(msg.needs[i].param3);
 		}
-		else if (page.MisNeed[i].byType == mission::MIS_NEED_DESP) {
+		else if (page.MisNeed[i].byType == +Corsairs::Common::Mission::MissionNeedType::MIS_NEED_DESP) {
 			strncpy(page.MisNeed[i].szNeed, msg.needs[i].desp.c_str(), ROLE_MAXNUM_NEEDDESPSIZE - 1);
 		}
 		else {

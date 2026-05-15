@@ -9,7 +9,8 @@
 #include "smallmap.h"
 #include "ItemTypeSet.h"
 #include "Item/ItemRecord.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "uiboatform.h"
 #include "tools.h"
 #include "PacketCmd.h"
@@ -20,7 +21,7 @@ using namespace GUI;
 
 using namespace std;
 
-static char szBuf[256] = {0};
+static std::string szBuf;
 
 CGuiPic CSkillCommand::_imgActive;
 //---------------------------------------------------------------------------
@@ -238,15 +239,15 @@ void CSkillCommand::AddHint(int x, int y) {
 	}
 
 	PushHint(GetLanguageString(757).c_str());
-	StringNewLine(szBuf, HINT_WIDTH, _pSkill->szDescribeHint.c_str(), (unsigned int)_pSkill->szDescribeHint.size());
+	szBuf = StringNewLine(_pSkill->szDescribeHint, HINT_WIDTH);
 	PushHint(szBuf);
 
 	PushHint(GetLanguageString(758).c_str());
-	StringNewLine(szBuf, HINT_WIDTH, _pSkill->szEffectHint.c_str(), (unsigned int)_pSkill->szEffectHint.size());
+	szBuf = StringNewLine(_pSkill->szEffectHint, HINT_WIDTH);
 	PushHint(szBuf);
 
 	PushHint(GetLanguageString(759).c_str());
-	StringNewLine(szBuf, HINT_WIDTH, _pSkill->szExpendHint.c_str(), (unsigned int)_pSkill->szExpendHint.size());
+	szBuf = StringNewLine(_pSkill->szExpendHint, HINT_WIDTH);
 	PushHint(szBuf);
 
 	if (_pSkill->GetIsActive()) {

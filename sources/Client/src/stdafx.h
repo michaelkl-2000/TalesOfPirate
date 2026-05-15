@@ -52,6 +52,7 @@ using namespace GUI;
 #include "MindPower.h"
 
 #include "Localization/LanguageRecordStore.h"
+#include "Localization/i18n.h"
 
 inline VOID D3DUtil_InitMaterialI(D3DMATERIALX& mtrl, FLOAT r, FLOAT g, FLOAT b,
 								  FLOAT a) {
@@ -117,3 +118,4 @@ using namespace Corsairs::Common::World;
 using namespace Corsairs::Common::Character;
 using namespace Corsairs::Common::Item;
 using namespace Corsairs::Common::Database;
+using namespace Corsairs::Common::Mission;

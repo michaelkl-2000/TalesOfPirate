@@ -13,7 +13,7 @@
 #include "UITextButton.h"
 #include "UIGlobalVar.h"
 #include "PacketCmd.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
 
 
 #define ENABLE_CHURCHCHALLENGE   1

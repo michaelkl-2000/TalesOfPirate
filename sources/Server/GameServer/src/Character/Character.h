@@ -9,7 +9,11 @@
 #define CHARACTER_H
 
 #include "Combat/MoveAble.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 #include "Services/Mission/Mission.h"
 #include "Core/Timer.h"
 #include "Inventory/Kitbag.h"
@@ -85,7 +89,7 @@ enum ELogAssetsType	//
 	enumLASSETS_DELETE,		// 
 };
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	class CStallData;
 	class CTradeData;
@@ -262,8 +266,8 @@ public:
 	bool	IsPKSilver();
 
 	//
-	void	SetTradeData( mission::CTradeData* pData );
-	mission::CTradeData* GetTradeData();
+	void	SetTradeData( Corsairs::Common::Mission::CTradeData* pData );
+	Corsairs::Common::Mission::CTradeData* GetTradeData();
 
 	//
 	void	SetBoat( CCharacter* pBoat );
@@ -291,7 +295,7 @@ public:
 	BOOL	SaveMissionData();	// 
 
 	BOOL	AddMissionState( DWORD dwNpcID, BYTE byID, BYTE byState );
-	BOOL	ResetMissionState( mission::CTalkNpc& npc );
+	BOOL	ResetMissionState( Corsairs::Common::Mission::CTalkNpc& npc );
 	
 	BOOL	GetMissionState( DWORD dwNpcID, BYTE& byState );
 	BOOL	GetNumMission( DWORD dwNpcID, BYTE& byNum );
@@ -300,7 +304,7 @@ public:
 	BOOL	GetNextMission( DWORD dwNpcID, BYTE& byIndex, BYTE& byID, BYTE& byState );
 	BOOL	ClearMissionState( DWORD dwNpcID );
 	
-	BOOL	AddTrigger( const mission::TRIGGER_DATA& Data );
+	BOOL	AddTrigger( const Corsairs::Common::Mission::TRIGGER_DATA& Data );
 	BOOL	ClearTrigger( WORD wTriggerID );
 	BOOL	DeleteTrigger( WORD wTriggerID );
 	BOOL	GetMisScriptID( WORD wID, WORD& wScriptID );
@@ -319,10 +323,10 @@ public:
 
 	// 
 	BOOL	HasRandMission( WORD wRoleID );
-	BOOL	AddRandMission( WORD wRoleID, WORD wScriptID, BYTE byType, BYTE byLevel, DWORD dwExp, DWORD dwMoney, USHORT sPrizeData, USHORT sPrizeType, BYTE byNumData );
-	BOOL	SetRandMissionData( WORD wRoleID, BYTE byIndex, const mission::MISSION_DATA& RandData );
-	BOOL	GetRandMission( WORD wRoleID, BYTE& byType, BYTE& byLevel, DWORD& dwExp, DWORD& dwMoney, USHORT& sPrizeData, USHORT& sPrizeType, BYTE& byNumData );
-	BOOL	GetRandMissionData( WORD wRoleID, BYTE byIndex, mission::MISSION_DATA& RandData );
+	BOOL	AddRandMission( WORD wRoleID, WORD wScriptID, MissionRandType byType, BYTE byLevel, DWORD dwExp, DWORD dwMoney, USHORT sPrizeData, USHORT sPrizeType, BYTE byNumData );
+	BOOL	SetRandMissionData( WORD wRoleID, BYTE byIndex, const Corsairs::Common::Mission::MISSION_DATA& RandData );
+	BOOL	GetRandMission( WORD wRoleID, MissionRandType& byType, BYTE& byLevel, DWORD& dwExp, DWORD& dwMoney, USHORT& sPrizeData, USHORT& sPrizeType, BYTE& byNumData );
+	BOOL	GetRandMissionData( WORD wRoleID, BYTE byIndex, Corsairs::Common::Mission::MISSION_DATA& RandData );
 
 	// npc(NPC)
 	BOOL	HasSendNpcItemFlag( WORD wRoleID, WORD wNpcID );
@@ -466,9 +470,9 @@ public:
 
 	BOOL	BoatBerth( USHORT sBerthID, USHORT sxPos, USHORT syPos, USHORT sDir );	
 	BOOL	BoatLaunch( BYTE byIndex, USHORT sBerthID, USHORT sxPos, USHORT syPos, USHORT sDir );
-	BOOL	BoatBerthList( DWORD dwNpcID, BYTE byType, USHORT sBerthID, USHORT sxPos, USHORT syPos, USHORT sDir );
+	BOOL	BoatBerthList( DWORD dwNpcID, BoatListType byType, USHORT sBerthID, USHORT sxPos, USHORT syPos, USHORT sDir );
 	BOOL	BoatSelLuanch( BYTE byIndex );
-	BOOL	BoatSelected( BYTE byType, BYTE byIndex );
+	BOOL	BoatSelected( BoatListType byType, BYTE byIndex );
 	BOOL	HasAllBoatInBerth( USHORT sBerthID );
 	BOOL	HasBoatInBerth( USHORT sBerthID );
 	BOOL	HasDeadBoatInBerth( USHORT sBerthID );
@@ -495,8 +499,8 @@ public:
 	BOOL	HasGuild();
 
 	// 
-	void	SetStallData( mission::CStallData* pData );
-	mission::CStallData* GetStallData();
+	void	SetStallData( Corsairs::Common::Mission::CStallData* pData );
+	Corsairs::Common::Mission::CStallData* GetStallData();
 	BYTE	GetStallNum();
 
 	//add by jilinlee 2007/4/20
@@ -851,7 +855,7 @@ private:
 	
 
 	// 
-	mission::CTradeData*	m_pTradeData;
+	Corsairs::Common::Mission::CTradeData*	m_pTradeData;
 
 	#define CHAEXIT_NONE				0		// ...
 	#define CHAEXIT_BEGIN				1<<0	// 	

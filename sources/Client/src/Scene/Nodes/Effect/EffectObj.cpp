@@ -241,7 +241,7 @@ inline void Part_bind(CMagicEff* pEffCtrl) {
 			if (pCha->GetObjDummyRunTimeMatrix(&tMat, pEffCtrl->_iDummy)) {
 				g_logManager.InternalLog(LogLevel::Error, "errors",
 										 SafeVFormat(GetLanguageString(55), pEffCtrl->_iIdxID, pEffCtrl->_iDummy,
-													 pCha->GetDefaultChaInfo()->Name));
+													 pCha->GetDefaultChaInfo()->DataName));
 				const auto v = D3DXVECTOR3(0, 0, 0);
 				pEffCtrl->MoveTo(&v);
 				return;
@@ -771,7 +771,7 @@ BOOL CMagicEff::Create(int iIdxID) {
 	if (iIdxID == 0)
 		return FALSE;
 
-	CMagicInfo* pInfo = GetMagicInfo(iIdxID);
+	CEffectRecord* pInfo = GetEffectInfo(iIdxID);
 	if (!pInfo) {
 		return FALSE;
 	}
@@ -791,7 +791,7 @@ BOOL CMagicEff::Create(int iIdxID) {
 		{
 			setTypeID(4);
 			_bMagicEm = TRUE;
-			if ((int)pInfo->fPlayTime == 1) {
+			if ((int)pInfo->PlayTime == 1) {
 				_bloop = false;
 			}
 			else {
@@ -801,10 +801,10 @@ BOOL CMagicEff::Create(int iIdxID) {
 		else if (iIdxID >= 400)
 			setTypeID(1);
 
-		setAttachID(pInfo->nObjType);
+		setAttachID(pInfo->AttachId);
 		setIdxID(iIdxID);
 
-		_iDummy = pInfo->nDummy[0];
+		_iDummy = pInfo->Dummies[0];
 		_iOwnerID = -1;
 
 		SkillCtrl ctrl;
@@ -812,61 +812,56 @@ BOOL CMagicEff::Create(int iIdxID) {
 		SetSkillCtrl(&ctrl);
 
 		//  by lh 2005-10-27
-		int nEffType = pInfo->nEffType;
-		switch (nEffType) {
-		case 1:
-		case 2:
-		case 3:
-			nEffType = pInfo->nObjType;
+		using Corsairs::Common::Effect::EffectKind;
+		int attachIdx = -1;
+		switch (pInfo->Kind) {
+		case EffectKind::EFFECT_KIND_1:
+		case EffectKind::EFFECT_KIND_2:
+		case EffectKind::EFFECT_KIND_3:
+		case EffectKind::EFFECT_KIND_4:
+		case EffectKind::EFFECT_KIND_5:
+			attachIdx = pInfo->AttachId;
 			break;
-		case 4:
-			nEffType = pInfo->nObjType;
+		case EffectKind::EFFECT_NONE:
+			attachIdx = -1;
 			break;
-		case 5:
-			nEffType = pInfo->nObjType;
-			break;
-		default:
-			nEffType = -1;
 		}
 		RenderUpdate = NULL;
-		if (nEffType >= 0)
-			RenderUpdate = OpertionList[nEffType];
+		if (attachIdx >= 0)
+			RenderUpdate = OpertionList[attachIdx];
 		return TRUE;
 	}
 
 	Clear();
 	_pEffCtrl = new CMPEffectCtrl;
 
-	_fBaseSize = pInfo->fBaseSize;
+	_fBaseSize = pInfo->BaseSize;
 
 	Eff_Property Property;
-	Property.m_iEffType = pInfo->nEffType;
-	switch (Property.m_iEffType) {
-	case 0:
-		Property.m_iIdxRender = -1; //
-		break;
-	case 1:
-	case 2:
-	case 3:
-		Property.m_iIdxRender = pInfo->nObjType; //dummy
-		break;
-	case 4:
-		Property.m_iIdxRender = pInfo->nObjType; //
-		break;
-	case 5:
-		Property.m_iIdxRender = pInfo->nObjType; // 
-		break;
-	default:
-		return FALSE;
+	Property.Kind = pInfo->Kind;
+	{
+		using Corsairs::Common::Effect::EffectKind;
+		switch (Property.Kind) {
+		case EffectKind::EFFECT_NONE:
+			Property.m_iIdxRender = -1; //
+			break;
+		case EffectKind::EFFECT_KIND_1:
+		case EffectKind::EFFECT_KIND_2:
+		case EffectKind::EFFECT_KIND_3:
+		case EffectKind::EFFECT_KIND_4:
+		case EffectKind::EFFECT_KIND_5:
+			Property.m_iIdxRender = pInfo->AttachId; //
+			break;
+		}
 	}
 
-	Property.m_strName = pInfo->DataName.c_str();
+	Property.m_strName = pInfo->DataName;
 	if (!Create(&Property, &CMPResManger::Instance())) {
 		Clear();
 		return FALSE;
 	}
 
-	_nHeightOff = pInfo->nHeightOff;
+	_nHeightOff = pInfo->HeightOff;
 
 	if (iIdxID < 100)
 		setTypeID(0);
@@ -875,7 +870,7 @@ BOOL CMagicEff::Create(int iIdxID) {
 	{
 		setTypeID(4);
 		_bMagicEm = TRUE;
-		if ((int)pInfo->fPlayTime == 1) {
+		if ((int)pInfo->PlayTime == 1) {
 			_bloop = false;
 		}
 		else {
@@ -885,10 +880,10 @@ BOOL CMagicEff::Create(int iIdxID) {
 	else if (iIdxID >= 400) {
 		setTypeID(1);
 	}
-	setAttachID(pInfo->nObjType);
+	setAttachID(pInfo->AttachId);
 	setIdxID(iIdxID);
-	_iDummy = pInfo->nDummy[0];
-	if (pInfo->nDummy2 != -1) {
+	_iDummy = pInfo->Dummies[0];
+	if (pInfo->Dummy2 != -1) {
 		_pEffCtrl->setUseZBuff(false);
 	}
 	_pEffCtrl->Reset();

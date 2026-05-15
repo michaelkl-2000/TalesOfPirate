@@ -1020,7 +1020,7 @@ int IsChaInLand(CCharacter* pCCha) {
 	if (!pCCha) return 0;
 	if (!pCCha->GetSubMap()) return 0;
 	short sAreaAttr = pCCha->GetSubMap()->GetAreaAttr(pCCha->GetPos());
-	return g_IsLand(sAreaAttr) ? 1 : 0;
+	return IsLand(sAreaAttr) ? 1 : 0;
 }
 
 int SetTeamFightMapName(const std::string& cszMapName) {

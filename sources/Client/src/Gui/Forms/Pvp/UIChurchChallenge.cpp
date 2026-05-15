@@ -1,6 +1,7 @@
 ﻿//add by ALLEN 2007-10-19
 #include "StdAfx.h"
 #include "UIChurchChallenge.h"
+using namespace Corsairs::Util;
 #include "UINpcTalkForm.h"
 
 namespace GUI {
@@ -55,10 +56,10 @@ namespace GUI {
 
 				btnPriceUp->SetIsEnabled(!!_stInfo.sChurchID);
 
-				char szBuf[256] = {0};
+				std::string szBuf;
 				if (labInfoShow1) labInfoShow1->SetCaption(_stInfo.szChaName);
 				if (labInfoShow2) labInfoShow2->SetCaption(g_pGameApp->GetCurScene()->GetMainCha()->getName());
-				if (labInfoShow3) labInfoShow3->SetCaption(StringSplitNum(_stInfo.nCurPrice, 3, ','));
+				if (labInfoShow3) labInfoShow3->SetCaption(StringSplitNum(_stInfo.nCurPrice, 3, ',').c_str());
 			}
 
 			frmChurchSale->SetIsShow(bShow);

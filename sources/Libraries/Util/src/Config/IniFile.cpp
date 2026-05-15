@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <charconv>
 
-namespace Corsairs::Util::Ini {
+namespace Corsairs::Util {
 
 using Corsairs::Util::ThrowRuntimeError;
 
@@ -152,4 +152,4 @@ void IniSection::SetInt64(std::string_view key, int64_t value) {
 	SetString(key, std::to_string(value));
 }
 
-} // namespace Corsairs::Util::Ini
+} // namespace Corsairs::Util

@@ -7,7 +7,7 @@ using namespace std;
 
 GameConfig GlobalAppConfig;
 
-static float IniGetFloat(Corsairs::Util::Ini::IniSection& sec, std::string_view key, float def = 0.0f) {
+static float IniGetFloat(Corsairs::Util::IniSection& sec, std::string_view key, float def = 0.0f) {
 	auto s = sec.GetString(key);
 	return s.empty() ? def : Corsairs::Util::Str2Float(s);
 }

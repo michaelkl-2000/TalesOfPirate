@@ -11,7 +11,7 @@
 //     Win32 API ( )
 void SetThreadName(const std::string& name);
 
-namespace Corsairs::Util::Crush {
+namespace Corsairs::Util {
 	//       
 	void SetupDumpSetting(const std::string& dumpPath);
 	void SetupDumpSetting(const std::string& dumpPath, const std::function<void()>& function);

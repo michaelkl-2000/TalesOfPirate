@@ -14,7 +14,7 @@
 #include "CommandMessages.h"
 
 //---------------------------------------------------------
-namespace mission
+namespace Corsairs::Common::Mission
 {
 
 	//#define ROLE_DEBUG_INFO
@@ -108,8 +108,8 @@ namespace mission
 				&nData5, &nData6, &nData7, &nData8, &nData9, &nData10, &nData11 );
 			m_Mission[i].wRoleID = (WORD)nData1;
 			m_Mission[i].byState = (BYTE)nData2;
-			m_Mission[i].byMisType = (BYTE)nData3;
-			m_Mission[i].byType = (BYTE)nData4;
+			m_Mission[i].byMisType = (MissionType)nData3;
+			m_Mission[i].byType = (MissionRandType)nData4;
 			m_Mission[i].byLevel = (BYTE)nData5;
 			m_Mission[i].wItem = (WORD)nData6;
 			m_Mission[i].wParam1 = (WORD)nData7;
@@ -389,7 +389,7 @@ namespace mission
 				&nData5, &nData6, &nData7, &nData8, &nData9 );
 			m_Trigger[i].wTriggerID = (WORD)nData1;
 			m_Trigger[i].wMissionID = (WORD)nData2;
-			m_Trigger[i].byType = (BYTE)nData3; 
+			m_Trigger[i].byType = (TriggerEvent)nData3;
 			m_Trigger[i].wParam1 = (WORD)nData4;
 			m_Trigger[i].wParam2 = (WORD)nData5;
 			m_Trigger[i].wParam3 = (WORD)nData6;
@@ -418,7 +418,7 @@ namespace mission
 		m_byNumGotoMap = 0;
 		for( int t = 0; t < m_byNumTrigger; t++ )
 		{
-			if( m_Trigger[t].byType == mission::TE_GOTO_MAP )
+			if( m_Trigger[t].byType == Corsairs::Common::Mission::TriggerEvent::TE_GOTO_MAP )
 			{
 				m_byNumGotoMap++;
 			}
@@ -617,7 +617,7 @@ namespace mission
 	{
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].byType == TE_KILL )
+			if( m_Trigger[i].byType == TriggerEvent::TE_KILL )
 			{
 				// ID
 				if( sWareID == m_Trigger[i].wParam1 )
@@ -685,7 +685,7 @@ namespace mission
 	{
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].wMissionID == wRoleID && m_Trigger[i].byType == TE_GET_ITEM )
+			if( m_Trigger[i].wMissionID == wRoleID && m_Trigger[i].byType == TriggerEvent::TE_GET_ITEM )
 			{
 				// ID
 				if( sItemID == m_Trigger[i].wParam1 )
@@ -717,7 +717,7 @@ namespace mission
 
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].byType == TE_GET_ITEM )
+			if( m_Trigger[i].byType == TriggerEvent::TE_GET_ITEM )
 			{
 				// ID
 				if( sItemID == m_Trigger[i].wParam1 )
@@ -741,7 +741,7 @@ namespace mission
 	{
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].byType == TE_GET_ITEM )
+			if( m_Trigger[i].byType == TriggerEvent::TE_GET_ITEM )
 			{
 				// ID
 				if( sItemID == m_Trigger[i].wParam1 )
@@ -827,7 +827,7 @@ namespace mission
 
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].byType == TE_GAME_TIME )
+			if( m_Trigger[i].byType == TriggerEvent::TE_GAME_TIME )
 			{
 				// 
 				if( ++m_Trigger[i].wParam4 < m_Trigger[i].wParam2 )
@@ -862,15 +862,15 @@ namespace mission
 				if( dwResult == LUA_TRUE )
 				{
 					// 
-					switch( m_Trigger[i].wParam1 )
+					switch( (TriggerTimeType)m_Trigger[i].wParam1 )
 					{
-					case TT_CYCLETIME:
+					case TriggerTimeType::TT_CYCLETIME:
 						{
 							// 
 							m_Trigger[i].wParam4 = 0;
 						}
 						break;
-					case TT_MULTITIME:
+					case TriggerTimeType::TT_MULTITIME:
 						{
 							if( m_Trigger[i].wParam3 > 0 )
 							{
@@ -914,7 +914,7 @@ namespace mission
 	{
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].byType == TE_GOTO_MAP )
+			if( m_Trigger[i].byType == TriggerEvent::TE_GOTO_MAP )
 			{
 				// 
 				if( byMapID != m_Trigger[i].wParam1 )
@@ -997,7 +997,7 @@ namespace mission
 	{
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].byType == TE_LEVEL_UP )
+			if( m_Trigger[i].byType == TriggerEvent::TE_LEVEL_UP )
 			{
 				if( m_Trigger[i].wParam2 == 1 && sLevel < m_Trigger[i].wParam1 )
 					continue;
@@ -1087,7 +1087,7 @@ namespace mission
 		{
 			//  :   (CharBorn)
 			auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McTriggerActionMessage{
-				TE_MAP_INIT, 0, 0, 0
+				TriggerEvent::TE_MAP_INIT, 0, 0, 0
 			});
 			m_pRoleChar->ReflectINFof( m_pRoleChar, packet );
 		}
@@ -1130,7 +1130,7 @@ namespace mission
 		{
 			//  :  
 			auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McTriggerActionMessage{
-				TE_EQUIP_ITEM, 0, static_cast<int64_t>(sItemID), 0
+				TriggerEvent::TE_EQUIP_ITEM, 0, static_cast<int64_t>(sItemID), 0
 			});
 			m_pRoleChar->ReflectINFof( m_pRoleChar, packet );
 		}
@@ -1142,40 +1142,40 @@ namespace mission
 	}
 
 	// 
-	BOOL CCharMission::MisEventProc( TRIGGER_EVENT e, WPARAM wParam, LPARAM lParam )
+	BOOL CCharMission::MisEventProc( TriggerEvent e, WPARAM wParam, LPARAM lParam )
 	{
 		switch( e )
 		{
-		case TE_MAP_INIT:
+		case TriggerEvent::TE_MAP_INIT:
 			{
 				CharBorn();
 			}
 			break;
-		case TE_NPC:
+		case TriggerEvent::TE_NPC:
 			break;
-		case TE_KILL:
+		case TriggerEvent::TE_KILL:
 			{
 				KillWare( (USHORT)wParam );
 			}
 			break;
-		case TE_GAME_TIME:
+		case TriggerEvent::TE_GAME_TIME:
 			{
 				TimeOut( (USHORT)wParam );
 			}
 			break;
-		case TE_CHAT:
+		case TriggerEvent::TE_CHAT:
 			break; 
-		case TE_GET_ITEM:
+		case TriggerEvent::TE_GET_ITEM:
 			{
 				GetItem( (USHORT)wParam, (USHORT)lParam );
 			}
 			break;
-		case TE_EQUIP_ITEM:
+		case TriggerEvent::TE_EQUIP_ITEM:
 			{
 				EquipItem( (USHORT)wParam, (USHORT)lParam );
 			}
 			break;
-		case TE_GOTO_MAP:
+		case TriggerEvent::TE_GOTO_MAP:
 			{
 				if( m_byNumGotoMap > 0 ) 
 				{
@@ -1183,7 +1183,7 @@ namespace mission
 				}
 			}
 			break;
-		case TE_LEVEL_UP:
+		case TriggerEvent::TE_LEVEL_UP:
 			{
 				LevelUp( USHORT(wParam) );
 			}
@@ -1200,7 +1200,7 @@ namespace mission
 	{
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].byType == TE_GET_ITEM && sItemID == m_Trigger[i].wParam1)
+			if( m_Trigger[i].byType == TriggerEvent::TE_GET_ITEM && sItemID == m_Trigger[i].wParam1)
 			{
 				// 
 				return !(m_Trigger[i].wParam4 >= m_Trigger[i].wParam2);
@@ -1537,11 +1537,11 @@ namespace mission
 			Data.wParam5, Data.wParam6 );
 #endif
 
-		if( Data.byType == TE_GET_ITEM )
+		if( Data.byType == TriggerEvent::TE_GET_ITEM )
 		{
 			m_pRoleChar->RefreshNeedItem( Data.wParam1 );
 		}
-		else if( Data.byType == TE_GOTO_MAP )
+		else if( Data.byType == TriggerEvent::TE_GOTO_MAP )
 		{
 			m_byNumGotoMap++;
 		}
@@ -1592,7 +1592,7 @@ namespace mission
 			return;
 
 		// 
-		if( m_Trigger[dwIndex].byType == TE_GOTO_MAP ) 
+		if( m_Trigger[dwIndex].byType == TriggerEvent::TE_GOTO_MAP ) 
 			m_byNumGotoMap--;
 
 		memset( m_Trigger + dwIndex, 0, sizeof(TRIGGER_DATA) );
@@ -1692,7 +1692,7 @@ namespace mission
 
 		m_Mission[m_byNumMission].wRoleID = wRoleID;
 		m_Mission[m_byNumMission].byState = ROLE_MIS_PENDING_FLAG;
-		m_Mission[m_byNumMission].byMisType = MIS_TYPE_NOMAL;
+		m_Mission[m_byNumMission].byMisType = MissionType::MIS_TYPE_NOMAL;
 		m_Mission[m_byNumMission].wParam1 = wScriptID;
 		
 		// 
@@ -1840,7 +1840,7 @@ namespace mission
 			if( m_Mission[i].wRoleID == wRoleID )
 			{
 				// npc
-				if( m_Mission[i].byType == MIS_RAND_CONVOY )
+				if( m_Mission[i].byType == MissionRandType::MIS_RAND_CONVOY )
 				{
 					for( int j = 0; j < ROLE_MAXNUM_RAND_DATA; j++ )
 					{
@@ -1876,7 +1876,7 @@ namespace mission
 			if( m_Mission[i].wRoleID == wRoleID )
 			{
 				// npc
-				if( m_Mission[i].byType == MIS_RAND_CONVOY )
+				if( m_Mission[i].byType == MissionRandType::MIS_RAND_CONVOY )
 				{
 					for( int j = 0; j < ROLE_MAXNUM_RAND_DATA; j++ )
 					{
@@ -2033,7 +2033,7 @@ namespace mission
 			return FALSE;
 		}
 
-		if( m_Mission[index].byType == MIS_RAND_CONVOY )
+		if( m_Mission[index].byType == MissionRandType::MIS_RAND_CONVOY )
 		{
 			for( int j = 0; j < ROLE_MAXNUM_RAND_DATA; j++ )
 			{
@@ -2150,7 +2150,7 @@ namespace mission
 		return FALSE;
 	}
 
-	BOOL CCharMission::MisAddRandMission( WORD wRoleID, WORD wScriptID, BYTE byType, BYTE byLevel, DWORD dwExp, DWORD dwMoney, USHORT sPrizeData, USHORT sPrizeType, BYTE byNumData )
+	BOOL CCharMission::MisAddRandMission( WORD wRoleID, WORD wScriptID, MissionRandType byType, BYTE byLevel, DWORD dwExp, DWORD dwMoney, USHORT sPrizeData, USHORT sPrizeType, BYTE byNumData )
 	{
 		if( m_byNumMission >= ROLE_MAXNUM_RANDMISSION )
 			return FALSE;
@@ -2158,7 +2158,7 @@ namespace mission
 		m_Mission[m_byNumMission].wRoleID = wRoleID;
 		m_Mission[m_byNumMission].wParam1 = wScriptID;
 		m_Mission[m_byNumMission].byState = ROLE_MIS_PENDING_FLAG;
-		m_Mission[m_byNumMission].byMisType = MIS_TYPE_RAND;
+		m_Mission[m_byNumMission].byMisType = MissionType::MIS_TYPE_RAND;
 		m_Mission[m_byNumMission].byType = byType;
 		m_Mission[m_byNumMission].byLevel = byLevel;
 		m_Mission[m_byNumMission].dwExp = dwExp;
@@ -2178,14 +2178,14 @@ namespace mission
 	{
 		for( int i = 0; i < m_byNumMission; i++ )
 		{
-			if( m_Mission[i].wRoleID == wRoleID && m_Mission[i].byMisType == MIS_TYPE_RAND )
+			if( m_Mission[i].wRoleID == wRoleID && m_Mission[i].byMisType == MissionType::MIS_TYPE_RAND )
 				return TRUE;
 		}
 
 		return FALSE;
 	}
 
-	BOOL CCharMission::MisSetRandMissionData( WORD wRoleID, BYTE byIndex, const mission::MISSION_DATA& RandData )
+	BOOL CCharMission::MisSetRandMissionData( WORD wRoleID, BYTE byIndex, const Corsairs::Common::Mission::MISSION_DATA& RandData )
 	{
 		if( byIndex >= ROLE_MAXNUM_RAND_DATA )
 			return FALSE;
@@ -2210,7 +2210,7 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CCharMission::MisGetRandMission( WORD wRoleID, BYTE& byType, BYTE& byLevel, DWORD& dwExp, DWORD& dwMoney, USHORT& sPrizeData, USHORT& sPrizeType, BYTE& byNumData )
+	BOOL CCharMission::MisGetRandMission( WORD wRoleID, MissionRandType& byType, BYTE& byLevel, DWORD& dwExp, DWORD& dwMoney, USHORT& sPrizeData, USHORT& sPrizeType, BYTE& byNumData )
 	{
 		int index = -1;
 		for( int i = 0; i < m_byNumMission; i++ )
@@ -2222,7 +2222,7 @@ namespace mission
 			}
 		}
 
-		if( index == -1 || m_Mission[index].byMisType != MIS_TYPE_RAND ) 
+		if( index == -1 || m_Mission[index].byMisType != MissionType::MIS_TYPE_RAND ) 
 		{
 			//m_pRoleChar->SystemNotice( "GetRandMission:ID=%d", wRoleID );
 			m_pRoleChar->SystemNotice( RES_STRING(GM_MISSION_CPP_00030), wRoleID );
@@ -2240,7 +2240,7 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CCharMission::MisGetRandMissionData( WORD wRoleID, BYTE byIndex, mission::MISSION_DATA& RandData )
+	BOOL CCharMission::MisGetRandMissionData( WORD wRoleID, BYTE byIndex, Corsairs::Common::Mission::MISSION_DATA& RandData )
 	{
 		if( byIndex >= ROLE_MAXNUM_RAND_DATA )
 			return FALSE;
@@ -2254,7 +2254,7 @@ namespace mission
 			}
 		}
 
-		if( index == -1 || m_Mission[index].byMisType != MIS_TYPE_RAND ) 
+		if( index == -1 || m_Mission[index].byMisType != MissionType::MIS_TYPE_RAND ) 
 		{
 			//m_pRoleChar->SystemNotice( "GetRandMissionData:ID=%d", wRoleID );
 			m_pRoleChar->SystemNotice( RES_STRING(GM_MISSION_CPP_00031), wRoleID );
@@ -2277,7 +2277,7 @@ namespace mission
 			}
 		}
 			
-		if( index == -1 || m_Mission[index].byMisType != MIS_TYPE_RAND ) 
+		if( index == -1 || m_Mission[index].byMisType != MissionType::MIS_TYPE_RAND ) 
 		{
 			//m_pRoleChar->SystemNotice( "SetRandMissionNpcItemFlag:ID=%d", wRoleID );
 			m_pRoleChar->SystemNotice( RES_STRING(GM_MISSION_CPP_00032), wRoleID );
@@ -2306,7 +2306,7 @@ namespace mission
 			}
 		}
 			
-		if( index == -1 || m_Mission[index].byMisType != MIS_TYPE_RAND ) 
+		if( index == -1 || m_Mission[index].byMisType != MissionType::MIS_TYPE_RAND ) 
 		{
 			//m_pRoleChar->SystemNotice( "SetRandMissionNpcItemFlag:ID=%d", wRoleID );
 			m_pRoleChar->SystemNotice( RES_STRING(GM_MISSION_CPP_00032), wRoleID );
@@ -2335,7 +2335,7 @@ namespace mission
 			}
 		}
 		
-		if( index == -1 || m_Mission[index].byMisType != MIS_TYPE_RAND ) 
+		if( index == -1 || m_Mission[index].byMisType != MissionType::MIS_TYPE_RAND ) 
 		{
 			//m_pRoleChar->SystemNotice( "GetRandMissionNpcItem:ID=%d", wRoleID );
 			m_pRoleChar->SystemNotice( RES_STRING(GM_MISSION_CPP_00033), wRoleID );
@@ -2365,7 +2365,7 @@ namespace mission
 			}
 		}
 			
-		if( index == -1 || m_Mission[index].byMisType != MIS_TYPE_RAND ) 
+		if( index == -1 || m_Mission[index].byMisType != MissionType::MIS_TYPE_RAND ) 
 		{
 			//m_pRoleChar->SystemNotice( "GetRandMissionNpcItem:ID=%d", wRoleID );
 			m_pRoleChar->SystemNotice( RES_STRING(GM_MISSION_CPP_00033), wRoleID );
@@ -2396,7 +2396,7 @@ namespace mission
 			}
 		}
 
-		if( index == -1 || m_Mission[index].byMisType != MIS_TYPE_RAND ) 
+		if( index == -1 || m_Mission[index].byMisType != MissionType::MIS_TYPE_RAND ) 
 		{
 			//m_pRoleChar->SystemNotice( "HasRandMissionNpc:ID=%d", wRoleID );
 			m_pRoleChar->SystemNotice( RES_STRING(GM_MISSION_CPP_00034), wRoleID );
@@ -2612,7 +2612,7 @@ namespace mission
 				// npc
 				for( int i = 0; i < m_byNumMission; i++ )
 				{
-					if( m_Mission[i].byType == MIS_RAND_CONVOY )
+					if( m_Mission[i].byType == MissionRandType::MIS_RAND_CONVOY )
 					{
 						for( int j = 0; j < ROLE_MAXNUM_RAND_DATA; j++ )
 						{
@@ -2649,7 +2649,7 @@ namespace mission
 		// npc
 		for( int i = 0; i < m_byNumMission; i++ )
 		{
-			if( m_Mission[i].byType == MIS_RAND_CONVOY )
+			if( m_Mission[i].byType == MissionRandType::MIS_RAND_CONVOY )
 			{
 				for( int j = 0; j < ROLE_MAXNUM_RAND_DATA; j++ )
 				{

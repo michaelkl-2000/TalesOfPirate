@@ -55,7 +55,7 @@
     <ClCompile>
       <ExceptionHandling>Async</ExceptionHandling>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\caLua\include;$(ProjectDir)..\util\include;$(ProjectDir)..\cryptopp\;$(ProjectDir)..\sqlite3;$(ProjectDir)..\CorsairsNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\caLua\include;$(ProjectDir)..\Util\src;$(ProjectDir)..\Util\src\Logging;$(ProjectDir)..\Util\src\Encoding;$(ProjectDir)..\Util\src\Diagnostic;$(ProjectDir)..\Util\src\Math;$(ProjectDir)..\Util\src\Map;$(ProjectDir)..\Util\src\Config;$(ProjectDir)..\Util\src\Crypto;$(ProjectDir)..\Util\src\Database;$(ProjectDir)..\Util\src\Memory;$(ProjectDir)..\Util\src\Text;$(ProjectDir)..\cryptopp\;$(ProjectDir)..\sqlite3;$(ProjectDir)..\CorsairsNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;NDEBUG;_LIB;WINDOWS_IGNORE_PACKING_MISMATCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -74,7 +74,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\caLua\include;$(ProjectDir)..\util\include;$(ProjectDir)..\cryptopp\;$(ProjectDir)..\sqlite3;$(ProjectDir)..\CorsairsNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\caLua\include;$(ProjectDir)..\Util\src;$(ProjectDir)..\Util\src\Logging;$(ProjectDir)..\Util\src\Encoding;$(ProjectDir)..\Util\src\Diagnostic;$(ProjectDir)..\Util\src\Math;$(ProjectDir)..\Util\src\Map;$(ProjectDir)..\Util\src\Config;$(ProjectDir)..\Util\src\Crypto;$(ProjectDir)..\Util\src\Database;$(ProjectDir)..\Util\src\Memory;$(ProjectDir)..\Util\src\Text;$(ProjectDir)..\cryptopp\;$(ProjectDir)..\sqlite3;$(ProjectDir)..\CorsairsNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -105,7 +105,6 @@
     <ClCompile Include="src\Database\RenderAssetDatabase.cpp" />
     <ClCompile Include="src\Database\SqliteDatabase.cpp" />
     <ClCompile Include="src\Core\CommFunc.cpp" />
-    <ClCompile Include="src\Core\StringLib.cpp" />
     <ClCompile Include="src\Character\ChaAttr.cpp" />
     <ClCompile Include="src\Character\ChaCreateRecordStore.cpp" />
     <ClCompile Include="src\Character\PlayerMapMask.cpp" />
@@ -187,12 +186,9 @@
     <ClInclude Include="src\Database\SqliteDatabase.h" />
     <ClInclude Include="src\Database\TableData.h" />
     <ClInclude Include="src\Core\CommFunc.h" />
-    <ClInclude Include="src\Core\GameCommon.h" />
     <ClInclude Include="src\Core\JobType.h" />
     <ClInclude Include="src\Core\RoleCommon.h" />
-    <ClInclude Include="src\Core\StringLib.h" />
-    <ClInclude Include="src\Core\ToolClass.h" />
-    <ClInclude Include="src\Core\i18n.h" />
+    <ClInclude Include="src\Localization\i18n.h" />
     <ClInclude Include="src\Crypto\Blake2s.h" />
     <ClInclude Include="src\Network\CompCommand.h" />
     <ClInclude Include="src\Network\NetCommand.h" />

@@ -121,7 +121,7 @@ public:
 					 std::int32_t lFromEntityID = 0, std::int32_t lProtChaID = 0, std::int32_t lProtChaHandle = 0,
 					 std::int32_t lProtTime = 0, std::int32_t lOnTick = 0,
 					 CEvent* pCEvent = NULL);
-	CCharacter* ChaSpawn(std::int32_t lChaInfoID, char chCtrlType, int16_t sAngle, Corsairs::Util::Point* pSPos,
+	CCharacter* ChaSpawn(std::int32_t lChaInfoID, Corsairs::Common::Character::EChaCtrlType chCtrlType, int16_t sAngle, Corsairs::Util::Point* pSPos,
 						 bool bEyeshotAbility = false,
 						 const char* cszChaName = 0, const long clSearchRadius = 120 * 100);
 

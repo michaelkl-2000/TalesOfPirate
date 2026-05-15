@@ -2,6 +2,7 @@
 //	2005/4/13	Arcol	Extended and added interface: UI_SetFormStyleEx
 //----------------------------------------------------------------------
 #include "stdafx.h"
+#include "TextFilter.h"
 namespace Corsairs::Common::Effect {}
 using namespace Corsairs::Common::Effect;
 #include "script.h"
@@ -42,7 +43,8 @@ using namespace Corsairs::Common::Effect;
 #include "uimenu.h"
 #include "uiCozeform.h"
 #include "UIChat.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "uititle.h"
 #include "uiequipform.h"
 #include "uirichedit.h"
@@ -1220,21 +1222,21 @@ int UI_GridNodeAddItem(int nodeid, int itemid) {
 		if (stricmp(obj->GetItem()->GetString(), GetLanguageString(528).c_str()) == 0) {
 			CChaRecord* pInfo = GetChaRecordInfo(pHint->nTag);
 			if (pInfo) {
-				const std::string szBuf = std::format("{}.{}", pInfo->Id, pInfo->Name);
+				const std::string szBuf = std::format("{}.{}", pInfo->Id, pInfo->DataName);
 				pHint->SetHint(szBuf.c_str());
 			}
 		}
 		else if (stricmp(obj->GetItem()->GetString(), GetLanguageString(532).c_str()) == 0) {
 			CMapInfo* pInfo = GetMapInfo(pHint->nTag);
 			if (pInfo) {
-				pHint->SetHint(pInfo->DataName);
+				pHint->SetHint(pInfo->DataName.c_str());
 			}
 		}
 		else if (stricmp(obj->GetItem()->GetString(), GetLanguageString(530).c_str()) == 0) {
 			pHint->SetHint(g_GetAreaName(pHint->nTag));
 		}
 		else if (stricmp(obj->GetItem()->GetString(), GetLanguageString(529).c_str()) == 0) {
-			CEffectInfo* pInfo = GetEffectInfo(pHint->nTag);
+			CEffectRecord* pInfo = GetEffectInfo(pHint->nTag);
 			if (pInfo) {
 				const std::string szBuf = std::format("{}.{}", pInfo->Id, pInfo->DataName);
 				pHint->SetHint(szBuf.c_str());

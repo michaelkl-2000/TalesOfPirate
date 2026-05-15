@@ -21,6 +21,8 @@
 #include <source_location>
 #include "logutil.h"
 
+namespace Corsairs::Util {
+
 template <typename T>
 class TrackedPool {
 public:
@@ -122,3 +124,5 @@ private:
 	std::unordered_set<T*> _alive;
 	std::string _name;
 };
+
+} // namespace Corsairs::Util

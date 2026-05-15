@@ -782,7 +782,7 @@ void CTraceAttackState::CheckTrace() {
 		IsValid()) {
 		// 
 		if (_pSelf->GetDefaultChaInfo()->Territory != _pTarget->GetDefaultChaInfo()->Territory) {
-			if (!g_IsMoveAble(_pSelf->getChaCtrlType()
+			if (!IsMoveAble(_pSelf->getChaCtrlType()
 							  , _pSelf->GetDefaultChaInfo()->Territory
 							  , _pSelf->GetScene()->GetGridRegion(_pTarget->GetCurX() / 100, _pTarget->GetCurY() / 100))
 			)

@@ -16,7 +16,7 @@ using namespace Corsairs::Common::NPC;
 
 // #define ROLE_DEBUG_INFO
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	CTalkNpc* g_pTalkNpc = NULL;
 
@@ -65,12 +65,12 @@ namespace mission
 		return TRUE;
 	}
 
-	BOOL CNpc::AddNpcTrigger( WORD wID, mission::TRIGGER_EVENT e, WORD wParam1, WORD wParam2, WORD wParam3, WORD wParam4 )
+	BOOL CNpc::AddNpcTrigger( WORD wID, Corsairs::Common::Mission::TriggerEvent e, WORD wParam1, WORD wParam2, WORD wParam3, WORD wParam4 )
 	{
 		return TRUE;
 	}
 
-	BOOL CNpc::EventProc( TRIGGER_EVENT e, WPARAM wParam, LPARAM lParam )
+	BOOL CNpc::EventProc( TriggerEvent e, WPARAM wParam, LPARAM lParam )
 	{
 		return TRUE;
 	}
@@ -109,7 +109,7 @@ namespace mission
 			return FALSE;
 		}
 
-		luabridge::push( g_pLuaState, static_cast<mission::CNpc*>(this) );
+		luabridge::push( g_pLuaState, static_cast<Corsairs::Common::Mission::CNpc*>(this) );
 		lua_pushstring( g_pLuaState, szName );
 
 		int nStatus = lua_pcall( g_pLuaState, 2, 0, 0 );
@@ -156,7 +156,7 @@ namespace mission
 			return FALSE;
 		}
 
-		luabridge::push( g_pLuaState, static_cast<mission::CNpc*>(this) );
+		luabridge::push( g_pLuaState, static_cast<Corsairs::Common::Mission::CNpc*>(this) );
 		lua_pushstring( g_pLuaState, szName );
 
 		nStatus = lua_pcall( g_pLuaState, 2, 0, 0 );
@@ -287,7 +287,7 @@ namespace mission
 		luabridge::LuaRef action = BuildNpcActionTable(g_pLuaState, packet);
 
 		luabridge::push( g_pLuaState, &character );
-		luabridge::push( g_pLuaState, static_cast<mission::CNpc*>(this) );
+		luabridge::push( g_pLuaState, static_cast<Corsairs::Common::Mission::CNpc*>(this) );
 		action.push(g_pLuaState);
 		lua_pushnumber( g_pLuaState, m_sScriptID );
 
@@ -353,7 +353,7 @@ namespace mission
 		return character.GetMissionState( m_ID, byState );
 	}
 
-	BOOL CTalkNpc::AddNpcTrigger( WORD wID, mission::TRIGGER_EVENT e, WORD wParam1, WORD wParam2, WORD wParam3, WORD wParam4 )
+	BOOL CTalkNpc::AddNpcTrigger( WORD wID, Corsairs::Common::Mission::TriggerEvent e, WORD wParam1, WORD wParam2, WORD wParam3, WORD wParam4 )
 	{
 		if( m_byNumTrigger >= ROLE_MAXNUM_NPCTRIGGER )
 			return FALSE;
@@ -382,23 +382,23 @@ namespace mission
 		m_byNumTrigger--;
 	}
 
-	BOOL CTalkNpc::EventProc( TRIGGER_EVENT e, WPARAM wParam, LPARAM lParam )
+	BOOL CTalkNpc::EventProc( TriggerEvent e, WPARAM wParam, LPARAM lParam )
 	{
 		switch( e )
 		{
-		case TE_GAME_TIME:
+		case TriggerEvent::TE_GAME_TIME:
 			{
 				TimeOut( (USHORT)wParam );
 			}
 			break;
-		case TE_MAP_INIT:
-		case TE_NPC:
-		case TE_KILL:
-		case TE_CHAT:
-		case TE_GET_ITEM:
-		case TE_EQUIP_ITEM:
-		case TE_GOTO_MAP:
-		case TE_LEVEL_UP:
+		case TriggerEvent::TE_MAP_INIT:
+		case TriggerEvent::TE_NPC:
+		case TriggerEvent::TE_KILL:
+		case TriggerEvent::TE_CHAT:
+		case TriggerEvent::TE_GET_ITEM:
+		case TriggerEvent::TE_EQUIP_ITEM:
+		case TriggerEvent::TE_GOTO_MAP:
+		case TriggerEvent::TE_LEVEL_UP:
 		default:
 			break;
 		}
@@ -423,7 +423,7 @@ namespace mission
 
 		for( int i = 0; i < m_byNumTrigger; i++ )
 		{
-			if( m_Trigger[i].byType == TE_GAME_TIME )
+			if( m_Trigger[i].byType == TriggerEvent::TE_GAME_TIME )
 			{
 				// 
 				if( ++m_Trigger[i].wParam4 < m_Trigger[i].wParam2 )
@@ -438,7 +438,7 @@ namespace mission
 					return;
 				}
 
-				luabridge::push( g_pLuaState, static_cast<mission::CNpc*>(this) );
+				luabridge::push( g_pLuaState, static_cast<Corsairs::Common::Mission::CNpc*>(this) );
 				lua_pushnumber( g_pLuaState, m_Trigger[i].wTID );
 				lua_pushnumber( g_pLuaState, m_Trigger[i].wParam1 );
 				lua_pushnumber( g_pLuaState, m_Trigger[i].wParam2 );
@@ -462,15 +462,15 @@ namespace mission
 				if( dwResult == LUA_TRUE )
 				{
 					// 
-					switch( m_Trigger[i].wParam1 )
+					switch( (TriggerTimeType) m_Trigger[i].wParam1 )
 					{
-					case TT_CYCLETIME:
+					case TriggerTimeType::TT_CYCLETIME:
 						{
 							// 
 							m_Trigger[i].wParam4 = 0;
 						}
 						break;
-					case TT_MULTITIME:
+					case TriggerTimeType::TT_MULTITIME:
 						{
 							if( m_Trigger[i].wParam3 > 0 )
 							{
@@ -568,7 +568,7 @@ namespace mission
 // Ранее inline-методы из NPC.h, вынесены в .cpp 2026-04-22.
 // ============================================================================
 
-namespace mission {
+namespace Corsairs::Common::Mission {
 
 CNpc*       CNpc::IsNpc()                  { return this; }
 void        CNpc::SetType()                { m_byType = NPC; }
@@ -590,5 +590,5 @@ void        CTradeNpc::SetType()           { m_byType = TRADE; }
 void        CTradeAgencyNpc::SetType()     { m_byType = TRADE_AGENCY; }
 void        CRoleNpc::SetType()            { m_byType = ROLE; }
 
-} // namespace mission
+} // namespace Corsairs::Common::Mission
 

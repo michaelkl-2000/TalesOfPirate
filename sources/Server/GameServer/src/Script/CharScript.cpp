@@ -19,7 +19,7 @@ using namespace std;
 
 
 //---------------------------------------------------------
-using namespace mission;
+using namespace Corsairs::Common::Mission;
 
 std::string GetResString(const std::string& pszID)
 {
@@ -46,7 +46,7 @@ int AddTrigger(CCharacter* pChar, int wMissionID, int wTriggerID, int byType, in
 	memset(&Data, 0, sizeof(TRIGGER_DATA));
 	Data.wMissionID = (WORD)wMissionID;
 	Data.wTriggerID = (WORD)wTriggerID;
-	Data.byType     = (BYTE)byType;
+	Data.byType     = (TriggerEvent)byType;
 	Data.wParam1    = (WORD)wParam1;
 	Data.wParam2    = (WORD)wParam2;
 	Data.wParam3    = (WORD)wParam3;
@@ -338,7 +338,7 @@ int AddExpAndType(CCharacter* pChar, CTalkNpc* pTalk, int byType, int dwMinExp, 
 	}
 
 	BOOL bRet;
-	if ((BYTE)byType == mission::MIS_EXP_NOMAL)
+	if ((MissionExpType)byType == Corsairs::Common::Mission::MissionExpType::MIS_EXP_NOMAL)
 	{
 		bRet = pChar->GetPlyMainCha()->AddExpAndNotic(dwValue);
 		char szData[128];
@@ -346,7 +346,7 @@ int AddExpAndType(CCharacter* pChar, CTalkNpc* pTalk, int byType, int dwMinExp, 
 		pChar->SystemNotice(szData);
 		ToLogService("trade", "[CHA_MIS] {} : {}", pChar->GetName(), szData);
 	}
-	else if ((BYTE)byType == MIS_EXP_SAIL)
+	else if ((MissionExpType)byType == MissionExpType::MIS_EXP_SAIL)
 	{
 		bRet = pChar->GetPlyMainCha()->AddAttr(ATTR_CSAILEXP, dwValue);
 		char szData[128];
@@ -354,7 +354,7 @@ int AddExpAndType(CCharacter* pChar, CTalkNpc* pTalk, int byType, int dwMinExp, 
 		pChar->SystemNotice(szData);
 		ToLogService("trade", "[CHA_MIS] {} : {}", pChar->GetName(), szData);
 	}
-	else if ((BYTE)byType == MIS_EXP_LIFE)
+	else if ((MissionExpType)byType == MissionExpType::MIS_EXP_LIFE)
 	{
 		bRet = pChar->GetPlyMainCha()->AddAttr(ATTR_CLIFEEXP, dwValue);
 		char szData[128];
@@ -554,8 +554,8 @@ int GiveItem_raw(lua_State* L)
 
 	char szNpc[defENTITY_NAME_LEN];
 	strncpy(szNpc, RES_STRING(GM_CHARSCRIPT_CPP_00001), defENTITY_NAME_LEN - 1);
-	auto pTalkResult = luabridge::Stack<mission::CNpc*>::get(L, 2);
-	mission::CNpc* pTalk = pTalkResult ? *pTalkResult : nullptr;
+	auto pTalkResult = luabridge::Stack<Corsairs::Common::Mission::CNpc*>::get(L, 2);
+	Corsairs::Common::Mission::CNpc* pTalk = pTalkResult ? *pTalkResult : nullptr;
 	if (pTalk)
 	{
 		strncpy(szNpc, pTalk->GetName(), defENTITY_NAME_LEN - 1);
@@ -612,8 +612,8 @@ int GiveItemY_raw(lua_State* L)
 
 	char szNpc[defENTITY_NAME_LEN];
 	strncpy(szNpc, RES_STRING(GM_CHARSCRIPT_CPP_00001), defENTITY_NAME_LEN - 1);
-	auto pTalkResult = luabridge::Stack<mission::CNpc*>::get(L, 2);
-	mission::CNpc* pTalk = pTalkResult ? *pTalkResult : nullptr;
+	auto pTalkResult = luabridge::Stack<Corsairs::Common::Mission::CNpc*>::get(L, 2);
+	Corsairs::Common::Mission::CNpc* pTalk = pTalkResult ? *pTalkResult : nullptr;
 	if (pTalk)
 	{
 		strncpy(szNpc, pTalk->GetName(), defENTITY_NAME_LEN - 1);
@@ -1035,7 +1035,7 @@ int HasRandMission(CCharacter* pChar, int wID)
 int AddRandMission(CCharacter* pChar, int wID, int wScriptID, int byType, int byLevel, int dwExp, int dwMoney, int sPrizeData, int sPrizeType, int byNumData)
 {
 	if (!pChar) return LUA_FALSE;
-	BOOL bRet = pChar->AddRandMission((WORD)wID, (WORD)wScriptID, (BYTE)byType, (BYTE)byLevel, (DWORD)dwExp, (DWORD)dwMoney, (USHORT)sPrizeData, (USHORT)sPrizeType, (BYTE)byNumData);
+	BOOL bRet = pChar->AddRandMission((WORD)wID, (WORD)wScriptID, (MissionRandType)byType, (BYTE)byLevel, (DWORD)dwExp, (DWORD)dwMoney, (USHORT)sPrizeData, (USHORT)sPrizeType, (BYTE)byNumData);
 	return bRet ? LUA_TRUE : LUA_FALSE;
 }
 
@@ -1059,7 +1059,8 @@ std::tuple<int, int, int, int, int, int, int, int> GetRandMission(CCharacter* pC
 {
 	if (!pChar) return std::make_tuple(LUA_FALSE, 0, 0, 0, 0, 0, 0, 0);
 
-	BYTE byType, byLevel, byNumData;
+	MissionRandType byType;
+	BYTE byLevel, byNumData;
 	DWORD dwExp, dwMoney;
 	USHORT sPrizeData, sPrizeType;
 	BOOL bRet = pChar->GetRandMission((WORD)wID, byType, byLevel, dwExp, dwMoney, sPrizeData, sPrizeType, byNumData);
@@ -1412,7 +1413,7 @@ int BoatBerthList(CCharacter* pChar, int dwNpcID, int byType, int sBerth, int sx
 {
 	if (!pChar) return LUA_FALSE;
 	BOOL bRet;
-	bRet = pChar->BoatBerthList((DWORD)dwNpcID, (BYTE)byType, (USHORT)sBerth, (USHORT)sxPos, (USHORT)syPos, (USHORT)sDir);
+	bRet = pChar->BoatBerthList((DWORD)dwNpcID, (BoatListType)byType, (USHORT)sBerth, (USHORT)sxPos, (USHORT)syPos, (USHORT)sDir);
 	return bRet ? LUA_TRUE : LUA_FALSE;
 }
 

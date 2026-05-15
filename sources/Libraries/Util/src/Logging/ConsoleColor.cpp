@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <windows.h>
 
-namespace Corsairs::Util::Console {
+namespace Corsairs::Util {
 
     // CODES/NAMES — function-local statics (Meyers' singleton), не namespace-scope.
     // Why: namespace-scope `const std::map` без inline даёт per-TU копию (internal

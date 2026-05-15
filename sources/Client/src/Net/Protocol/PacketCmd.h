@@ -150,14 +150,14 @@ extern void CS_SaleGoods(DWORD dwNpcID, DWORD dwBoatID, BYTE byIndex, BYTE byCou
 extern void CS_BuyGoods(DWORD dwNpcID, DWORD dwBoatID, BYTE byItemType, BYTE byIndex1, BYTE byIndex2, BYTE byCount);
 
 // ,IDWorldID,byType
-extern void CS_RequestTrade(BYTE byType, DWORD dwCharID);
-extern void CS_AcceptTrade(BYTE byType, DWORD dwCharID);
-extern void CS_AddItem(BYTE byType, DWORD dwCharID, BYTE byOpType, BYTE byIndex, BYTE byItemIndex, BYTE byCount);
-extern void CS_AddMoney(BYTE byType, DWORD dwCharID, BYTE byOpType, DWORD dwMoney);
-extern void CS_AddIMP(BYTE byType, DWORD dwCharID, BYTE byOpType, DWORD dwMoney);
-extern void CS_ValidateTradeData(BYTE byType, DWORD dwCharID);
-extern void CS_ValidateTrade(BYTE byType, DWORD dwCharID);
-extern void CS_CancelTrade(BYTE byType, DWORD dwCharID);
+extern void CS_RequestTrade(Corsairs::Common::Mission::TradeCharType byType, DWORD dwCharID);
+extern void CS_AcceptTrade(Corsairs::Common::Mission::TradeCharType byType, DWORD dwCharID);
+extern void CS_AddItem(Corsairs::Common::Mission::TradeCharType byType, DWORD dwCharID, Corsairs::Common::Mission::TradeOpType byOpType, BYTE byIndex, BYTE byItemIndex, BYTE byCount);
+extern void CS_AddMoney(Corsairs::Common::Mission::TradeCharType byType, DWORD dwCharID, Corsairs::Common::Mission::TradeOpType byOpType, DWORD dwMoney);
+extern void CS_AddIMP(Corsairs::Common::Mission::TradeCharType byType, DWORD dwCharID, Corsairs::Common::Mission::TradeOpType byOpType, DWORD dwMoney);
+extern void CS_ValidateTradeData(Corsairs::Common::Mission::TradeCharType byType, DWORD dwCharID);
+extern void CS_ValidateTrade(Corsairs::Common::Mission::TradeCharType byType, DWORD dwCharID);
+extern void CS_CancelTrade(Corsairs::Common::Mission::TradeCharType byType, DWORD dwCharID);
 
 // 
 extern void CS_MissionPage(DWORD dwNpcID, BYTE byCmd, BYTE bySelItem = 0, BYTE byParam = 0);
@@ -185,7 +185,7 @@ extern void CS_SelectBoatBag(DWORD dwNpcID, BYTE byIndex);
 extern void CS_EntityEvent(DWORD dwEntityID);
 
 // 
-extern void CS_StallInfo(const char szName[], mission::NET_STALL_ALLDATA& Data);
+extern void CS_StallInfo(const char szName[], Corsairs::Common::Mission::NetStallAllData& Data);
 extern void CS_StallOpen(DWORD dwCharID);
 extern void CS_StallBuy(DWORD dwCharID, BYTE byIndex, BYTE byCount, int gridID);
 extern void CS_StallClose();

@@ -460,7 +460,7 @@ void CGameScene::_Render() {
 					continue;
 
 				cha_record = pCha->GetDefaultChaInfo();
-				cha_lgt = cha_record->bLight;
+				cha_lgt = cha_record->Light;
 				if (pCha->GetEmiColorFlag()) {
 					cha_lgt = 0;
 				}
@@ -598,7 +598,7 @@ void CGameScene::_Render() {
 				}
 
 				cha_record = pCha->GetDefaultChaInfo();
-				cha_lgt = cha_record->bLight;
+				cha_lgt = cha_record->Light;
 				if (pCha->GetEmiColorFlag()) {
 					cha_lgt = 0;
 				}

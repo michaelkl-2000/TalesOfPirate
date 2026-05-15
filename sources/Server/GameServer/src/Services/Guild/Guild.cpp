@@ -2,7 +2,11 @@
 #include "Services/Guild/Guild.h"
 #include "Db/GameDB.h"
 #include "util.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 #include "App/GameApp.h"
 #include "Script/LuaAPI.h"
 

@@ -8,7 +8,7 @@
 #include "App/GameServerApp.h"
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	CEventEntity::CEventEntity()
 		: CCharacter()
@@ -44,7 +44,7 @@ namespace mission
 		}
 		else
 		{
-			_name = (pRec->Name.c_str()) ? (pRec->Name.c_str()) : "";
+			_name = (pRec->DataName.c_str()) ? (pRec->DataName.c_str()) : "";
 		}
 
 		m_ID = g_pGameApp->m_Ident.GetID();
@@ -157,15 +157,15 @@ namespace mission
 		return 0;
 	}
 	
-	void CResourceEntity::GetState( CCharacter& character, BYTE& byState )
+	void CResourceEntity::GetState( CCharacter& character, EntityState& byState )
 	{
 		if( !character.IsMisNeedItem( m_sID ) )
 		{
-			byState = ENTITY_DISABLE;
+			byState = EntityState::ENTITY_DISABLE;
 		}
 		else
 		{
-			byState = ENTITY_ENABLE;
+			byState = EntityState::ENTITY_ENABLE;
 		}
 	}
 
@@ -205,9 +205,9 @@ namespace mission
 		return 0;
 	}
 
-	void CTransitEntity::GetState( CCharacter& character, BYTE& byState )
+	void CTransitEntity::GetState( CCharacter& character, EntityState& byState )
 	{
-		byState = ENTITY_ENABLE;
+		byState = EntityState::ENTITY_ENABLE;
 	}
 
 	//---------------------------------------------------------
@@ -248,9 +248,9 @@ namespace mission
 		return 0;
 	}
 
-	void CBerthEntity::GetState( CCharacter& character, BYTE& byState )
+	void CBerthEntity::GetState( CCharacter& character, EntityState& byState )
 	{
-		byState = ENTITY_ENABLE;
+		byState = EntityState::ENTITY_ENABLE;
 	}
 
 	//---------------------------------------------------------

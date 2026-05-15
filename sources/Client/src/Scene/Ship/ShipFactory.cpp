@@ -1,5 +1,7 @@
 ﻿#include "stdafx.h"
 #include "ShipFactory.h"
+#include "TextFilter.h"
+using namespace Corsairs::Util;
 #include "GameApp.h"
 #include "EffectObj.h"
 #include "GameConfig.h"

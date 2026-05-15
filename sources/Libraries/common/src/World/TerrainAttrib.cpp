@@ -1,7 +1,6 @@
 ﻿
 #include "World/TerrainAttrib.h"
 #include "util.h"
-#include "singleton.h"  // cfl_singleton_ap<tamem_mgr>; ранее тянулся через umbrella util.h
 #include <iostream>
 #include <memory>
 
@@ -720,17 +719,21 @@ inline bool terrain_attr_mem::get_info(unsigned int& width, unsigned int& height
 // terrain_attr_mem
 class tamem_mgr
     {
-    friend class cfl_singleton_ap<tamem_mgr>;
-
 private:
-    tamem_mgr(tamem_mgr const&) {}
-    tamem_mgr& operator =(tamem_mgr const&) {}
+    tamem_mgr() : _ta_map()
+    {
+        memset(_ta, NULL, sizeof _ta); _ta_cnt = 0;
+    }
+    tamem_mgr(tamem_mgr const&) = delete;
+    tamem_mgr& operator =(tamem_mgr const&) = delete;
 
 public:
-	tamem_mgr() : _ta_map()
-	{
-		memset(_ta, NULL, sizeof _ta); _ta_cnt = 0;
-	}
+    static tamem_mgr& Instance()
+    {
+        static tamem_mgr instance;
+        return instance;
+    }
+
 	~tamem_mgr()
 	{
 		for (int i = 0; i < _ta_cnt; ++i) delete _ta[i];
@@ -781,7 +784,7 @@ protected:
         if (it != _ta_map.end()) return (*it).second;
         else return INVALID_INDEX;}
 
-    }; typedef cfl_singleton_ap<tamem_mgr> TAM_MGR;
+    };
 
 int tamem_mgr::load_map(char const* fname)
     {
@@ -808,19 +811,19 @@ int tamem_mgr::load_map(char const* fname)
 int s_openAttribFile(char const* filename)
     {
     string strfile = filename; strfile += ".atr";
-    return TAM_MGR::instance()->load_map(strfile.c_str());}
+    return tamem_mgr::Instance().load_map(strfile.c_str());}
 
 bool s_getTileAttrib(int id, unsigned int x, unsigned int y, unsigned short& attrib)
-    {return TAM_MGR::instance()->get_trrnattr(id, x, y, attrib);}
+    {return tamem_mgr::Instance().get_trrnattr(id, x, y, attrib);}
 
 bool s_hasTileAttrib(int id, unsigned int x, unsigned int y, unsigned char attrib_mask)
-    {return TAM_MGR::instance()->has_trrnattr(id, x, y, attrib_mask);}
+    {return tamem_mgr::Instance().has_trrnattr(id, x, y, attrib_mask);}
 
 bool s_getTileIsland(int id, unsigned int x, unsigned int y, unsigned char& island_index)
-    {return TAM_MGR::instance()->get_isldidx(id, x, y, island_index);}
+    {return tamem_mgr::Instance().get_isldidx(id, x, y, island_index);}
 
 bool s_getAttribFileInfo(int id, unsigned int& width, unsigned int& height)
-    {return TAM_MGR::instance()->get_info(id, width, height);}
+    {return tamem_mgr::Instance().get_info(id, width, height);}
 
 } // namespace Corsairs::Common::World
 

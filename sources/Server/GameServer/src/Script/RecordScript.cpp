@@ -176,7 +176,7 @@ bool RegisterRecordScript() {
 			.addFunction("GetFightType",      +[](CSkillRecord* self) -> int         { return static_cast<int>(self->chFightType); })
 			.addFunction("GetPointExpend",    +[](CSkillRecord* self) -> int         { return static_cast<int>(self->chPointExpend); })
 			.addFunction("GetAngle",          +[](CSkillRecord* self) -> int         { return static_cast<int>(self->sAngle); })
-			.addFunction("GetRadii",          +[](CSkillRecord* self) -> int         { return static_cast<int>(self->Radii); })
+			.addFunction("GetRadii",          +[](CSkillRecord* self) -> int         { return static_cast<int>(self->sRadii); })
 		.endClass();
 
 	// --- CSkillStateRecord ---

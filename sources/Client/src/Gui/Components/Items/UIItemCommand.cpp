@@ -14,7 +14,8 @@ using namespace Corsairs::Common::Mount;
 #include "Core/CommFunc.h"
 #include "uiequipform.h"
 #include <strstream>
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "Skill/SkillRecord.h"
 #include "uiboatform.h"
 #include "Inventory/ShipSet.h"
@@ -129,8 +130,8 @@ CItemCommand::~CItemCommand() {
 void CItemCommand::PUSH_HINT(const char* str, int value, DWORD color) {
 	if (value == 0) return;
 
-	char buf[256] = {0};
-	FmtLang(buf, sizeof(buf), str, value);
+	std::string buf;
+	buf = FmtLang(str, value);
 	PushHint(buf, color);
 }
 
@@ -218,7 +219,7 @@ void CItemCommand::SaleRender(int x, int y, int nWidth, int nHeight) {
 		// UTF-8: не разрываем codepoint — если szBuf1[nEnter] — continuation-
 		// байт (10xxxxxx), отступаем назад до starter-байта включительно.
 		while (nEnter > 0
-			&& !Corsairs::Util::Encoding::IsUtf8StartByte(static_cast<unsigned char>(szBuf1[nEnter]))) {
+			&& !Corsairs::Util::IsUtf8StartByte(static_cast<unsigned char>(szBuf1[nEnter]))) {
 			--nEnter;
 		}
 		if (nEnter < 0) return;
@@ -399,7 +400,7 @@ void CItemCommand::OwnDefRender(int x, int y, int nWidth, int nHeight) {
 		// UTF-8: не разрываем codepoint — если szBuf1[nEnter] — continuation-
 		// байт (10xxxxxx), отступаем назад до starter-байта включительно.
 		while (nEnter > 0
-			&& !Corsairs::Util::Encoding::IsUtf8StartByte(static_cast<unsigned char>(szBuf1[nEnter]))) {
+			&& !Corsairs::Util::IsUtf8StartByte(static_cast<unsigned char>(szBuf1[nEnter]))) {
 			--nEnter;
 		}
 		if (nEnter < 0) return;
@@ -432,13 +433,13 @@ void CItemCommand::RenderEnergy(int x, int y) {
 }
 
 void CItemCommand::_AddDescriptor() {
-	char buf[256] = {0};
-	StringNewLine(buf, 40, _pItem->szDescriptor.c_str(), (unsigned int)_pItem->szDescriptor.size());
+	std::string buf;
+	buf = StringNewLine(_pItem->szDescriptor, 40);
 	PushHint(buf);
 }
 
 void CItemCommand::AddHint(int x, int y) {
-	char buf[256] = {0};  // буфер для FmtLang / StringNewLine (требуют char*)
+	std::string buf;  // буфер для FmtLang / StringNewLine (требуют char*)
 	bool isMain = false;
 
 	if (GetParent()) {
@@ -492,7 +493,7 @@ void CItemCommand::AddHint(int x, int y) {
 		}
 
 		if (_pItem->lID == 1034) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(862), _ItemData.sEndure[0] * 10 - 1000,
+			buf = FmtLang( GetLanguageString(862), _ItemData.sEndure[0] * 10 - 1000,
 					_ItemData.sEndure[1] * 10 - 1000); //
 			PushHint(buf, COLOR_WHITE, 5, 1);
 		}
@@ -504,7 +505,7 @@ void CItemCommand::AddHint(int x, int y) {
 		AddHintHeight();
 
 		if (isWeapon) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(625), _GetValue(ITEMATTR_VAL_MNATK, item),
+			buf = FmtLang( GetLanguageString(625), _GetValue(ITEMATTR_VAL_MNATK, item),
 					_GetValue(ITEMATTR_VAL_MXATK, item));
 			PushHint(buf, GENERIC_COLOR);
 		}
@@ -514,7 +515,7 @@ void CItemCommand::AddHint(int x, int y) {
 
 
 		if (!isStore && !isJewelery) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(626), item.sEndure[0], item.sEndure[1]);
+			buf = FmtLang(GetLanguageString(626), item.sEndure[0], item.sEndure[1]);
 			PushHint(buf, GENERIC_COLOR);
 		}
 
@@ -573,10 +574,10 @@ void CItemCommand::AddHint(int x, int y) {
 		AddHintHeight();
 
 		if (!isStore) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(662), _ItemData.sEndure[0] / 50, _ItemData.sEndure[1] / 50);
+			buf = FmtLang(GetLanguageString(662), _ItemData.sEndure[0] / 50, _ItemData.sEndure[1] / 50);
 			PushHint(buf);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(663), _ItemData.sEnergy[0], _ItemData.sEnergy[1]);
+			buf = FmtLang(GetLanguageString(663), _ItemData.sEnergy[0], _ItemData.sEnergy[1]);
 			PushHint(buf);
 		}
 
@@ -649,13 +650,13 @@ void CItemCommand::AddHint(int x, int y) {
 		PushHint(_pItem->szName.c_str(), COLOR_WHITE, 5, 1);
 
 		if (5786 == _pItem->lID || 5787 == _pItem->lID || 5788 == _pItem->lID || 5789 == _pItem->lID) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(644), item.sEndure[0], item.sEndure[1]);
+			buf = FmtLang(GetLanguageString(644), item.sEndure[0], item.sEndure[1]);
 			PushHint(buf);
 		}
 
 		if (_ItemData.sNum > 0) {
 			AddHintHeight();
-			FmtLang(buf, sizeof(buf), GetLanguageString(633), _ItemData.sNum);
+			buf = FmtLang(GetLanguageString(633), _ItemData.sNum);
 			PushHint(buf);
 		}
 
@@ -675,12 +676,12 @@ void CItemCommand::AddHint(int x, int y) {
 
 		if (_pItem->Id == 3908 || _pItem->Id == 3108) // 3108 add by Philip  2005-05-30
 		{
-			FmtLang(buf, sizeof(buf), GetLanguageString(626), item.sEndure[0], item.sEndure[1]);
+			buf = FmtLang(GetLanguageString(626), item.sEndure[0], item.sEndure[1]);
 			PushHint(buf, GENERIC_COLOR);
 		}
 
 		if (_ItemData.GetItemLevel() > 0) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(627), _ItemData.GetItemLevel() * 2 + 100); //  0-80% 1-82% ...
+			buf = FmtLang(GetLanguageString(627), _ItemData.GetItemLevel() * 2 + 100); //  0-80% 1-82% ...
 			PushHint(buf, GENERIC_COLOR);
 		}
 
@@ -701,47 +702,47 @@ void CItemCommand::AddHint(int x, int y) {
 			if (pInfo) {
 				int nNeedLv = pInfo->sLvLimit;
 				if (nNeedLv > 0) {
-					FmtLang(buf, sizeof(buf), GetLanguageString(628), nNeedLv);
+					buf = FmtLang(GetLanguageString(628), nNeedLv);
 					PushHint(buf, g_stUIBoat.GetHuman()->getGameAttr()->get(ATTR_LV) >= nNeedLv
 									  ? GENERIC_COLOR
 									  : VALID_COLOR);
 				}
 			}
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(634), _pBoatHint->sLevel);
+			buf = FmtLang(GetLanguageString(634), _pBoatHint->sLevel);
 			PushHint(buf);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(635), _pBoatHint->dwExp);
+			buf = FmtLang(GetLanguageString(635), _pBoatHint->dwExp);
 			PushHint(buf);
 
 			AddHintHeight();
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(636), _pBoatHint->dwHp, (int)(_pBoatHint->dwMaxHp));
+			buf = FmtLang(GetLanguageString(636), _pBoatHint->dwHp, (int)(_pBoatHint->dwMaxHp));
 			PushHint(buf);
 
 			if (pInfo) {
 				_ShowWork(pInfo, g_stUIBoat.GetHuman()->getGameAttr());
 			}
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(637), _pBoatHint->dwSp, (int)(_pBoatHint->dwMaxSp));
+			buf = FmtLang(GetLanguageString(637), _pBoatHint->dwSp, (int)(_pBoatHint->dwMaxSp));
 			PushHint(buf);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(638), _pBoatHint->dwMinAttack, (int)(_pBoatHint->dwMaxAttack));
+			buf = FmtLang(GetLanguageString(638), _pBoatHint->dwMinAttack, (int)(_pBoatHint->dwMaxAttack));
 			PushHint(buf);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(639), _pBoatHint->dwDef);
+			buf = FmtLang(GetLanguageString(639), _pBoatHint->dwDef);
 			PushHint(buf);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(640), _pBoatHint->dwSpeed);
+			buf = FmtLang(GetLanguageString(640), _pBoatHint->dwSpeed);
 			PushHint(buf);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(641), _pBoatHint->dwShootSpeed);
+			buf = FmtLang(GetLanguageString(641), _pBoatHint->dwShootSpeed);
 			PushHint(buf);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(642), _pBoatHint->byHasItem, _pBoatHint->byCapacity);
+			buf = FmtLang(GetLanguageString(642), _pBoatHint->byHasItem, _pBoatHint->byCapacity);
 			PushHint(buf);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(643), StringSplitNum(_pBoatHint->dwPrice / 2));
+			buf = FmtLang(GetLanguageString(643), StringSplitNum(_pBoatHint->dwPrice / 2));
 			PushHint(buf);
 		}
 		else {
@@ -752,46 +753,46 @@ void CItemCommand::AddHint(int x, int y) {
 
 				int nNeedLv = pCha->GetShipInfo()->sLvLimit;
 				if (nNeedLv > 0) {
-					FmtLang(buf, sizeof(buf), GetLanguageString(628), nNeedLv);
+					buf = FmtLang(GetLanguageString(628), nNeedLv);
 					PushHint(buf, g_stUIBoat.GetHuman()->getGameAttr()->get(ATTR_LV) >= nNeedLv
 									  ? GENERIC_COLOR
 									  : VALID_COLOR);
 				}
 
 				SGameAttr* pAttr = pCha->getGameAttr();
-				FmtLang(buf, sizeof(buf), GetLanguageString(634), pAttr->get(ATTR_LV));
+				buf = FmtLang(GetLanguageString(634), pAttr->get(ATTR_LV));
 				PushHint(buf);
 
-				FmtLang(buf, sizeof(buf), GetLanguageString(635), pAttr->get(ATTR_CEXP));
+				buf = FmtLang(GetLanguageString(635), pAttr->get(ATTR_CEXP));
 				PushHint(buf);
 
 				AddHintHeight();
 
-				FmtLang(buf, sizeof(buf), GetLanguageString(636), pAttr->get(ATTR_HP), pAttr->get(ATTR_MXHP));
+				buf = FmtLang(GetLanguageString(636), pAttr->get(ATTR_HP), pAttr->get(ATTR_MXHP));
 				PushHint(buf);
 
 				_ShowWork(pCha->GetShipInfo(), g_stUIBoat.GetHuman()->getGameAttr());
 
-				FmtLang(buf, sizeof(buf), GetLanguageString(637), pAttr->get(ATTR_SP), pAttr->get(ATTR_MXSP));
+				buf = FmtLang(GetLanguageString(637), pAttr->get(ATTR_SP), pAttr->get(ATTR_MXSP));
 				PushHint(buf);
 
-				FmtLang(buf, sizeof(buf), GetLanguageString(638), pAttr->get(ATTR_BMNATK), pAttr->get(ATTR_BMXATK));
+				buf = FmtLang(GetLanguageString(638), pAttr->get(ATTR_BMNATK), pAttr->get(ATTR_BMXATK));
 				PushHint(buf);
 
-				FmtLang(buf, sizeof(buf), GetLanguageString(639), pAttr->get(ATTR_BDEF));
+				buf = FmtLang(GetLanguageString(639), pAttr->get(ATTR_BDEF));
 				PushHint(buf);
 
-				FmtLang(buf, sizeof(buf), GetLanguageString(640), pAttr->get(ATTR_BMSPD));
+				buf = FmtLang(GetLanguageString(640), pAttr->get(ATTR_BMSPD));
 				PushHint(buf);
 
-				FmtLang(buf, sizeof(buf), GetLanguageString(641), pAttr->get(ATTR_BASPD));
+				buf = FmtLang(GetLanguageString(641), pAttr->get(ATTR_BASPD));
 				PushHint(buf);
 
 				CGoodsGrid* pGoods = pBoat->GetGoodsGrid();
-				FmtLang(buf, sizeof(buf), GetLanguageString(642), pGoods->GetCurNum(), pGoods->GetMaxNum());
+				buf = FmtLang(GetLanguageString(642), pGoods->GetCurNum(), pGoods->GetMaxNum());
 				PushHint(buf);
 
-				FmtLang(buf, sizeof(buf), GetLanguageString(643), StringSplitNum(pAttr->get(ATTR_BOAT_PRICE) / 2));
+				buf = FmtLang(GetLanguageString(643), StringSplitNum(pAttr->get(ATTR_BOAT_PRICE) / 2));
 				PushHint(buf);
 			}
 		}
@@ -808,7 +809,7 @@ void CItemCommand::AddHint(int x, int y) {
 
 		_ShowWork(_pItem, pAttr);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(644), _ItemData.sEnergy[0], _ItemData.sEnergy[1]);
+		buf = FmtLang(GetLanguageString(644), _ItemData.sEnergy[0], _ItemData.sEnergy[1]);
 		PushHint(buf);
 
 		_AddDescriptor();
@@ -830,7 +831,7 @@ void CItemCommand::AddHint(int x, int y) {
 			if (fRate > 30.0f) fRate = 30.0f;
 			if (fRate < 0.0f) fRate = 0.0f;
 		}
-		FmtLang(buf, sizeof(buf), GetLanguageString(645), fRate);
+		buf = FmtLang(GetLanguageString(645), fRate);
 		PushHint(buf);
 	}
 	else if (_pItem->sType == 34) //
@@ -851,7 +852,7 @@ void CItemCommand::AddHint(int x, int y) {
 					if (i > 0 && (i % 2) == 0) {
 						str << GetLanguageString(647).c_str();
 					}
-					str << g_GetJobName(pSkill->chJobSelect[i][0]);
+					str << GetJobName(pSkill->chJobSelect[i][0]);
 					str << " ";
 				}
 				str << '\0';
@@ -860,7 +861,7 @@ void CItemCommand::AddHint(int x, int y) {
 			}
 
 			if (pSkill->sLevelDemand != -1) {
-				FmtLang(buf, sizeof(buf), GetLanguageString(648), pSkill->sLevelDemand);
+				buf = FmtLang(GetLanguageString(648), pSkill->sLevelDemand);
 				PushHint(buf, pAttr->get(ATTR_LV) >= pSkill->sLevelDemand ? GENERIC_COLOR : VALID_COLOR);
 			}
 
@@ -873,7 +874,7 @@ void CItemCommand::AddHint(int x, int y) {
 				p = GetSkillRecordInfo(pSkill->sPremissSkill[i][0]);
 				if (p) {
 					pSelfSkill = g_stUIEquip.FindSkill(p->Id);
-					FmtLang(buf, sizeof(buf), GetLanguageString(649), p->szName.c_str(), pSkill->sPremissSkill[i][1]);
+					buf = FmtLang(GetLanguageString(649), p->szName.c_str(), pSkill->sPremissSkill[i][1]);
 					if (pSelfSkill && pSelfSkill->GetSkillGrid().chLv >= pSkill->sPremissSkill[i][1])
 						PushHint(buf);
 					else
@@ -881,11 +882,11 @@ void CItemCommand::AddHint(int x, int y) {
 				}
 			}
 			SetHintIsCenter(false);
-			StringNewLine(buf, 40, pSkill->szExpendHint.c_str(), (unsigned int)pSkill->szExpendHint.size());
+			buf = StringNewLine(pSkill->szExpendHint, 40);
 			PushHint(buf);
-			StringNewLine(buf, 40, pSkill->szEffectHint.c_str(), (unsigned int)pSkill->szEffectHint.size());
+			buf = StringNewLine(pSkill->szEffectHint, 40);
 			PushHint(buf, ADVANCED_COLOR);
-			StringNewLine(buf, 40, pSkill->szDescribeHint.c_str(), (unsigned int)pSkill->szDescribeHint.size());
+			buf = StringNewLine(pSkill->szDescribeHint, 40);
 			PushHint(buf);
 		}
 		else {
@@ -909,7 +910,7 @@ void CItemCommand::AddHint(int x, int y) {
 			PushHint(std::format("{}:{}", show_text[i], value), GENERIC_COLOR);
 		}
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(655), _ItemData.sEndure[1]);
+		buf = FmtLang(GetLanguageString(655), _ItemData.sEndure[1]);
 		PushHint(buf, GENERIC_COLOR);
 
 		PushHint(std::format("{}:{}", GetLanguageString(848), _ItemData.sEnergy[1]), GENERIC_COLOR);
@@ -923,7 +924,7 @@ void CItemCommand::AddHint(int x, int y) {
 				color = (DWORD)stone.nItemRgb;
 		});
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(656), ConvertNumToChinese(item.sEnergy[1]).c_str(),
+		buf = FmtLang( GetLanguageString(656), ConvertNumToChinese(item.sEnergy[1]).c_str(),
 				_pItem->szName.c_str());
 		//PushHint( buf, color, 5, 1, -1, true, -16777216);
 		PushHint(buf, (DWORD)(color ^ 0xFF000000), 5, 1, -1, true, -16777216);
@@ -931,7 +932,7 @@ void CItemCommand::AddHint(int x, int y) {
 		_AddDescriptor();
 	}
 	else if (_pItem->sType == 50) {
-		FmtLang(buf, sizeof(buf), GetLanguageString(656), ConvertNumToChinese(item.sEnergy[1]).c_str(),
+		buf = FmtLang( GetLanguageString(656), ConvertNumToChinese(item.sEnergy[1]).c_str(),
 				_pItem->szName.c_str());
 		PushHint(buf, COLOR_WHITE, 5, 1);
 		_AddDescriptor();
@@ -1068,16 +1069,16 @@ void CItemCommand::AddHint(int x, int y) {
 		}
 		//End
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(664), 5 - item.sInstAttr[ITEMATTR_VAL_AGI]);
+		buf = FmtLang(GetLanguageString(664), 5 - item.sInstAttr[ITEMATTR_VAL_AGI]);
 		PushHint(buf);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(665), 5 - item.sInstAttr[ITEMATTR_VAL_STR]);
+		buf = FmtLang(GetLanguageString(665), 5 - item.sInstAttr[ITEMATTR_VAL_STR]);
 		PushHint(buf);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(666), 5 - item.sInstAttr[ITEMATTR_VAL_DEX]);
+		buf = FmtLang(GetLanguageString(666), 5 - item.sInstAttr[ITEMATTR_VAL_DEX]);
 		PushHint(buf);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(667), 5 - item.sInstAttr[ITEMATTR_VAL_CON]);
+		buf = FmtLang(GetLanguageString(667), 5 - item.sInstAttr[ITEMATTR_VAL_CON]);
 		PushHint(buf);
 
 		AddHintHeight();
@@ -1102,7 +1103,7 @@ void CItemCommand::AddHint(int x, int y) {
 
 		AddHintHeight();
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(672), _ItemData.sEnergy[0]);
+		buf = FmtLang(GetLanguageString(672), _ItemData.sEnergy[0]);
 		PushHint(buf);
 
 		return;
@@ -1115,19 +1116,19 @@ void CItemCommand::AddHint(int x, int y) {
 
 		PushHint(_pItem->szName.c_str(), COLOR_WHITE, 5, 1);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(869), _ItemData.sEndure[0]);
+		buf = FmtLang(GetLanguageString(869), _ItemData.sEndure[0]);
 		PushHint(buf, GENERIC_COLOR);
 
 		iItem = item.sInstAttr[ITEMATTR_VAL_AGI];
 		if (iItem) {
 			pCItemRec = GetItemRecordInfo(iItem);
 			if (pCItemRec) {
-				FmtLang(buf, sizeof(buf), GetLanguageString(870), pCItemRec->szName.c_str());
+				buf = FmtLang(GetLanguageString(870), pCItemRec->szName.c_str());
 				PushHint(buf, GENERIC_COLOR);
 			}
 		}
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(871), _ItemData.sEnergy[1] - 100);
+		buf = FmtLang(GetLanguageString(871), _ItemData.sEnergy[1] - 100);
 		PushHint(buf, GENERIC_COLOR);
 
 		AddHintHeight();
@@ -1138,7 +1139,7 @@ void CItemCommand::AddHint(int x, int y) {
 		if (iItem) {
 			pCItemRec = GetItemRecordInfo(iItem);
 			if (pCItemRec) {
-				FmtLang(buf, sizeof(buf), GetLanguageString(872), pCItemRec->szName.c_str(), (lForge / 10000000));
+				buf = FmtLang(GetLanguageString(872), pCItemRec->szName.c_str(), (lForge / 10000000));
 				PushHint(buf, GENERIC_COLOR);
 			}
 		}
@@ -1148,7 +1149,7 @@ void CItemCommand::AddHint(int x, int y) {
 		if (iItem) {
 			pCItemRec = GetItemRecordInfo(iItem);
 			if (pCItemRec) {
-				FmtLang(buf, sizeof(buf), GetLanguageString(873), pCItemRec->szName.c_str(), (lForge / 10000));
+				buf = FmtLang(GetLanguageString(873), pCItemRec->szName.c_str(), (lForge / 10000));
 				PushHint(buf, GENERIC_COLOR);
 			}
 		}
@@ -1158,20 +1159,20 @@ void CItemCommand::AddHint(int x, int y) {
 		if (iItem) {
 			pCItemRec = GetItemRecordInfo(iItem);
 			if (pCItemRec) {
-				FmtLang(buf, sizeof(buf), GetLanguageString(874), pCItemRec->szName.c_str(), (lForge / 10));
+				buf = FmtLang(GetLanguageString(874), pCItemRec->szName.c_str(), (lForge / 10));
 				PushHint(buf, GENERIC_COLOR);
 			}
 		}
 
 		AddHintHeight();
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(875), item.sInstAttr[ITEMATTR_VAL_STA]);
+		buf = FmtLang(GetLanguageString(875), item.sInstAttr[ITEMATTR_VAL_STA]);
 		PushHint(buf, GENERIC_COLOR);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(876), _ItemData.sEnergy[0] * 10);
+		buf = FmtLang(GetLanguageString(876), _ItemData.sEnergy[0] * 10);
 		PushHint(buf, GENERIC_COLOR);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(877), _ItemData.sEndure[1]);
+		buf = FmtLang(GetLanguageString(877), _ItemData.sEndure[1]);
 		PushHint(buf, GENERIC_COLOR);
 
 		AddHintHeight();
@@ -1195,7 +1196,7 @@ void CItemCommand::AddHint(int x, int y) {
 		}
 		else if (_nPrice != 0) {
 			AddHintHeight();
-			FmtLang(buf, sizeof(buf), GetLanguageString(674), StringSplitNum(isMain ? _nPrice / 2 : _nPrice));
+			buf = FmtLang(GetLanguageString(674), StringSplitNum(isMain ? _nPrice / 2 : _nPrice));
 			PushHint(buf, COLOR_WHITE);
 		}
 
@@ -1206,7 +1207,7 @@ void CItemCommand::AddHint(int x, int y) {
 
 		if (_pItem->lID == 2902 || _pItem->lID == 2903) // ,
 		{
-			FmtLang(buf, sizeof(buf), GetLanguageString(909), item.sInstAttr[ITEMATTR_VAL_STR]); // "%d"
+			buf = FmtLang(GetLanguageString(909), item.sInstAttr[ITEMATTR_VAL_STR]); // "%d"
 			PushHint(buf, GENERIC_COLOR);
 
 			AddHintHeight();
@@ -1216,14 +1217,14 @@ void CItemCommand::AddHint(int x, int y) {
 			return;
 		}
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(869), item.sInstAttr[ITEMATTR_VAL_STR]);
+		buf = FmtLang(GetLanguageString(869), item.sInstAttr[ITEMATTR_VAL_STR]);
 		PushHint(buf, GENERIC_COLOR);
 
 		if (_pItem->lID != 2236) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(878), _ItemData.sEndure[0] / 50);
+			buf = FmtLang(GetLanguageString(878), _ItemData.sEndure[0] / 50);
 			PushHint(buf, GENERIC_COLOR);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(897), _ItemData.sEnergy[0]); // "%i"
+			buf = FmtLang(GetLanguageString(897), _ItemData.sEnergy[0]); // "%i"
 			PushHint(buf, GENERIC_COLOR);
 		}
 
@@ -1252,7 +1253,7 @@ void CItemCommand::AddHint(int x, int y) {
 		}
 		else if (_nPrice != 0) {
 			AddHintHeight();
-			FmtLang(buf, sizeof(buf), GetLanguageString(674), StringSplitNum(isMain ? _nPrice / 2 : _nPrice));
+			buf = FmtLang(GetLanguageString(674), StringSplitNum(isMain ? _nPrice / 2 : _nPrice));
 			PushHint(buf, COLOR_WHITE);
 		}
 
@@ -1261,7 +1262,7 @@ void CItemCommand::AddHint(int x, int y) {
 	else if (_pItem->sType == 71 && _pItem->lID == 3010) {
 		PushHint(_pItem->szName.c_str(), COLOR_WHITE, 5, 1);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(644), _ItemData.sEnergy[0], _ItemData.sEnergy[1]);
+		buf = FmtLang(GetLanguageString(644), _ItemData.sEnergy[0], _ItemData.sEnergy[1]);
 		PushHint(buf);
 
 		SetHintIsCenter(true);
@@ -1280,14 +1281,14 @@ void CItemCommand::AddHint(int x, int y) {
 			GetLanguageString(947).c_str(), GetLanguageString(948).c_str()
 		}; // "", "", "", "", "" };
 		if (0 <= nLevel && nLevel <= 4) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(949), arShowName[nLevel]); // ":%s"
+			buf = FmtLang(GetLanguageString(949), arShowName[nLevel]); // ":%s"
 			PushHint(buf, COLOR_WHITE, 5, 1);
 		}
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(950), item.sEndure[0], item.sEndure[1]); // "(%d/%d)"
+		buf = FmtLang(GetLanguageString(950), item.sEndure[0], item.sEndure[1]); // "(%d/%d)"
 		PushHint(buf, COLOR_WHITE, 5, 1);
 
-		FmtLang(buf, sizeof(buf), GetLanguageString(951), item.sEnergy[0] * 1000, item.sEnergy[1] * 1000); // "(%d/%d)"
+		buf = FmtLang(GetLanguageString(951), item.sEnergy[0] * 1000, item.sEnergy[1] * 1000); // "(%d/%d)"
 		PushHint(buf, COLOR_WHITE, 5, 1);
 
 		return;
@@ -1320,7 +1321,7 @@ void CItemCommand::AddHint(int x, int y) {
 		{
 			PushHint(_pItem->szName.c_str(), COLOR_WHITE, 5, 1);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(626), item.sEnergy[0], item.sEnergy[1]);
+			buf = FmtLang(GetLanguageString(626), item.sEnergy[0], item.sEnergy[1]);
 			PushHint(buf, GENERIC_COLOR);
 
 			SetHintIsCenter(true);
@@ -1342,7 +1343,7 @@ void CItemCommand::AddHint(int x, int y) {
 
 			int nIndex = item.sEndure[0];
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(957),
+			buf = FmtLang( GetLanguageString(957),
 					0 <= nIndex && nIndex <= 4 ? pszText[nIndex] : "Not Valid");
 			PushHint(buf, GENERIC_COLOR);
 
@@ -1355,7 +1356,7 @@ void CItemCommand::AddHint(int x, int y) {
 		{
 			PushHint(_pItem->szName.c_str(), COLOR_WHITE, 5, 1);
 
-			FmtLang(buf, sizeof(buf), GetLanguageString(626), item.sEnergy[0], item.sEnergy[1]);
+			buf = FmtLang(GetLanguageString(626), item.sEnergy[0], item.sEnergy[1]);
 			PushHint(buf, GENERIC_COLOR);
 
 			SetHintIsCenter(true);
@@ -1451,12 +1452,12 @@ void CItemCommand::AddHint(int x, int y) {
 	SItemForge& Forge = GetForgeInfo();
 	if (_hints.GetCount() > 0 && Forge.IsForge) {
 		if (Forge.nHoleNum > 0) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(673), Forge.nHoleNum);
+			buf = FmtLang(GetLanguageString(673), Forge.nHoleNum);
 			PushHint(buf, ADVANCED_COLOR);
 		}
 
 		for (int i = 0; i < Forge.nStoneNum && i < Forge.nHoleNum; i++) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(656), ConvertNumToChinese(Forge.nStoneLevel[i]).c_str(),
+			buf = FmtLang( GetLanguageString(656), ConvertNumToChinese(Forge.nStoneLevel[i]).c_str(),
 					Forge.pStoneInfo[i]->DataName.c_str());
 			//PushHint( buf, (DWORD)((Forge.pStoneInfo[i]->nItemRgb) ^ 0xFF000000) );
 			PushHint(buf, (DWORD)((Forge.pStoneInfo[i]->nItemRgb) ^ 0xFF000000), 5, 1, -1, true, -16777216);
@@ -1518,7 +1519,7 @@ void CItemCommand::AddHint(int x, int y) {
 	}
 	else if (_nPrice != 0) {
 		AddHintHeight();
-		FmtLang(buf, sizeof(buf), GetLanguageString(674), StringSplitNum(_ItemData.sNum != 0 ? _nPrice / 2 : _nPrice));
+		buf = FmtLang(GetLanguageString(674), StringSplitNum(_ItemData.sNum != 0 ? _nPrice / 2 : _nPrice));
 		PushHint(buf, COLOR_WHITE); //item price hint
 	}
 
@@ -1527,7 +1528,7 @@ void CItemCommand::AddHint(int x, int y) {
 		if( _nPrice != 0 )
 			{
 				AddHintHeight();
-				FmtLang(buf, sizeof(buf), GetLanguageString(674), StringSplitNum( _ItemData.sNum != 0  ? _nPrice/ 2 : _nPrice ) );
+				buf = FmtLang(GetLanguageString(674), StringSplitNum( _ItemData.sNum != 0  ? _nPrice/ 2 : _nPrice ) );
 				PushHint( buf, COLOR_WHITE );	//item price hint
 			}
 		//end
@@ -1611,15 +1612,15 @@ void CItemCommand::_PushItemAttr(int attr, SItemHint& item, DWORD color) {
 	std::string text;
 	if (attr <= ITEMATTR_COE_PDEF) {
 		if (!(item.sInstAttr[attr] % 10)) {
-			text = std::format("{}:{:+}%", g_GetItemAttrExplain(attr), item.sInstAttr[attr] / 10);
+			text = std::format("{}:{:+}%", GetItemAttrExplain(attr), item.sInstAttr[attr] / 10);
 		}
 		else {
 			float f = (float)item.sInstAttr[attr] / 10.0f;
-			text = std::format("{}:{:+.1f}%", g_GetItemAttrExplain(attr), f);
+			text = std::format("{}:{:+.1f}%", GetItemAttrExplain(attr), f);
 		}
 	}
 	else {
-		text = std::format("{}:{:+}", g_GetItemAttrExplain(attr), item.sInstAttr[attr]);
+		text = std::format("{}:{:+}", GetItemAttrExplain(attr), item.sInstAttr[attr]);
 	}
 	PushHint(text, color);
 
@@ -2107,25 +2108,22 @@ const char* CItemCommand::GetName() {
 	if (_ItemData.chForgeLv == 0) {
 		return _pItem->szName.c_str();
 	}
-	else {
-		static char szBuf[128] = {0};
-		auto r = std::format_to_n(szBuf, sizeof(szBuf) - 1, "Lv{} {}", _ItemData.chForgeLv, _pItem->szName);
-		*r.out = 0;
-		return szBuf;
-	}
+	thread_local std::string szBuf;
+	szBuf = std::format("Lv{} {}", _ItemData.chForgeLv, _pItem->szName);
+	return szBuf.c_str();
 }
 
 void CItemCommand::_ShowWork(CItemRecord* pItem, SGameAttr* pAttr) {
 	bool isFind = false;
 	bool isSame = false;
-	char buf[256] = {0};
+	std::string buf;
 
 	for (int i = 0; i < MAX_JOB_TYPE; i++) {
 		if (pItem->szWork[i] < 0)
 			break;
 
 		if (!isFind) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(679), g_GetJobName(pItem->szWork[i]));
+			buf = FmtLang(GetLanguageString(679), GetJobName(pItem->szWork[i]));
 			isFind = true;
 		}
 
@@ -2152,7 +2150,7 @@ void CItemCommand::_ShowFusionWork(CItemRecord* pAppearItem, CItemRecord* pEquip
 	int iEquipIndex = -1;
 	bool isSame = false;
 	CItemRecord* pItem(0);
-	char buf[256] = {0};
+	std::string buf;
 
 	if (pAppearItem->szWork[0] > pEquipItem->szWork[0]) {
 		pItem = pAppearItem;
@@ -2166,7 +2164,7 @@ void CItemCommand::_ShowFusionWork(CItemRecord* pAppearItem, CItemRecord* pEquip
 			break;
 
 		if (!isFind) {
-			FmtLang(buf, sizeof(buf), GetLanguageString(679), g_GetJobName(pItem->szWork[i]));
+			buf = FmtLang(GetLanguageString(679), GetJobName(pItem->szWork[i]));
 			isFind = true;
 		}
 
@@ -2190,7 +2188,7 @@ void CItemCommand::_ShowFusionWork(CItemRecord* pAppearItem, CItemRecord* pEquip
 void CItemCommand::_ShowWork(xShipInfo* pInfo, SGameAttr* pAttr) {
 	bool isFind = false;
 	bool isSame = false;
-	char buf[256] = {0};
+	std::string buf;
 
 	for (int i = 0; i < MAX_JOB_TYPE; i++) {
 		if (pInfo->sPfLimit[i] == (USHORT)-1)
@@ -2198,7 +2196,7 @@ void CItemCommand::_ShowWork(xShipInfo* pInfo, SGameAttr* pAttr) {
 
 		/*if( !isFind )
 		{
-			FmtLang(buf, sizeof(buf), GetLanguageString(679), g_GetJobName(pInfo->sPfLimit[i]) );
+			buf = FmtLang(GetLanguageString(679), GetJobName(pInfo->sPfLimit[i]) );
 			isFind = true;
 		}*/
 		//add by alfred.shi 20080714	begin
@@ -2206,13 +2204,13 @@ void CItemCommand::_ShowWork(xShipInfo* pInfo, SGameAttr* pAttr) {
 		if (!isFind) {
 			//string name(RES_STRING(CL_UIITEMCOMMAND_CPP_00010));
 			string name("");
-			g_GetJobName(pInfo->sPfLimit[i]);
-			if (name.compare(g_GetJobName(pInfo->sPfLimit[i])) == 0) {
+			GetJobName(pInfo->sPfLimit[i]);
+			if (name.compare(GetJobName(pInfo->sPfLimit[i])) == 0) {
 				buf[0] = '\0';
 				//PushHint( buf, VALID_COLOR );
 			}
 			else {
-				FmtLang(buf, sizeof(buf), GetLanguageString(679), g_GetJobName(pInfo->sPfLimit[i]));
+				buf = FmtLang(GetLanguageString(679), GetJobName(pInfo->sPfLimit[i]));
 			}
 
 			isFind = true;

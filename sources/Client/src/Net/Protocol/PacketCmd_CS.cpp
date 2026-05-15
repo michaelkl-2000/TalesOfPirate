@@ -299,44 +299,44 @@ void CS_BlackMarketExchangeReq(DWORD dwNpcID, short sSrcID, short sSrcNum, short
 	g_NetIF->SendPacketMessage(packet);
 }
 
-void CS_RequestTrade(BYTE byType, DWORD dwCharID) {
+void CS_RequestTrade(TradeCharType byType, DWORD dwCharID) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmRequestTradeMessage{byType, dwCharID});
 	g_NetIF->SendPacketMessage(packet);
 }
 
-void CS_AcceptTrade(BYTE byType, DWORD dwCharID) {
+void CS_AcceptTrade(TradeCharType byType, DWORD dwCharID) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmAcceptTradeMessage{byType, dwCharID});
 	g_NetIF->SendPacketMessage(packet);
 }
 
-void CS_AddItem(BYTE byType, DWORD dwCharID, BYTE byOpType, BYTE byIndex, BYTE byItemIndex, BYTE byCount) {
+void CS_AddItem(TradeCharType byType, DWORD dwCharID, TradeOpType byOpType, BYTE byIndex, BYTE byItemIndex, BYTE byCount) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmAddItemMessage{
 		byType, dwCharID, byOpType, byIndex, byItemIndex, byCount
 	});
 	g_NetIF->SendPacketMessage(packet);
 }
 
-void CS_AddMoney(BYTE byType, DWORD dwCharID, BYTE byOpType, DWORD dwMoney) {
+void CS_AddMoney(TradeCharType byType, DWORD dwCharID, TradeOpType byOpType, DWORD dwMoney) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmAddMoneyMessage{byType, dwCharID, byOpType, 0, dwMoney});
 	g_NetIF->SendPacketMessage(packet);
 }
 
-void CS_AddIMP(BYTE byType, DWORD dwCharID, BYTE byOpType, DWORD dwMoney) {
+void CS_AddIMP(TradeCharType byType, DWORD dwCharID, TradeOpType byOpType, DWORD dwMoney) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmAddMoneyMessage{byType, dwCharID, byOpType, 1, dwMoney});
 	g_NetIF->SendPacketMessage(packet);
 }
 
-void CS_CancelTrade(BYTE byType, DWORD dwCharID) {
+void CS_CancelTrade(TradeCharType byType, DWORD dwCharID) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmCancelTradeMessage{byType, dwCharID});
 	g_NetIF->SendPacketMessage(packet);
 }
 
-void CS_ValidateTradeData(BYTE byType, DWORD dwCharID) {
+void CS_ValidateTradeData(TradeCharType byType, DWORD dwCharID) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmValidateTradeDataMessage{byType, dwCharID});
 	g_NetIF->SendPacketMessage(packet);
 }
 
-void CS_ValidateTrade(BYTE byType, DWORD dwCharID) {
+void CS_ValidateTrade(TradeCharType byType, DWORD dwCharID) {
 	auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmValidateTradeMessage{byType, dwCharID});
 	g_NetIF->SendPacketMessage(packet);
 }
@@ -397,12 +397,12 @@ void CS_CreateBoat(const char szBoat[], char szHeader, char szEngine, char szCan
 }
 
 void CS_SelectBoatList(DWORD dwNpcID, BYTE byType, BYTE byIndex) {
-	if (byType == mission::BERTH_TRADE_LIST) {
+	if (byType == +Corsairs::Common::Mission::BoatListType::BERTH_TRADE_LIST) {
 		CS_SelectTradeBoat(dwNpcID, byIndex);
 	}
 	else {
 		auto packet = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::CmSelectBoatListMessage{
-			(int64_t)dwNpcID, (int64_t)byType, (int64_t)byIndex
+			(int64_t)dwNpcID, static_cast<Corsairs::Common::Mission::BoatListType>(byType), (int64_t)byIndex
 		});
 		g_NetIF->SendPacketMessage(packet);
 	}
@@ -442,13 +442,13 @@ void CS_EntityEvent(DWORD dwEntityID) {
 }
 
 //    ( )
-void CS_StallInfo(const char szName[], mission::NET_STALL_ALLDATA& Data) {
+void CS_StallInfo(const char szName[], Corsairs::Common::Mission::NetStallAllData& Data) {
 	Corsairs::Net::Msg::CmStallInfoMessage msg;
 	msg.name = szName;
-	msg.num = Data.byNum;
-	msg.items.resize(Data.byNum);
-	for (BYTE i = 0; i < Data.byNum; ++i) {
-		msg.items[i] = {Data.Info[i].byGrid, Data.Info[i].dwMoney, Data.Info[i].byCount, Data.Info[i].byIndex};
+	msg.num = Data.Num;
+	msg.items.resize(Data.Num);
+	for (BYTE i = 0; i < Data.Num; ++i) {
+		msg.items[i] = {Data.Info[i].Grid, Data.Info[i].Money, Data.Info[i].Count, Data.Info[i].Index};
 	}
 	auto packet = Corsairs::Net::Msg::serialize(msg);
 	g_NetIF->SendPacketMessage(packet);

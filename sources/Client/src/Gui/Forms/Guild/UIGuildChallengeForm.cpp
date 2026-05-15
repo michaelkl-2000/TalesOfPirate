@@ -22,9 +22,11 @@
 #include "UIProgressBar.h"
 #include "WorldScene.h"
 #include "UIList.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "NetGuild.h"
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "UIEdit.h"
 
 
@@ -115,7 +117,7 @@ namespace GUI {
 			else {
 				labGuildName[i]->SetCaption(Info.szGuild[i]);
 				labChallenger[i]->SetCaption(Info.szChall[i]);
-				labMoney[i]->SetCaption(StringSplitNum(Info.dwMoney[i]));
+				labMoney[i]->SetCaption(StringSplitNum(Info.dwMoney[i]).c_str());
 				m_lChargeMoney[i] = Info.dwMoney[i];
 				m_bStart[i] = Info.byStart[i] == 1 ? true : false;
 			}
@@ -174,8 +176,8 @@ namespace GUI {
 		}
 		g_stGuildChallenge.m_iChangeMoney = iChargeMoney;
 
-		char buf[256] = {0};
-		FmtLang(buf, sizeof(buf), GetLanguageString(583), StringSplitNum(iChargeMoney));
+		std::string buf;
+		buf = FmtLang(GetLanguageString(583), StringSplitNum(iChargeMoney));
 		g_stUIBox.ShowSelectBox(_ChargeEvent, buf, true);
 	}
 

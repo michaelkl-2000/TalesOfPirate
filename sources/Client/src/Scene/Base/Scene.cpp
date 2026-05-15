@@ -1544,7 +1544,7 @@ BOOL CGameScene::IsPointVisible(float fX, float fY) {
 
 bool CGameScene::GetIsBlockWalk(CCharacter* pCha, int nX, int nY) {
 	if (_pTerrain) {
-		return _pTerrain->IsGridBlock(nX / 50, nY / 50) || !g_IsMoveAble(
+		return _pTerrain->IsGridBlock(nX / 50, nY / 50) || !IsMoveAble(
 			pCha->getChaCtrlType(), pCha->GetDefaultChaInfo()->Territory,
 			(EAreaMask)_pTerrain->GetTile(nX / 100, nY / 100)->sRegion);
 	}

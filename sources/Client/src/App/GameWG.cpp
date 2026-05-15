@@ -76,7 +76,7 @@ void CGameWG::SafeTerminateThread() {
 //
 UINT CALLBACK CGameWG::Run(void* param) {
 	::SetThreadName("game-wg");
-	Corsairs::Util::Crush::SetPerThreadCRTExceptionBehavior();
+	Corsairs::Util::SetPerThreadCRTExceptionBehavior();
 	CGameWG* pGameWG = (CGameWG*)(param);
 
 	for (;;) {

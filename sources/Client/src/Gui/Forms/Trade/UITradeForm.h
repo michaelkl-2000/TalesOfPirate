@@ -1,6 +1,10 @@
 ﻿#pragma once
 #include "UIGlobalVar.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 
 struct NET_CHARTRADE_BOATDATA;
 
@@ -93,7 +97,7 @@ namespace GUI {
 
 		DWORD m_dwAcceptID; // 
 		DWORD m_dwRequestID; // 
-		BYTE m_bTradeType; // ,RoleCommand.h TRADE_CHAR_TYPE
+		BYTE m_bTradeType; // ,RoleCommand.h TradeCharType
 
 		DWORD m_dwMainID;
 

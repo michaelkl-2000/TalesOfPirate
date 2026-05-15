@@ -38,7 +38,7 @@ class CPlayer;
 class CItem;
 class CPassengerMgr;
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
  class CTalkNpc;
  class CNpc;
@@ -147,7 +147,7 @@ public:
 	CPlayer*	IsValidPlayer(long lID, long lHandle);
     CCharacter* GetNewCharacter();
 	CItem*		GetNewItem();
-	mission::CTalkNpc*	GetNewTNpc();
+	Corsairs::Common::Mission::CTalkNpc*	GetNewTNpc();
 	Entity*		GetEntity(long lHandle);
 	Entity*		IsValidEntity(unsigned long ulID, long lHandle);
 	Entity*		IsLiveingEntity(unsigned long ulID, long lHandle);
@@ -171,13 +171,13 @@ public:
 	float		GetGlobalExpRate();
 	// npc
 	BOOL		ReloadNpcInfo( CCharacter& character );
-	mission::CNpc* FindNpc( const char szName[] );
+	Corsairs::Common::Mission::CNpc* FindNpc( const char szName[] );
 
 	// NPC
 	BOOL		SummonNpc( BYTE byMapID, USHORT sAreaID, const char szNpc[], USHORT sTime );
 
 	//
-	mission::CEventEntity* CreateEntity( BYTE byType );
+	Corsairs::Common::Mission::CEventEntity* CreateEntity( BYTE byType );
 
 	void		NotiGameReset(unsigned long ulLeftSec);
 	void		SaveAllPlayer(void);
@@ -235,13 +235,13 @@ public:
 	BOOL	m_bExecLuaCmd;
 	std::string	m_strMapNameList;
 
-	TrackedPool<CPassengerMgr>				m_CabinPool{"Cabin"};
-	TrackedPool<mission::CTradeData>		m_TradeDataPool{"TradeData"};
-	TrackedPool<mission::CStallData>		m_StallDataPool{"StallData"};
-	TrackedPool<CSkillTempData>				m_SkillTDataPool{"SkillTData"};
-	TrackedPool<CStateCell>					m_MapStateCellPool{"StateCell"};
-	TrackedPool<CChaListNode>				m_ChaListPool{"ChaList"};
-	TrackedPool<CStateCellNode>				m_StateCellNodePool{"StateCellNode"};
+	Corsairs::Util::TrackedPool<CPassengerMgr>				m_CabinPool{"Cabin"};
+	Corsairs::Util::TrackedPool<Corsairs::Common::Mission::CTradeData>		m_TradeDataPool{"TradeData"};
+	Corsairs::Util::TrackedPool<Corsairs::Common::Mission::CStallData>		m_StallDataPool{"StallData"};
+	Corsairs::Util::TrackedPool<CSkillTempData>				m_SkillTDataPool{"SkillTData"};
+	Corsairs::Util::TrackedPool<CStateCell>					m_MapStateCellPool{"StateCell"};
+	Corsairs::Util::TrackedPool<CChaListNode>				m_ChaListPool{"ChaList"};
+	Corsairs::Util::TrackedPool<CStateCellNode>				m_StateCellNodePool{"StateCellNode"};
 
 	//
 	std::int32_t	m_lCabinHeapNum;

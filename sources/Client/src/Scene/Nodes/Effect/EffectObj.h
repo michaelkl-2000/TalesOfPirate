@@ -8,6 +8,8 @@
 #include "mpparticlesys.h"
 #include "mpparticlectrl.h"
 
+#include "Effect/EffectRecord.h"
+
 enum Effect_Type {
 	EFF_SCENE, //	
 	EFF_CHA, //,ID
@@ -138,10 +140,10 @@ class CMagicEff;
 
 //
 struct Eff_Property {
-	int m_iEffType; //0 =1,2,3,4
+	Corsairs::Common::Effect::EffectKind Kind{Corsairs::Common::Effect::EffectKind::EFFECT_NONE};
 	s_string m_strName; //
 
-	int m_iIdxRender; //
+	int m_iIdxRender{-1}; //
 };
 
 //!

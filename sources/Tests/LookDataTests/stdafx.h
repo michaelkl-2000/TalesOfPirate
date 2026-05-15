@@ -26,5 +26,5 @@
 #include <cstdint>
 
 #include "util.h"
-#include "Core/i18n.h"
+#include "Localization/i18n.h"
 

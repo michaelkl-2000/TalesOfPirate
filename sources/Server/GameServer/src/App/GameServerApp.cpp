@@ -5,7 +5,11 @@
 #include <iostream>
 
 #include <time.h>
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 #include "World/SubMap.h"
 #include "App/GameApp.h"
 

@@ -328,8 +328,8 @@ void MapStream::Close() noexcept {
 
 namespace {
 
-using ::Corsairs::Util::Map::TileInfo_Pack;
-using ::Corsairs::Util::Map::TileInfo_Unpack;
+using ::Corsairs::Util::TileInfo_Pack;
+using ::Corsairs::Util::TileInfo_Unpack;
 
 void DecodeTile(const SNewFileTile& src, ::MPTile& dst) {
     dst.Init();

@@ -250,7 +250,7 @@ bool CMoveState::_Start() {
 }
 
 void CMoveState::WriteInfo(S_BVECTOR<D3DXVECTOR3>& path, stNetMoveInfo& info) {
-	char buf[80] = {0};
+	std::string buf;
 
 	int n = path.size();
 	if (n > defMAX_POS_NUM) n = defMAX_POS_NUM;

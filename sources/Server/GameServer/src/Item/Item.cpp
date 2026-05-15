@@ -6,7 +6,11 @@
 //=============================================================================
 #include "Core/stdafx.h"
 #include "Item/Item.h"
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 #include "App/GameAppNet.h"
 #include "World/SubMap.h"
 #include "Db/GameDB.h"

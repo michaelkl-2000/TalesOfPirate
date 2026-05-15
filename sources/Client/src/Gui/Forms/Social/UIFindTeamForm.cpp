@@ -10,7 +10,8 @@
 #include "Character.h"
 #include "Core/JobType.h"	// common
 
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 extern const char* g_szJobName[MAX_JOB_TYPE];
 
 using namespace std;
@@ -169,8 +170,8 @@ namespace GUI {
 	void CFindTeamMgr::FindTeamAsk(const char* szName) {
 		m_strTeamLeader = szName;
 
-		char szBuffer[256] = {0};
-		FmtLang(szBuffer, sizeof(szBuffer), GetLanguageString(863), szName);
+		std::string szBuffer;
+		szBuffer = FmtLang(GetLanguageString(863), szName);
 		CBoxMgr::ShowSelectBox(_evtFindTeamCheckEvent, szBuffer, true);
 	}
 

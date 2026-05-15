@@ -224,7 +224,7 @@ void CNpcTalkMgr::SwitchMap() {
 			const size_t cap = HELPINFO_DESPSIZE - 1;
 			const size_t len = intro.size() > cap ? cap : intro.size();
 			memcpy(Info.szDesp, intro.data(), len);
-			Info.byType = mission::MIS_HELP_DESP;
+			Info.byType = +Corsairs::Common::Mission::MissionHelpType::MIS_HELP_DESP;
 			AddHelpInfo(Info);
 		}
 		return;
@@ -232,7 +232,7 @@ void CNpcTalkMgr::SwitchMap() {
 }
 
 void CNpcTalkMgr::ShowHelpInfo(const NET_HELPINFO& Info) {
-	if (Info.byType == mission::MIS_HELP_DESP || Info.byType == mission::MIS_HELP_IMAGE) {
+	if (Info.byType == +Corsairs::Common::Mission::MissionHelpType::MIS_HELP_DESP || Info.byType == +Corsairs::Common::Mission::MissionHelpType::MIS_HELP_IMAGE) {
 		m_bIsNpcTalk = false;
 		if (memCtrl) {
 			memCtrl->Init();
@@ -247,7 +247,7 @@ void CNpcTalkMgr::ShowHelpInfo(const NET_HELPINFO& Info) {
 		else {
 		}
 	}
-	else if (Info.byType == mission::MIS_HELP_SOUND) {
+	else if (Info.byType == +Corsairs::Common::Mission::MissionHelpType::MIS_HELP_SOUND) {
 		//Info.sID;
 	}
 	else {

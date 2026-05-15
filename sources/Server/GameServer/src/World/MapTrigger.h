@@ -7,7 +7,7 @@
 
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	class CTrigger
 	{

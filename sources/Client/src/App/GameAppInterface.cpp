@@ -113,7 +113,8 @@ using namespace Corsairs::Common::Effect;
 
 #include "gameloading.h"
 
-#include "Core/StringLib.h"
+#include "StringLib.h"
+using namespace Corsairs::Util;
 #include "ItemPreSet.h"
 #include "Character/HairRecord.h"
 #include "ItemRefineSet.h"
@@ -1506,7 +1507,7 @@ void CGameApp::AutoTest() {
 		//
 		{
 			AutoTestInfo(GetLanguageString(80));
-			EffectRecordStore::Instance()->ForEach([&](const CMagicInfo& info) {
+			EffectRecordStore::Instance()->ForEach([&](const CEffectRecord& info) {
 				auto* pEffect = pScene->GetFirstInvalidEffObj();
 				if (!pEffect) return;
 
@@ -1572,7 +1573,7 @@ void CGameApp::AutoTest() {
 	//
 	{
 		AutoTestInfo(GetLanguageString(80));
-		EffectRecordStore::Instance()->ForEach([&](const CMagicInfo& info) {
+		EffectRecordStore::Instance()->ForEach([&](const CEffectRecord& info) {
 			auto* pEffect = pScene->GetFirstInvalidEffObj();
 			if (!pEffect) return;
 
@@ -1601,10 +1602,10 @@ void CGameApp::AutoTest() {
 		AutoTestInfo(GetLanguageString(87));
 		CItemRecord* pInfo = NULL;
 		CSceneItem* pItem = NULL;
-		CMagicInfo* pEffectInfo = NULL;
+		CEffectRecord* pEffectInfo = NULL;
 		int nEffectID = 0;
 		auto checkEffect = [&](int effectID, int msgIdx, int id, const char* name) {
-			if (effectID > 0 && !GetMagicInfo(effectID))
+			if (effectID > 0 && !GetEffectInfo(effectID))
 				AutoTestInfo(SafeVFormat(GetLanguageString(msgIdx), id, name, effectID));
 		};
 
@@ -1671,7 +1672,7 @@ void CGameApp::AutoTest() {
 
 					for (int level = 0; level < 4; level++) {
 						int nEffectID = info.sEffectID[k][j] * 10 + level;
-						if (!GetMagicInfo(nEffectID)) {
+						if (!GetEffectInfo(nEffectID)) {
 							AutoTestInfo(SafeVFormat(GetLanguageString(99), info.Id,
 														   std::string_view(info.DataName.c_str()), nEffectID));
 						}

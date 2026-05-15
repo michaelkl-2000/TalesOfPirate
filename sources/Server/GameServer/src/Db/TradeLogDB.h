@@ -16,7 +16,7 @@ public:
 	BOOL m_bInitOK{FALSE};
 
 private:
-	OdbcDatabase _db;
+	Corsairs::Util::OdbcDatabase _db;
 };
 
 extern CTradeLogDB tradeLog_db;

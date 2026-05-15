@@ -945,11 +945,11 @@ CAttachable* Entity::IsAttachable() {
 	return nullptr;
 }
 
-mission::CNpc* Entity::IsNpc() {
+Corsairs::Common::Mission::CNpc* Entity::IsNpc() {
 	return nullptr;
 }
 
-mission::CEventEntity* Entity::IsEvent() {
+Corsairs::Common::Mission::CEventEntity* Entity::IsEvent() {
 	return nullptr;
 }
 

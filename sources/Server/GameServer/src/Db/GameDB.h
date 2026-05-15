@@ -328,439 +328,439 @@ struct WinTicketRow {
 };
 
 // ============================================================================
-// Типизированные таблицы — наследники OdbcTable<T> (Column DSL)
+// Типизированные таблицы — наследники Corsairs::Util::OdbcTable<T> (Column DSL)
 // ============================================================================
 
-class TableAccount : public OdbcTable<AccountRow> {
+class TableAccount : public Corsairs::Util::OdbcTable<AccountRow> {
 public:
-	explicit TableAccount(OdbcDatabase& db)
+	explicit TableAccount(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "account", {
-			MakeColumn("ato_id",       &AccountRow::ato_id, PrimaryKey),
-			MakeColumn("ato_nome",     &AccountRow::ato_nome),
-			MakeColumn("jmes",         &AccountRow::jmes),
-			MakeColumn("ator_ids",     &AccountRow::ator_ids),
-			MakeColumn("last_ip",      &AccountRow::last_ip),
-			MakeColumn("disc_reason",  &AccountRow::disc_reason),
-			MakeColumn("last_leave",   &AccountRow::last_leave, Timestamp),
-			MakeColumn("password",     &AccountRow::password),
-			MakeColumn("merge_state",  &AccountRow::merge_state),
-			MakeColumn("IMP",          &AccountRow::IMP),
-			MakeColumn("total_votes",  &AccountRow::total_votes),
-			MakeColumn("credit",       &AccountRow::credit),
+			Corsairs::Util::MakeColumn("ato_id",       &AccountRow::ato_id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("ato_nome",     &AccountRow::ato_nome),
+			Corsairs::Util::MakeColumn("jmes",         &AccountRow::jmes),
+			Corsairs::Util::MakeColumn("ator_ids",     &AccountRow::ator_ids),
+			Corsairs::Util::MakeColumn("last_ip",      &AccountRow::last_ip),
+			Corsairs::Util::MakeColumn("disc_reason",  &AccountRow::disc_reason),
+			Corsairs::Util::MakeColumn("last_leave",   &AccountRow::last_leave, Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("password",     &AccountRow::password),
+			Corsairs::Util::MakeColumn("merge_state",  &AccountRow::merge_state),
+			Corsairs::Util::MakeColumn("IMP",          &AccountRow::IMP),
+			Corsairs::Util::MakeColumn("total_votes",  &AccountRow::total_votes),
+			Corsairs::Util::MakeColumn("credit",       &AccountRow::credit),
 		}) {}
 };
 
-class TableAmphitheaterSetting : public OdbcTable<AmphitheaterSettingRow> {
+class TableAmphitheaterSetting : public Corsairs::Util::OdbcTable<AmphitheaterSettingRow> {
 public:
-	explicit TableAmphitheaterSetting(OdbcDatabase& db)
+	explicit TableAmphitheaterSetting(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "AmphitheaterSetting", {
-			MakeColumn("section",    &AmphitheaterSettingRow::section),
-			MakeColumn("season",     &AmphitheaterSettingRow::season),
-			MakeColumn("round",      &AmphitheaterSettingRow::round),
-			MakeColumn("state",      &AmphitheaterSettingRow::state),
-			MakeColumn("createdate", &AmphitheaterSettingRow::createdate, Timestamp),
-			MakeColumn("updatetime", &AmphitheaterSettingRow::updatetime, Nullable | Timestamp),
+			Corsairs::Util::MakeColumn("section",    &AmphitheaterSettingRow::section),
+			Corsairs::Util::MakeColumn("season",     &AmphitheaterSettingRow::season),
+			Corsairs::Util::MakeColumn("round",      &AmphitheaterSettingRow::round),
+			Corsairs::Util::MakeColumn("state",      &AmphitheaterSettingRow::state),
+			Corsairs::Util::MakeColumn("createdate", &AmphitheaterSettingRow::createdate, Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("updatetime", &AmphitheaterSettingRow::updatetime, Corsairs::Util::Nullable | Corsairs::Util::Timestamp),
 		}) {}
 };
 
-class TableAmphitheaterTeam : public OdbcTable<AmphitheaterTeamRow> {
+class TableAmphitheaterTeam : public Corsairs::Util::OdbcTable<AmphitheaterTeamRow> {
 public:
-	explicit TableAmphitheaterTeam(OdbcDatabase& db)
+	explicit TableAmphitheaterTeam(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "AmphitheaterTeam", {
-			MakeColumn("id",         &AmphitheaterTeamRow::id, PrimaryKey),
-			MakeColumn("captain",    &AmphitheaterTeamRow::captain),
-			MakeColumn("member",     &AmphitheaterTeamRow::member),
-			MakeColumn("matchno",    &AmphitheaterTeamRow::matchno),
-			MakeColumn("state",      &AmphitheaterTeamRow::state),
-			MakeColumn("map",        &AmphitheaterTeamRow::map),
-			MakeColumn("mapflag",    &AmphitheaterTeamRow::mapflag),
-			MakeColumn("winnum",     &AmphitheaterTeamRow::winnum),
-			MakeColumn("losenum",    &AmphitheaterTeamRow::losenum),
-			MakeColumn("relivenum",  &AmphitheaterTeamRow::relivenum),
-			MakeColumn("createdate", &AmphitheaterTeamRow::createdate, Nullable | Timestamp),
-			MakeColumn("updatetime", &AmphitheaterTeamRow::updatetime, Timestamp),
+			Corsairs::Util::MakeColumn("id",         &AmphitheaterTeamRow::id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("captain",    &AmphitheaterTeamRow::captain),
+			Corsairs::Util::MakeColumn("member",     &AmphitheaterTeamRow::member),
+			Corsairs::Util::MakeColumn("matchno",    &AmphitheaterTeamRow::matchno),
+			Corsairs::Util::MakeColumn("state",      &AmphitheaterTeamRow::state),
+			Corsairs::Util::MakeColumn("map",        &AmphitheaterTeamRow::map),
+			Corsairs::Util::MakeColumn("mapflag",    &AmphitheaterTeamRow::mapflag),
+			Corsairs::Util::MakeColumn("winnum",     &AmphitheaterTeamRow::winnum),
+			Corsairs::Util::MakeColumn("losenum",    &AmphitheaterTeamRow::losenum),
+			Corsairs::Util::MakeColumn("relivenum",  &AmphitheaterTeamRow::relivenum),
+			Corsairs::Util::MakeColumn("createdate", &AmphitheaterTeamRow::createdate, Corsairs::Util::Nullable | Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("updatetime", &AmphitheaterTeamRow::updatetime, Corsairs::Util::Timestamp),
 		}) {}
 };
 
-class TableBoat : public OdbcTable<BoatRow> {
+class TableBoat : public Corsairs::Util::OdbcTable<BoatRow> {
 public:
-	explicit TableBoat(OdbcDatabase& db)
+	explicit TableBoat(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "boat", {
-			MakeColumn("boat_id",         &BoatRow::boat_id, PrimaryKey),
-			MakeColumn("boat_berth",      &BoatRow::boat_berth),
-			MakeColumn("boat_name",       &BoatRow::boat_name),
-			MakeColumn("boat_boatid",     &BoatRow::boat_boatid),
-			MakeColumn("boat_header",     &BoatRow::boat_header),
-			MakeColumn("boat_body",       &BoatRow::boat_body),
-			MakeColumn("boat_engine",     &BoatRow::boat_engine),
-			MakeColumn("boat_cannon",     &BoatRow::boat_cannon),
-			MakeColumn("boat_equipment",  &BoatRow::boat_equipment),
-			MakeColumn("boat_bagsize",    &BoatRow::boat_bagsize),
-			MakeColumn("boat_bag",        &BoatRow::boat_bag),
-			MakeColumn("boat_diecount",   &BoatRow::boat_diecount),
-			MakeColumn("boat_isdead",     &BoatRow::boat_isdead),
-			MakeColumn("cur_endure",      &BoatRow::cur_endure),
-			MakeColumn("mx_endure",       &BoatRow::mx_endure),
-			MakeColumn("cur_supply",      &BoatRow::cur_supply),
-			MakeColumn("mx_supply",       &BoatRow::mx_supply),
-			MakeColumn("skill_state",     &BoatRow::skill_state),
-			MakeColumn("boat_ownerid",    &BoatRow::boat_ownerid),
-			MakeColumn("boat_createtime", &BoatRow::boat_createtime),
-			MakeColumn("boat_isdeleted",  &BoatRow::boat_isdeleted),
-			MakeColumn("map",             &BoatRow::map),
-			MakeColumn("map_x",           &BoatRow::map_x),
-			MakeColumn("map_y",           &BoatRow::map_y),
-			MakeColumn("angle",           &BoatRow::angle),
-			MakeColumn("degree",          &BoatRow::degree),
-			MakeColumn("exp",             &BoatRow::exp),
-			MakeColumn("version",         &BoatRow::version),
+			Corsairs::Util::MakeColumn("boat_id",         &BoatRow::boat_id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("boat_berth",      &BoatRow::boat_berth),
+			Corsairs::Util::MakeColumn("boat_name",       &BoatRow::boat_name),
+			Corsairs::Util::MakeColumn("boat_boatid",     &BoatRow::boat_boatid),
+			Corsairs::Util::MakeColumn("boat_header",     &BoatRow::boat_header),
+			Corsairs::Util::MakeColumn("boat_body",       &BoatRow::boat_body),
+			Corsairs::Util::MakeColumn("boat_engine",     &BoatRow::boat_engine),
+			Corsairs::Util::MakeColumn("boat_cannon",     &BoatRow::boat_cannon),
+			Corsairs::Util::MakeColumn("boat_equipment",  &BoatRow::boat_equipment),
+			Corsairs::Util::MakeColumn("boat_bagsize",    &BoatRow::boat_bagsize),
+			Corsairs::Util::MakeColumn("boat_bag",        &BoatRow::boat_bag),
+			Corsairs::Util::MakeColumn("boat_diecount",   &BoatRow::boat_diecount),
+			Corsairs::Util::MakeColumn("boat_isdead",     &BoatRow::boat_isdead),
+			Corsairs::Util::MakeColumn("cur_endure",      &BoatRow::cur_endure),
+			Corsairs::Util::MakeColumn("mx_endure",       &BoatRow::mx_endure),
+			Corsairs::Util::MakeColumn("cur_supply",      &BoatRow::cur_supply),
+			Corsairs::Util::MakeColumn("mx_supply",       &BoatRow::mx_supply),
+			Corsairs::Util::MakeColumn("skill_state",     &BoatRow::skill_state),
+			Corsairs::Util::MakeColumn("boat_ownerid",    &BoatRow::boat_ownerid),
+			Corsairs::Util::MakeColumn("boat_createtime", &BoatRow::boat_createtime),
+			Corsairs::Util::MakeColumn("boat_isdeleted",  &BoatRow::boat_isdeleted),
+			Corsairs::Util::MakeColumn("map",             &BoatRow::map),
+			Corsairs::Util::MakeColumn("map_x",           &BoatRow::map_x),
+			Corsairs::Util::MakeColumn("map_y",           &BoatRow::map_y),
+			Corsairs::Util::MakeColumn("angle",           &BoatRow::angle),
+			Corsairs::Util::MakeColumn("degree",          &BoatRow::degree),
+			Corsairs::Util::MakeColumn("exp",             &BoatRow::exp),
+			Corsairs::Util::MakeColumn("version",         &BoatRow::version),
 		}) {}
 };
 
-class TableCharacter : public OdbcTable<CharacterRow> {
+class TableCharacter : public Corsairs::Util::OdbcTable<CharacterRow> {
 public:
-	explicit TableCharacter(OdbcDatabase& db)
+	explicit TableCharacter(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "character", {
-			MakeColumn("atorID",           &CharacterRow::atorID, PrimaryKey),
-			MakeColumn("atorNome",         &CharacterRow::atorNome),
-			MakeColumn("motto",            &CharacterRow::motto),
-			MakeColumn("icon",             &CharacterRow::icon),
-			MakeColumn("version",          &CharacterRow::version),
-			MakeColumn("pk_ctrl",          &CharacterRow::pk_ctrl),
-			MakeColumn("endeMem",          &CharacterRow::endeMem),
-			MakeColumn("ato_id",           &CharacterRow::ato_id),
-			MakeColumn("guild_id",         &CharacterRow::guild_id),
-			MakeColumn("guild_stat",       &CharacterRow::guild_stat),
-			MakeColumn("guild_permission", &CharacterRow::guild_permission),
-			MakeColumn("job",              &CharacterRow::job),
-			MakeColumn("degree",           &CharacterRow::degree),
-			MakeColumn("exp",              &CharacterRow::exp),
-			MakeColumn("hp",               &CharacterRow::hp),
-			MakeColumn("sp",               &CharacterRow::sp),
-			MakeColumn("ap",               &CharacterRow::ap),
-			MakeColumn("tp",               &CharacterRow::tp),
-			MakeColumn("bomd",             &CharacterRow::bomd),
-			MakeColumn("str",              &CharacterRow::str),
-			MakeColumn("dex",              &CharacterRow::dex),
-			MakeColumn("agi",              &CharacterRow::agi),
-			MakeColumn("con",              &CharacterRow::con),
-			MakeColumn("sta",              &CharacterRow::sta),
-			MakeColumn("luk",              &CharacterRow::luk),
-			MakeColumn("sail_lv",          &CharacterRow::sail_lv),
-			MakeColumn("sail_exp",         &CharacterRow::sail_exp),
-			MakeColumn("sail_left_exp",    &CharacterRow::sail_left_exp),
-			MakeColumn("live_lv",          &CharacterRow::live_lv),
-			MakeColumn("live_exp",         &CharacterRow::live_exp),
-			MakeColumn("map",              &CharacterRow::map),
-			MakeColumn("map_x",            &CharacterRow::map_x),
-			MakeColumn("map_y",            &CharacterRow::map_y),
-			MakeColumn("radius",           &CharacterRow::radius),
-			MakeColumn("angle",            &CharacterRow::angle),
-			MakeColumn("olhe",             &CharacterRow::olhe),
-			MakeColumn("kb_capacity",      &CharacterRow::kb_capacity),
-			MakeColumn("kitbag",           &CharacterRow::kitbag),
-			MakeColumn("skillbag",         &CharacterRow::skillbag),
-			MakeColumn("shortcut",         &CharacterRow::shortcut),
-			MakeColumn("mission",          &CharacterRow::mission),
-			MakeColumn("misrecord",        &CharacterRow::misrecord),
-			MakeColumn("mistrigger",       &CharacterRow::mistrigger),
-			MakeColumn("miscount",         &CharacterRow::miscount),
-			MakeColumn("birth",            &CharacterRow::birth),
-			MakeColumn("login_cha",        &CharacterRow::login_cha),
-			MakeColumn("live_tp",          &CharacterRow::live_tp),
-			MakeColumn("delflag",          &CharacterRow::delflag),
-			MakeColumn("operdate",         &CharacterRow::operdate, Timestamp),
-			MakeColumn("deldate",          &CharacterRow::deldate, Nullable | Timestamp),
-			MakeColumn("main_map",         &CharacterRow::main_map),
-			MakeColumn("skill_state",      &CharacterRow::skill_state),
-			MakeColumn("bank",             &CharacterRow::bank),
-			MakeColumn("estop",            &CharacterRow::estop, Timestamp),
-			MakeColumn("estoptime",        &CharacterRow::estoptime),
-			MakeColumn("kb_locked",        &CharacterRow::kb_locked),
-			MakeColumn("kitbag_tmp",       &CharacterRow::kitbag_tmp),
-			MakeColumn("credit",           &CharacterRow::credit),
-			MakeColumn("store_item",       &CharacterRow::store_item),
-			MakeColumn("extend",           &CharacterRow::extend),
-			MakeColumn("chatColour",       &CharacterRow::chatColour),
-			MakeColumn("IMP",              &CharacterRow::IMP),
+			Corsairs::Util::MakeColumn("atorID",           &CharacterRow::atorID, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("atorNome",         &CharacterRow::atorNome),
+			Corsairs::Util::MakeColumn("motto",            &CharacterRow::motto),
+			Corsairs::Util::MakeColumn("icon",             &CharacterRow::icon),
+			Corsairs::Util::MakeColumn("version",          &CharacterRow::version),
+			Corsairs::Util::MakeColumn("pk_ctrl",          &CharacterRow::pk_ctrl),
+			Corsairs::Util::MakeColumn("endeMem",          &CharacterRow::endeMem),
+			Corsairs::Util::MakeColumn("ato_id",           &CharacterRow::ato_id),
+			Corsairs::Util::MakeColumn("guild_id",         &CharacterRow::guild_id),
+			Corsairs::Util::MakeColumn("guild_stat",       &CharacterRow::guild_stat),
+			Corsairs::Util::MakeColumn("guild_permission", &CharacterRow::guild_permission),
+			Corsairs::Util::MakeColumn("job",              &CharacterRow::job),
+			Corsairs::Util::MakeColumn("degree",           &CharacterRow::degree),
+			Corsairs::Util::MakeColumn("exp",              &CharacterRow::exp),
+			Corsairs::Util::MakeColumn("hp",               &CharacterRow::hp),
+			Corsairs::Util::MakeColumn("sp",               &CharacterRow::sp),
+			Corsairs::Util::MakeColumn("ap",               &CharacterRow::ap),
+			Corsairs::Util::MakeColumn("tp",               &CharacterRow::tp),
+			Corsairs::Util::MakeColumn("bomd",             &CharacterRow::bomd),
+			Corsairs::Util::MakeColumn("str",              &CharacterRow::str),
+			Corsairs::Util::MakeColumn("dex",              &CharacterRow::dex),
+			Corsairs::Util::MakeColumn("agi",              &CharacterRow::agi),
+			Corsairs::Util::MakeColumn("con",              &CharacterRow::con),
+			Corsairs::Util::MakeColumn("sta",              &CharacterRow::sta),
+			Corsairs::Util::MakeColumn("luk",              &CharacterRow::luk),
+			Corsairs::Util::MakeColumn("sail_lv",          &CharacterRow::sail_lv),
+			Corsairs::Util::MakeColumn("sail_exp",         &CharacterRow::sail_exp),
+			Corsairs::Util::MakeColumn("sail_left_exp",    &CharacterRow::sail_left_exp),
+			Corsairs::Util::MakeColumn("live_lv",          &CharacterRow::live_lv),
+			Corsairs::Util::MakeColumn("live_exp",         &CharacterRow::live_exp),
+			Corsairs::Util::MakeColumn("map",              &CharacterRow::map),
+			Corsairs::Util::MakeColumn("map_x",            &CharacterRow::map_x),
+			Corsairs::Util::MakeColumn("map_y",            &CharacterRow::map_y),
+			Corsairs::Util::MakeColumn("radius",           &CharacterRow::radius),
+			Corsairs::Util::MakeColumn("angle",            &CharacterRow::angle),
+			Corsairs::Util::MakeColumn("olhe",             &CharacterRow::olhe),
+			Corsairs::Util::MakeColumn("kb_capacity",      &CharacterRow::kb_capacity),
+			Corsairs::Util::MakeColumn("kitbag",           &CharacterRow::kitbag),
+			Corsairs::Util::MakeColumn("skillbag",         &CharacterRow::skillbag),
+			Corsairs::Util::MakeColumn("shortcut",         &CharacterRow::shortcut),
+			Corsairs::Util::MakeColumn("mission",          &CharacterRow::mission),
+			Corsairs::Util::MakeColumn("misrecord",        &CharacterRow::misrecord),
+			Corsairs::Util::MakeColumn("mistrigger",       &CharacterRow::mistrigger),
+			Corsairs::Util::MakeColumn("miscount",         &CharacterRow::miscount),
+			Corsairs::Util::MakeColumn("birth",            &CharacterRow::birth),
+			Corsairs::Util::MakeColumn("login_cha",        &CharacterRow::login_cha),
+			Corsairs::Util::MakeColumn("live_tp",          &CharacterRow::live_tp),
+			Corsairs::Util::MakeColumn("delflag",          &CharacterRow::delflag),
+			Corsairs::Util::MakeColumn("operdate",         &CharacterRow::operdate, Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("deldate",          &CharacterRow::deldate, Corsairs::Util::Nullable | Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("main_map",         &CharacterRow::main_map),
+			Corsairs::Util::MakeColumn("skill_state",      &CharacterRow::skill_state),
+			Corsairs::Util::MakeColumn("bank",             &CharacterRow::bank),
+			Corsairs::Util::MakeColumn("estop",            &CharacterRow::estop, Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("estoptime",        &CharacterRow::estoptime),
+			Corsairs::Util::MakeColumn("kb_locked",        &CharacterRow::kb_locked),
+			Corsairs::Util::MakeColumn("kitbag_tmp",       &CharacterRow::kitbag_tmp),
+			Corsairs::Util::MakeColumn("credit",           &CharacterRow::credit),
+			Corsairs::Util::MakeColumn("store_item",       &CharacterRow::store_item),
+			Corsairs::Util::MakeColumn("extend",           &CharacterRow::extend),
+			Corsairs::Util::MakeColumn("chatColour",       &CharacterRow::chatColour),
+			Corsairs::Util::MakeColumn("IMP",              &CharacterRow::IMP),
 		}) {}
 };
 
-class TableCharacterLog : public OdbcTable<CharacterLogRow> {
+class TableCharacterLog : public Corsairs::Util::OdbcTable<CharacterLogRow> {
 public:
-	explicit TableCharacterLog(OdbcDatabase& db)
+	explicit TableCharacterLog(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "character_log", {
-			MakeColumn("atorID",   &CharacterLogRow::atorID),
-			MakeColumn("atorNome", &CharacterLogRow::atorNome),
-			MakeColumn("ato_id",   &CharacterLogRow::ato_id),
-			MakeColumn("guild_id", &CharacterLogRow::guild_id),
-			MakeColumn("job",      &CharacterLogRow::job),
-			MakeColumn("degree",   &CharacterLogRow::degree),
-			MakeColumn("exp",      &CharacterLogRow::exp),
-			MakeColumn("hp",       &CharacterLogRow::hp),
-			MakeColumn("sp",       &CharacterLogRow::sp),
-			MakeColumn("ap",       &CharacterLogRow::ap),
-			MakeColumn("tp",       &CharacterLogRow::tp),
-			MakeColumn("bomd",     &CharacterLogRow::bomd),
-			MakeColumn("str",      &CharacterLogRow::str),
-			MakeColumn("dex",      &CharacterLogRow::dex),
-			MakeColumn("agi",      &CharacterLogRow::agi),
-			MakeColumn("con",      &CharacterLogRow::con),
-			MakeColumn("sta",      &CharacterLogRow::sta),
-			MakeColumn("luk",      &CharacterLogRow::luk),
-			MakeColumn("map",      &CharacterLogRow::map),
-			MakeColumn("map_x",    &CharacterLogRow::map_x),
-			MakeColumn("map_y",    &CharacterLogRow::map_y),
-			MakeColumn("radius",   &CharacterLogRow::radius),
-			MakeColumn("olhe",     &CharacterLogRow::olhe),
-			MakeColumn("del_date", &CharacterLogRow::del_date, Timestamp),
+			Corsairs::Util::MakeColumn("atorID",   &CharacterLogRow::atorID),
+			Corsairs::Util::MakeColumn("atorNome", &CharacterLogRow::atorNome),
+			Corsairs::Util::MakeColumn("ato_id",   &CharacterLogRow::ato_id),
+			Corsairs::Util::MakeColumn("guild_id", &CharacterLogRow::guild_id),
+			Corsairs::Util::MakeColumn("job",      &CharacterLogRow::job),
+			Corsairs::Util::MakeColumn("degree",   &CharacterLogRow::degree),
+			Corsairs::Util::MakeColumn("exp",      &CharacterLogRow::exp),
+			Corsairs::Util::MakeColumn("hp",       &CharacterLogRow::hp),
+			Corsairs::Util::MakeColumn("sp",       &CharacterLogRow::sp),
+			Corsairs::Util::MakeColumn("ap",       &CharacterLogRow::ap),
+			Corsairs::Util::MakeColumn("tp",       &CharacterLogRow::tp),
+			Corsairs::Util::MakeColumn("bomd",     &CharacterLogRow::bomd),
+			Corsairs::Util::MakeColumn("str",      &CharacterLogRow::str),
+			Corsairs::Util::MakeColumn("dex",      &CharacterLogRow::dex),
+			Corsairs::Util::MakeColumn("agi",      &CharacterLogRow::agi),
+			Corsairs::Util::MakeColumn("con",      &CharacterLogRow::con),
+			Corsairs::Util::MakeColumn("sta",      &CharacterLogRow::sta),
+			Corsairs::Util::MakeColumn("luk",      &CharacterLogRow::luk),
+			Corsairs::Util::MakeColumn("map",      &CharacterLogRow::map),
+			Corsairs::Util::MakeColumn("map_x",    &CharacterLogRow::map_x),
+			Corsairs::Util::MakeColumn("map_y",    &CharacterLogRow::map_y),
+			Corsairs::Util::MakeColumn("radius",   &CharacterLogRow::radius),
+			Corsairs::Util::MakeColumn("olhe",     &CharacterLogRow::olhe),
+			Corsairs::Util::MakeColumn("del_date", &CharacterLogRow::del_date, Corsairs::Util::Timestamp),
 		}) {}
 };
 
-class TableFriends : public OdbcTable<FriendsRow> {
+class TableFriends : public Corsairs::Util::OdbcTable<FriendsRow> {
 public:
-	explicit TableFriends(OdbcDatabase& db)
+	explicit TableFriends(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "friends", {
-			MakeColumn("cha_id1",    &FriendsRow::cha_id1),
-			MakeColumn("cha_id2",    &FriendsRow::cha_id2),
-			MakeColumn("relation",   &FriendsRow::relation),
-			MakeColumn("createtime", &FriendsRow::createtime, Nullable | Timestamp),
+			Corsairs::Util::MakeColumn("cha_id1",    &FriendsRow::cha_id1),
+			Corsairs::Util::MakeColumn("cha_id2",    &FriendsRow::cha_id2),
+			Corsairs::Util::MakeColumn("relation",   &FriendsRow::relation),
+			Corsairs::Util::MakeColumn("createtime", &FriendsRow::createtime, Corsairs::Util::Nullable | Corsairs::Util::Timestamp),
 		}) {}
 };
 
-class TableGuildTyped : public OdbcTable<GuildRow> {
+class TableGuildTyped : public Corsairs::Util::OdbcTable<GuildRow> {
 public:
-	explicit TableGuildTyped(OdbcDatabase& db)
+	explicit TableGuildTyped(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "guild", {
-			MakeColumn("guild_id",     &GuildRow::guild_id, PrimaryKey),
-			MakeColumn("guild_name",   &GuildRow::guild_name),
-			MakeColumn("motto",        &GuildRow::motto),
-			MakeColumn("passwd",       &GuildRow::passwd),
-			MakeColumn("leader_id",    &GuildRow::leader_id),
-			MakeColumn("exp",          &GuildRow::exp),
-			MakeColumn("gold",         &GuildRow::gold),
-			MakeColumn("bank",         &GuildRow::bank),
-			MakeColumn("level",        &GuildRow::level),
-			MakeColumn("member_total", &GuildRow::member_total),
-			MakeColumn("try_total",    &GuildRow::try_total),
-			MakeColumn("disband_date", &GuildRow::disband_date, Timestamp),
-			MakeColumn("challlevel",   &GuildRow::challlevel),
-			MakeColumn("challid",      &GuildRow::challid),
-			MakeColumn("challmoney",   &GuildRow::challmoney),
-			MakeColumn("challstart",   &GuildRow::challstart),
+			Corsairs::Util::MakeColumn("guild_id",     &GuildRow::guild_id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("guild_name",   &GuildRow::guild_name),
+			Corsairs::Util::MakeColumn("motto",        &GuildRow::motto),
+			Corsairs::Util::MakeColumn("passwd",       &GuildRow::passwd),
+			Corsairs::Util::MakeColumn("leader_id",    &GuildRow::leader_id),
+			Corsairs::Util::MakeColumn("exp",          &GuildRow::exp),
+			Corsairs::Util::MakeColumn("gold",         &GuildRow::gold),
+			Corsairs::Util::MakeColumn("bank",         &GuildRow::bank),
+			Corsairs::Util::MakeColumn("level",        &GuildRow::level),
+			Corsairs::Util::MakeColumn("member_total", &GuildRow::member_total),
+			Corsairs::Util::MakeColumn("try_total",    &GuildRow::try_total),
+			Corsairs::Util::MakeColumn("disband_date", &GuildRow::disband_date, Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("challlevel",   &GuildRow::challlevel),
+			Corsairs::Util::MakeColumn("challid",      &GuildRow::challid),
+			Corsairs::Util::MakeColumn("challmoney",   &GuildRow::challmoney),
+			Corsairs::Util::MakeColumn("challstart",   &GuildRow::challstart),
 		}) {}
 };
 
-class TableLotterySetting : public OdbcTable<LotterySettingRow> {
+class TableLotterySetting : public Corsairs::Util::OdbcTable<LotterySettingRow> {
 public:
-	explicit TableLotterySetting(OdbcDatabase& db)
+	explicit TableLotterySetting(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "LotterySetting", {
-			MakeColumn("section",    &LotterySettingRow::section),
-			MakeColumn("issue",      &LotterySettingRow::issue),
-			MakeColumn("state",      &LotterySettingRow::state),
-			MakeColumn("createdate", &LotterySettingRow::createdate, Timestamp),
-			MakeColumn("updatetime", &LotterySettingRow::updatetime, Nullable | Timestamp),
-			MakeColumn("itemno",     &LotterySettingRow::itemno),
+			Corsairs::Util::MakeColumn("section",    &LotterySettingRow::section),
+			Corsairs::Util::MakeColumn("issue",      &LotterySettingRow::issue),
+			Corsairs::Util::MakeColumn("state",      &LotterySettingRow::state),
+			Corsairs::Util::MakeColumn("createdate", &LotterySettingRow::createdate, Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("updatetime", &LotterySettingRow::updatetime, Corsairs::Util::Nullable | Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("itemno",     &LotterySettingRow::itemno),
 		}) {}
 };
 
 
-class TableMaster : public OdbcTable<MasterRow> {
+class TableMaster : public Corsairs::Util::OdbcTable<MasterRow> {
 public:
-	explicit TableMaster(OdbcDatabase& db)
+	explicit TableMaster(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "master", {
-			MakeColumn("cha_id1",  &MasterRow::cha_id1),
-			MakeColumn("cha_id2",  &MasterRow::cha_id2),
-			MakeColumn("finish",   &MasterRow::finish),
-			MakeColumn("relation", &MasterRow::relation),
+			Corsairs::Util::MakeColumn("cha_id1",  &MasterRow::cha_id1),
+			Corsairs::Util::MakeColumn("cha_id2",  &MasterRow::cha_id2),
+			Corsairs::Util::MakeColumn("finish",   &MasterRow::finish),
+			Corsairs::Util::MakeColumn("relation", &MasterRow::relation),
 		}) {}
 };
 
-class TableParam : public OdbcTable<ParamRow> {
+class TableParam : public Corsairs::Util::OdbcTable<ParamRow> {
 public:
-	explicit TableParam(OdbcDatabase& db)
+	explicit TableParam(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "param", {
-			MakeColumn("id",      &ParamRow::id, PrimaryKey),
-			MakeColumn("param1",  &ParamRow::param1),
-			MakeColumn("param2",  &ParamRow::param2),
-			MakeColumn("param3",  &ParamRow::param3),
-			MakeColumn("param4",  &ParamRow::param4),
-			MakeColumn("param5",  &ParamRow::param5),
-			MakeColumn("param6",  &ParamRow::param6),
-			MakeColumn("param7",  &ParamRow::param7),
-			MakeColumn("param8",  &ParamRow::param8),
-			MakeColumn("param9",  &ParamRow::param9),
-			MakeColumn("param10", &ParamRow::param10),
+			Corsairs::Util::MakeColumn("id",      &ParamRow::id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("param1",  &ParamRow::param1),
+			Corsairs::Util::MakeColumn("param2",  &ParamRow::param2),
+			Corsairs::Util::MakeColumn("param3",  &ParamRow::param3),
+			Corsairs::Util::MakeColumn("param4",  &ParamRow::param4),
+			Corsairs::Util::MakeColumn("param5",  &ParamRow::param5),
+			Corsairs::Util::MakeColumn("param6",  &ParamRow::param6),
+			Corsairs::Util::MakeColumn("param7",  &ParamRow::param7),
+			Corsairs::Util::MakeColumn("param8",  &ParamRow::param8),
+			Corsairs::Util::MakeColumn("param9",  &ParamRow::param9),
+			Corsairs::Util::MakeColumn("param10", &ParamRow::param10),
 		}) {}
 };
 
-class TablePersonAvatar : public OdbcTable<PersonAvatarRow> {
+class TablePersonAvatar : public Corsairs::Util::OdbcTable<PersonAvatarRow> {
 public:
-	explicit TablePersonAvatar(OdbcDatabase& db)
+	explicit TablePersonAvatar(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "personavatar", {
-			MakeColumn("atorID", &PersonAvatarRow::atorID, PrimaryKey),
-			MakeColumn("avatar", &PersonAvatarRow::avatar),
+			Corsairs::Util::MakeColumn("atorID", &PersonAvatarRow::atorID, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("avatar", &PersonAvatarRow::avatar),
 		}) {}
 };
 
-class TablePersonInfo : public OdbcTable<PersonInfoRow> {
+class TablePersonInfo : public Corsairs::Util::OdbcTable<PersonInfoRow> {
 public:
-	explicit TablePersonInfo(OdbcDatabase& db)
+	explicit TablePersonInfo(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "personinfo", {
-			MakeColumn("atorID",        &PersonInfoRow::atorID, PrimaryKey),
-			MakeColumn("motto",         &PersonInfoRow::motto),
-			MakeColumn("showmotto",     &PersonInfoRow::showmotto),
-			MakeColumn("sex",           &PersonInfoRow::sex),
-			MakeColumn("age",           &PersonInfoRow::age),
-			MakeColumn("name",          &PersonInfoRow::name),
-			MakeColumn("animal_zodiac", &PersonInfoRow::animal_zodiac),
-			MakeColumn("blood_type",    &PersonInfoRow::blood_type),
-			MakeColumn("birthday",      &PersonInfoRow::birthday),
-			MakeColumn("state",         &PersonInfoRow::state),
-			MakeColumn("city",          &PersonInfoRow::city),
-			MakeColumn("constellation", &PersonInfoRow::constellation),
-			MakeColumn("career",        &PersonInfoRow::career),
-			MakeColumn("avatarsize",    &PersonInfoRow::avatarsize),
-			MakeColumn("prevent",       &PersonInfoRow::prevent),
-			MakeColumn("support",       &PersonInfoRow::support),
-			MakeColumn("oppose",        &PersonInfoRow::oppose),
+			Corsairs::Util::MakeColumn("atorID",        &PersonInfoRow::atorID, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("motto",         &PersonInfoRow::motto),
+			Corsairs::Util::MakeColumn("showmotto",     &PersonInfoRow::showmotto),
+			Corsairs::Util::MakeColumn("sex",           &PersonInfoRow::sex),
+			Corsairs::Util::MakeColumn("age",           &PersonInfoRow::age),
+			Corsairs::Util::MakeColumn("name",          &PersonInfoRow::name),
+			Corsairs::Util::MakeColumn("animal_zodiac", &PersonInfoRow::animal_zodiac),
+			Corsairs::Util::MakeColumn("blood_type",    &PersonInfoRow::blood_type),
+			Corsairs::Util::MakeColumn("birthday",      &PersonInfoRow::birthday),
+			Corsairs::Util::MakeColumn("state",         &PersonInfoRow::state),
+			Corsairs::Util::MakeColumn("city",          &PersonInfoRow::city),
+			Corsairs::Util::MakeColumn("constellation", &PersonInfoRow::constellation),
+			Corsairs::Util::MakeColumn("career",        &PersonInfoRow::career),
+			Corsairs::Util::MakeColumn("avatarsize",    &PersonInfoRow::avatarsize),
+			Corsairs::Util::MakeColumn("prevent",       &PersonInfoRow::prevent),
+			Corsairs::Util::MakeColumn("support",       &PersonInfoRow::support),
+			Corsairs::Util::MakeColumn("oppose",        &PersonInfoRow::oppose),
 		}) {}
 };
 
-class TableProperty : public OdbcTable<PropertyRow> {
+class TableProperty : public Corsairs::Util::OdbcTable<PropertyRow> {
 public:
-	explicit TableProperty(OdbcDatabase& db)
+	explicit TableProperty(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "property", {
-			MakeColumn("id",      &PropertyRow::id, PrimaryKey),
-			MakeColumn("atorID",  &PropertyRow::atorID),
-			MakeColumn("context", &PropertyRow::context),
-			MakeColumn("sum",     &PropertyRow::sum),
-			MakeColumn("time",    &PropertyRow::time, Timestamp),
+			Corsairs::Util::MakeColumn("id",      &PropertyRow::id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("atorID",  &PropertyRow::atorID),
+			Corsairs::Util::MakeColumn("context", &PropertyRow::context),
+			Corsairs::Util::MakeColumn("sum",     &PropertyRow::sum),
+			Corsairs::Util::MakeColumn("time",    &PropertyRow::time, Corsairs::Util::Timestamp),
 		}) {}
 };
 
-class TableResourceTyped : public OdbcTable<ResourceRow> {
+class TableResourceTyped : public Corsairs::Util::OdbcTable<ResourceRow> {
 public:
-	explicit TableResourceTyped(OdbcDatabase& db)
+	explicit TableResourceTyped(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "Resource", {
-			MakeColumn("id",      &ResourceRow::id, PrimaryKey),
-			MakeColumn("atorID",  &ResourceRow::atorID),
-			MakeColumn("type_id", &ResourceRow::type_id),
-			MakeColumn("content", &ResourceRow::content),
+			Corsairs::Util::MakeColumn("id",      &ResourceRow::id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("atorID",  &ResourceRow::atorID),
+			Corsairs::Util::MakeColumn("type_id", &ResourceRow::type_id),
+			Corsairs::Util::MakeColumn("content", &ResourceRow::content),
 		}) {}
 };
 
-class TableStatLog : public OdbcTable<StatLogRow> {
+class TableStatLog : public Corsairs::Util::OdbcTable<StatLogRow> {
 public:
-	explicit TableStatLog(OdbcDatabase& db)
+	explicit TableStatLog(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "stat_log", {
-			MakeColumn("track_date",  &StatLogRow::track_date, PrimaryKey | Timestamp),
-			MakeColumn("login_num",   &StatLogRow::login_num),
-			MakeColumn("play_num",    &StatLogRow::play_num),
-			MakeColumn("wgplay_num",  &StatLogRow::wgplay_num),
+			Corsairs::Util::MakeColumn("track_date",  &StatLogRow::track_date, Corsairs::Util::PrimaryKey | Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("login_num",   &StatLogRow::login_num),
+			Corsairs::Util::MakeColumn("play_num",    &StatLogRow::play_num),
+			Corsairs::Util::MakeColumn("wgplay_num",  &StatLogRow::wgplay_num),
 		}) {}
 };
 
-class TableStatDegree : public OdbcTable<StatDegreeRow> {
+class TableStatDegree : public Corsairs::Util::OdbcTable<StatDegreeRow> {
 public:
-	explicit TableStatDegree(OdbcDatabase& db)
+	explicit TableStatDegree(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "StatDegree", {
-			MakeColumn("statDate",       &StatDegreeRow::statDate, PrimaryKey),
-			MakeColumn("degree",         &StatDegreeRow::degree, PrimaryKey),
-			MakeColumn("characterCount", &StatDegreeRow::characterCount),
+			Corsairs::Util::MakeColumn("statDate",       &StatDegreeRow::statDate, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("degree",         &StatDegreeRow::degree, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("characterCount", &StatDegreeRow::characterCount),
 		}) {}
 };
 
-class TableStatGender : public OdbcTable<StatGenderRow> {
+class TableStatGender : public Corsairs::Util::OdbcTable<StatGenderRow> {
 public:
-	explicit TableStatGender(OdbcDatabase& db)
+	explicit TableStatGender(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "StatGender", {
-			MakeColumn("statDate",    &StatGenderRow::statDate, PrimaryKey),
-			MakeColumn("gender",      &StatGenderRow::gender, PrimaryKey),
-			MakeColumn("genderCount", &StatGenderRow::genderCount),
+			Corsairs::Util::MakeColumn("statDate",    &StatGenderRow::statDate, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("gender",      &StatGenderRow::gender, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("genderCount", &StatGenderRow::genderCount),
 		}) {}
 };
 
-class TableStatJob : public OdbcTable<StatJobRow> {
+class TableStatJob : public Corsairs::Util::OdbcTable<StatJobRow> {
 public:
-	explicit TableStatJob(OdbcDatabase& db)
+	explicit TableStatJob(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "StatJob", {
-			MakeColumn("statDate",       &StatJobRow::statDate, PrimaryKey),
-			MakeColumn("job",            &StatJobRow::job, PrimaryKey),
-			MakeColumn("characterCount", &StatJobRow::characterCount),
+			Corsairs::Util::MakeColumn("statDate",       &StatJobRow::statDate, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("job",            &StatJobRow::job, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("characterCount", &StatJobRow::characterCount),
 		}) {}
 };
 
-class TableStatLogin : public OdbcTable<StatLoginRow> {
+class TableStatLogin : public Corsairs::Util::OdbcTable<StatLoginRow> {
 public:
-	explicit TableStatLogin(OdbcDatabase& db)
+	explicit TableStatLogin(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "StatLogin", {
-			MakeColumn("statDate",   &StatLoginRow::statDate, PrimaryKey),
-			MakeColumn("loginCount", &StatLoginRow::loginCount),
+			Corsairs::Util::MakeColumn("statDate",   &StatLoginRow::statDate, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("loginCount", &StatLoginRow::loginCount),
 		}) {}
 };
 
-class TableStatMap : public OdbcTable<StatMapRow> {
+class TableStatMap : public Corsairs::Util::OdbcTable<StatMapRow> {
 public:
-	explicit TableStatMap(OdbcDatabase& db)
+	explicit TableStatMap(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "StatMap", {
-			MakeColumn("statDate",  &StatMapRow::statDate, PrimaryKey),
-			MakeColumn("map",       &StatMapRow::map, PrimaryKey),
-			MakeColumn("playCount", &StatMapRow::playCount),
+			Corsairs::Util::MakeColumn("statDate",  &StatMapRow::statDate, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("map",       &StatMapRow::map, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("playCount", &StatMapRow::playCount),
 		}) {}
 };
 
-class TableTicket : public OdbcTable<TicketRow> {
+class TableTicket : public Corsairs::Util::OdbcTable<TicketRow> {
 public:
-	explicit TableTicket(OdbcDatabase& db)
+	explicit TableTicket(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "Ticket", {
-			MakeColumn("id",      &TicketRow::id, PrimaryKey),
-			MakeColumn("atorID",  &TicketRow::atorID),
-			MakeColumn("issue",   &TicketRow::issue),
-			MakeColumn("itemno",  &TicketRow::itemno),
-			MakeColumn("real",    &TicketRow::real),
-			MakeColumn("buydate", &TicketRow::buydate, Timestamp),
+			Corsairs::Util::MakeColumn("id",      &TicketRow::id, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("atorID",  &TicketRow::atorID),
+			Corsairs::Util::MakeColumn("issue",   &TicketRow::issue),
+			Corsairs::Util::MakeColumn("itemno",  &TicketRow::itemno),
+			Corsairs::Util::MakeColumn("real",    &TicketRow::real),
+			Corsairs::Util::MakeColumn("buydate", &TicketRow::buydate, Corsairs::Util::Timestamp),
 		}) {}
 };
 
-class TableTradeLog : public OdbcTable<TradeLogRow> {
+class TableTradeLog : public Corsairs::Util::OdbcTable<TradeLogRow> {
 public:
-	explicit TableTradeLog(OdbcDatabase& db)
+	explicit TableTradeLog(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "Trade_Log", {
-			MakeColumn("ID",          &TradeLogRow::ID, PrimaryKey),
-			MakeColumn("ExecuteTime", &TradeLogRow::ExecuteTime),
-			MakeColumn("GameServer",  &TradeLogRow::GameServer),
-			MakeColumn("Action",      &TradeLogRow::Action),
-			MakeColumn("From",        &TradeLogRow::From),
-			MakeColumn("To",          &TradeLogRow::To),
-			MakeColumn("Memo",        &TradeLogRow::Memo),
+			Corsairs::Util::MakeColumn("ID",          &TradeLogRow::ID, Corsairs::Util::PrimaryKey),
+			Corsairs::Util::MakeColumn("ExecuteTime", &TradeLogRow::ExecuteTime),
+			Corsairs::Util::MakeColumn("GameServer",  &TradeLogRow::GameServer),
+			Corsairs::Util::MakeColumn("Action",      &TradeLogRow::Action),
+			Corsairs::Util::MakeColumn("From",        &TradeLogRow::From),
+			Corsairs::Util::MakeColumn("To",          &TradeLogRow::To),
+			Corsairs::Util::MakeColumn("Memo",        &TradeLogRow::Memo),
 		}) {}
 };
 
-class TableWeekReport : public OdbcTable<WeekReportRow> {
+class TableWeekReport : public Corsairs::Util::OdbcTable<WeekReportRow> {
 public:
-	explicit TableWeekReport(OdbcDatabase& db)
+	explicit TableWeekReport(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "weekreport", {
-			MakeColumn("ato_nome",   &WeekReportRow::ato_nome),
-			MakeColumn("atorNome",   &WeekReportRow::atorNome),
-			MakeColumn("degree",     &WeekReportRow::degree),
-			MakeColumn("ip",         &WeekReportRow::ip),
-			MakeColumn("createdate", &WeekReportRow::createdate, Nullable | Timestamp),
-			MakeColumn("logouttime", &WeekReportRow::logouttime, Nullable | Timestamp),
-			MakeColumn("playtime",   &WeekReportRow::playtime),
-			MakeColumn("Guild_Name", &WeekReportRow::Guild_Name),
+			Corsairs::Util::MakeColumn("ato_nome",   &WeekReportRow::ato_nome),
+			Corsairs::Util::MakeColumn("atorNome",   &WeekReportRow::atorNome),
+			Corsairs::Util::MakeColumn("degree",     &WeekReportRow::degree),
+			Corsairs::Util::MakeColumn("ip",         &WeekReportRow::ip),
+			Corsairs::Util::MakeColumn("createdate", &WeekReportRow::createdate, Corsairs::Util::Nullable | Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("logouttime", &WeekReportRow::logouttime, Corsairs::Util::Nullable | Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("playtime",   &WeekReportRow::playtime),
+			Corsairs::Util::MakeColumn("Guild_Name", &WeekReportRow::Guild_Name),
 		}) {}
 };
 
-class TableWinTicket : public OdbcTable<WinTicketRow> {
+class TableWinTicket : public Corsairs::Util::OdbcTable<WinTicketRow> {
 public:
-	explicit TableWinTicket(OdbcDatabase& db)
+	explicit TableWinTicket(Corsairs::Util::OdbcDatabase& db)
 		: OdbcTable(db, "WinTicket", {
-			MakeColumn("issue",      &WinTicketRow::issue),
-			MakeColumn("itemno",     &WinTicketRow::itemno),
-			MakeColumn("grade",      &WinTicketRow::grade),
-			MakeColumn("createdate", &WinTicketRow::createdate, Timestamp),
-			MakeColumn("num",        &WinTicketRow::num),
+			Corsairs::Util::MakeColumn("issue",      &WinTicketRow::issue),
+			Corsairs::Util::MakeColumn("itemno",     &WinTicketRow::itemno),
+			Corsairs::Util::MakeColumn("grade",      &WinTicketRow::grade),
+			Corsairs::Util::MakeColumn("createdate", &WinTicketRow::createdate, Corsairs::Util::Timestamp),
+			Corsairs::Util::MakeColumn("num",        &WinTicketRow::num),
 		}) {}
 };
 
@@ -769,11 +769,11 @@ public:
 // ============================================================================
 
 class PlayerStorage {
-	OdbcDatabase& _db;
+	Corsairs::Util::OdbcDatabase& _db;
 	TableCharacter& _characters;
 
 public:
-	PlayerStorage(OdbcDatabase& db, TableCharacter& characters)
+	PlayerStorage(Corsairs::Util::OdbcDatabase& db, TableCharacter& characters)
 		: _db(db), _characters(characters) {
 	}
 
@@ -841,10 +841,10 @@ struct AmphitheaterTeam {
 	};
 };
 
-// Resource — kitbag/bank хранилище (OdbcDatabase)
+// Resource — kitbag/bank хранилище (Corsairs::Util::OdbcDatabase)
 class CTableResource {
 public:
-	explicit CTableResource(OdbcDatabase& db) : _db(db) {
+	explicit CTableResource(Corsairs::Util::OdbcDatabase& db) : _db(db) {
 	}
 
 	bool Create(std::int32_t& lDBID, std::int32_t lChaId, std::int32_t lTypeId);
@@ -856,7 +856,7 @@ public:
 	bool SaveBankData(CPlayer& pCPly, std::int8_t chBankNO = -1);
 
 private:
-	OdbcDatabase& _db;
+	Corsairs::Util::OdbcDatabase& _db;
 };
 
 // Fog-of-war: per-(player, map) хранение в таблице player_map_masks.
@@ -864,7 +864,7 @@ private:
 // databases/migrate_player_map_masks.sql).
 class CTableMapMask {
 public:
-	explicit CTableMapMask(OdbcDatabase& db) : _db(db) {
+	explicit CTableMapMask(Corsairs::Util::OdbcDatabase& db) : _db(db) {
 	}
 
 	// Загружает все маски игрока (одним SELECT) и пушит их в pCPly через
@@ -880,14 +880,14 @@ public:
 	void SaveAll();
 
 private:
-	OdbcDatabase& _db;
+	Corsairs::Util::OdbcDatabase& _db;
 	std::list<std::string> _saveQueue;
 };
 
 
 class CTableBoat {
 public:
-	explicit CTableBoat(OdbcDatabase& db) : _db(db) {
+	explicit CTableBoat(Corsairs::Util::OdbcDatabase& db) : _db(db) {
 	}
 
 	bool Create(std::uint32_t& dwBoatID, const BOAT_DATA& Data);
@@ -903,14 +903,14 @@ public:
 	bool SaveAllCabin(CPlayer& pPlayer, std::int8_t chSaveType);
 
 private:
-	OdbcDatabase& _db;
+	Corsairs::Util::OdbcDatabase& _db;
 };
 
 class CTableGuild {
-	OdbcDatabase& _db;
+	Corsairs::Util::OdbcDatabase& _db;
 
 public:
-	explicit CTableGuild(OdbcDatabase& db) : _db(db) {
+	explicit CTableGuild(Corsairs::Util::OdbcDatabase& db) : _db(db) {
 	}
 
 
@@ -970,7 +970,7 @@ public:
 
 	bool Init();
 
-	OdbcTransaction BeginTransaction();
+	Corsairs::Util::OdbcTransaction BeginTransaction();
 
 	// Совместимость со старым кодом
 	bool BeginTran();
@@ -1108,7 +1108,7 @@ public:
 
 protected:
 	// ODBC API — объявлен первым, т.к. все таблицы зависят от _db
-	OdbcDatabase _db{};
+	Corsairs::Util::OdbcDatabase _db{};
 
 	// Legacy-таблицы (прямые члены)
 	PlayerStorage _tab_cha;

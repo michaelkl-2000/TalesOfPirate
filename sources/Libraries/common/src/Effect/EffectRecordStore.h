@@ -1,5 +1,9 @@
 #pragma once
 
+#include <format>
+#include <source_location>
+#include <string_view>
+
 #include "Database/GameRecordset.h"
 #include "Effect/EffectRecord.h"
 
@@ -7,7 +11,7 @@
 
 namespace Corsairs::Common::Effect {
 
-class EffectRecordStore : public GameRecordset<CMagicInfo> {
+class EffectRecordStore : public GameRecordset<CEffectRecord> {
 public:
 	static EffectRecordStore* Instance() {
 		static EffectRecordStore instance{};
@@ -20,7 +24,6 @@ public:
 		CREATE TABLE IF NOT EXISTS effects (
 			id         INTEGER PRIMARY KEY,
 			data_name  TEXT,
-			name       TEXT,
 			photo_name TEXT,
 			eff_type   INTEGER,
 			obj_type   INTEGER,
@@ -33,30 +36,29 @@ public:
 		)
 	)";
 
+	// Явный список колонок: в legacy-БД может присутствовать колонка `name`,
+	// которая больше не читается (поле Name снесено как дубль DataName).
 	static constexpr const char* SELECT_ALL_SQL =
-		"SELECT * FROM effects ORDER BY id";
+		"SELECT id, data_name, photo_name, eff_type, obj_type, dummies, dummy2, "
+		"height_off, play_time, light_id, base_size FROM effects ORDER BY id";
 
 	bool Load(SqliteDatabase& db, int(*getTexId)(const char*) = nullptr) {
 		EnsureCreated(db, TABLE_NAME, CREATE_TABLE_SQL);
 		if (!GameRecordset::Load(db, SELECT_ALL_SQL)) return false;
 
 		if (getTexId) {
-			ForEach([&](CMagicInfo& info) {
-				char szPhoto[72];
-				sprintf(szPhoto, "texture/photo/%s.bmp", info.szPhotoName);
-				info.nPhotoTexID = getTexId(szPhoto);
+			ForEach([&](CEffectRecord& info) {
+				const auto photoPath = std::format("texture/photo/{}.bmp", info.PhotoName);
+				info.PhotoTexId = getTexId(photoPath.c_str());
 			});
 		}
 		return true;
 	}
 
-	static void Insert(SqliteDatabase& db, const CMagicInfo& record);
-
 protected:
 	RecordEntry ReadRecord(SqliteStatement& stmt) override;
 };
 
-CMagicInfo* GetMagicInfo(int nTypeID, const std::source_location& loc = std::source_location::current());
+CEffectRecord* GetEffectInfo(int nTypeID, const std::source_location& loc = std::source_location::current());
 
 } // namespace Corsairs::Common::Effect
-

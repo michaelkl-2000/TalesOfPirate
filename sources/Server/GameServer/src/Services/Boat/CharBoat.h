@@ -6,7 +6,7 @@
 
 //---------------------------------------------------------
 
-namespace mission
+namespace Corsairs::Common::Mission
 {
 	struct BOAT_SYNC_ATTR
 	{
@@ -54,4 +54,4 @@ namespace mission
 }
 
 //
-extern mission::CCharBoat g_CharBoat;
+extern Corsairs::Common::Mission::CCharBoat g_CharBoat;

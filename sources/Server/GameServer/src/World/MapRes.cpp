@@ -171,7 +171,7 @@ BOOL CMapRes::SummonNpc( USHORT sAreaID, const char szNpc[], USHORT sTime )
 // 
 bool CMapRes::InitCtrl(void)
 {
-	if (g_IsFileExist(GetResPath(m_szCtrlFile)))
+	if (FileExists(GetResPath(m_szCtrlFile)))
 		luaL_dofile(g_pLuaState, GetResPath(m_szCtrlFile));
 
 	m_szEntryMapName[0] = '\0';
@@ -635,7 +635,7 @@ SubMap* CMapRes::GetNextUsedCopy(void)
 	return NULL;
 }
 
-mission::CNpc* CMapRes::FindNpc( const char szName[] )
+Corsairs::Common::Mission::CNpc* CMapRes::FindNpc( const char szName[] )
 {
 	if( szName )
 	{

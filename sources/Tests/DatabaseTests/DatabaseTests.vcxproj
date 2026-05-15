@@ -50,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\Libraries\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\Libraries\Util\src;..\..\Libraries\Util\src\Logging;..\..\Libraries\Util\src\Encoding;..\..\Libraries\Util\src\Diagnostic;..\..\Libraries\Util\src\Math;..\..\Libraries\Util\src\Map;..\..\Libraries\Util\src\Config;..\..\Libraries\Util\src\Crypto;..\..\Libraries\Util\src\Database;..\..\Libraries\Util\src\Memory;..\..\Libraries\Util\src\Text;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
@@ -67,7 +67,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\Libraries\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\Libraries\Util\src;..\..\Libraries\Util\src\Logging;..\..\Libraries\Util\src\Encoding;..\..\Libraries\Util\src\Diagnostic;..\..\Libraries\Util\src\Math;..\..\Libraries\Util\src\Map;..\..\Libraries\Util\src\Config;..\..\Libraries\Util\src\Crypto;..\..\Libraries\Util\src\Database;..\..\Libraries\Util\src\Memory;..\..\Libraries\Util\src\Text;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
@@ -85,10 +85,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OdbcTableTests.cpp" />
-    <ClCompile Include="..\..\Libraries\Util\src\Database.cpp" />
-    <ClCompile Include="..\..\Libraries\Util\src\newlogutil.cpp" />
-    <ClCompile Include="..\..\Libraries\Util\src\ConsoleColor.cpp" />
-    <ClCompile Include="..\..\Libraries\Util\src\CrushSystem.cpp" />
+    <ClCompile Include="..\..\Libraries\Util\src\Database\Database.cpp" />
+    <ClCompile Include="..\..\Libraries\Util\src\Logging\newlogutil.cpp" />
+    <ClCompile Include="..\..\Libraries\Util\src\Logging\ConsoleColor.cpp" />
+    <ClCompile Include="..\..\Libraries\Util\src\Diagnostic\CrushSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestFramework.h" />

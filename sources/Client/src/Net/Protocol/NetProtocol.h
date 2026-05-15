@@ -1,5 +1,9 @@
 ﻿#pragma once
-#include "Core/GameCommon.h"
+#include "Network/NetCommand.h"
+#include "Network/NetRetCode.h"
+#include "Core/RoleCommon.h"
+#include "Network/CompCommand.h"
+#include "Core/CommFunc.h"
 #include "Point.h"
 #include "Inventory/Kitbag.h"
 #include "Skill/SkillStateType.h"
@@ -482,14 +486,14 @@ typedef struct _NET_TRADEPAGE {
 } NET_TRADEPAGE, *PNET_TRADEPAGE;
 
 typedef struct _NET_TRADEINFO {
-	NET_TRADEPAGE TradePage[mission::MAXTRADE_ITEMTYPE];
+	NET_TRADEPAGE TradePage[MAXTRADE_ITEMTYPE];
 
 	_NET_TRADEINFO() {
 		Clear();
 	}
 
 	void Clear() {
-		memset(TradePage, 0, sizeof(NET_TRADEPAGE) * mission::MAXTRADE_ITEMTYPE);
+		memset(TradePage, 0, sizeof(NET_TRADEPAGE) * MAXTRADE_ITEMTYPE);
 	}
 } NET_TRADEINFO, *PNETTRADEINFO;
 
@@ -785,7 +789,7 @@ extern void NetCreateBoat(const Corsairs::Common::Inventory::xShipBuildInfo& Inf
 extern void NetUpdateBoat(const Corsairs::Common::Inventory::xShipBuildInfo& Info);
 extern void NetBoatInfo(DWORD dwBoatID, const char szName[], const Corsairs::Common::Inventory::xShipBuildInfo& Info);
 extern void NetShowBoatList(DWORD dwNpcID, BYTE byNumBoat, const Corsairs::Common::Inventory::BOAT_BERTH_DATA& Data,
-							BYTE byType = mission::BERTH_LUANCH_LIST);
+							BYTE byType = static_cast<BYTE>(+Corsairs::Common::Mission::BoatListType::BERTH_LUANCH_LIST));
 extern void NetChangeChaLookEnergy(unsigned int nID, stLookEnergy& SLookEnergy);
 extern void NetQueryRelive(unsigned int nID, stNetQueryRelive& SQueryRelive);
 extern void NetPreMoveTime(unsigned long ulTime);

@@ -1053,7 +1053,7 @@ void CheckSkillEffect(CSkillRecord* pSkill, int nEffectID) {
 	else {
 		CMagicInfo* pInfo = GetMagicInfo(nEffectID);
 		if (pInfo) {
-			name = pInfo->szName;
+			name = pInfo->DataName;
 		}
 	}
 
@@ -1312,7 +1312,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 				int nCharID = pMain->getTypeID() - 1;
 				if (nCharID < 0 || nCharID > 3) {
 					g_logManager.InternalLog(LogLevel::Error, "errors",
-											 SafeVFormat(GetLanguageString(126), pMain->GetDefaultChaInfo()->szName,
+											 SafeVFormat(GetLanguageString(126), pMain->GetDefaultChaInfo()->Name,
 														 RefineID));
 					return strRes.c_str();
 				}
@@ -1485,7 +1485,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 					if (!pInfo) continue;
 
 					IsDel = false;
-					name = pInfo->szName;
+					name = pInfo->DataName;
 					int n = (int)name.find(GetLanguageString(118));
 					if (n >= 0) {
 						IsDel = true;
@@ -1929,7 +1929,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 			pCha->Destroy();
 			pCha->setTypeID(nScriptID);
 			pCha->SetDefaultChaInfo(pInfo);
-			if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA)) {
+			if (pInfo->ModalType == EChaModalType::MAIN_CHA) {
 				// save loading res mt flag
 				res_bs = g_Render.GetInterfaceMgr()->res_mgr->GetByteSet();
 				loadtex_flag = res_bs->GetValue(OPT_RESMGR_LOADTEXTURE_MT);
@@ -1938,15 +1938,15 @@ const char* ConsoleCallback(const char* pszCmd) {
 				// Variable to change ID
 				DWORD part_buf[5] =
 				{
-					pInfo->sSkinInfo[0],
-					pInfo->sSkinInfo[1],
-					pInfo->sSkinInfo[2],
-					pInfo->sSkinInfo[3],
-					pInfo->sSkinInfo[4],
+					pInfo->SkinInfo[0],
+					pInfo->SkinInfo[1],
+					pInfo->SkinInfo[2],
+					pInfo->SkinInfo[3],
+					pInfo->SkinInfo[4],
 				};
 
 				//  Что было: первый параметр всех Load*-вызовов получал
-				//  pInfo->chModalType (enum 1..4). Этот же параметр у Load*
+				//  pInfo->ModalType (enum 1..4). Этот же параметр у Load*
 				//  присваивается в CCharacterModel::_TypeID, который позже
 				//  используется как primary key для GetChaRecordInfo()
 				//  в Cull/LoadPose/setAttachedCharacterID. То есть _TypeID
@@ -1959,41 +1959,41 @@ const char* ConsoleCallback(const char* pszCmd) {
 				//  Что исправили: передаём nScriptID — это уже подтверждённый
 				//  primary key архетипа (по нему рядом достаётся pInfo через
 				//  GetChaRecordInfo(nScriptID)).
-				if (((CCharacterModel*)pCha)->LoadCha(nScriptID, pInfo->sModel, part_buf) == 0) {
+				if (((CCharacterModel*)pCha)->LoadCha(nScriptID, pInfo->Model, part_buf) == 0) {
 					g_logManager.InternalLog(LogLevel::Error, "errors",
 											 SafeVFormat(GetLanguageString(26), nScriptID,
 														 std::string_view(pInfo->DataName.c_str())));
 					continue;
 				}
 			}
-			else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT)) {
+			else if (pInfo->ModalType == EChaModalType::BOAT) {
 				DWORD part_buf[3] =
 				{
-					pInfo->sSkinInfo[0],
-					pInfo->sSkinInfo[1],
-					pInfo->sSkinInfo[2],
+					pInfo->SkinInfo[0],
+					pInfo->SkinInfo[1],
+					pInfo->SkinInfo[2],
 				};
 
-				//  Было: LoadShip(pInfo->chModalType, ...) — _TypeID = 2 (enum),
+				//  Было: LoadShip(pInfo->ModalType, ...) — _TypeID = 2 (enum),
 				//  Cull искал CChaRecord с lID=2 (бессмысленно).
 				//  Стало: передаём nScriptID — реальный primary key архетипа.
-				if (((CCharacterModel*)pCha)->LoadShip(nScriptID, pInfo->sModel, part_buf) == 0) {
+				if (((CCharacterModel*)pCha)->LoadShip(nScriptID, pInfo->Model, part_buf) == 0) {
 					g_logManager.InternalLog(LogLevel::Error, "errors",
 											 SafeVFormat(GetLanguageString(26), nScriptID,
 														 std::string_view(pInfo->DataName.c_str())));
 					continue;
 				}
 			}
-			else if (pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) {
+			else if (pInfo->ModalType == EChaModalType::EMPL) {
 				DWORD part_buf[5] =
 				{
-					pInfo->sSkinInfo[0],
-					pInfo->sSkinInfo[1],
-					pInfo->sSkinInfo[2],
-					pInfo->sSkinInfo[3],
+					pInfo->SkinInfo[0],
+					pInfo->SkinInfo[1],
+					pInfo->SkinInfo[2],
+					pInfo->SkinInfo[3],
 				};
 
-				//  Было: LoadTower(pInfo->chModalType, ...) — _TypeID = 3 (enum).
+				//  Было: LoadTower(pInfo->ModalType, ...) — _TypeID = 3 (enum).
 				//  Стало: передаём nScriptID — реальный primary key архетипа.
 				if (((CCharacterModel*)pCha)->LoadTower(nScriptID, part_buf) == 0) {
 					g_logManager.InternalLog(LogLevel::Error, "errors",
@@ -2002,19 +2002,19 @@ const char* ConsoleCallback(const char* pszCmd) {
 					continue;
 				}
 			}
-			else if (pInfo->chModalType == static_cast<char>(EChaModalType::OTHER)) {
+			else if (pInfo->ModalType == EChaModalType::OTHER) {
 				// This is the main window
 				MPChaLoadInfo load_info;
 
 				// load_info.bone — фиксированный 64-байтный буфер MPChaLoadInfo.
-				const std::string boneStr = std::format("{:04}.lab", pInfo->sModel);
+				const std::string boneStr = std::format("{:04}.lab", pInfo->Model);
 				const std::size_t boneN = std::min<std::size_t>(boneStr.size(), sizeof(load_info.bone) - 1);
 				std::memcpy(load_info.bone, boneStr.data(), boneN);
 				load_info.bone[boneN] = '\0';
 
 				for (DWORD i = 0; i < 5; i++) {
-					if (pInfo->sSkinInfo[i] != 0) {
-						DWORD file_id = pInfo->sModel * 1000000 + pInfo->sSuitID * 10000 + i;
+					if (pInfo->SkinInfo[i] != 0) {
+						DWORD file_id = pInfo->Model * 1000000 + pInfo->SuitID * 10000 + i;
 						const std::string partStr = std::format("{:010}.lgo", file_id);
 						const std::size_t partN = std::min<std::size_t>(partStr.size(),
 																		sizeof(load_info.part[i]) - 1);
@@ -2036,7 +2036,7 @@ const char* ConsoleCallback(const char* pszCmd) {
 					continue;
 				}
 			}
-			if (((CCharacterModel*)pCha)->LoadPose(pInfo->sActionID) == 0) {
+			if (((CCharacterModel*)pCha)->LoadPose(pInfo->ActionId) == 0) {
 				g_logManager.InternalLog(LogLevel::Error, "errors",
 										 SafeVFormat(GetLanguageString(27), nScriptID,
 													 std::string_view(pInfo->DataName.c_str())));

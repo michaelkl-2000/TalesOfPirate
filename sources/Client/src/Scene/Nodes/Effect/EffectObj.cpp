@@ -241,7 +241,7 @@ inline void Part_bind(CMagicEff* pEffCtrl) {
 			if (pCha->GetObjDummyRunTimeMatrix(&tMat, pEffCtrl->_iDummy)) {
 				g_logManager.InternalLog(LogLevel::Error, "errors",
 										 SafeVFormat(GetLanguageString(55), pEffCtrl->_iIdxID, pEffCtrl->_iDummy,
-													 pCha->GetDefaultChaInfo()->szName));
+													 pCha->GetDefaultChaInfo()->Name));
 				const auto v = D3DXVECTOR3(0, 0, 0);
 				pEffCtrl->MoveTo(&v);
 				return;

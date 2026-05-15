@@ -512,15 +512,15 @@ public: //
 		return _Attr.get(Corsairs::Common::Character::ATTR_LV);
 	}
 
-	void setChaModalType(int type) {
-		_eChaModalType = (Corsairs::Common::Character::EChaModalType)type;
+	void setChaModalType(Corsairs::Common::Character::EChaModalType type) {
+		_eChaModalType = type;
 	}
 
 	Corsairs::Common::Character::EChaModalType getChaModalType() {
 		return _eChaModalType;
 	}
 
-	void setChaCtrlType(int type);
+	void setChaCtrlType(Corsairs::Common::Character::EChaCtrlType type);
 
 	Corsairs::Common::Character::EChaCtrlType getChaCtrlType() {
 		return _eChaCtrlType;

@@ -67,7 +67,7 @@ void CSceneSign::Show(CCharacter* pCha) {
 			d.z = _pScene->GetGridHeight(d.x, d.y);
 			_pAttackShade->MoveTo(&d);
 
-			_pAttack->setHeightOff((int)(_pCha->GetDefaultChaInfo()->fHeight * 100.0f));
+			_pAttack->setHeightOff((int)(_pCha->GetDefaultChaInfo()->Height * 100.0f));
 			_pAttack->setPos(_pCha->GetCurX(), _pCha->GetCurY());
 			_pAttack->SetHide(FALSE);
 			_pAttack->FrameMove(CGameApp::GetCurTick());

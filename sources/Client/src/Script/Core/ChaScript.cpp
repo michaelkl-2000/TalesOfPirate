@@ -10,7 +10,7 @@
 int GetChaPhotoTexID(int nTypeID) {
 	CChaRecord* pInfo = GetChaRecordInfo(nTypeID);
 	if (pInfo) {
-		const std::string szPhoto = std::format("texture/photo/{}.png", pInfo->szIconName);
+		const std::string szPhoto = std::format("texture/photo/{}.png", pInfo->IconName);
 		return GetTextureID(szPhoto.c_str());
 	}
 	return 0;

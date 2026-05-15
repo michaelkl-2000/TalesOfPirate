@@ -270,7 +270,7 @@ void CWorldScene::_FrameMove(DWORD dwTimeParam) {
 						g_stUIMap.RefreshMapName(pArea->DataName.c_str());
 					}
 					else if (_pMapInfo) {
-						std::string name = std::string(_pMapInfo->szName) + GetLanguageString(790);
+						std::string name = std::string(_pMapInfo->DataName) + GetLanguageString(790);
 						g_stUIMap.RefreshMapName(name.c_str());
 						g_pGameApp->ShowBigText(name);
 					}
@@ -581,7 +581,7 @@ bool CWorldScene::_IsBlock(CCharacter* pCha, int x, int y) {
 
 	if (_pTerrain) {
 		return _pTerrain->IsGridBlock(nX / 50, nY / 50) || !g_IsMoveAble(
-			pCha->getChaCtrlType(), pCha->GetDefaultChaInfo()->chTerritory,
+			pCha->getChaCtrlType(), pCha->GetDefaultChaInfo()->Territory,
 			(EAreaMask)_pTerrain->GetTile(nX / 100, nY / 100)->sRegion);
 	}
 	return true;
@@ -903,7 +903,7 @@ void CWorldScene::_SceneCursor() {
 					&&
 					(
 						_pTerrain->IsGridBlock(nScrX / 50, nScrY / 50)
-						|| !g_IsMoveAble(pMain->getChaCtrlType(), pMain->GetDefaultChaInfo()->chTerritory,
+						|| !g_IsMoveAble(pMain->getChaCtrlType(), pMain->GetDefaultChaInfo()->Territory,
 										 (EAreaMask)_pTerrain->GetTile(nScrX / 100, nScrY / 100)->sRegion)
 					)
 				) {
@@ -1011,7 +1011,7 @@ void CWorldScene::_KeyDownEvent(int key) {
 				part_id = 0;
 				group_id += 1;
 			}
-			if (group_id > (DWORD)info->sSuitNum - 1) {
+			if (group_id > (DWORD)info->SuitNum - 1) {
 				group_id = 0;
 			}
 
@@ -1023,14 +1023,14 @@ void CWorldScene::_KeyDownEvent(int key) {
 			//
 			DWORD part = 0;
 			if (group_id <= 99) {
-				part = info->sModel * 1000000 + group_id * 10000 + part_id;
+				part = info->Model * 1000000 + group_id * 10000 + part_id;
 			}
 			else {
 				int thousand = (group_id / 1000) % 10; // 
 				int hundred = (group_id / 100) % 10; // 
 
 				group_id = group_id % 100;
-				part = info->sModel * 1000000 + group_id * 10000 + part_id;
+				part = info->Model * 1000000 + group_id * 10000 + part_id;
 				part += hundred * 1000 + thousand * 100;
 			}
 

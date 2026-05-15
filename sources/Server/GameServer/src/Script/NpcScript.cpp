@@ -831,7 +831,7 @@ std::string GetMonsterName(int sMonsterID)
 	CChaRecord* pRec = GetChaRecordInfo(static_cast<USHORT>(sMonsterID));
 	if (pRec)
 	{
-		strncpy(szName, pRec->szName.c_str(), 64 - 1);
+		strncpy(szName, pRec->Name.c_str(), 64 - 1);
 	}
 
 	return szName;
@@ -845,7 +845,7 @@ std::string GetItemName(int sItemID)
 	CItemRecord* pRec = GetItemRecordInfo(static_cast<USHORT>(sItemID));
 	if (pRec)
 	{
-		strncpy(szItem, pRec->szName.c_str(), 64 - 1);
+		strncpy(szItem, pRec->DataName.c_str(), 64 - 1);
 	}
 
 	return szItem;

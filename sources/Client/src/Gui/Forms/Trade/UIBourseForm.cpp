@@ -804,7 +804,7 @@ void CBlackTradeMgr::SetItem(stBlackTrade* pBlackTrade) {
 
 	pInfo = GetItemRecordInfo(pBlackTrade->sSrcID);
 	if (pInfo) {
-		const std::string szBuffer = std::format("{} x {}", pBlackTrade->sSrcNum, pInfo->szName);
+		const std::string szBuffer = std::format("{} x {}", pBlackTrade->sSrcNum, pInfo->DataName);
 		pItem->SetOwnDefText(szBuffer.c_str());
 	}
 
@@ -827,7 +827,7 @@ void CBlackTradeMgr::ExchangeAnswerProc(bool bSuccess, stBlackTrade* pBlackTrade
 			pItem->GetData().sNum = pBlackTrade->sTarNum; // 
 			pInfo = GetItemRecordInfo(pBlackTrade->sSrcID);
 			if (pInfo) {
-				auto _str = SafeVFormat(GetLanguageString(843), pBlackTrade->sSrcNum, pInfo->szName.c_str()); // x
+				auto _str = SafeVFormat(GetLanguageString(843), pBlackTrade->sSrcNum, pInfo->DataName.c_str()); // x
 				pItem->SetOwnDefText(_str.c_str());
 			}
 			grdItemBuy->SetItem(nCurNum, pItem);

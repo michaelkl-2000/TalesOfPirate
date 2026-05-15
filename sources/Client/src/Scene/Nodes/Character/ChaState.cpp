@@ -95,7 +95,7 @@ CBoolSet& CChaStateMgr::Synchro(const stSkillState* pState, int nCount) {
 		pChaState = stTmp[i];
 		if (pChaState->IsDel) {
 			g_logManager.InternalLog(LogLevel::Debug, "common",
-									 SafeVFormat(GetLanguageString(30), pChaState->pInfo->Id, pChaState->pInfo->szName,
+									 SafeVFormat(GetLanguageString(30), pChaState->pInfo->Id, pChaState->pInfo->DataName,
 												 static_cast<int>(pChaState->pInfo->sEffect)));
 
 			// Existing delete
@@ -113,7 +113,7 @@ CBoolSet& CChaStateMgr::Synchro(const stSkillState* pState, int nCount) {
 			// increase
 			_states.push_back(pChaState);
 			g_logManager.InternalLog(LogLevel::Debug, "common",
-									 SafeVFormat(GetLanguageString(32), pChaState->pInfo->Id, pChaState->pInfo->szName,
+									 SafeVFormat(GetLanguageString(32), pChaState->pInfo->Id, pChaState->pInfo->DataName,
 												 static_cast<int>(pChaState->pInfo->sEffect)));
 
 			pInfo = pChaState->pInfo;

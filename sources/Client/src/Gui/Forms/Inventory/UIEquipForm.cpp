@@ -767,7 +767,7 @@ void CEquipMgr::UpdataEquip(const stNetChangeChaPart& SPart, CCharacter* pCha) {
 	// 
 	memcpy(&stEquip, &SPart, sizeof(SPart));
 	for (int i = 0; i < enumEQUIP_PART_NUM; i++) {
-		if (stEquip.SLink[i].sID == pCha->GetDefaultChaInfo()->sSkinInfo[i])
+		if (stEquip.SLink[i].sID == pCha->GetDefaultChaInfo()->SkinInfo[i])
 			stEquip.SLink[i].sID = 0;
 	}
 	//for( int i=enumEQUIP_PART_NUM; i<enumEQUIP_NUM; i++ )
@@ -792,7 +792,7 @@ void CEquipMgr::UpdataEquipSpy(const stNetChangeChaPart& SPart, CCharacter* pCha
 
 	memcpy(&stEquipSpy, &SPart, sizeof(SPart));
 	for (int i = 0; i < enumEQUIP_PART_NUM; i++) {
-		if (stEquipSpy.SLink[i].sID == pCha->GetDefaultChaInfo()->sSkinInfo[i])
+		if (stEquipSpy.SLink[i].sID == pCha->GetDefaultChaInfo()->SkinInfo[i])
 			stEquipSpy.SLink[i].sID = 0;
 	}
 	for (int i = 0; i < enumEQUIP_NUM; i++) {

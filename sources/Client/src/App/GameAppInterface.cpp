@@ -460,7 +460,7 @@ void CGameApp::CreateCharImg() {
 
 			pCha->setPos(pMainCha->GetCurX(), pMainCha->GetCurY());
 
-			//if(pInfo->chTerritory == 1)
+			//if(pInfo->Territory == 1)
 			//	pCha->SetHieght(1.6f);
 			pCha->FrameMove(0);
 
@@ -962,7 +962,7 @@ void CGameApp::AddTipText(std::string_view text) {
 }
 
 void CGameApp::ShowStateHint(int x, int y, CChaStateMgr::stChaState stateData) {
-	const std::string szTitle = std::format("Lv{} {}", stateData.chStateLv, stateData.pInfo->szName);
+	const std::string szTitle = std::format("Lv{} {}", stateData.chStateLv, stateData.pInfo->DataName);
 	_pNotify->SetFixWidth(0);
 	_dwNotifyTime = GetCurTick() + 100;
 	_pNotify->Clear();
@@ -1407,8 +1407,8 @@ bool CGameApp::LoadRes4() {
 	CCharacter* pChar = this->GetCurScene()->_GetFirstInvalidCha();
 	for (int i = 1; i < 1200; i++) {
 		CChaRecord* pInfo = GetChaRecordInfo(i);
-		if (pInfo && (pInfo->chCtrlType == 1 || pInfo->chCtrlType == 2)) {
-			const std::string szBone = std::format("{:04}.lab", pInfo->sModel);
+		if (pInfo && (pInfo->CtrlType == EChaCtrlType::PLAYER || pInfo->CtrlType == EChaCtrlType::NPC)) {
+			const std::string szBone = std::format("{:04}.lab", pInfo->Model);
 			pChar->InitBone(szBone.c_str());
 			test++;
 		}

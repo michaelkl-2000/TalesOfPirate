@@ -487,8 +487,8 @@ void CCharacter::FrameMove(DWORD dwTimeParam) {
 			_UpdateHeight();
 
 			if (_pNpcStateItem) {
-				//_pNpcStateItem->setHeightOff( (int)(GetDefaultChaInfo()->fHeight * 100.0f) );
-				_pNpcStateItem->setHeightOff((int)(GetDefaultChaInfo()->fHeight * (GetIsFly() ? 130.0f : 100.0f)));
+				//_pNpcStateItem->setHeightOff( (int)(GetDefaultChaInfo()->Height * 100.0f) );
+				_pNpcStateItem->setHeightOff((int)(GetDefaultChaInfo()->Height * (GetIsFly() ? 130.0f : 100.0f)));
 			}
 		}
 	}
@@ -955,9 +955,9 @@ void CCharacter::_UpdateHeight() {
 	_vPos.y = (float)_nCurY / 100.0f;
 
 	if (_nPoseHeightOff == ERROR_POSE_HEIGHT) {
-		switch (_pDefaultChaInfo->chTerritory) {
+		switch (_pDefaultChaInfo->Territory) {
 		case 1:
-			_fMapHeight = (float)_pDefaultChaInfo->sSeaHeight / 100.0f;
+			_fMapHeight = (float)_pDefaultChaInfo->SeaHeight / 100.0f;
 			break;
 		default:
 			_fMapHeight = _pScene->GetGridHeight(_vPos.x, _vPos.y);
@@ -979,10 +979,10 @@ void CCharacter::_UpdateHeight() {
 //{
 //	if( _nPoseHeightOff==ERROR_POSE_HEIGHT )
 //	{
-//		switch( _pDefaultChaInfo->chTerritory )
+//		switch( _pDefaultChaInfo->Territory )
 //		{
 //		case 1:
-//			//_fMapHeight = (float)_pDefaultChaInfo->sSeaHeight / 100.0f;
+//			//_fMapHeight = (float)_pDefaultChaInfo->SeaHeight / 100.0f;
 //			_fMapHeight = fhei +_pScene->GetGridHeight(_vPos.x, _vPos.y);
 //			break;
 //		default:
@@ -1194,8 +1194,8 @@ void CCharacter::setGuildID(int nGuildID) {
 
 void CCharacter::ActionKeyFrame(DWORD key_id) {
 	if (_pDefaultChaInfo) {
-		if (_pDefaultChaInfo->sEffectActionID[0] == key_id) {
-			SelfEffect(_pDefaultChaInfo->sEffectActionID[1], _pDefaultChaInfo->sEffectActionID[2]);
+		if (_pDefaultChaInfo->EffectActionID[0] == key_id) {
+			SelfEffect(_pDefaultChaInfo->EffectActionID[1], _pDefaultChaInfo->EffectActionID[2]);
 		}
 	}
 
@@ -1226,22 +1226,22 @@ void CCharacter::SetDefaultChaInfo(CChaRecord* pInfo) {
 	_pDefaultChaInfo = pInfo;
 
 	_pszFootMusic = NULL;
-	if (_pDefaultChaInfo->sFootfall != -1) {
-		CMusicInfo* pInfo = GetMusicInfo(_pDefaultChaInfo->sFootfall);
+	if (_pDefaultChaInfo->Footfall != -1) {
+		CMusicInfo* pInfo = GetMusicInfo(_pDefaultChaInfo->Footfall);
 		if (pInfo) {
 			_pszFootMusic = pInfo->DataName.c_str();
 		}
 	}
 
 	_pszWhoopMusic = NULL;
-	if (_pDefaultChaInfo->sWhoop != -1) {
-		CMusicInfo* pInfo = GetMusicInfo(_pDefaultChaInfo->sWhoop);
+	if (_pDefaultChaInfo->Whoop != -1) {
+		CMusicInfo* pInfo = GetMusicInfo(_pDefaultChaInfo->Whoop);
 		if (pInfo) {
 			_pszWhoopMusic = pInfo->DataName.c_str();
 		}
 	}
 
-	_fMaxOpacity = (float)_pDefaultChaInfo->chDiaphaneity / 100.0f;
+	_fMaxOpacity = (float)_pDefaultChaInfo->Diaphaneity / 100.0f;
 }
 
 DWORD GetMountPose(DWORD pose) {
@@ -1337,10 +1337,10 @@ bool CCharacter::PlayPose(DWORD pose, DWORD type, int time, int fps, bool isBlen
 
 	switch (pose) {
 	case POSE_WAITING2:
-		CGameScene::PlayEnvSound(_pDefaultChaInfo->sWhoop, GetCurX(), GetCurY());
+		CGameScene::PlayEnvSound(_pDefaultChaInfo->Whoop, GetCurX(), GetCurY());
 		break;
 	case POSE_DIE:
-		CGameScene::PlayEnvSound(_pDefaultChaInfo->sDirge, GetCurX(), GetCurY());
+		CGameScene::PlayEnvSound(_pDefaultChaInfo->Dirge, GetCurX(), GetCurY());
 		break;
 	}
 	return true;
@@ -1544,7 +1544,7 @@ bool CCharacter::SpawnMount(int mountID) {
 			chaMount->GetActor()->InitState();
 			chaMount->SetMountOwner(this);
 			chaMount->EnableAI(FALSE);
-			chaMount->setChaCtrlType(static_cast<char>(EChaCtrlType::PLAYER));
+			chaMount->setChaCtrlType(EChaCtrlType::PLAYER);
 		}
 		else {
 			return false;
@@ -1613,7 +1613,7 @@ bool CCharacter::UpdataItem(int nItem, DWORD nLink) {
 			//we get cloak level
 			int CloakLv = GetPart().SLink[enumEQUIP_CLOAK].sNeedLv;
 			//lets get player race
-			int Race = GetDefaultChaInfo()->lID;
+			int Race = GetDefaultChaInfo()->Id;
 			//we set EffectID
 			int effID = GetCloakGlowByRace(Race, CloakLv);
 			//on switch cloak levels update glow
@@ -1694,7 +1694,7 @@ bool CCharacter::UpdataItem(int nItem, DWORD nLink) {
 					int boneID = pInfo->sItemEffect[1];
 
 					if (nLink == enumEQUIP_CLOAK) {
-						effID = effID + GetDefaultChaInfo()->lID - 1;
+						effID = effID + GetDefaultChaInfo()->Id - 1;
 					}
 
 					if (prevID != effID) {
@@ -1712,7 +1712,7 @@ bool CCharacter::UpdataItem(int nItem, DWORD nLink) {
 								pEffect->SetValid(TRUE);
 								_pHandItemEff[nLink] = pEffect;
 
-								if (nLink == enumEQUIP_CLOAK && GetDefaultChaInfo()->lID == 1) {
+								if (nLink == enumEQUIP_CLOAK && GetDefaultChaInfo()->Id == 1) {
 									_pHandItemEff[nLink]->SetScale(1, 0.4f, 1);
 								}
 							}
@@ -1735,7 +1735,7 @@ bool CCharacter::UpdataItem(int nItem, DWORD nLink) {
 	case enumEQUIP_GLOVE:
 	case enumEQUIP_SHOES:
 		if (nItem == 0 || !_ShowApparel)
-			nItem = _pDefaultChaInfo->sSkinInfo[nLink];
+			nItem = _pDefaultChaInfo->SkinInfo[nLink];
 		if (_ShowApparel) {
 			bool checkHair = false;
 			if (nLink == enumEQUIP_HEAD) {
@@ -1864,7 +1864,7 @@ void CCharacter::setNpcState(DWORD dwState) {
 
 	if (_pNpcStateItem) {
 		_pNpcStateItem->setIsSystem(true);
-		_pNpcStateItem->setHeightOff((int)(GetDefaultChaInfo()->fHeight * 100.0f));
+		_pNpcStateItem->setHeightOff((int)(GetDefaultChaInfo()->Height * 100.0f));
 		_pNpcStateItem->setPos(GetCurX(), GetCurY());
 		_pNpcStateItem->PlayDefaultAnimation(1.0f / Corsairs::Client::Frame::SteadyFrameSync::Instance().GetAnimMultiplier());
 		_pNpcStateItem->setYaw(0);
@@ -2247,7 +2247,7 @@ void CCharacter::SetItemFace(unsigned int nIndex, int nItem) {
 			if (pInfo->chBody[0] != -1) {
 				bool bFlag = false;
 				for (int i = 0; i < defITEM_BODY; i++) {
-					if (pInfo->chBody[i] != -1 && pInfo->chBody[i] == GetDefaultChaInfo()->lID) {
+					if (pInfo->chBody[i] != -1 && pInfo->chBody[i] == GetDefaultChaInfo()->Id) {
 						bFlag = true;
 						break;
 					}
@@ -2275,7 +2275,7 @@ void CCharacter::SetItemFace(unsigned int nIndex, int nItem) {
 
 
 bool CCharacter::GetIsPet() {
-	long nID = GetDefaultChaInfo()->lID;
+	long nID = GetDefaultChaInfo()->Id;
 
 	switch (nID) {
 	case 929: //
@@ -2361,7 +2361,7 @@ void CCharacter::_computeLinkedMatrix() {
 
 			if (_pNpcStateItem) {
 				_pNpcStateItem->setHeightOff(
-					static_cast<int>((GetDefaultChaInfo()->fHeight + boneZ + pMount->height[getTypeID() - 1] / 100.f -
+					static_cast<int>((GetDefaultChaInfo()->Height + boneZ + pMount->height[getTypeID() - 1] / 100.f -
 						mountCha->GetPos().z) * 100.f));
 			}
 		}
@@ -2430,7 +2430,7 @@ MountData* CCharacter::GetMountData(){
 	switch(mountID){
 	case 19676: 		// Baby Black Dragon Mount
 	data->boneID = 3;
-	switch(GetDefaultChaInfo()->lID){
+	switch(GetDefaultChaInfo()->Id){
 		case 1:
 			data->height = 0;
 			data->pose = POSE_SEAT2;
@@ -2455,7 +2455,7 @@ MountData* CCharacter::GetMountData(){
 	break;
 	case 19677:			// Cuddly Lamb Mount
 	data->boneID = 1;
-	switch(GetDefaultChaInfo()->lID){
+	switch(GetDefaultChaInfo()->Id){
 		case 1:
 			data->height = 0;
 			data->pose = POSE_SEAT2;
@@ -2487,7 +2487,7 @@ MountData* CCharacter::GetMountData(){
 		}
 	case 19678:			// Yeti Mount
 	data->boneID = 1;
-	switch(GetDefaultChaInfo()->lID){
+	switch(GetDefaultChaInfo()->Id){
 		case 1:
 			data->height = 0;
 			data->pose = POSE_SEAT2;
@@ -2520,7 +2520,7 @@ MountData* CCharacter::GetMountData(){
 	break;
 	case 19683:			// Yeti Mount
 	data->boneID = 0;
-	switch(GetDefaultChaInfo()->lID){
+	switch(GetDefaultChaInfo()->Id){
 		case 1:
 			data->height = 0;
 			data->pose = POSE_SEAT2;
@@ -2748,7 +2748,7 @@ void CCharacter::StopMove() {
 }
 
 void CCharacter::RefreshShadow() {
-	if (_IsShowShadow && (GetDefaultChaInfo()->chTerritory != defCHA_TERRITORY_SEA) && GetActor()->GetState() ==
+	if (_IsShowShadow && (GetDefaultChaInfo()->Territory != defCHA_TERRITORY_SEA) && GetActor()->GetState() ==
 		enumNormal && !IsHide()) {
 		SetShadeShow(SCENENODE_SHADOW, true);
 	}
@@ -2767,33 +2767,33 @@ void CCharacter::StopAni() {
 	_nCurY = _nHelixCenterY;
 }
 
-void CCharacter::setChaCtrlType(int type) {
-	_eChaCtrlType = (EChaCtrlType)type;
+void CCharacter::setChaCtrlType(EChaCtrlType type) {
+	_eChaCtrlType = type;
 	switch (type) {
-	case static_cast<char>(EChaCtrlType::NONE): _nDanger = 0;
+	case EChaCtrlType::NONE: _nDanger = 0;
 		break;
-	case static_cast<char>(EChaCtrlType::PLAYER): _nDanger = 1;
+	case EChaCtrlType::PLAYER: _nDanger = 1;
 		break;
-	case static_cast<char>(EChaCtrlType::NPC): _nDanger = 2;
-		break;
-
-	case static_cast<char>(EChaCtrlType::NPC_EVENT): _nDanger = 7;
-		break;
-	case static_cast<char>(EChaCtrlType::MONS_TREE): _nDanger = 7;
-		break;
-	case static_cast<char>(EChaCtrlType::MONS_MINE): _nDanger = 7;
-		break;
-	case static_cast<char>(EChaCtrlType::MONS_FISH): _nDanger = 7;
-		break;
-	case static_cast<char>(EChaCtrlType::MONS_DBOAT): _nDanger = 7;
+	case EChaCtrlType::NPC: _nDanger = 2;
 		break;
 
-	case static_cast<char>(EChaCtrlType::PLAYER_PET): _nDanger = 8;
+	case EChaCtrlType::NPC_EVENT: _nDanger = 7;
 		break;
-	case static_cast<char>(EChaCtrlType::MONS_REPAIRABLE): _nDanger = 9;
+	case EChaCtrlType::MONS_TREE: _nDanger = 7;
+		break;
+	case EChaCtrlType::MONS_MINE: _nDanger = 7;
+		break;
+	case EChaCtrlType::MONS_FISH: _nDanger = 7;
+		break;
+	case EChaCtrlType::MONS_DBOAT: _nDanger = 7;
 		break;
 
-	case static_cast<char>(EChaCtrlType::MONS): _nDanger = 10;
+	case EChaCtrlType::PLAYER_PET: _nDanger = 8;
+		break;
+	case EChaCtrlType::MONS_REPAIRABLE: _nDanger = 9;
+		break;
+
+	case EChaCtrlType::MONS: _nDanger = 10;
 		break;
 	default: _nDanger = 0;
 		break;

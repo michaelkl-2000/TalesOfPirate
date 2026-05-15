@@ -166,22 +166,22 @@ CCharacter* SubMap::ChaSpawn(std::int32_t lChaInfoID, char chCtrlType, int16_t s
 	if (!pCCha)
 		return 0;
 	pCCha->m_CChaAttr.Init(lChaInfoID);
-	if (chCtrlType == static_cast<char>(EChaCtrlType::NONE))
-		chCtrlType = pCChaRecord->chCtrlType;
+	if (chCtrlType == EChaCtrlType::NONE)
+		chCtrlType = pCChaRecord->CtrlType;
 	pCCha->setAttr(ATTR_CHATYPE, chCtrlType);
 	pCCha->m_pCChaRecord = pCChaRecord;
-	pCCha->SetCat((short)(pCCha->m_pCChaRecord->lID));
+	pCCha->SetCat((short)(pCCha->m_pCChaRecord->Id));
 	pCCha->SetID(g_pGameApp->m_Ident.GetID());
-	pCCha->m_AIType = (BYTE)(pCChaRecord->lAiNo);
-	pCCha->m_sChaseRange = (short)(pCChaRecord->lCDis);
+	pCCha->m_AIType = (BYTE)(pCChaRecord->AiNo);
+	pCCha->m_sChaseRange = (short)(pCChaRecord->CDis);
 	pCCha->SetAngle(sAngle);
-	Corsairs::Util::Square SShape = {*pSPos, pCCha->m_pCChaRecord->sRadii};
+	Corsairs::Util::Square SShape = {*pSPos, pCCha->m_pCChaRecord->Radii};
 	if (!cszChaName)
-		pCCha->_name = pCCha->m_pCChaRecord->szName;
+		pCCha->_name = pCCha->m_pCChaRecord->Name;
 	else
 		pCCha->_name = cszChaName;
 	pCCha->SetEyeshotAbility(bEyeshotAbility);
-	if (pCChaRecord->sDormancy > 0)
+	if (pCChaRecord->Dormancy > 0)
 		pCCha->SetExistState(enumEXISTS_SLEEPING);
 	if (!Enter(&SShape, pCCha, clSearchRadius))
 	{
@@ -290,7 +290,7 @@ bool SubMap::IsMoveAble(Entity *pCEnt, std::int32_t lPosX, std::int32_t lPosY)
 	CFightAble	*pCCha = 0;
 	if (!pCEnt || !(pCCha = pCEnt->IsFightAble()))
 		return false;
-	return g_IsMoveAble(static_cast<EChaCtrlType>(pCCha->m_CChaAttr.GetAttr(ATTR_CHATYPE)), pCCha->m_pCChaRecord->chTerritory, pCEnt->GetAreaAttr()); //
+	return g_IsMoveAble(static_cast<EChaCtrlType>(pCCha->m_CChaAttr.GetAttr(ATTR_CHATYPE)), pCCha->m_pCChaRecord->Territory, pCEnt->GetAreaAttr()); //
 }
 
 BOOL SubMap::LoadEventEntity()

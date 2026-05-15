@@ -66,19 +66,19 @@ void CGameScene::HandleSceneMsg(int nMsgType, int nParam1, int nParam2, int nPar
 		pCha = GetCha(nParam1);
 
 		//{lemon add@2004.9.2 for create binding effect
-		for (int n = 0; n < pInfo->sEeffID; n++) {
-			CMagicInfo* peffInfo = GetMagicInfo(pInfo->sFeffID[n]);
+		for (int n = 0; n < pInfo->EeffID; n++) {
+			CMagicInfo* peffInfo = GetMagicInfo(pInfo->FeffID[n]);
 			if (!peffInfo) {
 				continue;
 			}
 			for (int m = 0; m < peffInfo->nDummyNum; m++) {
 				pEffect = GetFirstInvalidEffObj();
-				if (!pEffect || !pEffect->Create(pInfo->sFeffID[n])) {
-					ToLogService("errors", LogLevel::Error, "create cha`s effect fail,ID {}", pInfo->sFeffID[n]);
+				if (!pEffect || !pEffect->Create(pInfo->FeffID[n])) {
+					ToLogService("errors", LogLevel::Error, "create cha`s effect fail,ID {}", pInfo->FeffID[n]);
 					return;
 				}
 				if (pCha->IsBoat() &&
-					(pInfo->sFeffID[n] == EFFECT_RIPPLE1 || pInfo->sFeffID[n] == EFFECT_RIPPLE2)) {
+					(pInfo->FeffID[n] == EFFECT_RIPPLE1 || pInfo->FeffID[n] == EFFECT_RIPPLE2)) {
 					//pEffect->setFollow();
 					pEffect->setFollowObj((CSceneNode*)pCha, NODE_CHA);
 				}
@@ -87,7 +87,7 @@ void CGameScene::HandleSceneMsg(int nMsgType, int nParam1, int nParam2, int nPar
 					pEffect->setFollowObj((CSceneNode*)pCha, NODE_CHA, peffInfo->nDummy[m]);
 				}
 				//pEffect->setChaID(pCha->getID());
-				if (pCha->IsBoat() && (pInfo->sFeffID[n] == EFFECT_RIPPLE2)) {
+				if (pCha->IsBoat() && (pInfo->FeffID[n] == EFFECT_RIPPLE2)) {
 					pEffect->SetHide(TRUE);
 				}
 				if (nParam2 == CHA1 || nParam2 == CHA2 || nParam2 == CHA3 || nParam2 == CHA4) {
@@ -115,10 +115,10 @@ void CGameScene::HandleSceneMsg(int nMsgType, int nParam1, int nParam2, int nPar
 					   pCha->AddShade(pShade->getID());
 				   }*/
 
-		if (pInfo->sShadow != 0) {
+		if (pInfo->Shadow != 0) {
 			pShade = GetFirstInvalidShadeObj();
 			if (pShade) {
-				pShade->Create(pInfo->sShadow);
+				pShade->Create(pInfo->Shadow);
 				pShade->setChaID(pCha->getID());
 				pShade->Emission(0, &pCha->GetPos(), NULL);
 				pShade->SetValid(TRUE);

@@ -445,22 +445,22 @@ int	g_IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int 
 			return enumESKILL_FAILD_ONLY_DIEPLY;
 	}
 
-	if (nTChaCtrlType == static_cast<char>(EChaCtrlType::MONS_TREE)) // 
+	if (nTChaCtrlType == EChaCtrlType::MONS_TREE) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_TREE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if (nTChaCtrlType == static_cast<char>(EChaCtrlType::MONS_MINE)) // 
+	else if (nTChaCtrlType == EChaCtrlType::MONS_MINE) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_MINE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if(nTChaCtrlType == static_cast<char>(EChaCtrlType::MONS_FISH)) // 
+	else if(nTChaCtrlType == EChaCtrlType::MONS_FISH) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_FISH)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
-	else if (nTChaCtrlType == static_cast<char>(EChaCtrlType::MONS_DBOAT)) // 
+	else if (nTChaCtrlType == EChaCtrlType::MONS_DBOAT) // 
 	{
 		if (nSSkillObjType != enumSKILL_TYPE_SALVAGE)
 			return enumESKILL_FAILD_ESP_MONS;
@@ -468,27 +468,27 @@ int	g_IsRightSkillTar(int nTChaCtrlType, bool bTIsDie, bool bTChaBeSkilled, int 
 
 	if (nSSkillObjType == enumSKILL_TYPE_REPAIR)
 	{
-		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_REPAIRABLE))
+		if (nTChaCtrlType != EChaCtrlType::MONS_REPAIRABLE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	if (nSSkillObjType == enumSKILL_TYPE_TREE)
 	{
-		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_TREE))
+		if (nTChaCtrlType != EChaCtrlType::MONS_TREE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if (nSSkillObjType == enumSKILL_TYPE_MINE)
 	{
-		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_MINE))
+		if (nTChaCtrlType != EChaCtrlType::MONS_MINE)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if(nSSkillObjType == enumSKILL_TYPE_FISH)
 	{
-		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_FISH))
+		if (nTChaCtrlType != EChaCtrlType::MONS_FISH)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 	else if (nSSkillObjType == enumSKILL_TYPE_SALVAGE)
 	{
-		if (nTChaCtrlType != static_cast<char>(EChaCtrlType::MONS_DBOAT))
+		if (nTChaCtrlType != EChaCtrlType::MONS_DBOAT)
 			return enumESKILL_FAILD_ESP_MONS;
 	}
 

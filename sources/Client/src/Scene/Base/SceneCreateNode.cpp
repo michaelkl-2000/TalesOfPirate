@@ -36,7 +36,7 @@ CCharacter* CGameScene::AddBoat(stNetChangeChaPart& part) {
 
 	pCha->EnableAI(TRUE);
 
-	pCha->setChaModalType(pInfo->chModalType);
+	pCha->setChaModalType(pInfo->ModalType);
 
 	HandleSceneMsg(SCENEMSG_CHA_CREATE, pCha->getID(), nScriptID);
 
@@ -44,9 +44,9 @@ CCharacter* CGameScene::AddBoat(stNetChangeChaPart& part) {
 	pCha->FaceTo(0);
 	pCha->PlayPose(1, PLAY_LOOP);
 
-	pCha->setMoveSpeed(pInfo->lMSpd);
+	pCha->setMoveSpeed(pInfo->MSpd);
 
-	pCha->SetOpaque((float)pInfo->chDiaphaneity / 100.0f);
+	pCha->SetOpaque((float)pInfo->Diaphaneity / 100.0f);
 	pCha->SetIsForUI(false);
 	pCha->SetValid(TRUE);
 
@@ -82,17 +82,17 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 	loadtex_flag = res_bs->GetValue(OPT_RESMGR_LOADTEXTURE_MT);
 	loadmesh_flag = res_bs->GetValue(OPT_RESMGR_LOADMESH_MT);
 
-	if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA)) {
+	if (pInfo->ModalType == EChaModalType::MAIN_CHA) {
 		// save loading res mt flag
 		// res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 		// res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
 
 		// ??id?????
 		DWORD part_buf[5] = {
-			pInfo->sSkinInfo[0], pInfo->sSkinInfo[1], pInfo->sSkinInfo[2], pInfo->sSkinInfo[3], pInfo->sSkinInfo[4],
+			pInfo->SkinInfo[0], pInfo->SkinInfo[1], pInfo->SkinInfo[2], pInfo->SkinInfo[3], pInfo->SkinInfo[4],
 		};
 
-		//  Что было: первый параметр Load*-вызовов получал pInfo->chModalType
+		//  Что было: первый параметр Load*-вызовов получал pInfo->ModalType
 		//  (enum 1..4), который потом сохранялся в CCharacterModel::_TypeID.
 		//  _TypeID используется как primary key для GetChaRecordInfo() в
 		//  Cull/LoadPose/setAttachedCharacterID, поэтому подмена id-архетипа
@@ -102,7 +102,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 		//  0xCDCDCDCD (Debug-маркер uninit heap), что засоряло канал store_miss.
 		//  Что исправили: передаём nScriptID — уже подтверждённый primary key
 		//  архетипа (рядом, на строке 62, по нему достаётся pInfo).
-		if (((CCharacterModel*)pCha)->LoadCha(nScriptID, pInfo->sModel, part_buf) == 0) {
+		if (((CCharacterModel*)pCha)->LoadCha(nScriptID, pInfo->Model, part_buf) == 0) {
 			g_logManager.InternalLog(LogLevel::Error, "errors",
 									 SafeVFormat(GetLanguageString(26), nScriptID,
 												 std::string_view(pInfo->DataName.c_str())));
@@ -110,19 +110,19 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 			goto __ret;
 		}
 	}
-	else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT)) {
+	else if (pInfo->ModalType == EChaModalType::BOAT) {
 		// res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 		// res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
 		DWORD part_buf[3] = {
-			pInfo->sSkinInfo[0],
-			pInfo->sSkinInfo[1],
-			pInfo->sSkinInfo[2],
+			pInfo->SkinInfo[0],
+			pInfo->SkinInfo[1],
+			pInfo->SkinInfo[2],
 		};
 
-		//  Было: LoadShip(pInfo->chModalType, ...) — _TypeID = 2 (enum BOAT),
+		//  Было: LoadShip(pInfo->ModalType, ...) — _TypeID = 2 (enum BOAT),
 		//  Cull искал CChaRecord с lID=2 (бессмысленно).
 		//  Стало: передаём nScriptID — реальный primary key архетипа.
-		if (((CCharacterModel*)pCha)->LoadShip(nScriptID, pInfo->sModel, part_buf) == 0) {
+		if (((CCharacterModel*)pCha)->LoadShip(nScriptID, pInfo->Model, part_buf) == 0) {
 			g_logManager.InternalLog(LogLevel::Error, "errors",
 									 SafeVFormat(GetLanguageString(26), nScriptID,
 												 std::string_view(pInfo->DataName.c_str())));
@@ -130,17 +130,17 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 			goto __ret;
 		}
 	}
-	else if (pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) {
+	else if (pInfo->ModalType == EChaModalType::EMPL) {
 		// res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 		// res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
 		DWORD part_buf[5] = {
-			pInfo->sSkinInfo[0],
-			pInfo->sSkinInfo[1],
-			pInfo->sSkinInfo[2],
-			pInfo->sSkinInfo[3],
+			pInfo->SkinInfo[0],
+			pInfo->SkinInfo[1],
+			pInfo->SkinInfo[2],
+			pInfo->SkinInfo[3],
 		};
 
-		//  Было: LoadTower(pInfo->chModalType, ...) — _TypeID = 3 (enum EMPL).
+		//  Было: LoadTower(pInfo->ModalType, ...) — _TypeID = 3 (enum EMPL).
 		//  Стало: передаём nScriptID — реальный primary key архетипа.
 		if (((CCharacterModel*)pCha)->LoadTower(nScriptID, part_buf) == 0) {
 			g_logManager.InternalLog(LogLevel::Error, "errors",
@@ -150,7 +150,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 			goto __ret;
 		}
 	}
-	else if (pInfo->chModalType == static_cast<char>(EChaModalType::OTHER)) {
+	else if (pInfo->ModalType == EChaModalType::OTHER) {
 		// res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, 0);
 		// res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, 0);
 
@@ -158,15 +158,15 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 		MPChaLoadInfo load_info;
 
 		{
-			auto r = std::format_to_n(load_info.bone, sizeof(load_info.bone) - 1, "{:04}.lab", pInfo->sModel);
+			auto r = std::format_to_n(load_info.bone, sizeof(load_info.bone) - 1, "{:04}.lab", pInfo->Model);
 			*r.out = 0;
 		}
 
 		for (DWORD i = 0; i < 5; i++) {
-			if (pInfo->sSkinInfo[i] == 0)
+			if (pInfo->SkinInfo[i] == 0)
 				continue;
 
-			DWORD file_id = pInfo->sModel * 1000000 + pInfo->sSuitID * 10000 + i;
+			DWORD file_id = pInfo->Model * 1000000 + pInfo->SuitID * 10000 + i;
 			auto r = std::format_to_n(load_info.part[i], sizeof(load_info.part[i]) - 1, "{:010}.lgo", file_id);
 			*r.out = 0;
 		}
@@ -185,7 +185,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 		}
 	}
 
-	if (((CCharacterModel*)pCha)->LoadPose(pInfo->sActionID) == 0) {
+	if (((CCharacterModel*)pCha)->LoadPose(pInfo->ActionId) == 0) {
 		g_logManager.InternalLog(LogLevel::Error, "errors",
 								 SafeVFormat(GetLanguageString(27), nScriptID,
 											 std::string_view(pInfo->DataName.c_str())));
@@ -197,7 +197,7 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 		pCha->SetValid(TRUE);
 		pCha->EnableAI(TRUE);
 
-		pCha->setChaModalType(pInfo->chModalType);
+		pCha->setChaModalType(pInfo->ModalType);
 
 		HandleSceneMsg(SCENEMSG_CHA_CREATE, pCha->getID(), nScriptID);
 
@@ -205,15 +205,15 @@ CCharacter* CGameScene::AddCharacter(int nScriptID) {
 		pCha->FaceTo(0);
 		pCha->PlayPose(1, PLAY_LOOP);
 
-		pCha->setMoveSpeed(pInfo->lMSpd);
+		pCha->setMoveSpeed(pInfo->MSpd);
 
-		pCha->SetOpaque(static_cast<float>(pInfo->chDiaphaneity) / 100.0f);
+		pCha->SetOpaque(static_cast<float>(pInfo->Diaphaneity) / 100.0f);
 		pCha->SetIsForUI(false);
 		pCha->InitState();
-		pCha->SetScale(D3DXVECTOR3(pInfo->scaling[0], pInfo->scaling[1], pInfo->scaling[2]));
+		pCha->SetScale(D3DXVECTOR3(pInfo->Scaling[0], pInfo->Scaling[1], pInfo->Scaling[2]));
 	}
 __ret:
-	// if( res_bs && (pInfo->chModalType==static_cast<char>(EChaModalType::MAIN_CHA)) )
+	// if( res_bs && (pInfo->ModalType==EChaModalType::MAIN_CHA) )
 	if (res_bs) {
 		res_bs->SetValue(OPT_RESMGR_LOADTEXTURE_MT, loadtex_flag);
 		res_bs->SetValue(OPT_RESMGR_LOADMESH_MT, loadmesh_flag);

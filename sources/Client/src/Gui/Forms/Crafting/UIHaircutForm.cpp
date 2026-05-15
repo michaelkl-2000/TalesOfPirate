@@ -155,7 +155,7 @@ namespace GUI {
 			return;
 		}
 
-		m_pHairTools->RefreshCha(pMainCha->GetDefaultChaInfo()->lID);
+		m_pHairTools->RefreshCha(pMainCha->GetDefaultChaInfo()->Id);
 		//
 
 		if ((m_dwHairTypeMaxNum = m_pHairTools->GetHairMax()) <= 0) {

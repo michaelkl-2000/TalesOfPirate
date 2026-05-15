@@ -160,7 +160,7 @@ namespace GUI {
 
 
 		//send to server.
-		CS_StallSearch(pInfo->lID);
+		CS_StallSearch(pInfo->Id);
 	}
 
 
@@ -876,7 +876,7 @@ namespace GUI {
 			return;
 		}
 
-		g_stUIBooth.m_pkCurrSetupBooth->iPrice = 2000000000 + pInfo->lID;
+		g_stUIBooth.m_pkCurrSetupBooth->iPrice = 2000000000 + pInfo->Id;
 		g_stUIBooth.m_NumBox = g_stUIBox.ShowNumberBox(_PushItemTradeQuantity, pInfo->nPileMax,
 													   "Enter Required Item Quantity", false);
 	}
@@ -933,7 +933,7 @@ namespace GUI {
 				if (pInfo) {
 					buf = std::format("Do you wish to trade\n{}x {}\nfor {}",
 							num,
-							pInfo->szName,
+							pInfo->DataName,
 							rkItemCmd.GetName());
 				}
 				else {

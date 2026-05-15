@@ -84,8 +84,8 @@ bool CAutoAttack::AttackStart(CCharacter* pMain, CSkillRecord* pSkill, int nScrX
 
 void CAutoAttack::_CaleDist() {
 	if (_pSkill->GetDistance() > 0) {
-		_nTotalDis = _pMain->GetDefaultChaInfo()->sRadii + _pSkill->GetDistance();
-		if (_pTarget) _nTotalDis += _pTarget->GetDefaultChaInfo()->sRadii;
+		_nTotalDis = _pMain->GetDefaultChaInfo()->Radii + _pSkill->GetDistance();
+		if (_pTarget) _nTotalDis += _pTarget->GetDefaultChaInfo()->Radii;
 	}
 	else {
 		_eStyle = eNone;

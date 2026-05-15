@@ -1404,42 +1404,42 @@ void CCharacter2D::LoadCha(DWORD dwID, bool IsMonster) {
 	pCha->Destroy();
 
 
-	if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA)) {
+	if (pInfo->ModalType == EChaModalType::MAIN_CHA) {
 		DWORD part_buf[5] =
 		{
-			pInfo->sSkinInfo[0],
-			pInfo->sSkinInfo[1],
-			pInfo->sSkinInfo[2],
-			pInfo->sSkinInfo[3],
-			pInfo->sSkinInfo[4],
+			pInfo->SkinInfo[0],
+			pInfo->SkinInfo[1],
+			pInfo->SkinInfo[2],
+			pInfo->SkinInfo[3],
+			pInfo->SkinInfo[4],
 		};
 
-		if (((CCharacterModel*)pCha)->LoadCha(pInfo->chModalType, pInfo->sModel, part_buf) == 0) {
+		if (((CCharacterModel*)pCha)->LoadCha(static_cast<DWORD>(pInfo->ModalType), pInfo->Model, part_buf) == 0) {
 			return;
 		}
 	}
-	else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT)) {
+	else if (pInfo->ModalType == EChaModalType::BOAT) {
 		DWORD part_buf[3] =
 		{
-			pInfo->sSkinInfo[0],
-			pInfo->sSkinInfo[1],
-			pInfo->sSkinInfo[2],
+			pInfo->SkinInfo[0],
+			pInfo->SkinInfo[1],
+			pInfo->SkinInfo[2],
 		};
 
-		if (((CCharacterModel*)pCha)->LoadShip(pInfo->chModalType, pInfo->sModel, part_buf) == 0) {
+		if (((CCharacterModel*)pCha)->LoadShip(static_cast<DWORD>(pInfo->ModalType), pInfo->Model, part_buf) == 0) {
 			return;
 		}
 	}
-	else if (pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) {
+	else if (pInfo->ModalType == EChaModalType::EMPL) {
 		DWORD part_buf[5] =
 		{
-			pInfo->sSkinInfo[0],
-			pInfo->sSkinInfo[1],
-			pInfo->sSkinInfo[2],
-			pInfo->sSkinInfo[3],
+			pInfo->SkinInfo[0],
+			pInfo->SkinInfo[1],
+			pInfo->SkinInfo[2],
+			pInfo->SkinInfo[3],
 		};
 
-		if (((CCharacterModel*)pCha)->LoadTower(pInfo->chModalType, part_buf) == 0) {
+		if (((CCharacterModel*)pCha)->LoadTower(static_cast<DWORD>(pInfo->ModalType), part_buf) == 0) {
 			return;
 		}
 	}
@@ -1447,15 +1447,15 @@ void CCharacter2D::LoadCha(DWORD dwID, bool IsMonster) {
 		MPChaLoadInfo load_info;
 
 		{
-			auto r = std::format_to_n(load_info.bone, sizeof(load_info.bone) - 1, "{:04}.lab", pInfo->sModel);
+			auto r = std::format_to_n(load_info.bone, sizeof(load_info.bone) - 1, "{:04}.lab", pInfo->Model);
 			*r.out = 0;
 		}
 
 		for (DWORD i = 0; i < 5; i++) {
-			if (pInfo->sSkinInfo[i] == 0)
+			if (pInfo->SkinInfo[i] == 0)
 				continue;
 
-			DWORD file_id = pInfo->sModel * 1000000 + pInfo->sSuitID * 10000 + i;
+			DWORD file_id = pInfo->Model * 1000000 + pInfo->SuitID * 10000 + i;
 			auto r = std::format_to_n(load_info.part[i], sizeof(load_info.part[i]) - 1, "{:010}.lgo", file_id);
 			*r.out = 0;
 		}
@@ -1465,12 +1465,12 @@ void CCharacter2D::LoadCha(DWORD dwID, bool IsMonster) {
 		}
 	}
 
-	if (((CCharacterModel*)pCha)->LoadPose(pInfo->sActionID) == 0) {
+	if (((CCharacterModel*)pCha)->LoadPose(pInfo->ActionId) == 0) {
 		return;
 	}
-	_vPos.z = -pInfo->fHeight;
+	_vPos.z = -pInfo->Height;
 	//pCha->SetYaw( D3DX_PI );
-	if (pInfo->sModel == 139) pCha->PlayPose(1, PLAY_LOOP, -1, 32, 1, 5, true);
+	if (pInfo->Model == 139) pCha->PlayPose(1, PLAY_LOOP, -1, 32, 1, 5, true);
 	else
 		pCha->PlayPose(1, PLAY_LOOP);
 
@@ -1541,7 +1541,7 @@ void CCharacter2D::UpdataFace(stNetTeamChaPart& stPart, bool IsPlayer) {
 		int ID = stPart.SLink[i].sID;
 		if (ID == 0 && i && (!stPart.SLink[i + 19].sID || !CCharacter::GetIsShowApparel()) && IsPlayer) {
 			if (CGameScene::GetMainCha())
-				ID = CGameScene::GetMainCha()->GetDefaultChaInfo()->sSkinInfo[i];
+				ID = CGameScene::GetMainCha()->GetDefaultChaInfo()->SkinInfo[i];
 		}
 		else if (CCharacter::GetIsShowApparel()) {
 			if (stPart.SLink[i + 19].sID != 0 && ID != 0) {

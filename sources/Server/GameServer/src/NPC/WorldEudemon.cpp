@@ -128,10 +128,10 @@ namespace mission
 
 		// 
 		m_pCChaRecord = (CChaRecord*)GetChaRecordInfo( 1 );
-		m_cat = (SHORT)m_pCChaRecord->lID;
+		m_cat = (SHORT)m_pCChaRecord->Id;
 
 		m_CChaAttr.Init( 1 );		
-		setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::NPC));
+		setAttr(ATTR_CHATYPE, EChaCtrlType::NPC);
 
 		return TRUE;
 	}

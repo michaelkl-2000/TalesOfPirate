@@ -854,7 +854,7 @@ void CCameraCtrl::SetViewTransform() {
 			//CChaRecord* pInfo = GetChaRecordInfo( g_pGameApp->GetCurScene()->GetMainCha()->GetTypeID() );
 			//if( pInfo ) 
 			{
-				vRef.z += 1.2f; //pInfo->fHeight / 2;
+				vRef.z += 1.2f; //pInfo->Height / 2;
 			}
 		}
 	}

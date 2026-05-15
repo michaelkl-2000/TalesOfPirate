@@ -494,7 +494,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 		std::int32_t	lChaInfoID = Corsairs::Util::Str2Int(strList[0]);
 		Corsairs::Util::Point	Pos = GetPos();
 		Pos.Move(rand() % 360, 3 * 100);
-		CCharacter *pCha = m_submap->ChaSpawn(lChaInfoID, static_cast<char>(EChaCtrlType::PLAYER_PET), rand()%360, &Pos);
+		CCharacter *pCha = m_submap->ChaSpawn(lChaInfoID, EChaCtrlType::PLAYER_PET, rand()%360, &Pos);
 		if (pCha)
 		{
 			pCha->m_HostCha = this;
@@ -519,7 +519,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 			std::int32_t	lChaInfoID = Corsairs::Util::Str2Int(strList[0]);
 			Corsairs::Util::Point	Pos = GetPos();
 			Pos.Move(rand() % 360, 3 * 100);
-			CCharacter *pCha = m_submap->ChaSpawn(lChaInfoID, static_cast<char>(EChaCtrlType::NONE), rand()%360, &Pos);
+			CCharacter *pCha = m_submap->ChaSpawn(lChaInfoID, EChaCtrlType::NONE, rand()%360, &Pos);
 			if (pCha)
 			{
 				if(n>=2)
@@ -565,7 +565,7 @@ BOOL CCharacter::DoGMCommand(const char *pszCmd, const char *pszParam)
 			{
 				Pos = GetPos();
 				Pos.Move(rand() % 360, rand() % 20 * 100);
-				pCha = m_submap->ChaSpawn(lChaInfoID, static_cast<char>(EChaCtrlType::NONE), rand()%360, &Pos, bActEyeshot);
+				pCha = m_submap->ChaSpawn(lChaInfoID, EChaCtrlType::NONE, rand()%360, &Pos, bActEyeshot);
 				if (pCha)
 				{
 					if( n > 3 )

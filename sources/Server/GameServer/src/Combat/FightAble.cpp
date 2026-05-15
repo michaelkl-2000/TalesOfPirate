@@ -330,10 +330,10 @@ void CFightAble::SkillTarEffect(SFireUnit* pSFireSrc) {
 	BeUseSkill(lOldHP, lNowHP, pSrcCha, pSFireSrc->pCSkillRecord->chHelpful);
 
 	//
-	if (m_CChaAttr.GetAttr(ATTR_CHATYPE) != static_cast<char>(EChaCtrlType::MONS_MINE) && m_CChaAttr.
-		GetAttr(ATTR_CHATYPE) != static_cast<char>(EChaCtrlType::MONS_TREE)
-		&& m_CChaAttr.GetAttr(ATTR_CHATYPE) != static_cast<char>(EChaCtrlType::MONS_FISH) && m_CChaAttr.
-		GetAttr(ATTR_CHATYPE) != static_cast<char>(EChaCtrlType::MONS_DBOAT)) {
+	if (m_CChaAttr.GetAttr(ATTR_CHATYPE) != EChaCtrlType::MONS_MINE && m_CChaAttr.
+		GetAttr(ATTR_CHATYPE) != EChaCtrlType::MONS_TREE
+		&& m_CChaAttr.GetAttr(ATTR_CHATYPE) != EChaCtrlType::MONS_FISH && m_CChaAttr.
+		GetAttr(ATTR_CHATYPE) != EChaCtrlType::MONS_DBOAT) {
 		//
 		if (lOldHP > 0 && lNowHP <= 0) {
 			SetDie(pSrcCha);
@@ -489,7 +489,7 @@ void CFightAble::BeUseSkill(std::int32_t lPreHp, std::int32_t lNowHp, CCharacter
 }
 
 void CFightAble::SetMonsterFightObj(std::uint32_t ulObjWorldID, std::int32_t lObjHandle) {
-	if (m_SFightInit.chTarType == 0 && m_CChaAttr.GetAttr(ATTR_CHATYPE) != static_cast<char>(EChaCtrlType::PLAYER)) {
+	if (m_SFightInit.chTarType == 0 && m_CChaAttr.GetAttr(ATTR_CHATYPE) != EChaCtrlType::PLAYER) {
 		m_SFightInit.chTarType = 1;
 		m_SFightInit.lTarInfo1 = ulObjWorldID;
 		m_SFightInit.lTarInfo2 = lObjHandle;
@@ -1247,7 +1247,7 @@ CCharacter* CFightAble::SkillPopBoat(std::int32_t lPosX, std::int32_t lPosY, int
 		Corsairs::Util::Point SPos = {lPosX, lPosY};
 		if (sDir == -1)
 			sDir = GetAngle();
-		pCCha = GetSubMap()->ChaSpawn(302, static_cast<char>(EChaCtrlType::PLAYER), sDir, &SPos, true, GetName(), 0);
+		pCCha = GetSubMap()->ChaSpawn(302, EChaCtrlType::PLAYER, sDir, &SPos, true, GetName(), 0);
 		if (pCCha) {
 			pCCha->SetShip(g_pGameApp->m_CabinPool.Get());
 
@@ -1653,7 +1653,7 @@ bool CFightAble::AddExpAndNotic(std::int32_t lAddExp, int16_t sNotiType) {
 void CFightAble::SpawnResource(CCharacter* pCAtk, std::int32_t lSkillLv) {
 	std::int32_t i = 0;
 	for (; i < kChaInitItemNum; i++) {
-		if (m_pCChaRecord->lItem.at(i).at(1) <= 0)
+		if (m_pCChaRecord->Item.at(i).at(1) <= 0)
 			break;
 	}
 
@@ -1674,7 +1674,7 @@ void CFightAble::SpawnResource(CCharacter* pCAtk, std::int32_t lSkillLv) {
 	lua_pushnumber(g_pLuaState, lSkillLv);
 	lua_pushnumber(g_pLuaState, i); //
 	for (int n = 0; n < i; n++) {
-		lua_pushnumber(g_pLuaState, m_pCChaRecord->lItem.at(n).at(1));
+		lua_pushnumber(g_pLuaState, m_pCChaRecord->Item.at(n).at(1));
 	}
 
 	int nStatus = lua_pcall(g_pLuaState, 4 + i, 0, 0);
@@ -1688,9 +1688,9 @@ void CFightAble::SpawnResource(CCharacter* pCAtk, std::int32_t lSkillLv) {
 
 	CItem* pCItem;
 	for (int i = 0; i < g_chItemFall[0]; i++) {
-		//LG("", "\t%d\n", m_pCChaRecord->lItem[g_chItemFall[i + 1] - 1][0]);
+		//LG("", "\t%d\n", m_pCChaRecord->Item[g_chItemFall[i + 1] - 1][0]);
 		//
-		SItemGrid GridContent((int16_t)m_pCChaRecord->lItem[g_chItemFall[i + 1] - 1][0], 1);
+		SItemGrid GridContent((int16_t)m_pCChaRecord->Item[g_chItemFall[i + 1] - 1][0], 1);
 		ItemInstance(enumITEM_INST_MONS, &GridContent);
 		//
 		CCharacter *pCCtrlCha = IsCharacter()->GetPlyCtrlCha(), *pCAtkMainCha = pCAtk->GetPlyMainCha();
@@ -1781,9 +1781,9 @@ void CFightAble::ItemCount(CCharacter* pAtk) {
 	luabridge::push(g_pLuaState, static_cast<CCharacter*>(pThis));
 	lItemNum = 0;
 	for (std::int32_t i = 0; i < kChaInitItemNum; i++) {
-		if (m_pCChaRecord->lItem.at(i).at(1) == kChaRecordKeyValue)
+		if (m_pCChaRecord->Item.at(i).at(1) == kChaRecordKeyValue)
 			break;
-		lua_pushnumber(g_pLuaState, m_pCChaRecord->lItem.at(i).at(1));
+		lua_pushnumber(g_pLuaState, m_pCChaRecord->Item.at(i).at(1));
 		lItemNum++;
 	}
 	if (lItemNum < 1) {
@@ -1811,14 +1811,14 @@ void CFightAble::ItemCount(CCharacter* pAtk) {
 		for (int i = 0; i < lFallNum; i++)
 			lItem.at(i) = g_chItemFall.at(i + 1);
 		for (int i = 0; i < lFallNum; i++) {
-			long itemID = m_pCChaRecord->lItem.at(lItem.at(i) - 1).at(0);
+			long itemID = m_pCChaRecord->Item.at(lItem.at(i) - 1).at(0);
 			// for now, ignore all drops associated with fusion scrolls.
 			// Later, will handle all drops/possession from LUA
 			if (itemID == 453)
 				continue;
 
 			//
-			SItemGrid GridContent((int16_t)m_pCChaRecord->lItem.at(lItem.at(i) - 1).at(0), 1);
+			SItemGrid GridContent((int16_t)m_pCChaRecord->Item.at(lItem.at(i) - 1).at(0), 1);
 			ItemInstance(enumITEM_INST_MONS, &GridContent);
 			//
 			std::int32_t lPosX, lPosY;
@@ -1844,10 +1844,10 @@ void CFightAble::ItemCount(CCharacter* pAtk) {
 	luabridge::push(g_pLuaState, static_cast<CCharacter*>(pThis));
 	lItemNum = 0;
 	for (std::int32_t i = 0; i < kChaInitItemNum; i++) {
-		if (m_pCChaRecord->lTaskItem.at(i).at(1) == kChaRecordKeyValue)
+		if (m_pCChaRecord->TaskItem.at(i).at(1) == kChaRecordKeyValue)
 			break;
-		if (pCItemHCha->IsMisNeedItem((std::uint16_t)m_pCChaRecord->lTaskItem.at(i).at(0))) {
-			lua_pushnumber(g_pLuaState, m_pCChaRecord->lTaskItem.at(i).at(1));
+		if (pCItemHCha->IsMisNeedItem((std::uint16_t)m_pCChaRecord->TaskItem.at(i).at(0))) {
+			lua_pushnumber(g_pLuaState, m_pCChaRecord->TaskItem.at(i).at(1));
 			lIndex.at(lItemNum) = i;
 			lItemNum++;
 		}
@@ -1878,7 +1878,7 @@ void CFightAble::ItemCount(CCharacter* pAtk) {
 			lItem[i] = g_chItemFall[i + 1];
 		for (int i = 0; i < lFallNum; i++) {
 			//
-			SItemGrid GridContent((int16_t)m_pCChaRecord->lTaskItem[lIndex[lItem[i] - 1]][0], 1);
+			SItemGrid GridContent((int16_t)m_pCChaRecord->TaskItem[lIndex[lItem[i] - 1]][0], 1);
 			ItemInstance(enumITEM_INST_MONS, &GridContent);
 			//
 			std::int32_t lPosX, lPosY;
@@ -2137,8 +2137,8 @@ void CFightAble::EnrichSkillBag(bool bActive) {
 	else
 		SSkillCont.chState = enumSUSTATE_INACTIVE;
 	for (std::size_t i = 0; i < kChaInitSkillNum; i++) {
-		if (m_pCChaRecord->lSkill.at(i).at(0) > 0) {
-			SSkillCont.sID = (int16_t)m_pCChaRecord->lSkill.at(i).at(0);
+		if (m_pCChaRecord->Skill.at(i).at(0) > 0) {
+			SSkillCont.sID = (int16_t)m_pCChaRecord->Skill.at(i).at(0);
 			SSkillCont.chLv = 1;
 			m_CSkillBag.Add(&SSkillCont);
 		}

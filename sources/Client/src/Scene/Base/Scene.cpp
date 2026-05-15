@@ -1316,7 +1316,7 @@ long CGameScene::AddCharacterBlock(int nCurX, int nCurY, int nDist, BYTE* byBloc
 		if (pCha == _pMainCha)
 			continue;
 
-		nCharacterBlockRadius = pCha->GetDefaultChaInfo()->sRadii + sRadii;
+		nCharacterBlockRadius = pCha->GetDefaultChaInfo()->Radii + sRadii;
 
 		nPosX = pCha->GetCurX();
 		nPosY = pCha->GetCurY();
@@ -1545,7 +1545,7 @@ BOOL CGameScene::IsPointVisible(float fX, float fY) {
 bool CGameScene::GetIsBlockWalk(CCharacter* pCha, int nX, int nY) {
 	if (_pTerrain) {
 		return _pTerrain->IsGridBlock(nX / 50, nY / 50) || !g_IsMoveAble(
-			pCha->getChaCtrlType(), pCha->GetDefaultChaInfo()->chTerritory,
+			pCha->getChaCtrlType(), pCha->GetDefaultChaInfo()->Territory,
 			(EAreaMask)_pTerrain->GetTile(nX / 100, nY / 100)->sRegion);
 	}
 	return true;

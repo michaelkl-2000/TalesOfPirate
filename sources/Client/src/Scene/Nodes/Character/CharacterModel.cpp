@@ -252,18 +252,18 @@ int CCharacterModel::ReCreate(DWORD type_id) {
 		return 0;
 
 
-	if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA)) {
+	if (pInfo->ModalType == EChaModalType::MAIN_CHA) {
 #if 1 // id
 		DWORD part_buf[5] =
 		{
-			pInfo->sSkinInfo[0],
-			pInfo->sSkinInfo[1],
-			pInfo->sSkinInfo[2],
-			pInfo->sSkinInfo[3],
-			pInfo->sSkinInfo[4],
+			pInfo->SkinInfo[0],
+			pInfo->SkinInfo[1],
+			pInfo->SkinInfo[2],
+			pInfo->SkinInfo[3],
+			pInfo->SkinInfo[4],
 		};
 
-		if (LoadCha(pInfo->chModalType, pInfo->sModel, part_buf) == 0) {
+		if (LoadCha(static_cast<DWORD>(pInfo->ModalType), pInfo->Model, part_buf) == 0) {
 			g_logManager.InternalLog(LogLevel::Error, "errors",
 									 SafeVFormat(GetLanguageString(26), type_id,
 												 std::string_view(pInfo->DataName.c_str())));
@@ -275,15 +275,15 @@ int CCharacterModel::ReCreate(DWORD type_id) {
 		MPChaLoadInfo load_info;
 
 		{
-			auto r = std::format_to_n(load_info.bone, sizeof(load_info.bone) - 1, "{:04}.lab", pInfo->sModel);
+			auto r = std::format_to_n(load_info.bone, sizeof(load_info.bone) - 1, "{:04}.lab", pInfo->Model);
 			*r.out = 0;
 		}
 
 		for (DWORD i = 0; i < 5; i++) {
-			if (pInfo->sSkinInfo[i] == 0)
+			if (pInfo->SkinInfo[i] == 0)
 				continue;
 
-			DWORD file_id = pInfo->sModel * 1000000 + pInfo->sSuitID * 10000 + i;
+			DWORD file_id = pInfo->Model * 1000000 + pInfo->SuitID * 10000 + i;
 			auto r = std::format_to_n(load_info.part[i], sizeof(load_info.part[i]) - 1, "{:010}.lgo", file_id);
 			*r.out = 0;
 		}
@@ -296,31 +296,31 @@ int CCharacterModel::ReCreate(DWORD type_id) {
 		}
 #endif
 	}
-	else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT)) {
+	else if (pInfo->ModalType == EChaModalType::BOAT) {
 		DWORD part_buf[3] =
 		{
-			pInfo->sSkinInfo[0],
-			pInfo->sSkinInfo[1],
-			pInfo->sSkinInfo[2],
+			pInfo->SkinInfo[0],
+			pInfo->SkinInfo[1],
+			pInfo->SkinInfo[2],
 		};
 
-		if (LoadShip(pInfo->chModalType, pInfo->sModel, part_buf) == 0) {
+		if (LoadShip(static_cast<DWORD>(pInfo->ModalType), pInfo->Model, part_buf) == 0) {
 			g_logManager.InternalLog(LogLevel::Error, "errors",
 									 SafeVFormat(GetLanguageString(26), type_id,
 												 std::string_view(pInfo->DataName.c_str())));
 			return NULL;
 		}
 	}
-	else if (pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) {
+	else if (pInfo->ModalType == EChaModalType::EMPL) {
 		DWORD part_buf[5] =
 		{
-			pInfo->sSkinInfo[0],
-			pInfo->sSkinInfo[1],
-			pInfo->sSkinInfo[2],
-			pInfo->sSkinInfo[3],
+			pInfo->SkinInfo[0],
+			pInfo->SkinInfo[1],
+			pInfo->SkinInfo[2],
+			pInfo->SkinInfo[3],
 		};
 
-		if (LoadTower(pInfo->chModalType, part_buf) == 0) {
+		if (LoadTower(static_cast<DWORD>(pInfo->ModalType), part_buf) == 0) {
 			g_logManager.InternalLog(LogLevel::Error, "errors",
 									 SafeVFormat(GetLanguageString(26), type_id,
 												 std::string_view(pInfo->DataName.c_str())));
@@ -332,15 +332,15 @@ int CCharacterModel::ReCreate(DWORD type_id) {
 		MPChaLoadInfo load_info;
 
 		{
-			auto r = std::format_to_n(load_info.bone, sizeof(load_info.bone) - 1, "{:04}.lab", pInfo->sModel);
+			auto r = std::format_to_n(load_info.bone, sizeof(load_info.bone) - 1, "{:04}.lab", pInfo->Model);
 			*r.out = 0;
 		}
 
 		for (DWORD i = 0; i < 5; i++) {
-			if (pInfo->sSkinInfo[i] == 0)
+			if (pInfo->SkinInfo[i] == 0)
 				continue;
 
-			DWORD file_id = pInfo->sModel * 1000000 + pInfo->sSuitID * 10000 + i;
+			DWORD file_id = pInfo->Model * 1000000 + pInfo->SuitID * 10000 + i;
 			auto r = std::format_to_n(load_info.part[i], sizeof(load_info.part[i]) - 1, "{:010}.lgo", file_id);
 			*r.out = 0;
 		}
@@ -1266,21 +1266,21 @@ BOOL CCharacterModel::Cull() {
 	lwIViewFrustum* vf = scn_mgr->GetViewFrustum();
 
 	DWORD i;
-	if (pInfo->chModalType == static_cast<char>(EChaModalType::MAIN_CHA) || pInfo->chModalType == static_cast<char>(EChaModalType::OTHER)) // character
+	if (pInfo->ModalType == EChaModalType::MAIN_CHA || pInfo->ModalType == EChaModalType::OTHER) // character
 	{
 		lwSphere s;
 
-		if (pInfo->fHeight < 1.0f)
+		if (pInfo->Height < 1.0f)
 			s.r = 5.0f;
 		else
-			s.r = pInfo->fHeight / 2;
+			s.r = pInfo->Height / 2;
 
 		s.c = *(lwVector3*)&GetMatrix()->_41;
 		s.c.z += s.r;
 
 		return !vf->IsSphereInFrustum(&s);
 	}
-	else if (pInfo->chModalType == static_cast<char>(EChaModalType::BOAT) || pInfo->chModalType == static_cast<char>(EChaModalType::EMPL)) // ship
+	else if (pInfo->ModalType == EChaModalType::BOAT || pInfo->ModalType == EChaModalType::EMPL) // ship
 	{
 		MPIPhysique* p = GetPhysique();
 

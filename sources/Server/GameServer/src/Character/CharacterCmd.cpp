@@ -57,7 +57,7 @@ bool CCharacter::Cmd_EnterMap(const char* l_map, std::int32_t lMapCopyNO, std::u
 			bNewCha = false;
 			m_CChaAttr.Init(GetCat(), false);
 		}
-		setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
+		setAttr(ATTR_CHATYPE, EChaCtrlType::PLAYER);
 		ResetPosState();
 
 		if (pCPlayer->GetLoginChaType() == enumLOGIN_CHA_BOAT) // 
@@ -146,7 +146,7 @@ bool CCharacter::Cmd_EnterMap(const char* l_map, std::int32_t lMapCopyNO, std::u
 
 			l_shape.Centre.X = l_x;
 			l_shape.Centre.Y = l_y;
-			l_shape.Radius = m_pCChaRecord->sRadii;
+			l_shape.Radius = m_pCChaRecord->Radii;
 			if (!pCMap->EnsurePos(&l_shape, pCCtrlCha))
 			{
 				ToLogService("map", "character {}({}) 's map coordinate[{}, {}]is unlawful, fallback to birth point", GetLogName(), pCCtrlCha->GetLogName(), l_x, l_y);

@@ -24,7 +24,7 @@ bool CSeatState::_Start() {
 	}
 
 	if (_IsSend) {
-		if (GetDistance(_pCha->GetCurX(), _pCha->GetCurY(), _nPosX, _nPosY) > _pCha->GetDefaultChaInfo()->sRadii +
+		if (GetDistance(_pCha->GetCurX(), _pCha->GetCurY(), _nPosX, _nPosY) > _pCha->GetDefaultChaInfo()->Radii +
 			101) {
 			return false;
 		}

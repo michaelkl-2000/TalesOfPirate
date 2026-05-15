@@ -114,7 +114,7 @@ long CChaSpawn::Load(SubMap *pCMap)
 				}
 
 				CCharacter* pCCha = pCMap->ChaSpawn(
-					pMonRefRecord->lMonster[j][0], static_cast<char>(EChaCtrlType::NONE), sAngle, &l_pos);
+					pMonRefRecord->lMonster[j][0], EChaCtrlType::NONE, sAngle, &l_pos);
 				if (pCCha) {
 					pCCha->SetResumeTime(pMonRefRecord->lMonster[j][3] * 1000);
 					m_lCount++;

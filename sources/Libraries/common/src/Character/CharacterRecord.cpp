@@ -6,12 +6,12 @@ namespace Corsairs::Common::Character {
 
 void ChaRecord::RefreshPrivateData()
 {
-	_HaveEffectFog = false;
+	_haveEffectFog = false;
 	for (std::size_t i = 0; i < kChaHpEffectNum; i++)
 	{
-		if (_nHPEffect.at(i) != 0)
+		if (HpEffect.at(i) != 0)
 		{
-			_HaveEffectFog = true;
+			_haveEffectFog = true;
 			break;
 		}
 	}

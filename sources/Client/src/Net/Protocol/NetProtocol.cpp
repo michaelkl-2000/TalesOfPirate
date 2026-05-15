@@ -440,7 +440,7 @@ void stNetActorCreate::SetValue(CCharacter* pCha) {
 	pCha->setPos(SArea.Centre.X, SArea.Centre.Y);
 	pCha->SetServerPos(SArea.Centre.X, SArea.Centre.Y);
 	pCha->setYaw(sAngle);
-	pCha->setChaCtrlType(chCtrlType);
+	pCha->setChaCtrlType(static_cast<EChaCtrlType>(chCtrlType));
 	pCha->SetTeamLeaderID(ulTLeaderID);
 	pCha->setHumanID(ulCommID);
 	pCha->setHumanName(szCommName);
@@ -460,7 +460,7 @@ void stNetActorCreate::SetValue(CCharacter* pCha) {
 #ifdef _LOG_NAME_
 	g_logManager.InternalLog(LogLevel::Debug, "common", std::format("SeeType:{}, Create Cha:{}, Type:{}",
 																	static_cast<int>(chSeeType), pCha->getName(),
-																	pCha->GetDefaultChaInfo()->szName));
+																	pCha->GetDefaultChaInfo()->Name));
 	g_logManager.InternalLog(LogLevel::Debug, "common",
 							 std::format("CommID:{}, CommName:{}, MottoName:{}", ulCommID, szCommName, strMottoName));
 	g_logManager.InternalLog(LogLevel::Debug, "common",
@@ -501,7 +501,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 	CChaRecord* pChaRec = GetChaRecordInfo(ulChaID);
 	if (!pChaRec) return NULL;
 
-	if (pChaRec->chModalType == static_cast<char>(EChaModalType::BOAT)) {
+	if (pChaRec->ModalType == EChaModalType::BOAT) {
 		p = CGameApp::GetCurScene()->AddBoat(SLookInfo.SLook);
 	}
 	else {
@@ -511,7 +511,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 	if (!p) {
 		ToLogService("network", LogLevel::Error,
 					 "msgNetCreateActor AddCharacter Failed:chType[{}], chCtrlType[{}], MainType[{}], id[{}], type[{}], x[{}], y[{}], name[{}]",
-					 static_cast<int>(pChaRec->chModalType), static_cast<int>(chCtrlType), static_cast<int>(chMainCha),
+					 static_cast<int>(pChaRec->ModalType), static_cast<int>(chCtrlType), static_cast<int>(chMainCha),
 					 ulWorldID, ulChaID, SArea.Centre.X, SArea.Centre.Y, szName);
 		return 0;
 	}
@@ -523,23 +523,23 @@ CCharacter* stNetActorCreate::CreateCha() {
 
 	g_logManager.InternalLog(LogLevel::Debug, "common", std::format("MainChaType:{}", static_cast<int>(chMainCha)));
 
-	p->setChaModalType(pChaRec->chModalType);
+	p->setChaModalType(pChaRec->ModalType);
 	if (SEvent.usEventID) {
 		SEvent.Exec(p);
 	}
 
-	if (pChaRec->chModalType != static_cast<char>(EChaModalType::BOAT)) {
+	if (pChaRec->ModalType != EChaModalType::BOAT) {
 		// Apply look
-		if (p->GetMainType() != enumMainPlayer && pChaRec->chCtrlType == 5) {
-			p->setTypeID(pChaRec->lScript);
+		if (p->GetMainType() != enumMainPlayer && pChaRec->CtrlType == EChaCtrlType::MONS) {
+			p->setTypeID(pChaRec->Script);
 
 			// Apply Avatar parts
-			if (pChaRec->sSkinInfo[5]) {
-				SLookInfo.SLook.SLink[enumEQUIP_LHAND].sID = (short)pChaRec->sSkinInfo[5];
+			if (pChaRec->SkinInfo[5]) {
+				SLookInfo.SLook.SLink[enumEQUIP_LHAND].sID = (short)pChaRec->SkinInfo[5];
 				SLookInfo.SLook.SLink[enumEQUIP_LHAND].sNum = 1;
 			}
-			if (pChaRec->sSkinInfo[6]) {
-				SLookInfo.SLook.SLink[enumEQUIP_RHAND].sID = (short)pChaRec->sSkinInfo[6];
+			if (pChaRec->SkinInfo[6]) {
+				SLookInfo.SLook.SLink[enumEQUIP_RHAND].sID = (short)pChaRec->SkinInfo[6];
 				SLookInfo.SLook.SLink[enumEQUIP_RHAND].sNum = 1;
 			}
 		}
@@ -560,7 +560,7 @@ CCharacter* stNetActorCreate::CreateCha() {
 		}
 		p->SetHide(TRUE);
 	}
-	else if (chCtrlType == static_cast<char>(EChaCtrlType::PLAYER)) {
+	else if (chCtrlType == EChaCtrlType::PLAYER) {
 		g_stUIChat.GetTeamMgr()->Find(enumTeamRoad)->Add(ulWorldID, szCommName.c_str(), strMottoName.c_str(), sIcon);
 	}
 
@@ -568,8 +568,8 @@ CCharacter* stNetActorCreate::CreateCha() {
 		switch (sState) {
 		case enumEXISTS_SLEEPING:
 			p->GetActor()->SetState(enumNormal);
-			if (p->GetDefaultChaInfo()->sDormancy > 0) {
-				p->PlayPose(p->GetDefaultChaInfo()->sDormancy);
+			if (p->GetDefaultChaInfo()->Dormancy > 0) {
+				p->PlayPose(p->GetDefaultChaInfo()->Dormancy);
 				p->GetActor()->SetSleep();
 			}
 			break;
@@ -581,10 +581,10 @@ CCharacter* stNetActorCreate::CreateCha() {
 			break;
 		case enumEXISTS_NATALITY: {
 			p->GetActor()->SetState(enumNormal);
-			p->PlayAni(p->GetDefaultChaInfo()->nBirthBehave.data(), kChaDieEffectNum);
+			p->PlayAni(p->GetDefaultChaInfo()->BirthBehave.data(), kChaDieEffectNum);
 
 			CEffectObj* pEffect = p->GetScene()->GetFirstInvalidEffObj();
-			if (pEffect && pEffect->Create(p->GetDefaultChaInfo()->sBornEff)) {
+			if (pEffect && pEffect->Create(p->GetDefaultChaInfo()->BornEff)) {
 				pEffect->Emission(-1, &p->GetPos(), NULL);
 				pEffect->SetValid(TRUE);
 			}
@@ -596,8 +596,8 @@ CCharacter* stNetActorCreate::CreateCha() {
 	}
 
 	switch (chCtrlType) {
-	case static_cast<char>(EChaCtrlType::MONS_TREE):
-	case static_cast<char>(EChaCtrlType::MONS_MINE):
+	case EChaCtrlType::MONS_TREE:
+	case EChaCtrlType::MONS_MINE:
 		p->GetActor()->SetSleep();
 		break;
 	default:
@@ -1129,7 +1129,7 @@ void NetSwitchMap(stNetSwitchMap& switchmap) {
 		return;
 	}
 
-	g_stUIMap.RefreshMapName(pInfo->szName);
+	g_stUIMap.RefreshMapName(pInfo->DataName);
 
 	CGameApp::Waiting(false);
 	CWorldScene* s = dynamic_cast<CWorldScene*>(CGameApp::GetCurScene());
@@ -1143,7 +1143,7 @@ void NetSwitchMap(stNetSwitchMap& switchmap) {
 		init.nMaxItem = GlobalAppConfig.GetMaxItem();
 		init.nMaxObj = GlobalAppConfig.GetMaxObj();
 		init.nUITemplete = enumMainForm;
-		init.strName = pInfo->szName;
+		init.strName = pInfo->DataName;
 		init.nTypeID = enumWorldScene;
 		s = dynamic_cast<CWorldScene*>(g_pGameApp->CreateScene(&init));
 		if (!s) {

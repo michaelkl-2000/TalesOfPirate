@@ -51,17 +51,17 @@ void MPEditor::Init(int nMapID) {
 	CMapInfo *pMapInfo = GetMapInfo(nMapID);
 	if(pMapInfo)
 	{
-		char szTip[64]; sprintf(szTip, "[%s]", pMapInfo->szName);
+		char szTip[64]; sprintf(szTip, "[%s]", pMapInfo->DataName);
 
 		MPMapFileHeader maphdr;
-		if (_getMapHeader(pMapInfo->szName, maphdr))
+		if (_getMapHeader(pMapInfo->DataName, maphdr))
 			{
-			if (createAttribFile(pMapInfo->szName, maphdr.Width, maphdr.Height))
-				openAttribFile(pMapInfo->szName); // 
+			if (createAttribFile(pMapInfo->DataName, maphdr.Width, maphdr.Height))
+				openAttribFile(pMapInfo->DataName); // 
 			Tip(szTip);
 			}
 		else
-			ToLogService("errors", LogLevel::Error, "read header of {}.map failed", pMapInfo->szName);
+			ToLogService("errors", LogLevel::Error, "read header of {}.map failed", pMapInfo->DataName);
 	}
 	else
 	{
@@ -1092,8 +1092,8 @@ BOOL MPEditor::MouseButtonDown(int nButton) {
 					if (pCha) {
 						pCha->setPos(nX, nY);
 						pCha->setYaw(pCurScene->GetCha(m_nSelID)->getYaw());
-						if (pCha->GetDefaultChaInfo()->sDormancy > 0)
-							pCha->PlayPose(pCha->GetDefaultChaInfo()->sDormancy);
+						if (pCha->GetDefaultChaInfo()->Dormancy > 0)
+							pCha->PlayPose(pCha->GetDefaultChaInfo()->Dormancy);
 						if (pCha->IsNPC()) {
 							pCha->EnableAI(FALSE);
 						}

@@ -44,7 +44,7 @@ namespace mission
 		}
 		else
 		{
-			_name = (pRec->szName.c_str()) ? (pRec->szName.c_str()) : "";
+			_name = (pRec->Name.c_str()) ? (pRec->Name.c_str()) : "";
 		}
 
 		m_ID = g_pGameApp->m_Ident.GetID();
@@ -57,13 +57,13 @@ namespace mission
 		SetLogName(szLogName);
 
 		m_pCChaRecord = pRec;
-		m_cat = (short)m_pCChaRecord->lID;
+		m_cat = (short)m_pCChaRecord->Id;
 		SetAngle( sDir );
 
 		m_CChaAttr.Init( sID );
-		setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::NPC_EVENT));
+		setAttr(ATTR_CHATYPE, EChaCtrlType::NPC_EVENT);
 
-		Corsairs::Util::Square SShape = { { dwxPos, dwyPos }, m_pCChaRecord->sRadii };
+		Corsairs::Util::Square SShape = { { dwxPos, dwyPos }, m_pCChaRecord->Radii };
 		if( !Submap.Enter( &SShape, this ) )
 		{
 			//LG( "entity_error", "CEventEntity::Create!" );

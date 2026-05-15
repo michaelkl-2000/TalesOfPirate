@@ -284,10 +284,10 @@ void CEditor::_TreeEvent(CTreeView* tree, bool press) {
 
 			switch (p->nTag) {
 			case 0: {
-				pCha->PlayAni(pCha->GetDefaultChaInfo()->nBirthBehave.data(), kChaDieEffectNum);
+				pCha->PlayAni(pCha->GetDefaultChaInfo()->BirthBehave.data(), kChaDieEffectNum);
 
 				CEffectObj* pEffect = pCha->GetScene()->GetFirstInvalidEffObj();
-				if (pEffect && pEffect->Create(pCha->GetDefaultChaInfo()->sBornEff)) {
+				if (pEffect && pEffect->Create(pCha->GetDefaultChaInfo()->BornEff)) {
 					pEffect->Emission(-1, &pCha->GetPos(), NULL);
 					pEffect->SetValid(TRUE);
 				}

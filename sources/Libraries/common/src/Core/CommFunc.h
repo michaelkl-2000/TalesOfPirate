@@ -94,25 +94,25 @@ inline int g_IsUseSeaLiveSkill(long lFitNo, CSkillRecord* p) {
 }
 
 inline bool g_IsPlyCtrlCha(int nChaCtrlType) {
-	if (nChaCtrlType == static_cast<char>(EChaCtrlType::PLAYER) || nChaCtrlType == static_cast<char>(EChaCtrlType::PLAYER_PET))
+	if (nChaCtrlType == EChaCtrlType::PLAYER || nChaCtrlType == EChaCtrlType::PLAYER_PET)
 		return true;
 	return false;
 }
 
 inline bool g_IsMonsCtrlCha(int nChaCtrlType) {
-	if (nChaCtrlType == static_cast<char>(EChaCtrlType::MONS)
-		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_TREE)
-		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_MINE)
-		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_FISH)
-		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_DBOAT)
-		|| nChaCtrlType == static_cast<char>(EChaCtrlType::MONS_REPAIRABLE)
+	if (nChaCtrlType == EChaCtrlType::MONS
+		|| nChaCtrlType == EChaCtrlType::MONS_TREE
+		|| nChaCtrlType == EChaCtrlType::MONS_MINE
+		|| nChaCtrlType == EChaCtrlType::MONS_FISH
+		|| nChaCtrlType == EChaCtrlType::MONS_DBOAT
+		|| nChaCtrlType == EChaCtrlType::MONS_REPAIRABLE
 	)
 		return true;
 	return false;
 }
 
 inline bool g_IsNPCCtrlCha(int nChaCtrlType) {
-	if (nChaCtrlType == static_cast<char>(EChaCtrlType::NPC) || nChaCtrlType == static_cast<char>(EChaCtrlType::NPC_EVENT))
+	if (nChaCtrlType == EChaCtrlType::NPC || nChaCtrlType == EChaCtrlType::NPC_EVENT)
 		return true;
 	return false;
 }

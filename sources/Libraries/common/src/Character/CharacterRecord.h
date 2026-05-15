@@ -17,14 +17,14 @@
 
 namespace Corsairs::Common::Character {
 
-enum class EChaModalType : std::int32_t {
+enum class EChaModalType : std::int8_t {
 	MAIN_CHA = 1,
 	BOAT,
 	EMPL,
 	OTHER,
 };
 
-enum class EChaCtrlType : std::int32_t {
+enum class EChaCtrlType : std::int8_t {
 	NONE			= 0,
 
 	PLAYER			= 1,
@@ -49,7 +49,7 @@ enum class EChaAiType : std::int32_t {
 	ATTACK_ACTIVE	= 2,
 };
 
-// Sentinel-байт для пустых ячеек массивов lItem/lTaskItem/sSkinInfo/sItemType (0xFF / -1).
+// Sentinel-байт для пустых ячеек массивов Item/TaskItem/SkinInfo/ItemType (0xFF / -1).
 inline constexpr std::int8_t kChaRecordKeyValue = static_cast<std::int8_t>(0xFF);
 
 inline constexpr std::size_t kChaSkinNum			= 8;
@@ -63,140 +63,138 @@ inline constexpr std::size_t kChaFeffNum			= 4;
 inline constexpr std::size_t kChaEffectActionNum	= 3;
 inline constexpr std::size_t kChaScalingNum			= 3;
 
+// TypeID и Name записи живут в базе EntityData (поля Id / DataName), здесь не дублируем.
 class ChaRecord : public EntityData
 {
 public:
-	long	lID;								//
-	std::string	szName;							//
-	std::string	szIconName;						//
-	char	chModalType;						//
-	char	chCtrlType;							//
-	short	sModel;								//
-	short	sSuitID;							//
-	short	sSuitNum;							//
-	std::array<short, kChaSkinNum>			sSkinInfo;			//
-	std::array<short, kChaFeffNum>			sFeffID;			// FeffID
-	short	sEeffID;							// EeffID
-	std::array<short, kChaEffectActionNum>	sEffectActionID;	// ,0-,1-,2-dummy
-	short	sShadow;							//
-    short   sActionID;                          //
-    char    chDiaphaneity;                      //
-	short	sFootfall;							//
-	short	sWhoop;								//
-	short	sDirge;								//
-	char	chControlAble;						//
-	//char	chMoveAble;							//
-	char	chTerritory;						//
-	short   sSeaHeight;							//
-	std::array<short, kChaItemKindNum>		sItemType;			//
-	float	fLengh;								//
-	float	fWidth;								//
-	float	fHeight;							//
-	short	sRadii;								//
-	std::array<char, kChaBirthEffectNum>	nBirthBehave;		//
-	std::array<char, kChaDieEffectNum>		nDiedBehave;		//
-    short   sBornEff;                           //
-    short   sDieEff;                            //
-	short	sDormancy;							//
-    char    chDieAction;                        //
-	std::array<int, kChaHpEffectNum>		_nHPEffect;			// hp
-	bool	_IsFace;							//
-	bool	_IsCyclone;							//
-	long	lScript;							// ID
-	long	lWeapon;							// ID
-	std::array<std::array<long, 2>, kChaInitSkillNum>	lSkill;		//
-	std::array<std::array<long, 2>, kChaInitItemNum>	lItem;		//
-	std::array<std::array<long, 2>, kChaInitItemNum>	lTaskItem;	//
-	long	lMaxShowItem;						//
-	float	fAllShow;							//
-	long	lPrefix;							//
-	long	lAiNo;								// AI
-	char	chCanTurn;							//
-	long	lVision;							//
-	long	lNoise;								//
-	long	lGetEXP;							// EXP
-	bool	bLight;								//
+	std::string		IconName;
+	EChaModalType	ModalType;
+	EChaCtrlType	CtrlType;
+	std::int16_t	Model;
+	std::int16_t	SuitID;
+	std::int16_t	SuitNum;
+	std::array<std::int16_t, kChaSkinNum>				SkinInfo;
+	std::array<std::int16_t, kChaFeffNum>				FeffID;
+	std::int16_t	EeffID;
+	std::array<std::int16_t, kChaEffectActionNum>		EffectActionID;
+	std::int16_t	Shadow;
+	std::int16_t	ActionId;
+	std::int8_t		Diaphaneity;
+	std::int16_t	Footfall;
+	std::int16_t	Whoop;
+	std::int16_t	Dirge;
+	std::int8_t		ControlAble;
+	std::int8_t		Territory;
+	std::int16_t	SeaHeight;
+	std::array<std::int16_t, kChaItemKindNum>			ItemType;
+	float			Length;			// (был fLengh — опечатка исправлена)
+	float			Width;
+	float			Height;
+	std::int16_t	Radii;
+	std::array<std::int8_t, kChaBirthEffectNum>			BirthBehave;
+	std::array<std::int8_t, kChaDieEffectNum>			DiedBehave;
+	std::int16_t	BornEff;
+	std::int16_t	DieEff;
+	std::int16_t	Dormancy;
+	std::int8_t		DieAction;
+	std::array<std::int32_t, kChaHpEffectNum>			HpEffect;
+	bool			_IsFace;		// (приватный геттер: IsFace())
+	bool			_IsCyclone;		// (приватный геттер: IsCyclone())
+	std::int32_t	Script;
+	std::int32_t	Weapon;
+	std::array<std::array<std::int32_t, 2>, kChaInitSkillNum>	Skill;
+	std::array<std::array<std::int32_t, 2>, kChaInitItemNum>	Item;
+	std::array<std::array<std::int32_t, 2>, kChaInitItemNum>	TaskItem;
+	std::int32_t	MaxShowItem;
+	float			AllShow;
+	std::int32_t	Prefix;
+	EChaAiType		AiNo;
+	std::int8_t		CanTurn;
+	std::int32_t	Vision;
+	std::int32_t	Noise;
+	std::int32_t	GetExp;
+	bool			Light;
 
-	long	lMobexp;// exp
-	long	lLv;	//
-	long	lMxHp;	// HP
-	long	lHp;	// HP
-	long	lMxSp;	// SP
-	long	lSp;	// SP
-	long	lMnAtk;	//
-	long	lMxAtk;	//
-	long	lPDef;	//
-	long	lDef;	//
-	long	lHit;	//
-	long	lFlee;	//
-	long	lCrt;	//
-	long	lMf;	//
-	long	lHRec;	// hp
-	long	lSRec;	// sp
-	long	lASpd;	//
-	long	lADis;	//
-	long	lCDis;	//
-	long	lMSpd;	//
-	long	lCol;	//
-	long	lStr;	// strength
-	long	lAgi;	// agility
-	long	lDex;	// dexterity
-	long	lCon;	// constitution	hp
-	long	lSta;	// stamina		sp
-	long	lLuk;	// luck
-	long	lLHandVal;	//
-	std::string	szGuild;						//
-	std::string	szTitle;						//
-	std::string	szJob;							//
-	std::int32_t	lCExp;	//
-	std::int32_t	lNExp;	//
-	long	lFame;	//
-	long	lAp;	//
-	long	lTp;	// technique point
-	long	lGd;	//
-	long	lSpri;	//
-	long	lStor;	// ()
-	long	lMxSail;	//
-	long	lSail;	//
-	long	lStasa;	//
-	long	lScsm;	//
+	std::int32_t	MobExp;
+	std::int32_t	Lv;
+	std::int32_t	MxHp;
+	std::int32_t	Hp;
+	std::int32_t	MxSp;
+	std::int32_t	Sp;
+	std::int32_t	MnAtk;
+	std::int32_t	MxAtk;
+	std::int32_t	PDef;
+	std::int32_t	Def;
+	std::int32_t	Hit;
+	std::int32_t	Flee;
+	std::int32_t	Crt;
+	std::int32_t	Mf;
+	std::int32_t	HRec;
+	std::int32_t	SRec;
+	std::int32_t	ASpd;
+	std::int32_t	ADis;
+	std::int32_t	CDis;
+	std::int32_t	MSpd;
+	std::int32_t	Col;
+	std::int32_t	Str;	// strength
+	std::int32_t	Agi;	// agility
+	std::int32_t	Dex;	// dexterity
+	std::int32_t	Con;	// constitution	hp
+	std::int32_t	Sta;	// stamina		sp
+	std::int32_t	Luk;	// luck
+	std::int32_t	LHandVal;
+	std::string		Guild;
+	std::string		Title;
+	std::string		Job;
+	std::int32_t	CExp;
+	std::int32_t	NExp;
+	std::int32_t	Fame;
+	std::int32_t	Ap;
+	std::int32_t	Tp;		// technique point
+	std::int32_t	Gd;
+	std::int32_t	Spri;
+	std::int32_t	Stor;
+	std::int32_t	MxSail;
+	std::int32_t	Sail;
+	std::int32_t	Stasa;
+	std::int32_t	Scsm;
 
-	long	lTStr;	//
-	long	lTAgi;	//
-	long	lTDex;	//
-	long	lTCon;	//
-	long	lTSta;	//
-	long	lTLuk;	//
-	long	lTMxHp;	//
-	long	lTMxSp;	//
-	long	lTAtk;	//
-	long	lTDef;	//
-	long	lTHit;	//
-	long	lTFlee;	//
-	long	lTMf;	//
-	long	lTCrt;	//
-	long	lTHRec;	// hp		hp
-	long	lTSRec;	// sp		sp
-	long	lTASpd;	//
-	long	lTADis;	//
-	long	lTSpd;	//
-	long	lTSpri;	//
-	long	lTScsm;	//
+	std::int32_t	TStr;
+	std::int32_t	TAgi;
+	std::int32_t	TDex;
+	std::int32_t	TCon;
+	std::int32_t	TSta;
+	std::int32_t	TLuk;
+	std::int32_t	TMxHp;
+	std::int32_t	TMxSp;
+	std::int32_t	TAtk;
+	std::int32_t	TDef;
+	std::int32_t	THit;
+	std::int32_t	TFlee;
+	std::int32_t	TMf;
+	std::int32_t	TCrt;
+	std::int32_t	THRec;
+	std::int32_t	TSRec;
+	std::int32_t	TASpd;
+	std::int32_t	TADis;
+	std::int32_t	TSpd;
+	std::int32_t	TSpri;
+	std::int32_t	TScsm;
 
 	// added by clp
-	std::array<float, kChaScalingNum>	scaling;
+	std::array<float, kChaScalingNum>	Scaling;
 
 public:
-	bool	HaveEffectFog() const				{ return _HaveEffectFog;			}
-	int		GetEffectFog( int i ) const			{ return _nHPEffect.at(i);			}
+	bool	HaveEffectFog() const				{ return _haveEffectFog;	}
+	int		GetEffectFog( int i ) const			{ return HpEffect.at(i);	}
 
-	bool	IsFace() const						{ return _IsFace;					}
-	bool	IsCyclone() const					{ return _IsCyclone;				}
+	bool	IsFace() const						{ return _IsFace;			}
+	bool	IsCyclone() const					{ return _IsCyclone;		}
 
-	void	RefreshPrivateData();				//
+	void	RefreshPrivateData();
 
 private:
-	bool	_HaveEffectFog;
+	bool	_haveEffectFog;
 
 };
 

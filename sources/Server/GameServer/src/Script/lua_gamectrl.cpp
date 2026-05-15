@@ -286,7 +286,7 @@ CCharacter* CreateChaNearPlayer(CCharacter* pCha, int nScriptID) {
 
 	AddMonsterHelp(nScriptID, Pos.X, Pos.Y);
 
-	CCharacter* pCCha = pCha->GetSubMap()->ChaSpawn(nScriptID, static_cast<char>(EChaCtrlType::NONE), 0, &Pos);
+	CCharacter* pCCha = pCha->GetSubMap()->ChaSpawn(nScriptID, EChaCtrlType::NONE, 0, &Pos);
 	if (pCCha) {
 		return pCCha;
 	}
@@ -310,7 +310,7 @@ CCharacter* CreateCha(int nScriptID, int x, int y, int sAngle, int lReliveTime) 
 
 	AddMonsterHelp(nScriptID, Pos.X, Pos.Y);
 
-	CCharacter* pCCha = g_pScriptMap->ChaSpawn(nScriptID, static_cast<char>(EChaCtrlType::NONE), (short)sAngle, &Pos);
+	CCharacter* pCCha = g_pScriptMap->ChaSpawn(nScriptID, EChaCtrlType::NONE, (short)sAngle, &Pos);
 	if (pCCha) {
 		pCCha->SetResumeTime(lReliveTime * 1000);
 		return pCCha;
@@ -332,7 +332,7 @@ CCharacter* CreateChaX(int nScriptID, int x, int y, int sAngle, int lReliveTime,
 
 	AddMonsterHelp(nScriptID, Pos.X, Pos.Y);
 
-	CCharacter* pCCha = pMainCha->m_submap->ChaSpawn(nScriptID, static_cast<char>(EChaCtrlType::NONE), (short)sAngle, &Pos);
+	CCharacter* pCCha = pMainCha->m_submap->ChaSpawn(nScriptID, EChaCtrlType::NONE, (short)sAngle, &Pos);
 	if (pCCha) {
 		pCCha->SetResumeTime(lReliveTime * 1000);
 		return pCCha;
@@ -356,7 +356,7 @@ CCharacter* CreateChaEx(int nScriptID, int x, int y, int sAngle, int lReliveTime
 
 	AddMonsterHelp(nScriptID, Pos.X, Pos.Y);
 
-	CCharacter* pCCha = pMap->ChaSpawn(nScriptID, static_cast<char>(EChaCtrlType::NONE), (short)sAngle, &Pos);
+	CCharacter* pCCha = pMap->ChaSpawn(nScriptID, EChaCtrlType::NONE, (short)sAngle, &Pos);
 	if (pCCha) {
 		pCCha->SetResumeTime(lReliveTime * 1000);
 		return pCCha;
@@ -613,14 +613,14 @@ void SetChaAIType(CCharacter* pCha, int nType) {
 //
 int GetChaTypeID(CCharacter* pCha) {
 	if (pCha && pCha->m_pCChaRecord)
-		return (int)pCha->m_pCChaRecord->lID;
+		return (int)pCha->m_pCChaRecord->Id;
 	return 0;
 }
 
 // ()
 int GetChaVision(CCharacter* pCha) {
 	if (pCha)
-		return (int)pCha->m_pCChaRecord->lVision;
+		return (int)pCha->m_pCChaRecord->Vision;
 	return 0;
 }
 
@@ -659,8 +659,8 @@ int GetChaSkillInfo_raw(lua_State* L) {
 		return 2;
 	}
 	int nLoc = *nLocResult;
-	lua_pushinteger(L, pCha->m_pCChaRecord->lSkill[nLoc][0]);
-	lua_pushinteger(L, pCha->m_pCChaRecord->lSkill[nLoc][1]);
+	lua_pushinteger(L, pCha->m_pCChaRecord->Skill[nLoc][0]);
+	lua_pushinteger(L, pCha->m_pCChaRecord->Skill[nLoc][1]);
 	return 2;
 }
 
@@ -1728,7 +1728,7 @@ CCharacter* SummonCha(CCharacter* pHost, int sType, int sChaInfoID) {
 	CCharacter* pCha = NULL;
 
 	if (sType == 1) {
-		pCha = pHost->GetSubMap()->ChaSpawn((short)sChaInfoID, static_cast<char>(EChaCtrlType::PLAYER_PET), rand() % 360, &Pos);
+		pCha = pHost->GetSubMap()->ChaSpawn((short)sChaInfoID, EChaCtrlType::PLAYER_PET, rand() % 360, &Pos);
 		if (pCha) {
 			pCha->m_HostCha = pHost;
 			pCha->SetPlayer(pHost->GetPlayer());
@@ -1737,7 +1737,7 @@ CCharacter* SummonCha(CCharacter* pHost, int sType, int sChaInfoID) {
 	}
 	else if (sType == 2) {
 		Pos.Move(rand() % 360, 3 * 100);
-		pCha = pHost->GetSubMap()->ChaSpawn((short)sChaInfoID, static_cast<char>(EChaCtrlType::PLAYER_PET), rand() % 360, &Pos);
+		pCha = pHost->GetSubMap()->ChaSpawn((short)sChaInfoID, EChaCtrlType::PLAYER_PET, rand() % 360, &Pos);
 		if (pCha) {
 			pCha->m_HostCha = pHost;
 			pCha->SetPlayer(pHost->GetPlayer());

@@ -467,8 +467,8 @@ bool CAttackState::_Start() {
 
 	// 
 	if (_pSkillInfo->GetDistance() > 0) {
-		_nTotalDis = _pSelf->GetDefaultChaInfo()->sRadii + _pSkillInfo->GetDistance();
-		if (_pTarget) _nTotalDis += _pTarget->GetDefaultChaInfo()->sRadii;
+		_nTotalDis = _pSelf->GetDefaultChaInfo()->Radii + _pSkillInfo->GetDistance();
+		if (_pTarget) _nTotalDis += _pTarget->GetDefaultChaInfo()->Radii;
 	}
 	else {
 		_nTotalDis = 0;
@@ -781,9 +781,9 @@ void CTraceAttackState::CheckTrace() {
 	if (_pSelf->GetDefaultSkillInfo() == _pSkillInfo && _IsTrace && _pTarget && _pTarget->IsEnabled() && _pTarget->
 		IsValid()) {
 		// 
-		if (_pSelf->GetDefaultChaInfo()->chTerritory != _pTarget->GetDefaultChaInfo()->chTerritory) {
+		if (_pSelf->GetDefaultChaInfo()->Territory != _pTarget->GetDefaultChaInfo()->Territory) {
 			if (!g_IsMoveAble(_pSelf->getChaCtrlType()
-							  , _pSelf->GetDefaultChaInfo()->chTerritory
+							  , _pSelf->GetDefaultChaInfo()->Territory
 							  , _pSelf->GetScene()->GetGridRegion(_pTarget->GetCurX() / 100, _pTarget->GetCurY() / 100))
 			)
 				return;

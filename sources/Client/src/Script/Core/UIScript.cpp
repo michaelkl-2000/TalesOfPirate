@@ -1220,14 +1220,14 @@ int UI_GridNodeAddItem(int nodeid, int itemid) {
 		if (stricmp(obj->GetItem()->GetString(), GetLanguageString(528).c_str()) == 0) {
 			CChaRecord* pInfo = GetChaRecordInfo(pHint->nTag);
 			if (pInfo) {
-				const std::string szBuf = std::format("{}.{}", pInfo->lID, pInfo->szName);
+				const std::string szBuf = std::format("{}.{}", pInfo->Id, pInfo->Name);
 				pHint->SetHint(szBuf.c_str());
 			}
 		}
 		else if (stricmp(obj->GetItem()->GetString(), GetLanguageString(532).c_str()) == 0) {
 			CMapInfo* pInfo = GetMapInfo(pHint->nTag);
 			if (pInfo) {
-				pHint->SetHint(pInfo->szName);
+				pHint->SetHint(pInfo->DataName);
 			}
 		}
 		else if (stricmp(obj->GetItem()->GetString(), GetLanguageString(530).c_str()) == 0) {
@@ -1236,7 +1236,7 @@ int UI_GridNodeAddItem(int nodeid, int itemid) {
 		else if (stricmp(obj->GetItem()->GetString(), GetLanguageString(529).c_str()) == 0) {
 			CEffectInfo* pInfo = GetEffectInfo(pHint->nTag);
 			if (pInfo) {
-				const std::string szBuf = std::format("{}.{}", pInfo->Id, pInfo->szName);
+				const std::string szBuf = std::format("{}.{}", pInfo->Id, pInfo->DataName);
 				pHint->SetHint(szBuf.c_str());
 			}
 		}

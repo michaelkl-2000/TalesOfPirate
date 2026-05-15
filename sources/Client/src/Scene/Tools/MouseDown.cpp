@@ -384,7 +384,7 @@ bool CMouseDown::ActAttackCha(CCharacter* pCha, CSkillRecord* pSkill, CCharacter
 	//{
 	//	int preMove = CWaitMoveState::GetPreMoveDis();
 	//	if( preMove<ATTACT_DIS ) preMove = ATTACT_DIS;
-	//	int nTotalDis = pCha->GetDefaultChaInfo()->sRadii + pSkill->GetDistance() + pTarget->GetDefaultChaInfo()->sRadii + preMove + ATTACT_DIS;
+	//	int nTotalDis = pCha->GetDefaultChaInfo()->Radii + pSkill->GetDistance() + pTarget->GetDefaultChaInfo()->Radii + preMove + ATTACT_DIS;
 	//	bool isLine = false;
 	//	if( g_cFindPath.Find( pCha->GetScene(), pTarget, pTarget->GetServerX(), pTarget->GetServerY(), pCha->GetServerX(), pCha->GetServerY(), isLine ) )
 	//	{
@@ -464,7 +464,7 @@ bool CMouseDown::ActAttackArea(CCharacter* pCha, CSkillRecord* pSkill, int nScrX
 	//{
 	//	int preMove = CWaitMoveState::GetPreMoveDis();
 	//	if( preMove<ATTACT_DIS ) preMove = ATTACT_DIS;
-	//	int nTotalDis = pCha->GetDefaultChaInfo()->sRadii + pSkill->GetDistance() + preMove + ATTACT_DIS;
+	//	int nTotalDis = pCha->GetDefaultChaInfo()->Radii + pSkill->GetDistance() + preMove + ATTACT_DIS;
 	//	bool isLine = false;
 	//	if( g_cFindPath.Find( pCha->GetScene(), pCha, nScrX, nScrY, pCha->GetServerX(), pCha->GetServerY(), isLine ) )
 	//	{
@@ -662,7 +662,7 @@ bool CMouseDown::ActDummyObj(CCharacter* pCha, int x, int y, int h, int t_angle,
 	}
 
 	int dx, dy;
-	GetAnglePos(x, y, pCha->GetDefaultChaInfo()->sRadii, t_angle, dx, dy);
+	GetAnglePos(x, y, pCha->GetDefaultChaInfo()->Radii, t_angle, dx, dy);
 
 	ActMove(pCha, dx, dy);
 

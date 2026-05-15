@@ -113,8 +113,8 @@ void CStartMgr::SetMonsterInfo() {
 
 	int max = 15;
 	for (int i = 0; i < kChaInitItemNum; i++) {
-		vect[i][0] = ((int)charInfo->lItem[i][0]);
-		vect[i][1] = (int)charInfo->lItem[i][1];
+		vect[i][0] = ((int)charInfo->Item[i][0]);
+		vect[i][1] = (int)charInfo->Item[i][1];
 		if (GetItemRecordInfo(vect[i][0]) == NULL) {
 			max = i;
 			break;
@@ -155,7 +155,7 @@ void CStartMgr::SetMonsterInfo() {
 	}
 
 	long chaLevel = g_pGameApp->GetCurScene()->GetMainCha()->getLv();
-	long mobLevel = charInfo->lLv;
+	long mobLevel = charInfo->Lv;
 	long levelDif = chaLevel - mobLevel;
 	double b = 1;
 
@@ -166,17 +166,17 @@ void CStartMgr::SetMonsterInfo() {
 		b = std::min<double>(4, 1 + abs(levelDif - 10) * 0.1);
 	}
 
-	double ExpAdd = floor(std::max<double>(1, charInfo->lCExp / b)) * g_ExpBonus;
-	LabMobLevel->SetCaption(std::format("{}", charInfo->lLv).c_str());
+	double ExpAdd = floor(std::max<double>(1, charInfo->CExp / b)) * g_ExpBonus;
+	LabMobLevel->SetCaption(std::format("{}", charInfo->Lv).c_str());
 	LabMobexp->SetCaption(std::format("{:.0f}", ExpAdd).c_str());
-	LabMobHP->SetCaption(std::format("{}", charInfo->lMxHp).c_str());
-	LabMobAttack->SetCaption(std::format("{}/{}", charInfo->lMnAtk, charInfo->lMxAtk).c_str());
-	LabMobHitRate->SetCaption(std::format("{}", charInfo->lHit).c_str());
-	LabMobDodge->SetCaption(std::format("{}", charInfo->lFlee).c_str());
-	LabMobDef->SetCaption(std::format("{}", charInfo->lDef).c_str());
-	LabMobPR->SetCaption(std::format("{}", charInfo->lPDef).c_str());
-	LabMobAtSpeed->SetCaption(std::format("{}", charInfo->lASpd).c_str());
-	LabMobMSpeed->SetCaption(std::format("{}", charInfo->lMSpd).c_str());
+	LabMobHP->SetCaption(std::format("{}", charInfo->MxHp).c_str());
+	LabMobAttack->SetCaption(std::format("{}/{}", charInfo->MnAtk, charInfo->MxAtk).c_str());
+	LabMobHitRate->SetCaption(std::format("{}", charInfo->Hit).c_str());
+	LabMobDodge->SetCaption(std::format("{}", charInfo->Flee).c_str());
+	LabMobDef->SetCaption(std::format("{}", charInfo->Def).c_str());
+	LabMobPR->SetCaption(std::format("{}", charInfo->PDef).c_str());
+	LabMobAtSpeed->SetCaption(std::format("{}", charInfo->ASpd).c_str());
+	LabMobMSpeed->SetCaption(std::format("{}", charInfo->MSpd).c_str());
 
 	frmMonsterInfo->Refresh();
 }
@@ -2021,10 +2021,10 @@ void CStartMgr::_evtCheckLootFilter(CGuiData* pSender) {
 	bool bCheck = chkDrop->GetIsChecked();
 
 	if (bCheck) {
-		g_pGameApp->SysInfo(std::format("Loot Filter: {} is now visible", pInfo->szName));
+		g_pGameApp->SysInfo(std::format("Loot Filter: {} is now visible", pInfo->DataName));
 	}
 	else {
-		g_pGameApp->SysInfo(std::format("Loot Filter: {} is now hidden", pInfo->szName));
+		g_pGameApp->SysInfo(std::format("Loot Filter: {} is now hidden", pInfo->DataName));
 	}
 	pScene->FilterItemsByItemID(itemId, !bCheck);
 }

@@ -920,7 +920,7 @@ void CMemoEx::ParseMisPage() {
 				}
 				else {
 					strTemp += GetLanguageString(707);
-					strTemp += pInfo->szName;
+					strTemp += pInfo->Name;
 					strTemp += GetLanguageString(708);
 				}
 				{

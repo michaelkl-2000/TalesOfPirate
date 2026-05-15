@@ -244,7 +244,7 @@ void CItemCommand::SaleRender(int x, int y, int nWidth, int nHeight) {
 		int itemID = price - (quantity * 100000);
 		CItemRecord* pInfo = GetItemRecordInfo(itemID);
 		if (pInfo) {
-			priceBuf = std::format("{}x {}", quantity, pInfo->szName);
+			priceBuf = std::format("{}x {}", quantity, pInfo->DataName);
 		}
 		else {
 			priceBuf = std::format("{}x Invalid ID [ {}]", quantity, itemID);
@@ -1185,7 +1185,7 @@ void CItemCommand::AddHint(int x, int y) {
 
 			std::string tradeStr;
 			if (pInfo) {
-				tradeStr = std::format("Trade Value: {}x {}", num, pInfo->szName);
+				tradeStr = std::format("Trade Value: {}x {}", num, pInfo->DataName);
 			}
 			else {
 				tradeStr = std::format("Trade Value: {}x [Unknown]", num);
@@ -1242,7 +1242,7 @@ void CItemCommand::AddHint(int x, int y) {
 
 			std::string tradeStr;
 			if (pInfo) {
-				tradeStr = std::format("Trade Value: {}x {}", num, pInfo->szName);
+				tradeStr = std::format("Trade Value: {}x {}", num, pInfo->DataName);
 			}
 			else {
 				tradeStr = std::format("Trade Value: {}x [Unknown]", num);
@@ -1508,7 +1508,7 @@ void CItemCommand::AddHint(int x, int y) {
 
 		std::string tradeStr;
 		if (pInfo) {
-			tradeStr = std::format("Trade Value: {}x {}", num, pInfo->szName);
+			tradeStr = std::format("Trade Value: {}x {}", num, pInfo->DataName);
 		}
 		else {
 			tradeStr = std::format("Trade Value: {}x [Unknown]", num);
@@ -2262,7 +2262,7 @@ void CItemCommand::_ShowBody(CItemRecord* _pItem2) {
 	}
 	str << '\0';
 
-	int nBodyType = g_stUIBoat.GetHuman()->GetDefaultChaInfo()->lID;
+	int nBodyType = g_stUIBoat.GetHuman()->GetDefaultChaInfo()->Id;
 	PushHint(str.str(), _pItem->IsAllowEquip(nBodyType) ? GENERIC_COLOR : VALID_COLOR);
 }
 
@@ -2289,7 +2289,7 @@ void CItemCommand::_ShowFusionBody(CItemRecord* pEquipItem) {
 	}
 	str << '\0';
 
-	int nBodyType = g_stUIBoat.GetHuman()->GetDefaultChaInfo()->lID;
+	int nBodyType = g_stUIBoat.GetHuman()->GetDefaultChaInfo()->Id;
 	PushHint(str.str(), _pItem->IsAllowEquip(nBodyType) ? GENERIC_COLOR : VALID_COLOR);
 }
 

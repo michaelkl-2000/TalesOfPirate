@@ -154,7 +154,7 @@ namespace mission {
 		boatMsg.cmd = sCmd;
 		boatMsg.boatId = dwBoatID;
 		boatMsg.boatName = AttrInfo.szName;
-		boatMsg.shipName = pInfo->szName;
+		boatMsg.shipName = pInfo->DataName;
 		boatMsg.shipDesc = pInfo->szDesp;
 		boatMsg.berthName = Data.szBerth;
 		boatMsg.isUpdate = pInfo->byIsUpdate;
@@ -763,8 +763,8 @@ namespace mission {
 		if (!owner.TakeMoney("", Info.dwMoney)) {
 			pBoat->Free();
 			owner.SetBoat(NULL);
-			//owner.SystemNotice( "%s%d", pInfo->szName, Info.dwMoney );
-			owner.SystemNotice(RES_STRING(GM_CHARBOAT_CPP_00024), pInfo->szName, Info.dwMoney);
+			//owner.SystemNotice( "%s%d", pInfo->DataName, Info.dwMoney );
+			owner.SystemNotice(RES_STRING(GM_CHARBOAT_CPP_00024), pInfo->DataName, Info.dwMoney);
 			return TRUE;
 		}
 
@@ -816,7 +816,7 @@ namespace mission {
 		}
 
 		// ID
-		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
+		pBoat->setAttr(ATTR_CHATYPE, EChaCtrlType::PLAYER);
 		pBoat->setAttr(ATTR_BOAT_DBID, SGridCont.lDBParam[enumITEMDBP_INST_ID]);
 		pBoat->setAttr(ATTR_BOAT_DIECOUNT, 0);
 		pBoat->setAttr(ATTR_BOAT_ISDEAD, 0);
@@ -843,9 +843,9 @@ namespace mission {
 		pBoat->m_pCChaRecord = pRec;
 		pBoat->m_CChaAttr.Init(pInfo->sCharID, FALSE);
 		pBoat->SetID(g_pGameApp->m_Ident.GetID());
-		pBoat->SetRadius(pBoat->m_pCChaRecord->sRadii);
+		pBoat->SetRadius(pBoat->m_pCChaRecord->Radii);
 		pBoat->SetShip(g_pGameApp->m_CabinPool.Get());
-		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
+		pBoat->setAttr(ATTR_CHATYPE, EChaCtrlType::PLAYER);
 		pBoat->EnrichSkillBag();
 
 		if (!SetPartData(*pBoat, pInfo->sCharID, Data)) {
@@ -1014,7 +1014,7 @@ namespace mission {
 		}
 
 		pBoat->setAttr(ATTR_BOAT_DBID, -1);
-		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::MONS));
+		pBoat->setAttr(ATTR_CHATYPE, EChaCtrlType::MONS);
 
 		BOAT_DATA Info;
 		memset(&Info, 0, sizeof(BOAT_DATA));
@@ -1029,7 +1029,7 @@ namespace mission {
 						 Info.sBoat);
 			return FALSE;
 		}
-		pBoat->SetName(pInfo->szName);
+		pBoat->SetName(pInfo->DataName);
 
 		BYTE byIndex = 0;
 		if (pInfo->sNumHeader > 1) {
@@ -1130,7 +1130,7 @@ namespace mission {
 			return FALSE;
 		}
 		pBoat->setAttr(ATTR_BOAT_DBID, dwBoatID);
-		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
+		pBoat->setAttr(ATTR_CHATYPE, EChaCtrlType::PLAYER);
 
 		if (!game_db.GetBoat(*pBoat)) {
 			pBoat->Free();
@@ -1178,9 +1178,9 @@ namespace mission {
 		pBoat->m_pCChaRecord = pRec;
 		pBoat->m_CChaAttr.Init(pInfo->sCharID, FALSE);
 		pBoat->SetID(g_pGameApp->m_Ident.GetID());
-		pBoat->SetRadius(pBoat->m_pCChaRecord->sRadii);
+		pBoat->SetRadius(pBoat->m_pCChaRecord->Radii);
 		pBoat->SetShip(g_pGameApp->m_CabinPool.Get());
-		pBoat->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::PLAYER));
+		pBoat->setAttr(ATTR_CHATYPE, EChaCtrlType::PLAYER);
 		pBoat->EnrichSkillBag();
 
 		if (!SetPartData(*pBoat, pInfo->sCharID, Info)) {

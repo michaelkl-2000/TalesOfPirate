@@ -33,7 +33,7 @@ bool CReadyDieState::_Start() {
 	if (_pCha->IsMainCha()) {
 		g_stUIStart.MainChaDied();
 	}
-	else if (_pAttack && _pCha->GetDefaultChaInfo()->chDieAction == 1) {
+	else if (_pAttack && _pCha->GetDefaultChaInfo()->DieAction == 1) {
 		if ((rand() % 9) == 0) {
 			_pArcTrack = new CArcTrack;
 
@@ -71,7 +71,7 @@ void CReadyDieState::_Died() {
 	_pCha->PlayPose(POSE_DIE, PLAY_ONCE);
 
 	if (_pCha->GetCurPoseKeyFrameNum() <= 0) {
-		_pCha->SelfEffect(_pCha->GetDefaultChaInfo()->sDieEff);
+		_pCha->SelfEffect(_pCha->GetDefaultChaInfo()->DieEff);
 		_IsAlreadyEffect = true;
 	}
 }
@@ -103,7 +103,7 @@ void CReadyDieState::FrameMove() {
 	if (_eDieState == enumFallDown) {
 		_nFallDownTime++;
 		if (_nFallDownTime == _nDelayTime) {
-			_pCha->PlayAni(_pCha->GetDefaultChaInfo()->nDiedBehave.data(), kChaDieEffectNum);
+			_pCha->PlayAni(_pCha->GetDefaultChaInfo()->DiedBehave.data(), kChaDieEffectNum);
 			PopState();
 		}
 	}
@@ -113,7 +113,7 @@ void CReadyDieState::ActionFrame(DWORD pose_id, int key_frame) {
 	switch (_eDieState) {
 	case enumDie:
 		if (!_IsAlreadyEffect) {
-			_pCha->SelfEffect(_pCha->GetDefaultChaInfo()->sDieEff);
+			_pCha->SelfEffect(_pCha->GetDefaultChaInfo()->DieEff);
 			_pCha->GetStateMgr()->ChaDied();
 			_IsAlreadyEffect = true;
 		}

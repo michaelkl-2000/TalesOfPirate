@@ -202,12 +202,12 @@ namespace mission
 		SetLogName(szLogName);
 
 		m_pCChaRecord = (CChaRecord*)&recChar;
-		m_cat = (short)m_pCChaRecord->lID;
+		m_cat = (short)m_pCChaRecord->Id;
 		m_byShowType = recNpc.byShowType;
 		SetAngle( recNpc.sDir );
 
 		m_CChaAttr.Init( recNpc.sCharID );
-		setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::NPC));
+		setAttr(ATTR_CHATYPE, EChaCtrlType::NPC);
 		
 		return TRUE;
 	}

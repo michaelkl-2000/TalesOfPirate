@@ -148,16 +148,16 @@ bool RegisterRecordScript() {
 	// --- CChaRecord ---
 	luabridge::getGlobalNamespace(L)
 		.beginClass<ChaRecord>("CChaRecord")
-			.addFunction("GetID",         +[](ChaRecord* self) -> int         { return static_cast<int>(self->lID); })
-			.addFunction("GetName",       +[](ChaRecord* self) -> std::string { return self->szName; })
-			.addFunction("GetLevel",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->lLv); })
-			.addFunction("GetHp",         +[](ChaRecord* self) -> int         { return static_cast<int>(self->lHp); })
-			.addFunction("GetMaxHp",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->lMxHp); })
-			.addFunction("GetSp",         +[](ChaRecord* self) -> int         { return static_cast<int>(self->lSp); })
-			.addFunction("GetMaxSp",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->lMxSp); })
-			.addFunction("GetCtrlType",   +[](ChaRecord* self) -> int         { return static_cast<int>(self->chCtrlType); })
-			.addFunction("GetModalType",  +[](ChaRecord* self) -> int         { return static_cast<int>(self->chModalType); })
-			.addFunction("GetExpReward",  +[](ChaRecord* self) -> int         { return static_cast<int>(self->lGetEXP); })
+			.addFunction("GetID",         +[](ChaRecord* self) -> int         { return self->Id; })
+			.addFunction("GetName",       +[](ChaRecord* self) -> std::string { return self->DataName; })
+			.addFunction("GetLevel",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->Lv); })
+			.addFunction("GetHp",         +[](ChaRecord* self) -> int         { return static_cast<int>(self->Hp); })
+			.addFunction("GetMaxHp",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->MxHp); })
+			.addFunction("GetSp",         +[](ChaRecord* self) -> int         { return static_cast<int>(self->Sp); })
+			.addFunction("GetMaxSp",      +[](ChaRecord* self) -> int         { return static_cast<int>(self->MxSp); })
+			.addFunction("GetCtrlType",   +[](ChaRecord* self) -> int         { return static_cast<int>(self->CtrlType); })
+			.addFunction("GetModalType",  +[](ChaRecord* self) -> int         { return static_cast<int>(self->ModalType); })
+			.addFunction("GetExpReward",  +[](ChaRecord* self) -> int         { return static_cast<int>(self->GetExp); })
 		.endClass();
 
 	// --- CSkillRecord ---
@@ -176,7 +176,7 @@ bool RegisterRecordScript() {
 			.addFunction("GetFightType",      +[](CSkillRecord* self) -> int         { return static_cast<int>(self->chFightType); })
 			.addFunction("GetPointExpend",    +[](CSkillRecord* self) -> int         { return static_cast<int>(self->chPointExpend); })
 			.addFunction("GetAngle",          +[](CSkillRecord* self) -> int         { return static_cast<int>(self->sAngle); })
-			.addFunction("GetRadii",          +[](CSkillRecord* self) -> int         { return static_cast<int>(self->sRadii); })
+			.addFunction("GetRadii",          +[](CSkillRecord* self) -> int         { return static_cast<int>(self->Radii); })
 		.endClass();
 
 	// --- CSkillStateRecord ---

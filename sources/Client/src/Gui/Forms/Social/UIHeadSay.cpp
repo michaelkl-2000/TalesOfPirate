@@ -247,7 +247,7 @@ void CHeadSay::RenderStateIcons(CCharacter* cha, int x, int y, float scale, floa
 void CHeadSay::Render(D3DXVECTOR3& pos) {
 	static int x = 0, y = 0;
 	static int nSayTotalWidth = 32 * ui::GetWidth("a"); //32
-	g_Render.WorldToScreen(pos.x, pos.y, pos.z + _pOwn->GetDefaultChaInfo()->fHeight, &x, &y);
+	g_Render.WorldToScreen(pos.x, pos.y, pos.z + _pOwn->GetDefaultChaInfo()->Height, &x, &y);
 
 	/*
 	if(_pOwn->getHumanID() == g_stUIStart.targetInfoID && g_stUIStart.frmTargetInfo->GetIsShow()){

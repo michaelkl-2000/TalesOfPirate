@@ -154,10 +154,10 @@ protected:
 
 private:
 	// Вспомогательные функции для парсинга TEXT-массивов
-	static void ParseShortArray(std::string_view text, short* out, int maxLen, short defaultVal = 0);
-	static void ParseLongArray(std::string_view text, long* out, int maxLen, long defaultVal = 0);
-	static void ParseCharArray(std::string_view text, char* out, int maxLen);
-	static void ParseIntArray(std::string_view text, int* out, int maxLen);
+	static void ParseShortArray(std::string_view text, std::int16_t* out, int maxLen, std::int16_t defaultVal = 0);
+	static void ParseLongArray(std::string_view text, std::int32_t* out, int maxLen, std::int32_t defaultVal = 0);
+	static void ParseCharArray(std::string_view text, std::int8_t* out, int maxLen);
+	static void ParseIntArray(std::string_view text, std::int32_t* out, int maxLen);
 	static void ParseFloatArray(std::string_view text, float* out, int maxLen);
 
 	// Сериализация массивов в строку через запятую

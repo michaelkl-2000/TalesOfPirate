@@ -378,7 +378,7 @@ void CMissionTrigger::Exec() {
 
 	CChaRecord* pCharRecord = GetChaRecordInfo(_pData->sID);
 	if (pCharRecord) {
-		strncpy(szData, pCharRecord->szName.c_str(), sizeof(szData));
+		strncpy(szData, pCharRecord->Name.c_str(), sizeof(szData));
 	}
 	g_pGameApp->ShowMidText(SafeVFormat(GetLanguageString(3), std::string_view(szData),
 											  static_cast<int>(_pData->sCount),

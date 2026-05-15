@@ -608,7 +608,7 @@ namespace GUI {
 			//
 			// 
 			bool bAllowEquip = false;
-			DWORD dwBodyType = m_pCurrMainCha->GetDefaultChaInfo()->lID;
+			DWORD dwBodyType = m_pCurrMainCha->GetDefaultChaInfo()->Id;
 
 			if (0 <= m_nCurSel && m_nCurSel < STORE_PAGE_SIZE) {
 				bool leftHand = true;

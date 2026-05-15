@@ -393,7 +393,7 @@ BOOL CGameApp::Init() {
 	g_pCSystemCha->SetID(m_Ident.GetID());
 	//g_pCSystemCha->SetName("");
 	g_pCSystemCha->SetName(RES_STRING(GM_GAMEAPP_CPP_00018));
-	g_pCSystemCha->setAttr(ATTR_CHATYPE, static_cast<char>(EChaCtrlType::NONE), 1);
+	g_pCSystemCha->setAttr(ATTR_CHATYPE, EChaCtrlType::NONE, 1);
 
 	//LG("init", "Entity\n");
 	ToLogService("common", "start to assign every Entity memory");

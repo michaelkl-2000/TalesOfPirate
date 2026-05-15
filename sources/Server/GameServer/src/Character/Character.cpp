@@ -310,13 +310,13 @@ bool CCharacter::IsPlayerFocusCha(void)
 
 bool CCharacter::IsPlayerOwnCha(void)
 {
-	return IsPlayerCha() && (getAttr(ATTR_CHATYPE) == static_cast<char>(EChaCtrlType::PLAYER));
+	return IsPlayerCha() && (getAttr(ATTR_CHATYPE) == EChaCtrlType::PLAYER);
 }
 
 void CCharacter::WriteInt64PartInfo(Corsairs::Net::WPacket& packet)
 {
 	packet.WriteSequence((const char*)&this->m_SChaPart, sizeof(this->m_SChaPart));
-	packet.WriteInt64(m_pCChaRecord->lID);
+	packet.WriteInt64(m_pCChaRecord->Id);
 }
 
 //=============================================================================
@@ -574,7 +574,7 @@ void CCharacter::OnEndSeen(CCharacter *pCCha)
 
 	//  :
 	auto pk = Corsairs::Net::Msg::serialize(Corsairs::Net::Msg::McChaEndSeeMessage{
-		(GetPlayer() && GetPlayer() == pCCha->GetPlayer() && getAttr(ATTR_CHATYPE) == static_cast<char>(EChaCtrlType::PLAYER))
+		(GetPlayer() && GetPlayer() == pCCha->GetPlayer() && getAttr(ATTR_CHATYPE) == EChaCtrlType::PLAYER)
 			? enumENTITY_SEEN_SWITCH : enumENTITY_SEEN_NEW,
 		m_ID
 	});
@@ -1575,7 +1575,7 @@ void CCharacter::SubsequenceMove()
 	if (GetMoveState() != enumMSTATE_ON)
 	{
 		SetExistState(GetMoveStopState());
-		if (GetMoveStopState() == enumEXISTS_SLEEPING && m_pCChaRecord->sDormancy == 0)
+		if (GetMoveStopState() == enumEXISTS_SLEEPING && m_pCChaRecord->Dormancy == 0)
 		{
 			// LG("host", "[%s] move to sleep end, set waiting\n", GetName());
 			SetExistState(enumEXISTS_WAITING);
@@ -2162,7 +2162,7 @@ BOOL CCharacter::ConvoyNpc( WORD wRoleID, BYTE byIndex, WORD wNpcCharID, BYTE by
 		pos = GetPos();
 		pos.X += rand()%100;
 		pos.Y += rand()%100;
-		CCharacter* pNpc = this->GetSubMap()->ChaSpawn( wNpcCharID, static_cast<char>(EChaCtrlType::NPC), rand()%360, &pos, TRUE );
+		CCharacter* pNpc = this->GetSubMap()->ChaSpawn( wNpcCharID, EChaCtrlType::NPC, rand()%360, &pos, TRUE );
 		if( !pNpc )
 		{
 			return FALSE;
@@ -3764,7 +3764,7 @@ BOOL CCharacter::TakeRandNpcItem( WORD wRoleID, WORD wNpcID, const char szNpc[] 
 		//	CNpcRecord* pRec = m_submap->GetNpcInfo( wNpcID );
 		//	if( pRec )
 		//	{
-		//		strncpy( szNpc, pRec->szName, NPC_MAXSIZE_NAME - 1 );
+		//		strncpy( szNpc, pRec->DataName, NPC_MAXSIZE_NAME - 1 );
 		//	}
 		//}
 
@@ -4259,10 +4259,10 @@ int16_t CCharacter::CanEquipItemNew(int16_t sItemID1, int16_t sItemID2 )
 	CItemRecord* pItem2 = ( sItemID2 > 0 ) ? GetItemRecordInfo( sItemID2 ) : NULL;
 
 	if( !pItem1 ) return enumITEMOPT_ERROR_NONE;
-	if( !pItem1->IsAllowEquip( m_pCChaRecord->lID ) ) {
+	if( !pItem1->IsAllowEquip( m_pCChaRecord->Id ) ) {
 		return enumITEMOPT_ERROR_BODY;
 	}
-	if( pItem2 && !pItem2->IsAllowEquip( m_pCChaRecord->lID ) )	{
+	if( pItem2 && !pItem2->IsAllowEquip( m_pCChaRecord->Id ) )	{
 		return enumITEMOPT_ERROR_BODY;
 	}
 
@@ -4332,7 +4332,7 @@ int16_t CCharacter::CanEquipItem(SItemGrid* pSEquipIt)
 		return enumITEMOPT_ERROR_NONE;
 
 	CItemRecord	*pCItemRec = GetItemRecordInfo(pSEquipIt->sID);
-	if (!pCItemRec->IsAllowEquip(m_pCChaRecord->lID))
+	if (!pCItemRec->IsAllowEquip(m_pCChaRecord->Id))
 		return enumITEMOPT_ERROR_BODY;
 
 	if (m_CChaAttr.GetAttr(ATTR_LV) < pCItemRec->sNeedLv) {
@@ -4358,7 +4358,7 @@ int16_t CCharacter::CanEquipItem(int16_t sItemID)
 	{
 		return enumITEMOPT_ERROR_NONE;
 	}
-	if (!pCItemRec->IsAllowEquip(m_pCChaRecord->lID))
+	if (!pCItemRec->IsAllowEquip(m_pCChaRecord->Id))
 	{
 		//ColourNotice(0xBC0000, "Unable to equip %s", pCItemRec->szName);
 		return enumITEMOPT_ERROR_BODY;
@@ -7735,7 +7735,7 @@ bool CCharacter::ForgeAction(bool bLock)  { return SetNarmalSkillState(bLock, SS
 void                 CCharacter::SetTradeData(mission::CTradeData* pData) { m_pTradeData = pData; }
 mission::CTradeData* CCharacter::GetTradeData()                           { return m_pTradeData; }
 
-bool CCharacter::IsBoat(void)         { return m_pCChaRecord->chModalType == static_cast<char>(EChaModalType::BOAT); }
+bool CCharacter::IsBoat(void)         { return m_pCChaRecord->ModalType == EChaModalType::BOAT; }
 bool CCharacter::HasTradeAction(void) { return m_CSkillState.HasState(85); }
 
 bool      CCharacter::GetActControl(Corsairs::Common::Character::ActControl ctrlType) const { return _actControl[std::to_underlying(ctrlType)]; }

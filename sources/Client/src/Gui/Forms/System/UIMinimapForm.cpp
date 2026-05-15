@@ -364,7 +364,7 @@ void CMiniMapMgr::_RadarFormBeforeShowEvent(CForm* pForm, bool& IsShow) {
 		for (; i < maxItemNum; i++) {
 			CItemRow* pItemRow = cboAddr->GetList()->GetItems()->GetItem(i);
 			if (pItemRow) {
-				if (std::string_view(pMapInfo->szName) == pItemRow->GetBegin()->GetString())
+				if (std::string_view(pMapInfo->DataName) == pItemRow->GetBegin()->GetString())
 					break;
 			}
 		}
@@ -804,10 +804,10 @@ void CMiniMapMgr::_RenderBigMapHint(void) {
 				pMonsterInfo[i] = GetChaRecordInfo(pInfo->nMonsterList[i]);
 				if (!pMonsterInfo[i]) continue;
 
-				nLevelSum += pMonsterInfo[i]->lLv;
+				nLevelSum += pMonsterInfo[i]->Lv;
 				nMonCount++;
 
-				strMonsterName[i] = std::format(" {}. {}   LV:{:2} ", nMonCount, pMonsterInfo[i]->szName, pMonsterInfo[i]->lLv);
+				strMonsterName[i] = std::format(" {}. {}   LV:{:2} ", nMonCount, pMonsterInfo[i]->Name, pMonsterInfo[i]->Lv);
 
 				SIZE size;
 				FontManager::Instance().Get(FontSlot::TipText)->GetTextSize(strMonsterName[i].c_str(), &size);

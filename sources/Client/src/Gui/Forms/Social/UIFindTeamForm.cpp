@@ -132,7 +132,7 @@ namespace GUI {
 
 			CMapInfo* pMapInfo = GetMapInfo(szPlace);
 			if (pMapInfo) {
-				labPlace[nSeq]->SetCaption(pMapInfo->szName);
+				labPlace[nSeq]->SetCaption(pMapInfo->DataName);
 				labPlace[nSeq]->SetIsShow(true);
 			}
 			else {

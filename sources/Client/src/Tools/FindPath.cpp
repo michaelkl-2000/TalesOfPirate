@@ -370,7 +370,7 @@ BYTE* CFindPath::GetTempTerrain(CGameScene* pScene, CCharacter* pCha, int iCurX,
 	int tm = iCurX - iRadius;
 	int tn = iCurY - iRadius;
 
-	char Territory = pCha->GetDefaultChaInfo()->chTerritory;
+	char Territory = pCha->GetDefaultChaInfo()->Territory;
 
 	MPTerrain* pTer = pScene->GetTerrain();
 	if (!pTer) return _byTempBlock.get();
@@ -475,7 +475,7 @@ BOOL CFindPath::FindPath(CGameScene* pScene, CCharacter* pCha, int nSelfX, int n
 	int nCurX = nSelfX;
 	int nCurY = nSelfY;
 
-	int iRange = pCha->GetDefaultChaInfo()->sRadii * 2;
+	int iRange = pCha->GetDefaultChaInfo()->Radii * 2;
 
 	int nx = nCurX / 100;
 	int ny = nCurY / 100;
@@ -821,7 +821,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -842,7 +842,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -865,7 +865,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -886,7 +886,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -916,7 +916,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -940,7 +940,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -964,7 +964,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -991,7 +991,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -1015,7 +1015,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -1039,7 +1039,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -1066,7 +1066,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -1090,7 +1090,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -1114,7 +1114,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -1141,7 +1141,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -1165,7 +1165,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
@@ -1189,7 +1189,7 @@ void CFindPathEx::CalculateGuideStraight() {
 			while (1) {
 				if (!pScene->GetTerrain()->GetBlock()->IsGridBlock(TempX * 2, TempY * 2)) {
 					if (!g_IsMoveAble(pScene->GetMainCha()->getChaCtrlType(),
-									  pScene->GetMainCha()->GetDefaultChaInfo()->chTerritory,
+									  pScene->GetMainCha()->GetDefaultChaInfo()->Territory,
 									  (EAreaMask)pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(
 										  TempX * 50 / 100, TempY * 50 / 100))) {
 						short sRegion = pScene->GetTerrain()->GetBlock()->GetTileRegionAttr(

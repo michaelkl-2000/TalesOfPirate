@@ -294,6 +294,16 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return 0;
 	}
 
+	// Sets a mutex so only one gameclient can be ran per PC
+	HANDLE hSingleInstance = ::CreateMutexW(nullptr, TRUE, L"Global\\TalesOfPirates.SingleInstance");
+	if (hSingleInstance == nullptr || ::GetLastError() == ERROR_ALREADY_EXISTS) {
+		MessageBox(NULL, GetLanguageString(193).c_str(), GetLanguageString(190).c_str(), MB_OK | MB_ICONINFORMATION);
+		if (hSingleInstance != nullptr) {
+			::CloseHandle(hSingleInstance);
+		}
+		return 0;
+	}
+
 	int autoLog = (int)strParam.find("autolog:");
 	if (autoLog != -1) {
 		std::string strAuto = strParam.substr(autoLog + 8, strParam.length());

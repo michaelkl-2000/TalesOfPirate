@@ -16,7 +16,7 @@ BOOL CTradeLogDB::Init()
 		}
 
 		try {
-			static const char* s_szDsn = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=gamedb;Trusted_Connection=Yes;";
+			static const char* s_szDsn = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=AUTUMN\\SQLEXPRESS;DATABASE=gamedb;Trusted_Connection=Yes;";
 			ToLogService("common", "TradeLogDB: connecting [{}]...", s_szDsn);
 			_db.Open(s_szDsn);
 			ToLogService("common", "TradeLogDB: connected");

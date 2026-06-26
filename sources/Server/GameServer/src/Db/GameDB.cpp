@@ -1212,7 +1212,7 @@ bool CGameDB::Init() {
 	m_bInitOK = false;
 
 	static const char* s_szDsn =
-		"DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=gamedb;Trusted_Connection=Yes;";
+		"DRIVER={ODBC Driver 17 for SQL Server};SERVER=AUTUMN\\SQLEXPRESS;DATABASE=gamedb;Trusted_Connection=Yes;";
 	ToLogService("db", "Connecting database [{}]...", s_szDsn);
 
 	try {

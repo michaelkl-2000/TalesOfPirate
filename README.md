@@ -70,11 +70,14 @@ The project is a hybrid **C++23 / .NET 10** codebase:
 
 ## Build
 
+### NEW BUILDS BOTH CPP AND DOTNET PROJECTS
+### Open TalesOfPirate.sln in VS -- release / x64 -- build solution
+
 ### C++ (entire solution)
+### OLD
 ```bash
 msbuild sources/TalesOfPirates.sln /p:Configuration=Release /p:Platform=Win32
 ```
-
 ### .NET projects
 ```bash
 dotnet build sources/Dotnet --configuration Release
@@ -83,10 +86,17 @@ dotnet build sources/Dotnet --configuration Release
 ### Run .NET servers
 ```bash
 dotnet run --project sources/Dotnet/Servers/Account/Corsairs.AccountServer
-dotnet run --project sources/Dotnet/Servers/Gate/Corsairs.GateServer
 dotnet run --project sources/Dotnet/Servers/Group/Corsairs.GroupServer
+dotnet run --project sources/Dotnet/Servers/Gate/Corsairs.GateServer
 dotnet run --project sources/Dotnet/Admin/Corsairs.Admin.Web
 ```
+
+### DB STRINGS
+GameServer  GameDB.cpp 1215
+            TradeLogDB 19
+
+AccountServer appsettings.json
+GroupServer appsettings.json
 
 ### Tests
 ```bash

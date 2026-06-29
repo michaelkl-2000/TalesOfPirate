@@ -276,32 +276,29 @@ namespace Corsairs::Util {
 		_logsQueue.push(logEntry);
 	}
 
-	//  Выделение Win32-консоли для GUI-приложения. Без этого std::cout уходит
-	//  в никуда. Запускается при первом включении глобальной консоли; повторные
-	//  вызовы — no-op.
+	// Allocates a Win32 console. If no console is allocated std::cout wont have anything to write to.
+	// Only one Win32 console is created. Repeated calls wont allocated multiple consoles.
+	// If ran from cmd the cmd becomes the console.
 	static void EnsureWin32Console() {
 		static std::once_flag s_consoleOnce{};
 		std::call_once(s_consoleOnce, []() {
-			//  Если у процесса уже есть консоль (например, запущен из cmd) —
-			//  AttachConsole сам подцепит её; иначе AllocConsole создаёт новую.
 			if (::GetConsoleWindow() == nullptr) {
 				if (!::AttachConsole(ATTACH_PARENT_PROCESS)) {
 					::AllocConsole();
 				}
 			}
 
-			::SetConsoleTitleA("TalesOfPirate — log console");
+			::SetConsoleTitleA("TalesOfPirates — log console");
 			::SetConsoleOutputCP(CP_UTF8);
 
-			//  Перенаправляем stdout/stderr/stdin на консоль. freopen_s — стандартный
-			//  способ для C runtime, std::cout пойдёт через тот же FILE*.
+			//  Redirects stdout, stderr, stdin to the console.
 			FILE* dummy = nullptr;
 			freopen_s(&dummy, "CONOUT$", "w", stdout);
 			freopen_s(&dummy, "CONOUT$", "w", stderr);
 			freopen_s(&dummy, "CONIN$", "r", stdin);
 
-			//  Синхронизация iostream с C-stdio чтобы перевод stdout
-			//  применился и для std::cout.
+			// Redirection can sometimes corrupt stdio.
+			// Clear to ensure healthy state.
 			std::cout.clear();
 			std::cerr.clear();
 			std::cin.clear();

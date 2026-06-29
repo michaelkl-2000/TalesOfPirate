@@ -142,13 +142,14 @@ void CFightAble::BeginFight() {
 	}
 	lReqDist = GetRadius() + STarShape.Radius + m_SFightInit.pCSkillRecord->sApplyDistance;
 
-	long lDistX2 = (GetShape().Centre.X - STarShape.Centre.X) * (GetShape().Centre.X - STarShape.Centre.X);
-	long lDistY2 = (GetShape().Centre.Y - STarShape.Centre.Y) * (GetShape().Centre.Y - STarShape.Centre.Y);
-	if (lDistX2 + lDistY2 <= lReqDist * lReqDist) {
+	const std::int64_t lDx = GetShape().Centre.X - STarShape.Centre.X;
+	const std::int64_t lDy = GetShape().Centre.Y - STarShape.Centre.Y;
+	const std::int64_t lReqDist64 = lReqDist;
+	if (lDx * lDx + lDy * lDy <= lReqDist64 * lReqDist64) {
 		if (m_SFightInit.pCSkillRecord->chOperate[0] == 0) //
 		{
 			//g_CParser.DoString(m_SFightInit.pCSkillRecord->szPrepare, enumSCRIPT_RETURN_NONE, 0, enumSCRIPT_PARAM_LIGHTUSERDATA, 1, this->IsCharacter(), enumSCRIPT_PARAM_NUMBER, 1, m_SFightInit.pSSkillGrid->chLv, DOSTRING_PARAM_END);
-			SkillGeneral((long)sqrt((double)lDistX2 + lDistY2));
+			SkillGeneral((long)sqrt((double)(lDx * lDx + lDy * lDy)));
 		}
 		else {
 			m_SFightProc.sState = enumFSTATE_OFF;
@@ -220,9 +221,10 @@ void CFightAble::OnFight(std::uint32_t ulCurTick) {
 	if (m_SFightProc.sState == enumFSTATE_ON) {
 		lReqDist = GetRadius() + STarShape.Radius + m_SFightInit.pCSkillRecord->sApplyDistance;
 
-		long lDistX2 = (GetShape().Centre.X - STarShape.Centre.X) * (GetShape().Centre.X - STarShape.Centre.X);
-		long lDistY2 = (GetShape().Centre.Y - STarShape.Centre.Y) * (GetShape().Centre.Y - STarShape.Centre.Y);
-		if (lDistX2 + lDistY2 > lReqDist * lReqDist) {
+		const std::int64_t lDx = GetShape().Centre.X - STarShape.Centre.X;
+		const std::int64_t lDy = GetShape().Centre.Y - STarShape.Centre.Y;
+		const std::int64_t lReqDist64 = lReqDist;
+		if (lDx * lDx + lDy * lDy > lReqDist64 * lReqDist64) {
 			m_SFightProc.sState = enumFSTATE_TARGET_OUT; //
 			NotiSkillSrcToEyeshot();
 		}
@@ -254,7 +256,7 @@ void CFightAble::OnFight(std::uint32_t ulCurTick) {
 				{
 					short i;
 					for (i = 0; i < sExecTime; i++) {
-						if (!SkillGeneral((long)sqrt((double)lDistX2 + lDistY2)))
+						if (!SkillGeneral((long)sqrt((double)(lDx * lDx + lDy * lDy))))
 							break;
 					}
 					m_SFightInit.pSSkillGrid->lColdDownT += lResumeT * i;

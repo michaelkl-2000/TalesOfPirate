@@ -156,7 +156,7 @@ DWORD WINAPI g_GameLogicProcess(LPVOID lpParameter) {
 	g_strLogName = strLogName + szLogTime;*/
 
 	while (!g_bGameEnd) {
-		DWORD dwInterval = 50; //
+		DWORD dwInterval = 16; //
 
 		//lua_FrameMove();
 		if (g_pGameApp->m_bExecLuaCmd) {
@@ -180,7 +180,7 @@ DWORD WINAPI g_GameLogicProcess(LPVOID lpParameter) {
 
 		//
 		dwLastTick = dwCurTick;
-		PEEKPACKET(50 > dwRunTick ? 50 - dwRunTick : 0);
+		PEEKPACKET(dwInterval > dwRunTick ? dwInterval - dwRunTick : 0);
 		dwCurTick = GetTickCount();
 		dwRunTick += dwCurTick - dwLastTick;
 

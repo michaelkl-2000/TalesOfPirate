@@ -259,11 +259,24 @@ namespace GUI {
 		const char* strMapName;
 
 	private:
-		// 
+		//
 		static CCharacter2D* pMainCha;
 		static CCharacter2D* pTarget;
 		static CCharacter* pLastTarget;
-		static CCharacter* pChaPointer;
+
+		// Handle на текущую цель вместо сырого CCharacter*. Слоты CCharacter
+		// в CScene переиспользуются (фиксированный пул _pChaArray + IsValid()),
+		// поэтому кэшированный указатель «протухает»: либо слот стал невалиден,
+		// либо его занял другой персонаж. Аналог серверного GamePool-handle:
+		// храним устойчивый identity (getAttachID) и резолвим его через
+		// CScene::SearchByID в момент использования — протухший handle сам даёт
+		// nullptr, без обращения в переиспользованную память.
+		// 0 == «цели нет» (валидный attachID всегда != 0).
+		static DWORD _targetAttachID;
+
+		// Резолв handle'а в живой CCharacter* (или nullptr). Не разыменовывает
+		// старый слот — заново ищет персонажа по identity в текущей сцене.
+		static CCharacter* _ResolveTarget();
 
 		static void _MainChaRenderEvent(C3DCompent* pSender, int x, int y);
 		static void _TargetRenderEvent(C3DCompent* pSender, int x, int y);

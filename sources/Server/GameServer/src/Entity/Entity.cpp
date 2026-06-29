@@ -742,11 +742,11 @@ const Corsairs::Util::Point& Entity::GetPos() const {
 	return m_shape.Centre;
 }
 
-void Entity::SetRadius(const long& lRadius) {
+void Entity::SetRadius(std::int32_t lRadius) {
 	m_shape.Radius = lRadius;
 }
 
-const long& Entity::GetRadius() const {
+std::int32_t Entity::GetRadius() const {
 	return m_shape.Radius;
 }
 

@@ -335,6 +335,14 @@ void CWaitAttackState::ActionEnd(DWORD pose_id) {
 
 	if (GetIsExecEnd()) return;
 
+	//  Ghost-attack fix: после локальной отмены (_IsCancel) не реплеим следующую
+	//  cyclic-позу свинга — иначе она перебивает run-позу, выставленную в Cancel(),
+	//  и «фантомная» атака снова проигрывается. Штатный teardown стейта при этом
+	//  не трогаем.
+	if (_IsCancel) {
+		return;
+	}
+
 	if (_pSkillInfo->IsPlayCyc() && _pSkillInfo->GetPoseNum() > 1) {
 		_nSkillPoseID = _GetPoseID();
 
@@ -606,7 +614,7 @@ void CAttackState::FrameMove() {
 		PopState();
 		return;
 	}
-
+	
 	switch (_eUseSkill) {
 	case enumUseSkill:
 		if (!_pSelf->IsBoat() && _pTarget && _pTarget != _pSelf && _pSkillInfo->GetDistance() > 0 && !_IsMoveOver) {
@@ -737,6 +745,19 @@ void CAttackState::Cancel() {
 				return;
 		}
 		CS_EndAction(this);
+
+		//  Ghost-attack fix: для cyclic-скиллов (лук и т.п.) CS_EndAction уходит
+		//  и при уже начавшемся свинге. Сервер корректно отменяет выстрел до
+		//  истечения fire-time — урона нет, но локальная свинг-анимация
+		//  доигрывалась до конца, создавая «фантомную» атаку. Гасим только
+		//  визуал: возвращаем run-позу. Сам стейт НЕ сворачиваем (никакого
+		//  PopState) — это ломало бы штатный teardown атаки (_pHarm cleanup,
+		//  передачу _pMove и синхронизацию позиции), из-за чего клиент терял
+		//  позицию и резинил назад. Повторный показ свинга из ActionEnd для
+		//  cyclic-скиллов подавляется проверкой _IsCancel ниже.
+		if (_eUseSkill == enumUseSkill && _pSkillInfo->IsPlayCyc()) {
+			_pSelf->PlayPose(_pSelf->GetPose(POSE_RUN), PLAY_LOOP_SMOOTH);
+		}
 	}
 }
 

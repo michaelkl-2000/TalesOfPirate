@@ -73,7 +73,22 @@ CTextButton* CStartMgr::btnQQ = NULL;
 CCharacter2D* CStartMgr::pMainCha = NULL;
 CCharacter2D* CStartMgr::pTarget = NULL;
 CCharacter* CStartMgr::pLastTarget = nullptr;
-CCharacter* CStartMgr::pChaPointer = nullptr;
+DWORD CStartMgr::_targetAttachID = 0;
+
+// Резолв handle'а цели в живой указатель. Заново ищем персонажа по устойчивому
+// identity (getAttachID) в текущей сцене — если слот был освобождён или занят
+// другим персонажем, SearchByID вернёт nullptr/несовпадение, и мы не трогаем
+// переиспользованную память. См. серверный GamePool::FindEntity — тот же приём.
+CCharacter* CStartMgr::_ResolveTarget() {
+	if (_targetAttachID == 0) {
+		return nullptr;
+	}
+	CGameScene* pScene = CGameApp::GetCurScene();
+	if (!pScene) {
+		return nullptr;
+	}
+	return pScene->SearchByID(_targetAttachID);
+}
 
 float g_ExpBonus = 1.0;
 float g_DropBonus = 1.0;
@@ -98,6 +113,7 @@ void CStartMgr::CleanDropListForm() {
 
 void CStartMgr::SetMonsterInfo() {
 	CleanDropListForm();
+	CCharacter* pChaPointer = _ResolveTarget();
 	if (!pChaPointer) {
 		return;
 	}
@@ -198,14 +214,17 @@ void CStartMgr::SetTargetInfo(CCharacter* pTargetCha) {
 	else
 		btnMonsterInfo->SetIsShow(true);
 
-	if (pChaPointer && pTargetCha) {
-		if (pChaPointer->getMobID() != pTargetCha->getMobID()) {
-			frmMonsterInfo->Close();
-		}
+	// Резолвим прошлую цель заново — не доверяем кэшу. Если прошлый персонаж
+	// исчез или слот занял другой моб, prevTarget == nullptr / другой mobID,
+	// и окно моба корректно закрывается. Раньше тут разыменовывался протухший
+	// pChaPointer → access violation (см. дамп UIStartForm.cpp:202).
+	CCharacter* prevTarget = _ResolveTarget();
+	if (prevTarget && prevTarget->getMobID() != pTargetCha->getMobID()) {
+		frmMonsterInfo->Close();
 	}
 
-	pChaPointer = pTargetCha;
-	RefreshTargetModel(pChaPointer);
+	_targetAttachID = pTargetCha->getAttachID();
+	RefreshTargetModel(pTargetCha);
 }
 
 void CStartMgr::RefreshTargetModel(CCharacter* pChaPointer) {
@@ -228,7 +247,7 @@ void CStartMgr::RefreshTargetModel(CCharacter* pChaPointer) {
 
 void CStartMgr::RemoveTarget() {
 	frmTargetInfo->Hide();
-	pChaPointer = NULL;
+	_targetAttachID = 0;
 	targetInfoID = 0;
 }
 

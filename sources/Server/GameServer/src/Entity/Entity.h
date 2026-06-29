@@ -64,8 +64,8 @@ public:
 	void          SetPos(std::int32_t lPosX, std::int32_t lPosY);
 	const Corsairs::Util::Point&  GetPos() const;
 
-	void          SetRadius(const long& lRadius);
-	const long&   GetRadius() const;
+	void          SetRadius(std::int32_t lRadius);
+	std::int32_t  GetRadius() const;
 
 	std::uint32_t    GetID() const;
 	short         GetCat() const;

@@ -547,7 +547,7 @@ bool COneMoveState::ContinueMove(int nTargetX, int nTargetY, bool isWalkLine, bo
 
 	CompartMoveList(_List, g_cFindPath.GetResultPath(), len);
 
-	const DWORD MOUSE_TIME = 300;
+	const DWORD MOUSE_TIME = 50;
 	static DWORD dwTime = 0;
 	if (!IsCheckTime || (IsCheckTime && CGameApp::GetCurTick() > dwTime)) {
 		if (IsCheckTime) {

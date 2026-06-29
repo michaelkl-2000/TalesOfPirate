@@ -735,16 +735,16 @@ int CCharacter::FaceTo(int nAngle) {
 	nAngle = FixAngle(nAngle);
 
 	if (IsBoat()) {
-		_nAngleStep = (int)(300.0f / (float)Corsairs::Client::Frame::SteadyFrameSync::Instance().GetFps());
+		_nAngleStep = (int)(3600.0f / (float)Corsairs::Client::Frame::SteadyFrameSync::Instance().GetFps());
 	}
 	else {
-		_nAngleStep = (int)(600.0f / (float)Corsairs::Client::Frame::SteadyFrameSync::Instance().GetFps());
+		_nAngleStep = (int)(3600.0f / (float)Corsairs::Client::Frame::SteadyFrameSync::Instance().GetFps());
 	}
 
-	if (!_isArrive && IsMainCha() && !IsBoat()) {
-		_nAngleStep = (int)((float)_nAngleStep * 0.75f);
-		if (_nAngleStep <= 0) _nAngleStep = 1;
-	}
+	// if (!_isArrive && IsMainCha() && !IsBoat()) {
+	// 	_nAngleStep = (int)((float)_nAngleStep * 0.75f);
+	// 	if (_nAngleStep <= 0) _nAngleStep = 1;
+	// }
 
 	int nDis = GetAngleDistance(_nYaw, nAngle);
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Language
 
-All documentation, comments, and communication — in Russian. Technical terms and code identifiers stay in original form.
+Always use english whenever possible.
 
 ## Project Overview
 
@@ -308,3 +308,246 @@ rtk proxy <cmd>        # Прогнать без фильтра (для деба
 
 **Неприменимо к этому проекту** (и поэтому не используется): `rtk cargo`, `rtk tsc`, `rtk lint`, `rtk prettier`, `rtk next`, `rtk vitest`, `rtk playwright`, `rtk pnpm`, `rtk npm`, `rtk npx`, `rtk prisma`, `rtk docker`, `rtk kubectl`. Для сборки здесь — MSBuild (C++) и `dotnet build`/`dotnet test` (F#/C#); у них RTK-фильтров нет, пишем команды напрямую.
 <!-- /rtk-instructions -->
+
+---
+
+# English Translation
+
+> The sections below are an English translation of the Russian-language guidance above. Code identifiers, file paths, type names, and other technical terms are kept in their original form. In case of any discrepancy, the Russian text above is authoritative.
+
+## Language
+
+All documentation, comments, and communication — in Russian. Technical terms and code identifiers stay in original form.
+
+## Project Overview
+
+Tales of Pirate — MMORPG with two codebases:
+- **C++23** (VS 2026 Preview, toolset v145, `/std:c++latest`, **x64-only** since 2026-04-22): client (DirectX 9 engine MindPower3D) + GameServer. Account/Gate/Group servers were migrated out of C++ and now live only in .NET.
+- **Modern .NET 10** (F# + C#): replacement server infrastructure (Corsairs.*), Blazor admin panel
+
+**C++ standard: C++23.** Prefer modern C++ constructs: `std::string`/`std::string_view` over `char*`, `std::format` over `sprintf`, `std::filesystem` over Win32 file API, structured bindings, `auto`, range-based for, `std::optional`, `std::span`, smart pointers. Avoid raw `new`/`delete` where possible.
+
+**Field naming:**
+- **Class (`class`) fields** — always start with `_`, then `camelCase`: `_id`, `_name`, `_currentTrack`, `_isPlaying`. This is encapsulated state with private/protected access. No Hungarian notation (`nID`, `szName`, `m_nType`).
+- **Public struct (`struct`) fields** — `PascalCase`, without `_`. A struct in our code is a data bag / DTO / POD; fields are public by default and read as data, not as object state. Correct: `struct Point { int X; int Y; };`, `struct AudioInfo { AudioType Type; std::uint32_t Code; };`. Incorrect: `struct Point { int x; int y; }` or `struct Point { int _x; int _y; }`.
+- Private fields inside a `struct` (if any) — same as a class: `_camelCase`. But if private fields appear — it's most likely a class, not a struct.
+
+**Method names:** class/interface methods and free functions — `PascalCase`. This applies to virtual methods, overloads, and static helpers in a namespace.
+- Correct: `Init()`, `Instance()`, `GetResourceId()`, `IsValid()`, `SetVolume(float)`.
+- Incorrect: `init()`, `get_instance()`, `get_resID()`, `is_valid()`, `set_volume(int)`.
+- Abbreviations of 2+ letters — first letter uppercase, the rest lowercase (`GetResId`, not `GetResID`; `ParseUrl`, not `ParseURL`; `HttpClient`, not `HTTPClient`). Same as in the .NET part `Corsairs.*`.
+- Local variables and function parameters — `camelCase` (`const int maxValue = ...`); fields — `_camelCase` (see rule above).
+- Exceptions: signatures dictated by third-party APIs (WinAPI callbacks with `WndProc`/`LRESULT CALLBACK`; STL customization points like `begin()`/`end()`/`size()`/`swap()` for compatibility with range-based for and `std::swap`). Only there — snake_case/CamelCase stays as the API requires.
+
+**Singleton:** all singleton classes in the project use a standardized accessor — `static T& Instance()` (not `GetInstance()`, not `get_instance()`, not `Get()`). Implementation — Meyers' singleton via `static T instance;` inside the function; constructor `private`, copy/assign — `delete`. Example — `AssetDatabase::Instance()`, `AudioSDL::Instance()`. When refactoring legacy singletons (`_singleton<T>::get_instance()`, `SomeClass::getInstance()`) — bring them to `Instance()`.
+
+**Namespaces:** new classes and refactored code must be wrapped in a namespace rooted at `Corsairs::` — aligned with the project's .NET part (`Corsairs.*`). Scheme: `Corsairs::<Section>[::<Subsection>]`.
+- `Corsairs::Client::*` — client (`sources/Client/`, `sources/Libraries/AudioSDL/`, etc.): `Corsairs::Client::Audio`, `Corsairs::Client::Net`, `Corsairs::Client::Ui`, `Corsairs::Client::Lua`.
+- `Corsairs::Engine::*` — MindPower3D engine (`sources/Engine/`): `Corsairs::Engine::Render`, `Corsairs::Engine::Dx10`, `Corsairs::Engine::Animation`, `Corsairs::Engine::Font`, `Corsairs::Engine::Particle`.
+- `Corsairs::Server::<Name>` — servers (`sources/Server/<Name>Server/`): `Corsairs::Server::Game`, `Corsairs::Server::Gate`, `Corsairs::Server::Group`, `Corsairs::Server::Account`.
+- `Corsairs::Common::*`, `Corsairs::Util::*` — shared libraries (`sources/Libraries/Common/`, `sources/Libraries/Util/`).
+
+Example: `sources/Libraries/AudioSDL/` → `Corsairs::Client::Audio`.
+
+Style (C++23):
+- Nested-namespace: `namespace Corsairs::Client::Audio { ... }`.
+- Comment the closing brace: `} // namespace Corsairs::Client::Audio`.
+- In a `.h` and its corresponding `.cpp` — the same namespace, both files wrapped.
+- **No `using namespace ...` at global scope** in `.h` files. In `.cpp` — allowed, but prefer qualification at the call site or a local `using` inside a function.
+
+Exceptions (do not wrap):
+- Third-party libraries (`LuaJIT`, `LuaBridge`, `SDL3`, `SDL3_mixer`, `FreeType`, `fontstash`, `discord-rpc`, `stb_image`, `sqlite3`) — their headers and implementations stay as-is; we do not impose a namespace.
+- Pure C APIs (WinAPI, DirectX, ODBC, OpenSSL) — without a wrapper.
+- Legacy code not touched by the current refactoring — do not bulk-move into a namespace; only when touching adjacent code, consistent with the rules about `_` fields and fixed-width types.
+
+**Header guards:** in new `.h` files and when refactoring old ones — use `#pragma once` at the very top of the file. C-style include guards (`#ifndef __FOO_H__ / #define __FOO_H__ / #endif`) — do not use.
+- `#pragma once` is supported by all of the project's current compilers (MSVC, clang, gcc), is shorter, and cannot be broken by a typo in the guard symbol or a name collision from copy-paste.
+- Exception — third-party headers (we do not touch them at all).
+
+**Refactoring C strings:** when refactoring and fixing bugs, replace C functions with their C++ equivalents:
+- `strcpy`/`strncpy` → `std::string` assignment or `.assign()`
+- `strcmp`/`strncmp` → `==`, `!=`, `.compare()` or `std::string_view`
+- `sprintf`/`snprintf` → `std::format`
+- `strlen` → `.size()` / `.length()`
+- `strcat` → `+=` or `std::string::append()`
+- `atoi`/`atof` → `std::stoi`/`std::stof` or `std::from_chars`
+
+**Integer types:** when refactoring and in new code — fixed-width from `<cstdint>` instead of platform-dependent and Windows typedefs.
+- `int`, `long`, `short`, `unsigned int`, `unsigned long` → `std::int32_t` / `std::uint32_t` / `std::int64_t` / `std::uint64_t` / `std::int16_t` / `std::uint16_t` / `std::int8_t` / `std::uint8_t`
+- `DWORD`, `ULONG`, `UINT` → `std::uint32_t`
+- `LONG`, `INT` → `std::int32_t`
+- `WORD`, `USHORT` → `std::uint16_t`
+- `BYTE`, `UCHAR` → `std::uint8_t`
+- `QWORD`, `ULONGLONG` → `std::uint64_t`
+- `LONGLONG` → `std::int64_t`
+- `size_t` → `std::size_t`, `ptrdiff_t` → `std::ptrdiff_t`, `intptr_t`/`uintptr_t` → `std::intptr_t`/`std::uintptr_t`
+- For handles and typed IDs prefer explicit `std::uint32_t`/`std::uint64_t` instead of `DWORD`/`ULONGLONG` — the hidden width of `DWORD` already caused a pointer-truncation bug on x64 once (see `x64-playerptr-fix`).
+
+Exceptions (leave as-is):
+- `bool`, `char` in `char*`/`std::string`, `wchar_t`, `float`, `double`;
+- `for`-loop counters that aren't stored;
+- **WinAPI parameters and return values** — pass and accept what the API requires (`WPARAM`/`LPARAM`/`HRESULT`/`DWORD` in callbacks), but your own class fields and internal variables — fixed-width;
+- legacy spots not touched by the current refactoring — do not change in bulk, only when touching adjacent code.
+
+**Enumerations:** in new code and when refactoring — **only `enum class`**, no plain `enum`. Always with a fixed underlying type from `<cstdint>` (`std::uint32_t` / `std::int32_t` / etc.).
+- Correct: `enum class TextureLoadMode : std::uint32_t { LOAD_TEXTURE_DDS = 0, LOAD_TEXTURE_USER_IMAGE = 1 };`
+- Incorrect: `enum TextureLoadMode { ... };` (no scope, implicit conversion to int, underlying type undefined).
+- Plain enum is allowed only in legacy code we don't touch (e.g. neighboring `lwTexInfoTypeEnum`, `lwResStateEnum`, etc. — no need for a bulk rewrite). When extending such an enum — convert it to `enum class` in place if you're touching most of the call sites.
+- Value names — `SCREAMING_CASE` with a meaningful prefix (`LOAD_TEXTURE_*`, `TEX_TYPE_*`). The type itself — `PascalCase` without `lw`/`Enum` suffixes: `TextureLoadMode`, not `lwTextureLoadModeEnum`.
+- The call site must qualify the value: `TextureLoadMode::LOAD_TEXTURE_DDS`. No `using enum ...` at global header scope.
+
+**Exception handling:** `try { ... } catch (...) { ... }` — **only with the user's explicit agreement**. Don't wrap a call in `try/catch` on your own; let the exception propagate and the process crash. Suppressing exceptions hides broken data/resources and leads to silent regressions. Exception — if a catch is genuinely needed to roll back a resource or translate one error type into another, and it's been agreed.
+
+**Time measurement and timeouts:** in new code and when refactoring — `std::chrono` instead of `GetTickCount`/`timeGetTime`/`QueryPerformanceCounter` directly and instead of `DWORD` timestamps.
+- Points in time — `std::chrono::steady_clock::time_point` (`steady_clock::now()`); for wall-clock — `system_clock`.
+- Durations — `std::chrono::milliseconds` / `std::chrono::seconds` / `std::chrono::microseconds`. No `DWORD timeoutMs = 400;`.
+- Comparison/arithmetic via chrono operators: `(now - start) > 400ms`, `start + 1s`, etc.
+- Sleep — `std::this_thread::sleep_for(...)` instead of `Sleep(N)`.
+- "Not set" sentinel — `time_point{}` (default-constructed = epoch); check `if (tp == steady_clock::time_point{})`.
+- Exception: WinAPI callbacks and legacy APIs that require `DWORD` directly — leave those as-is.
+
+**Business-logic timing — by time, not by frames.** Any long-press, blink, cooldown, debounce, animation timing, ttl, etc. must be measured from `std::chrono` timestamps, not from a counter incremented every frame. Frame-counter timeouts tuned at 30 FPS become 2.4× faster at 144 FPS — behavior breaks when the FPS changes. If you see the pattern `++counter; if (counter > N)` for a timeout/blink — that's a **bug**, rewrite it as `(now - start) > Nms`. Exception — counters that are semantically about **frames**, not **time** (e.g. the animation-frame index in a sprite) — there, FPS normalization is done via `SteadyFrameSync::GetAnimMultiplier()`.
+
+**Formatting:** Single-line `if` without braces is forbidden. Always use braces and line breaks:
+```cpp
+// Incorrect:
+if (result.empty()) return false;
+
+// Correct:
+if (result.empty()) {
+    return false;
+}
+```
+
+**`.SetParam()` chains:** Each parameter on its own line:
+```cpp
+// Correct:
+_db.CreateCommand("UPDATE character SET level = ? WHERE atorID = ?")
+    .SetParam(1, level)
+    .SetParam(2, chaId)
+    .ExecuteNonQuery();
+```
+
+Main solution: `sources/TalesOfPirates.sln` — contains both C++ and .NET projects.
+
+## Build Commands
+
+(See the build commands above — these are already in English and are not repeated here.)
+
+## Architecture
+
+### C++ Client
+- Entry: `sources/Client/src/Main.cpp` → `GameApp` class
+- Game loop: `GameAppInit.cpp`, `GameAppFrameMove.cpp`, `GameAppRender.cpp`
+- Engine: `sources/Engine/` (MindPower3D — DirectX 9 renderer, animation, particles, GUI)
+- Network: `NetProtocol.cpp`, `PacketCmd*.cpp`, `Connection.cpp`
+- State machine: `STAttack.cpp`, `STMove.cpp` (attack/movement states)
+- Character system: `Character.cpp` → `CharacterModel.cpp` → `CharacterAction.cpp`
+- Input: `Corsairs::Engine::Input::InputSystem` on top of `WM_KEY*` / `WM_MOUSE*` / `WM_CHAR` (DirectInput 8 removed 2026-04-24)
+- Textures: `TextureLoader` + `TextureCache` (stb_image for BMP/TGA/PNG, manual `DdsLoader` for DDS)
+- Entity pooling: `GamePool` + `SlotMap<T, Capacity>` with stable handles `(gen:12|slot:20)` / `(tag:8|serial:24)` — replaced raw pointers after the x86→x64 migration
+- PCH: all C++ projects use `stdafx.h` with `/FI` (ForcedIncludeFiles). **Do not manually add `#include "stdafx.h"` to `.cpp` files.**
+
+### C++ Server (GameServer — the only C++ server)
+- `sources/Server/GameServer/` — combat, quests, trading, guilds, NPCs (~130 source files)
+- DB: ODBC, hardcoded connection string `DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=gamedb;Trusted_Connection=Yes;` in `GameDB.cpp` / `TradeLogDB.cpp`
+- Encoding: MSSQL and the server were converted to UTF-8 (migration closed 2026-04-19, utilities — `Libraries/Util/EncodingUtil.h`)
+- Static data: reads the shared `server/GameServer/gamedata.sqlite` via `AssetDatabase::Instance()` (see below)
+
+### .NET Server Infrastructure (Corsairs.*)
+(Already in English above — Platform.Network, Platform.Protocol, Platform.Shared, Platform.Database, Platform.Grpc.Contracts.)
+
+### .NET Server Pattern / Admin.Web / Attack Chain
+(Already in English above.)
+
+## Static Data Store
+
+**`server/GameServer/gamedata.sqlite`** — shared static-data DB (client + server, dev environment). Access point: `AssetDatabase::Instance()`. All `.txt` / `.bin` files from `server/GameServer/resource/` are gradually moving here (the Lua→stores migration closed 2026-04-22; 53 root tables were moved to `old.table/`). For new "tables" — create a store (example: `NpcRecordStore`, `ChaNameFilterStore`) that reads via `AssetDatabase::Instance().GetDb()`. When migrating a legacy table — **always in 2 stages**: (1) the store + hookup to the legacy parser to transfer the data; (2) removal of the legacy path after the data has actually been imported.
+
+The client-side `render.sqlite` (SQLAR + 3D/texture metadata) — in progress, plan in `memory/render-assets-plan.md`.
+
+## Key Libraries (C++)
+
+All live in `sources/Libraries/`:
+
+- `common` — shared utilities (all projects depend on it; Windows SDK, PCH, base types)
+- `Util` — shared utilities (`EncodingUtil.h` UTF-8, etc.)
+- `CorsairsNet` — network transport for the client and GameServer (replaced legacy `InfoNet`)
+- `LuaJIT` (`lua51.lib`) — Lua 5.1 JIT, client + GameServer
+- `LuaBridge` (header-only) — C++ Lua binding, auto-marshaling
+- `AudioSDL` — client audio wrapper on top of **SDL3 3.4.4 + SDL3_mixer 3.2.0** (migration 2026-04-23, track-model API). OGG Vorbis — via the built-in stb_vorbis, `libogg` is not needed.
+- `SDL3` — SDL3 headers/import libs
+- `FreeType` + `fontstash` — multi-page glyph atlas for UI fonts (DX9 backend; plan in `memory/font-render-freetype-plan.md`)
+- `sqlite3` — SQLite (for `AssetDatabase`, future `render.sqlite`)
+- `Discord` — discord-rpc DLL
+- `DirectX` — DirectX 9 headers/libs. **Do not include `sources/Libraries/DirectX/include` on x64** — it produces C2733 due to a `winnt.h` conflict with the recent Windows SDK (see `memory/x64_migration_plan.md`)
+
+## Important Caveats
+
+- **Platform**: C++ builds — **x64 only** (Win32 configs removed from the solution 2026-04-22). .NET targets `net10.0`.
+- **RC files**: the Edit tool breaks the GBK encoding in `.rc` files — the live one among the C++ projects is `GameServer.rc`. To edit resource files, use `sed -i`.
+- **PCH**: all three C++ projects (`kop`, `MindPower3D`, `GameServer`) use `stdafx.h` via `ForcedIncludeFiles` (`/FI`). **Do not manually add `#include "stdafx.h"` to `.cpp` files.**
+- **Client launch**: `Game.exe pKcfT0PcaX` (password argument required). Artifacts: `Client/system/Game.exe` (Debug) and `sources/Client/bin/system/Game.exe` (Release). The SDL3 DLLs (`SDL3.dll`, `SDL3_mixer.dll`) must sit next to it.
+- **F# compilation order**: file order in the `.fsproj` matters — add new files in dependency order.
+- **sqlcmd from git-bash**: invoke via `bash -c "unset SQLCMDUSER SQLCMDPASSWORD; ..."` + `cygpath -w` for `-i`; SSPI — with the `-E` flag. See `memory/feedback_mssql_sqlcmd.md`.
+- **Third-party component licenses**: when adding a new library/font/resource to the client — place the license text in `Client/licenses/` (fonts — in `Client/licenses/fonts/`), add an entry to `Client/licenses/README.md`. When removing — delete the file and the README line. License texts must **only be downloaded** (curl/cp), never generated.
+
+## RTK (Rust Token Killer) — Token-Optimized Commands
+
+**Golden rule**: prefix `rtk` to commands that have a filter. If there's no filter — `rtk` just proxies, so the call stays safe. You must prefix **every** link in `&&` chains:
+
+```bash
+# ❌
+git add . && git commit -m "msg" && git push
+# ✅
+rtk git add . && rtk git commit -m "msg" && rtk git push
+```
+
+This project's stack — C++ (MSBuild) + .NET (F#/C#) + SQLite + Lua. The meaningful RTK filters for it:
+
+### Git (59–80% savings)
+```bash
+rtk git status | log | diff | show | add | commit | push | pull | branch | fetch | stash | worktree
+```
+Passthrough works for **all** git subcommands, even ones not listed.
+
+### GitHub (26–87% savings)
+```bash
+rtk gh pr view <num>    # Compact PR view
+rtk gh pr checks
+rtk gh run list
+rtk gh issue list
+rtk gh api
+```
+
+### Files & Search (60–75% savings)
+```bash
+rtk ls <path>      # Tree format, compact
+rtk read <file>
+rtk grep <pattern>
+rtk find <pattern>
+```
+
+### Analysis & Debug (70–90% savings)
+```bash
+rtk err <cmd>          # Only errors from stdout/stderr
+rtk log <file>         # Log dedup with counts
+rtk json <file>        # JSON structure without values
+rtk summary <cmd>      # Smart summary of output
+rtk diff               # Ultra-compact diff
+```
+
+### Network (65–70% savings)
+```bash
+rtk curl <url>
+rtk wget <url>
+```
+
+### Meta
+```bash
+rtk gain [--history]   # Token-savings stats
+rtk discover           # Find missed RTK opportunities in the session
+rtk proxy <cmd>        # Run without a filter (for debugging)
+```
+
+**Not applicable to this project** (and therefore unused): `rtk cargo`, `rtk tsc`, `rtk lint`, `rtk prettier`, `rtk next`, `rtk vitest`, `rtk playwright`, `rtk pnpm`, `rtk npm`, `rtk npx`, `rtk prisma`, `rtk docker`, `rtk kubectl`. For building here — MSBuild (C++) and `dotnet build`/`dotnet test` (F#/C#); they have no RTK filters, so write those commands directly.

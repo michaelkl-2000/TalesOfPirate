@@ -192,20 +192,33 @@ void CActor::FrameMove(DWORD dwTimeParam) {
 		if (_pCurState->GetIsExecEnd()) {
 			_pCurState->End();
 
-			if (_statelist.empty()) {
-				if (!_pCurState->IsKeepPose())
-					IdleState();
+			bool keepPose = _pCurState->IsKeepPose();
+			SAFE_DELETE(_pCurState);
 
-				SAFE_DELETE(_pCurState);
-			}
-			else {
-				SAFE_DELETE(_pCurState);
-
-				_pCurState = _statelist.front();
+			// Промоутим из очереди следующее валидное состояние. Если стоящий в
+			// очереди стейт уже не разрешён (например, атака с ещё не вышедшим
+			// кулдауном — отменённая/слишком ранняя), не реплеим его: выкидываем
+			// и берём следующее. Так отменённая атака не «всплывает» посреди
+			// движения. Move/прочие стейты возвращают IsAllowUse()==true и
+			// промоутятся как раньше.
+			while (!_statelist.empty()) {
+				CActionState* pNext = _statelist.front();
 				_statelist.pop_front();
 
+				if (!pNext->IsAllowUse()) {
+					SAFE_DELETE(pNext);
+					continue;
+				}
+
+				_pCurState = pNext;
 				_pCurState->SetIsWait(false);
 				_pCurState->Start();
+				break;
+			}
+
+			if (!_pCurState) {
+				if (!keepPose)
+					IdleState();
 			}
 		}
 	}

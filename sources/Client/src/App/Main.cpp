@@ -428,16 +428,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	// Main message loop:
 	ZeroMemory(&msg, sizeof(msg));
 
-	DWORD st_dwtick = GetTickCount();
-	DWORD st_tickcount = (GetTickCount() - st_dwtick) / unsigned long(g_NetIF->m_framedelay);
-
-	g_NetIF->m_framedelay = 40; // Frame delay
-
-	//string str( "Micro" );
-	//string rstr( "soft" );
-	//str.append( rstr, 14, 3 );
-
-
 	g_pGameApp->Run();
 
 	g_pGameApp->End();
